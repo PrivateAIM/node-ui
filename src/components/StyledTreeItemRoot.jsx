@@ -1,5 +1,6 @@
 import { styled } from "@mui/material/styles";
-import TreeItem, { treeItemClasses } from "@mui/lab/TreeItem";
+// import TreeItem, { treeItemClasses } from "@mui/lab/TreeItem";
+import { TreeItem, treeItemClasses } from '@mui/x-tree-view';
 
 const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
   color: theme.palette.text.secondary,

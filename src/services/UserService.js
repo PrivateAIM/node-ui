@@ -2,7 +2,7 @@ import Keycloak from "keycloak-js";
 import axios from "axios";
 
 async function getKeycloakConfig() {
-  const baseURL = process.env.NODE_ENV === "production" ? "/" : "http://127.0.0.1:3030/";
+  const baseURL = process.env.NODE_ENV === "production" ? "/" : "http://127.0.0.1:8080/";
   const response = await axios.get(`${baseURL}dashboard/v2/keycloakConfig`);
   return response.data;
 }

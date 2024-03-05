@@ -2,7 +2,7 @@ import axios from "axios";
 import UserService from "./UserService";
 
 const baseUrl = "/";
-const localhost = "http://127.0.0.1:3030";
+const localhost = "http://127.0.0.1:8080";
 
 const _axios = axios.create({
   baseURL: process.env.NODE_ENV === "production" ? baseUrl : localhost,

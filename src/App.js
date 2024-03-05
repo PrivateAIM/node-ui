@@ -18,6 +18,7 @@ export const LearningContext = createContext(learningType.INCREMENTAL);
 
 function App() {
   const { vault, learning } = useSelector((state) => state.station);
+  const vaultKeysDownloaded = Boolean(localStorage.getItem("vaultKeysDownloaded"));
 
   return (
     <LearningContext.Provider value={learning}>
@@ -45,7 +46,7 @@ function App() {
                 element={
                   <ProtectedRoute
                     isAllowed={
-                      !Boolean(localStorage.getItem("vaultKeysDownloaded"))
+                        !vaultKeysDownloaded
                     }
                     redirectPath="/vault/unseal"
                   >
