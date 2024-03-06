@@ -23,6 +23,7 @@
         "chart.js": "^4.4.0",
         "diff2html": "^3.4.35",
         "formik": "^2.4.1",
+        "keycloak-connect": "^24.0.1",
         "keycloak-js": "^21.1.2",
         "material-ui-popup-state": "^5.0.9",
         "notistack": "^3.0.1",
