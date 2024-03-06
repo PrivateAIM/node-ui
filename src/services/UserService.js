@@ -2,8 +2,8 @@ import Keycloak from "keycloak-js";
 import axios from "axios";
 
 async function getKeycloakConfig() {
-  const baseURL = process.env.NODE_ENV === "production" ? "/" : "http://127.0.0.1:8080/";
-  const response = await axios.get(`${baseURL}dashboard/v2/keycloakConfig`);
+  const baseURL = process.env.NODE_ENV === "production" ? "/" : "http://127.0.0.1:8081/";
+  const response = await axios.get(`${baseURL}metadata/keycloakConfig`);
   return response.data;
 }
 
@@ -22,14 +22,12 @@ const initKeycloak = async (onAuthenticatedCallback) => {
   });
 
   _kc
-    .init({
-      onLoad: "login-required",
-    })
+    .init({onLoad: "login-required"})
     .then((authenticated) => {
       if (!authenticated) {
         console.log("user is not authenticated..!");
       }
-      onAuthenticatedCallback();
+        onAuthenticatedCallback();
     })
     .catch(console.error);
 };

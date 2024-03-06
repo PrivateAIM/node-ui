@@ -1,6 +1,6 @@
 import axios from "../../services/AxiosService";
 
-export const fetchStationInfoAPI = () => axios.get("/dashboard/v2/stationInfo");
+export const fetchStationInfoAPI = () => axios.get("/metadata/version");
 
 export const fetchTrainsAPI = () => axios.get("/dashboard/v2");
 

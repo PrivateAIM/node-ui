@@ -3,20 +3,20 @@ const axios = require('axios').default;
 
 let _keycloak;
 const authServerUrl = process.env.KC_AUTH_SERVER_URL || "https://localhost:8443";
-const realm = process.env.KC_REALM || "PHT-Station";
+const realm = process.env.KC_REALM || "flame";
 let _publicKey;
 
 let keycloakConfig = {
     "realm": realm,
     "auth-server-url": authServerUrl,
     "ssl-required": process.env.KC_SSL_REQUIRED || "false",
-    "resource": process.env.KC_CLIENT_ID || "pht-web-backend",
+    "resource": process.env.KC_CLIENT_ID || "node-web-backend",
     "bearer-only": true
 }
 
 async function setPublicKey() {
     try {
-        const publicKeyUrl = process.env.KC_PUBLIC_KEY_URL || `http://pht-keycloak:8080/realms/PHT-Station`;
+        const publicKeyUrl = process.env.KC_PUBLIC_KEY_URL || `http://flame-keycloak:8080/realms/flame-node`;
         const response = await axios.get(publicKeyUrl);
         const { public_key } = response.data;
         _publicKey = public_key;
