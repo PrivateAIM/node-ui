@@ -1380,12 +1380,12 @@ const stationSlice = createSlice({
         state.images = [...payload.pullImages, ...payload.pushImages].map(
           (img) =>
             createImageData(
-              img.Id,
-              img.TrainClassId,
-              img.RepoTag,
+              img.id,
+              img.train_class_id,
+              img.repo_tag,
               img.status,
-              img?.JobId,
-              img?.Labels ? JSON.parse(img?.Labels) : ""
+              img?.job_id,
+              img?.labels ? JSON.parse(img?.labels) : ""
             )
         );
       })
@@ -1399,15 +1399,15 @@ const stationSlice = createSlice({
         state.loadingContainers = false;
         state.containers = payload.containers.map((cntr) =>
           createContainerData(
-            cntr.Id,
-            cntr.TrainClassId,
-            cntr.Name,
-            cntr.Image,
-            cntr.State,
-            cntr.Status,
-            cntr.JobId,
-            cntr.NextTag,
-            cntr.Repo
+            cntr.id,
+            cntr.train_class_id,
+            cntr.name,
+            cntr.image,
+            cntr.state,
+            cntr.status,
+            cntr.job_id,
+            cntr.next_tag,
+            cntr.repo
           )
         );
       })
