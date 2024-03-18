@@ -6,7 +6,7 @@ export const fetchTrainsAPI = () => axios.get("/dashboard/v2");
 
 export const fetchImagesAPI = () => axios.get("/hub/images");
 
-export const fetchContainersAPI = () => axios.get("/hub/containers");
+export const fetchContainersAPI = () => axios.get("/analysis-nodes?include=analysis");
 
 export const startFederatedLearningAPI = (payload) =>
   axios.post("/dashboard/federated/startLearning/v2", payload);
