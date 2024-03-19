@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-node-ui-deployment
+spec:
+  selector:
+    matchLabels:
+      component: node-ui-service
+      version: {{ .Chart.AppVersion }}
+      deployment-id:  {{ .Release.Name }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: node-ui-service
+        version: {{ .Chart.AppVersion }}
+        deployment-id:  {{ .Release.Name }}
+    spec:
+      containers:
+        - name: ui
+          image: ghcr.io/privateaim/node-hub-api-adapter:sha-f70404d
+          imagePullPolicy: IfNotPresent  # Maybe "Always" during debug
+          ports:
+            - containerPort: 80
+          env:
+            - name: KC_AUTH_SERVER_URL
+              value: "http://localhost:8080"  # To be replaced
+            - name: KC_CLIENT_ID
+              value: "node-ui-app"  # To be replaced
+            - name: KC_REALM
+              value: "flame"  # To be replaced
+            - name: KC_PUBLIC_KEY_URL
+              value: "http://localhost:8080/realms/flame"  # To be properly filled in
