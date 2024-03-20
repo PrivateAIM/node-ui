@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: ui
-          image: ghcr.io/privateaim/node-hub-api-adapter:sha-f70404d
+          image: ghcr.io/privateaim/node-hub-api-adapter:latest
           imagePullPolicy: IfNotPresent  # Maybe "Always" during debug
           ports:
             - containerPort: 80
