@@ -82,56 +82,56 @@ jobs:
 #            -   name: Run tests
 #                run: |
 #                    npm run test
-
-    release:
-        name: Release
-        needs: [lint, tests]
-        runs-on: ubuntu-latest
-        steps:
-            -   name: Checkout
-                uses: actions/checkout@v4
-
-            -   name: Install
-                uses: ./.github/actions/install
-                with:
-                    node-version: ${{ env.PRIMARY_NODE_VERSION }}
-
-            -   name: Build
-                uses: ./.github/actions/build
-
-            #-   name: Release
-                #env:
-                #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                #    NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-                #
-                # run: npx semantic-release
-
-    coverage:
-        name: Coverage
-        needs: [release]
-        runs-on: ubuntu-latest
-        if: ${{ github.ref_name == 'master' }}
-        steps:
-            -   name: Checkout
-                uses: actions/checkout@v4
-
-            -   name: Install
-                uses: ./.github/actions/install
-                with:
-                    node-version: ${{ env.PRIMARY_NODE_VERSION }}
-
-            -   name: Build
-                uses: ./.github/actions/build
-
-            -   name: Coverage
-                run: |
-                    npm run test:coverage
-
-            #-   name: Upload report
-            #    uses: codecov/codecov-action@v3.1.4
-            #    with:
-            #        token: ${{ secrets.codecov }}
-            #        directory: ./coverage/
+#
+#    release:
+#        name: Release
+#        needs: [lint, tests]
+#        runs-on: ubuntu-latest
+#        steps:
+#            -   name: Checkout
+#                uses: actions/checkout@v4
+#
+#            -   name: Install
+#                uses: ./.github/actions/install
+#                with:
+#                    node-version: ${{ env.PRIMARY_NODE_VERSION }}
+#
+#            -   name: Build
+#                uses: ./.github/actions/build
+#
+#            #-   name: Release
+#                #env:
+#                #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#                #    NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+#                #
+#                # run: npx semantic-release
+#
+#    coverage:
+#        name: Coverage
+#        needs: [release]
+#        runs-on: ubuntu-latest
+#        if: ${{ github.ref_name == 'master' }}
+#        steps:
+#            -   name: Checkout
+#                uses: actions/checkout@v4
+#
+#            -   name: Install
+#                uses: ./.github/actions/install
+#                with:
+#                    node-version: ${{ env.PRIMARY_NODE_VERSION }}
+#
+#            -   name: Build
+#                uses: ./.github/actions/build
+#
+#            -   name: Coverage
+#                run: |
+#                    npm run test:coverage
+#
+#            #-   name: Upload report
+#            #    uses: codecov/codecov-action@v3.1.4
+#            #    with:
+#            #        token: ${{ secrets.codecov }}
+#            #        directory: ./coverage/
 
     build-and-push-image:
         if: contains(github.event.head_commit.message, 'build_image')
