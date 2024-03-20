@@ -31,3 +31,5 @@ spec:
               value: "flame"  # To be replaced
             - name: KC_PUBLIC_KEY_URL
               value: "http://localhost:8080/realms/flame"  # To be properly filled in
+            - name: API_URL
+              value: "http://localhost:8081"  # To be properly filled in
