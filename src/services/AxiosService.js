@@ -2,7 +2,7 @@ import axios from "axios";
 import UserService from "./UserService";
 
 const baseUrl = "/";
-const localhost = process.env.API_URL;
+const localhost = process.env.REACT_APP_API_URL;
 
 const _axios = axios.create({
   baseURL: process.env.NODE_ENV === "production" ? baseUrl : localhost,

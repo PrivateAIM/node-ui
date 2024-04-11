@@ -6,7 +6,7 @@ export const fetchTrainsAPI = () => axios.get("/dashboard/v2");
 
 export const fetchImagesAPI = () => axios.get("/hub/images");
 
-export const fetchContainersAPI = () => axios.get("/analysis-nodes?include=analysis");
+export const fetchContainersAPI = () => axios.get("/containers?include=analysis");
 
 export const startFederatedLearningAPI = (payload) =>
   axios.post("/dashboard/federated/startLearning/v2", payload);
@@ -88,7 +88,7 @@ export const downloadJobResultAPI = (payload) =>
 export const showContainerFileChangesAPI = (paylaod) =>
   axios.get("/docker/container/changes/file/v2", paylaod);
 
-export const fetchVaultStatusAPI = () => axios.get("/hub/vault/status");
+export const fetchVaultStatusAPI = () => axios.get("/vault/status");
 
 export const fetchVaultUnsealStatusAPI = () =>
   axios.get("/vault/unseal/status");
