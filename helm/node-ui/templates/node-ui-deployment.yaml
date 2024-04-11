@@ -23,13 +23,13 @@ spec:
           ports:
             - containerPort: 80
           env:
-            - name: KC_AUTH_SERVER_URL
+            - name: REACT_APP_KC_AUTH_SERVER_URL
               value: "http://localhost:8080"  # To be replaced
-            - name: KC_CLIENT_ID
+            - name: REACT_APP_KC_CLIENT_ID
               value: "node-ui-app"  # To be replaced
-            - name: KC_REALM
+            - name: REACT_APP_KC_REALM
               value: "flame"  # To be replaced
-            - name: KC_PUBLIC_KEY_URL
+            - name: REACT_APP_KC_PUBLIC_KEY_URL
               value: "http://localhost:8080/realms/flame"  # To be properly filled in
-            - name: API_URL
+            - name: REACT_APP_API_URL
               value: "http://localhost:5000"  # To be properly filled in
