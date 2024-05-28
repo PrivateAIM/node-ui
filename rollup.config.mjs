@@ -1,40 +1,83 @@
+/*
+ * Copyright (c) 2022-2024.
+ * Author Peter Placzek (tada5hi)
+ * For the full copyright and license information,
+ * view the LICENSE file that was distributed with this source code.
+ */
+
 import resolve from '@rollup/plugin-node-resolve';
-import swc from "@rollup/plugin-swc";
-import pkg from './package.json' assert {type: 'json'};
+
+import { merge } from 'smob';
+
+import { builtinModules } from 'node:module';
+import { transform } from "@swc/core";
 
 const extensions = [
-    '.cjs',
-    '.mjs',
-    '.mts',
-    '.cts',
-    '.js',
-    '.jsx',
-    '.ts',
-    '.tsx',
+    '.js', '.mjs', '.cjs', '.ts', '.vue'
 ];
 
-export default [
-    {
-        input: './src/index.ts',
-        external: [
-            ...Object.keys(pkg.dependencies || {}),
-            ...Object.keys(pkg.peerDependencies || {}),
-        ],
-        plugins: [
-            resolve({ extensions}),
+const swcOptions = {
+    jsc: {
+        target: 'es2020',
+        parser: {
+            syntax: 'typescript',
+            decorators: true
+        },
+        transform: {
+            decoratorMetadata: true,
+            legacyDecorator: true
+        }
+    },
+    sourceMaps: true
+}
 
-            swc()
-        ],
+export function createConfig(
+    {
+        pkg,
+        pluginsPre = [],
+        pluginsPost = [],
+        external = [],
+        defaultExport = false,
+        swc = {}
+    }
+) {
+    external = Object.keys(pkg.dependencies || {})
+        .concat(Object.keys(pkg.peerDependencies || {}))
+        .concat(builtinModules)
+        .concat(external);
+
+    return {
+        input: 'src/index.ts',
+        external,
         output: [
             {
-                file: pkg.main,
                 format: 'cjs',
+                file: pkg.main,
+                exports: 'named',
+                ...(defaultExport ? { footer: 'module.exports = Object.assign(exports.default, exports);' } : {}),
                 sourcemap: true
-            }, {
+            },
+            {
+                format: 'es',
                 file: pkg.module,
-                format: 'esm',
                 sourcemap: true
             }
+        ],
+        plugins: [
+            ...pluginsPre,
+
+            // Allows node_modules resolution
+            resolve({ extensions }),
+
+            ...pluginsPost,
+
+            // Compile TypeScript/JavaScript files
+            {
+                name: 'swc',
+                transform(code) {
+                    return transform(code, merge({}, swc, swcOptions));
+                }
+            },
         ]
-    }
-];
+    };
+}
