@@ -39,7 +39,6 @@
         "lint": "eslint ./packages/**/*.{ts,vue}",
         "lint:fix": "npm run lint -- --fix",
         "prepare": "husky install",
-        "cli": "npm run cli --workspace=packages/server-api",
         "start": "npm run dev --workspace=packages/client-ui"
     }
 }
