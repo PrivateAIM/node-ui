@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
 import { defineComponent } from "vue";
 import Badge from "primevue/badge";
 import Avatar from "primevue/avatar";
@@ -15,17 +15,34 @@ export default defineComponent({
   },
   data() {
     return {
-      items: [{ label: "Home", icon: "pi pi-home" }],
+      items: [
+        { label: "Home", icon: "pi pi-home" },
+        { label: "About", icon: "pi pi-at" },
+        { label: "Settings", icon: "pi pi-spin pi-cog" },
+      ],
     };
   },
 });
 </script>
 
 <template>
-  <div id="topMenu">
+  <div class="menuBar">
     <Menubar :model="items">
+      <template #start>
+        <svg
+          width="35"
+          height="40"
+          viewBox="0 0 35 40"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-2rem"
+        >
+          <!--          <path d="..." fill="var(&#45;&#45;primary-color)" />-->
+          <!--          <path d="..." fill="var(&#45;&#45;text-color)" />-->
+        </svg>
+      </template>
       <template #item="{ item, props, hasSubmenu, root }">
-        <a v-bind="props.action">
+        <a v-ripple class="flex align-items-center" v-bind="props.action">
           <span :class="item.icon" />
           <span class="ml-2">{{ item.label }}</span>
           <Badge
@@ -54,17 +71,11 @@ export default defineComponent({
             type="text"
             class="w-8rem sm:w-auto"
           />
-          <Avatar icon="pi pi-user" class="mr-2" size="xlarge" />
+          <Avatar icon="pi pi-user" class="mr-2" size="large" shape="circle" />
         </div>
       </template>
     </Menubar>
   </div>
 </template>
 
-<style scoped lang="scss">
-@import "primeicons/primeicons.css";
-
-//.p-menubar-root-list {
-//  padding: 0.5rem 1rem !important;
-//}
-</style>
+<style scoped lang="scss"></style>

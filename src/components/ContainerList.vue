@@ -19,17 +19,19 @@ export default defineComponent({
 </script>
 
 <template>
-  <h2>Data Table Example</h2>
-  <DataTable
-    :value="products"
-    :pt="{
-      table: 'table table-striped',
-    }"
-  >
-    <Column field="name" header="Name"></Column>
-    <Column field="category" header="Category"></Column>
-    <Column field="quantity" header="Quantity"></Column>
-  </DataTable>
+  <div class="containerList">
+    <h2 style="color: blue">Data Table Example</h2>
+    <DataTable
+      :value="products"
+      :pt="{
+        table: 'table table-striped',
+      }"
+    >
+      <Column field="name" header="Name"></Column>
+      <Column field="category" header="Category"></Column>
+      <Column field="quantity" header="Quantity"></Column>
+    </DataTable>
+  </div>
 </template>
 
 <style scoped lang="scss"></style>
