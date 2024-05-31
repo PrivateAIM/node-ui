@@ -1,5 +1,4 @@
 <script>
-import { defineComponent } from "vue";
 import Badge from "primevue/badge";
 import Avatar from "primevue/avatar";
 import InputText from "primevue/inputtext";
@@ -71,11 +70,15 @@ export default defineComponent({
             type="text"
             class="w-8rem sm:w-auto"
           />
-          <Avatar icon="pi pi-user" class="mr-2" size="large" shape="circle" />
+          <Avatar icon="pi pi-user" class="userIcon" size="large" shape="circle" />
         </div>
       </template>
     </Menubar>
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.userIcon {
+  margin-left: 20px;
+}
+</style>

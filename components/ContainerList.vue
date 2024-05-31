@@ -1,8 +1,8 @@
-<script lang="ts">
+<script>
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 
-import { defineComponent } from "vue";
+// import { defineNuxtComponent } from "#app";
 
 export default defineComponent({
   name: "ContainerList",

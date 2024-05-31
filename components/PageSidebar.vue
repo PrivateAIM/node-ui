@@ -1,5 +1,5 @@
-<script lang="ts">
-import { defineComponent } from "vue";
+<script>
+import { defineNuxtComponent } from "#app";
 import Sidebar from "primevue/sidebar";
 import Button from "primevue/button";
 
@@ -50,23 +50,7 @@ export default defineComponent({
             </span>
           </div>
           <div class="overflow-y-auto">
-            <ul class="list-none p-3 m-0">
-              <li>
-                <div
-                  v-ripple
-                  v-styleclass="{
-                    selector: '@next',
-                    enterClass: 'hidden',
-                    enterActiveClass: 'slidedown',
-                    leaveToClass: 'hidden',
-                    leaveActiveClass: 'slideup',
-                  }"
-                  class="p-3 flex align-items-center justify-content-between text-600 cursor-pointer p-ripple"
-                >
-                  <span class="font-medium">FAVORITES</span>
-                  <i class="pi pi-chevron-down"></i>
-                </div>
-                <ul class="list-none p-0 m-0 overflow-hidden">
+            <ul class="list-none p-0 m-0 overflow-hidden">
                   <li>
                     <a
                       v-ripple
@@ -127,55 +111,53 @@ export default defineComponent({
                     </a>
                   </li>
                 </ul>
-              </li>
-            </ul>
-            <ul class="list-none p-3 m-0">
+            <ul class="list-none p-0 m-0 overflow-hidden">
               <li>
-                <div
-                  v-ripple
-                  v-styleclass="{
-                    selector: '@next',
-                    enterClass: 'hidden',
-                    enterActiveClass: 'slidedown',
-                    leaveToClass: 'hidden',
-                    leaveActiveClass: 'slideup',
-                  }"
-                  class="p-3 flex align-items-center justify-content-between text-600 cursor-pointer p-ripple"
+                <a
+                    v-ripple
+                    class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple"
                 >
-                  <span class="font-medium">APPLICATION</span>
-                  <i class="pi pi-chevron-down"></i>
-                </div>
-                <ul class="list-none p-0 m-0 overflow-hidden">
-                  <li>
-                    <a
-                      v-ripple
-                      class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple"
-                    >
-                      <i class="pi pi-folder mr-2"></i>
-                      <span class="font-medium">Projects</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      v-ripple
-                      class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple"
-                    >
-                      <i class="pi pi-chart-bar mr-2"></i>
-                      <span class="font-medium">Performance</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      v-ripple
-                      class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple"
-                    >
-                      <i class="pi pi-cog mr-2"></i>
-                      <span class="font-medium">Settings</span>
-                    </a>
-                  </li>
-                </ul>
+                  <i class="pi pi-folder mr-2"></i>
+                  <span class="font-medium">Projects</span>
+                </a>
+              </li>
+              <li>
+                <a
+                    v-ripple
+                    class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple"
+                >
+                  <i class="pi pi-chart-bar mr-2"></i>
+                  <span class="font-medium">Performance</span>
+                </a>
+              </li>
+              <li>
+                <a
+                    v-ripple
+                    class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple"
+                >
+                  <i class="pi pi-cog mr-2"></i>
+                  <span class="font-medium">Settings</span>
+                </a>
               </li>
             </ul>
+<!--            <ul class="list-none p-3 m-0">-->
+<!--              <li>-->
+<!--                <div-->
+<!--                  v-ripple-->
+<!--                  v-styleclass="{-->
+<!--                    selector: '@next',-->
+<!--                    enterClass: 'hidden',-->
+<!--                    enterActiveClass: 'slidedown',-->
+<!--                    leaveToClass: 'hidden',-->
+<!--                    leaveActiveClass: 'slideup',-->
+<!--                  }"-->
+<!--                  class="p-3 flex align-items-center justify-content-between text-600 cursor-pointer p-ripple"-->
+<!--                >-->
+<!--                  <span class="font-medium">APPLICATION</span>-->
+<!--                  <i class="pi pi-chevron-down"></i>-->
+<!--                </div>-->
+<!--              </li>-->
+<!--            </ul>-->
           </div>
           <div class="mt-auto">
             <hr class="mb-3 mx-3 border-top-1 border-none surface-border" />
