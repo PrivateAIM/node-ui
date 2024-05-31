@@ -1,31 +1,33 @@
-import eslint from '@eslint/js';
-import tseslint from 'typescript-eslint';
-import pluginVue from 'eslint-plugin-vue';
-import eslintConfigPrettier from 'eslint-config-prettier';
+import globals from "globals";
+import eslint from "@eslint/js";
+import eslintConfigPrettier from "eslint-config-prettier";
+
+import tsParser from '@typescript-eslint/parser';
+import tsPlugin from "@typescript-eslint/eslint-plugin";
 
 export default [
   eslint.configs.recommended,
-  ...tseslint.configs.recommended,
-  ...pluginVue.configs['flat/recommended'],
   eslintConfigPrettier,
   {
-      plugins: {
-        'typescript-eslint': tseslint.plugin,
-      },
-      languageOptions: {
-        parserOptions: {
-          extraFileExtensions: ['.vue'],
-          project: "./tsconfig.json",
-          parser: tseslint.parser,
-        },
-      },
-      ignores: [
-          "**/dist/*",
-          "**/*.d.ts",
-          "**/node_modules/**",
-          "**/.nuxt",
-          "**/writable/**",
-          "**/packages/frontend/ui/components/svg/**"
-      ],
-  }
-]
+    languageOptions: {
+      parser: tsParser,
+      globals: globals.node,
+    },
+    plugins: {
+      "@typescript-eslint": tsPlugin,
+    },
+    rules: {
+      ...tsPlugin.configs.recommended.rules,
+      "no-console": "error",
+    },
+    ignores: [
+      "**/dist/*",
+      "**/*.d.ts",
+      "**/node_modules/**",
+      "**/.nuxt",
+      "**/writable/**",
+      "**/packages/frontend/ui/components/svg/**",
+      "public/**",
+    ],
+  },
+];

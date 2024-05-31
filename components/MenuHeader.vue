@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import Badge from "primevue/badge";
 import Avatar from "primevue/avatar";
 import InputText from "primevue/inputtext";
