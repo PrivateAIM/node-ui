@@ -6,7 +6,6 @@ tsconfig.build.tsbuildinfo
 # local env files
 .env.local
 .env.*.local
-.env
 
 # Logs
 /logs
