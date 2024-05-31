@@ -9,24 +9,26 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
-  "dependencies": {
-
-  },
   "devDependencies": {
-    "eslint": "^7.32.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-vue": "^8.0.3",
+    "@eslint/js": "^9.3.0",
+    "@types/eslint__js": "^8.42.3",
+    "eslint": "^9.3.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-vue": "^9.26.0",
     "nuxt": "^3.11.2",
     "nuxt-primevue": "^3.0.0",
     "prettier": "^2.4.1",
+    "primeicons": "^7.0.0",
     "primevue": "^3.52.0",
     "sass": "^1.32.7",
     "sass-loader": "^12.0.0",
-    "typescript": "~4.5.5",
+    "typescript": "^5.4.5",
     "vue": "^3.4.27",
     "vue-router": "^4.3.2",
     "webpack": "^5.91.0",
-    "primeicons": "^7.0.0"
+    "typescript-eslint": "^7.11.0"
+  },
+  "dependencies": {
+
   }
 }
