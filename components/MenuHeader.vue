@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { PageSidebar } from "#components";
+import { NavMenu } from "#components";
 
 const items = ref([
   {
@@ -22,7 +22,7 @@ const items = ref([
   <div class="menuBar">
     <Menubar :model="items">
       <template #start>
-        <PageSidebar class="h-2rem" />
+        <NavMenu />
       </template>
       <template #item="{ item, props, hasSubmenu, root }">
         <a v-ripple class="flex align-items-center" v-bind="props.action">
@@ -69,5 +69,9 @@ const items = ref([
 <style scoped lang="scss">
 .userIcon {
   margin-left: 20px;
+}
+
+.ml-2 {
+  margin-left: 5px;
 }
 </style>

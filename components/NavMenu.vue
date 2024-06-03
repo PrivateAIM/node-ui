@@ -31,8 +31,9 @@ const toggle = (event) => {
       @click="toggle"
       aria-haspopup="true"
       aria-controls=""
+      class="sideMenuButton"
     />
-    <Menu ref="menu" :model="items" class="sideMenu" :popup="true">
+    <Menu ref="menu" :model="items" :popup="true">
       <template #item="{ item, props }">
         <router-link
           v-if="item.route"
@@ -61,9 +62,11 @@ const toggle = (event) => {
 </template>
 
 <style scoped>
-:deep(.sideMenu) {
-  background-color: var(--yellow-500);
-  right: 100%;
-  left: unset;
+.sideMenuButton {
+  background-color: yellow;
+}
+
+.ml-2 {
+  margin-left: 5px;
 }
 </style>
