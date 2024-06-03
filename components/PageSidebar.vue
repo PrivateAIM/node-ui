@@ -1,17 +1,23 @@
 <script setup>
 import { ref } from "vue";
 
-const menu = ref();
 const items = ref([
   {
-    label: 'Nav Menu',
+    label: "Nav Menu",
     items: [
-      { label: "Containers", icon: "pi pi-warehouse" },
-      { label: "Images", icon: "pi pi-database" },
-    ]
-  }
+      {
+        label: "Containers",
+        icon: "pi pi-warehouse",
+      },
+      {
+        label: "Images",
+        icon: "pi pi-database",
+      },
+    ],
+  },
 ]);
 
+const menu = ref();
 const toggle = (event) => {
   menu.value.toggle(event);
 };
@@ -19,7 +25,13 @@ const toggle = (event) => {
 
 <template>
   <div>
-    <Button type="button" icon="pi pi-bars" @click="toggle" aria-haspopup="true" aria-controls="" />
+    <Button
+      type="button"
+      icon="pi pi-bars"
+      @click="toggle"
+      aria-haspopup="true"
+      aria-controls=""
+    />
     <Menu ref="menu" :model="items" class="sideMenu" :popup="true">
       <template #item="{ item, props }">
         <router-link

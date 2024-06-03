@@ -1,15 +1,22 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from "vue";
 
 // onMounted(() => {
 //   CustomerService.getCustomersMedium().then((data) => (customers.value = data));
 // });
 
 const containers = ref([
-    { name: "Foo", category: "TestInstance", quantity: 1 },
-  { name: "Teacup", category: "ShortAndStout", quantity: 3 }
+  {
+    name: "Foo",
+    category: "TestInstance",
+    quantity: 1,
+  },
+  {
+    name: "Teacup",
+    category: "ShortAndStout",
+    quantity: 3,
+  },
 ]);
-
 </script>
 
 <template>
