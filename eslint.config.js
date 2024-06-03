@@ -1,24 +1,17 @@
 import globals from "globals";
-import eslint from "@eslint/js";
+import pluginJs from "@eslint/js";
+import tseslint from "typescript-eslint";
+import pluginVue from "eslint-plugin-vue";
 import eslintConfigPrettier from "eslint-config-prettier";
 
-import tsParser from '@typescript-eslint/parser';
-import tsPlugin from "@typescript-eslint/eslint-plugin";
-
 export default [
-  eslint.configs.recommended,
+  pluginJs.configs.recommended,
   eslintConfigPrettier,
+  ...tseslint.configs.recommended,
+  ...pluginVue.configs["flat/essential"],
   {
     languageOptions: {
-      parser: tsParser,
-      globals: globals.node,
-    },
-    plugins: {
-      "@typescript-eslint": tsPlugin,
-    },
-    rules: {
-      ...tsPlugin.configs.recommended.rules,
-      "no-console": "error",
+      globals: globals.browser,
     },
     ignores: [
       "**/dist/*",
