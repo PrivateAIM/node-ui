@@ -3,22 +3,24 @@ import { defineNuxtConfig } from "nuxt/config";
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: ["nuxt-primevue"],
+  modules: [
+      "nuxt-primevue"
+  ],
   primevue: {
-    components: {
-      include: "*",
-    },
+    // components: {
+    //   include: "*",
+    // },
     options: {
-      ripple: true,
+      ripple: true
     },
   },
   css: [
       'primevue/resources/themes/lara-dark-amber/theme.css', 'primeicons/primeicons.css'
   ],
-  components: [
-    {
-      path: './components',
-      pathPrefix: false,
-    },
-  ],
+  // components: [
+  //   {
+  //     path: './components',
+  //     pathPrefix: false,
+  //   },
+  // ],
 });

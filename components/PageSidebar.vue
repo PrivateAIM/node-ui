@@ -1,53 +1,57 @@
-<script lang="ts">
-import Menu from "primevue/menu";
+<script setup>
+import { ref } from "vue";
 
-export default defineComponent({
-  name: "PageSidebar",
-  components: {
-    Menu,
-  },
-  data() {
-    return {
-      items: [
-        { label: "Containers", icon: "pi pi-warehouse" },
-        { label: "Images", icon: "pi pi-database" },
-      ],
-    };
-  },
-});
+const menu = ref();
+const items = ref([
+  {
+    label: 'Nav Menu',
+    items: [
+      { label: "Containers", icon: "pi pi-warehouse" },
+      { label: "Images", icon: "pi pi-database" },
+    ]
+  }
+]);
+
+const toggle = (event) => {
+  menu.value.toggle(event);
+};
 </script>
 
 <template>
-  <Menu :model="items" class="sideMenu">
-    <template #item="{ item, props }">
-      <router-link
-        v-if="item.route"
-        v-slot="{ href, navigate }"
-        :to="item.route"
-        custom
-      >
-        <a v-ripple :href="href" v-bind="props.action" @click="navigate">
+  <div>
+    <Button type="button" icon="pi pi-bars" @click="toggle" aria-haspopup="true" aria-controls="" />
+    <Menu ref="menu" :model="items" class="sideMenu" :popup="true">
+      <template #item="{ item, props }">
+        <router-link
+          v-if="item.route"
+          v-slot="{ href, navigate }"
+          :to="item.route"
+          custom
+        >
+          <a v-ripple :href="href" v-bind="props.action" @click="navigate">
+            <span :class="item.icon" />
+            <span class="ml-2">{{ item.label }}</span>
+          </a>
+        </router-link>
+        <a
+          v-else
+          v-ripple
+          :href="item.url"
+          :target="item.target"
+          v-bind="props.action"
+        >
           <span :class="item.icon" />
           <span class="ml-2">{{ item.label }}</span>
         </a>
-      </router-link>
-      <a
-        v-else
-        v-ripple
-        :href="item.url"
-        :target="item.target"
-        v-bind="props.action"
-      >
-        <span :class="item.icon" />
-        <span class="ml-2">{{ item.label }}</span>
-      </a>
-    </template>
-  </Menu>
+      </template>
+    </Menu>
+  </div>
 </template>
 
-<style scoped lang="scss">
-//.sideMenu {
-//  right: 100%;
-//  left: unset;
-//}
+<style scoped>
+:deep(.sideMenu) {
+  background-color: var(--yellow-500);
+  right: 100%;
+  left: unset;
+}
 </style>
