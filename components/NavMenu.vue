@@ -12,7 +12,12 @@ const items = ref([
       },
       {
         label: "Images",
-        icon: "pi pi-database",
+        icon: "pi pi-images",
+      },
+      {
+        label: "Analyses",
+        icon: "pi pi-lightbulb",
+        route: "/analyses",
       },
     ],
   },
