@@ -3,11 +3,33 @@ import { defineNuxtConfig } from "nuxt/config";
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: ["nuxt-primevue"],
+  modules: ["nuxt-primevue", "nuxt-oidc-auth"],
+  oidc: {
+    defaultProvider: "keycloak",
+    providers: {
+      keycloak: {
+        audience: "account",
+        clientId: process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_ID,
+        clientSecret: process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET,
+        baseUrl: process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL,
+        redirectUri: process.env.BASE_URL + "/auth/keycloak/callback",
+        tokenRequestType: "form-urlencoded",
+        exposeAccessToken: true,
+        // logoutUrl:
+        //   process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL +
+        //   "/protocol/openid-connect/logout",
+      },
+    },
+    session: {
+      expirationCheck: true,
+      automaticRefresh: true,
+    },
+    middleware: {
+      globalMiddlewareEnabled: true,
+      customLoginPage: false,
+    },
+  },
   primevue: {
-    // components: {
-    //   include: "*",
-    // },
     options: {
       ripple: true,
     },
@@ -16,10 +38,4 @@ export default defineNuxtConfig({
     "primevue/resources/themes/lara-dark-amber/theme.css",
     "primeicons/primeicons.css",
   ],
-  // components: [
-  //   {
-  //     path: './components',
-  //     pathPrefix: false,
-  //   },
-  // ],
 });
