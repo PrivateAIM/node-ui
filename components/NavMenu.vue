@@ -8,6 +8,7 @@ const items = ref([
       {
         label: "Containers",
         icon: "pi pi-warehouse",
+        route: "/containers",
       },
       {
         label: "Images",

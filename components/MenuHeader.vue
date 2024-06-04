@@ -6,10 +6,12 @@ const items = ref([
   {
     label: "Home",
     icon: "pi pi-home",
+    route: "/",
   },
   {
     label: "About",
     icon: "pi pi-at",
+    route: "/about",
   },
   {
     label: "Settings",
@@ -24,27 +26,28 @@ const items = ref([
       <template #start>
         <NavMenu />
       </template>
-      <template #item="{ item, props, hasSubmenu, root }">
-        <a v-ripple class="flex align-items-center" v-bind="props.action">
+      <template #item="{ item, props, hasSubmenu }">
+        <router-link
+          v-if="item.route"
+          v-slot="{ href, navigate }"
+          :to="item.route"
+          custom
+        >
+          <a v-ripple :href="href" v-bind="props.action" @click="navigate">
+            <span :class="item.icon" />
+            <span class="ml-2">{{ item.label }}</span>
+          </a>
+        </router-link>
+        <a
+          v-else
+          v-ripple
+          :href="item.url"
+          :target="item.target"
+          v-bind="props.action"
+        >
           <span :class="item.icon" />
           <span class="ml-2">{{ item.label }}</span>
-          <Badge
-            v-if="item.badge"
-            :class="{ 'ml-auto': !root, 'ml-2': root }"
-            :value="item.badge"
-          />
-          <span
-            v-if="item.shortcut"
-            class="ml-auto border-1 surface-border border-round surface-100 text-xs p-1"
-            >{{ item.shortcut }}</span
-          >
-          <i
-            v-if="hasSubmenu"
-            :class="[
-              'pi pi-angle-down',
-              { 'pi-angle-down ml-2': root, 'pi-angle-right ml-auto': !root },
-            ]"
-          ></i>
+          <span v-if="hasSubmenu" class="pi pi-fw pi-angle-down ml-2" />
         </a>
       </template>
       <template #end>
