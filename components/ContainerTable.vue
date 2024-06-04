@@ -20,7 +20,7 @@ const containers = ref([
 </script>
 
 <template>
-  <div class="containerList">
+  <div class="containerTable">
     <h2 style="color: blue">Data Table Example</h2>
     <DataTable
       :value="containers"

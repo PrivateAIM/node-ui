@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 
 <template>
-  <ContainerList />
+  <ContainerTable />
 </template>
 
 <style scoped lang="scss"></style>
