@@ -23,6 +23,7 @@ const analyses = ref(json.data);
       tableStyle="min-width: 50rem"
     >
       <Column field="id" header="ID"></Column>
+      <Column field="approval_status" header="Approval Status"></Column>
       <Column field="run_status" header="Status"></Column>
       <Column field="project_id" header="Project ID"></Column>
       <Column field="node.name" header="Node"></Column>
