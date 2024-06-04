@@ -13,6 +13,9 @@ export default [
     languageOptions: {
       globals: globals.browser,
     },
+    rules: {
+      "vue/multi-word-component-names": 0,
+    },
     ignores: [
       "**/dist/*",
       "**/*.d.ts",
