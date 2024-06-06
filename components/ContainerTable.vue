@@ -1,22 +1,29 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { useAPIFetch } from "~/composables/useAPIFetch";
 
 // onMounted(() => {
 //   CustomerService.getCustomersMedium().then((data) => (customers.value = data));
 // });
 
-const containers = ref([
+let containers = ref([
   {
     name: "Foo",
     category: "TestInstance",
     quantity: 1,
   },
   {
-    name: "Teacup",
+    name: "Failed API Call",
     category: "ShortAndStout",
     quantity: 3,
   },
 ]);
+
+const { data } = await useAPIFetch("/containers", {
+  method: "GET",
+});
+
+containers.value = containers || data;
 </script>
 
 <template>
