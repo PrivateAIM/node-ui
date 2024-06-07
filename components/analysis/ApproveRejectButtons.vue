@@ -30,8 +30,4 @@ console.log(props.analysisId);
   </div>
 </template>
 
-<style scoped lang="scss">
-.approval-buttons {
-  border: red;
-}
-</style>
+<style scoped lang="scss"></style>

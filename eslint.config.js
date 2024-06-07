@@ -12,6 +12,9 @@ export default [
   {
     languageOptions: {
       globals: globals.browser,
+      parserOptions: {
+        parser: '@typescript-eslint/parser'
+      },
     },
     rules: {
       "vue/multi-word-component-names": 0,
