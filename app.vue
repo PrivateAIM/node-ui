@@ -1,7 +1,6 @@
 <template>
-  <div>
-    <MenuHeader />
-    <NuxtPage />
-    <Footer />
-  </div>
+  <NuxtLoadingIndicator />
+  <MenuHeader />
+  <NuxtPage />
+  <Footer />
 </template>

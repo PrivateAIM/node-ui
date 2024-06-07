@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AnalysesTable from "~/components/AnalysesTable.vue";
+import AnalysesTable from "~/components/analysis/AnalysesTable.vue";
 </script>
 
 <template>
