@@ -1,0 +1,33 @@
+<script setup lang="ts">
+</script>
+
+<template>
+  <footer>
+    <div class="page-footer">
+      <div class="footer-description">
+        <a href="https://github.com/PrivateAIM" class="github-link">
+          <i class="pi pi-github"></i>
+        </a>
+        Node UI
+      </div>
+    </div>
+  </footer>
+</template>
+
+<style scoped lang="scss">
+.page-footer {
+  box-shadow: 0 6px 0 0 rgba(0, 0, 0, 0.3) inset;
+  background-color: #374151;
+  padding: 10px 0 4px 0;
+  margin: 20px auto;
+  color: #aeb2b7;
+}
+
+.footer-description {
+  text-align: center;
+}
+
+.github-link {
+  padding: 0 5px 0 0
+}
+</style>

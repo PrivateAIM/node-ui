@@ -2,5 +2,6 @@
   <div>
     <MenuHeader />
     <NuxtPage />
+    <Footer />
   </div>
 </template>

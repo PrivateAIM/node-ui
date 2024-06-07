@@ -6,7 +6,7 @@ import { useAPIFetch } from "~/composables/useAPIFetch";
 //   CustomerService.getCustomersMedium().then((data) => (customers.value = data));
 // });
 
-let containers = ref([
+let testContainers = ref([
   {
     name: "Foo",
     category: "TestInstance",
@@ -19,11 +19,13 @@ let containers = ref([
   },
 ]);
 
-const { data } = await useAPIFetch("/containers", {
-  method: "GET",
-});
+const { data: APIcontainers } = await useAPIFetch<Array>(
+    "/containers", {
+      method: "GET",
+    }
+);
 
-containers.value = containers || data;
+let containers = APIcontainers || testContainers;
 </script>
 
 <template>
