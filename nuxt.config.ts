@@ -2,8 +2,8 @@
 import { defineNuxtConfig } from "nuxt/config";
 
 export default defineNuxtConfig({
-  ssr: false,
-  modules: ["nuxt-primevue", "@pinia/nuxt"],
+  ssr: true,
+  modules: ["nuxt-primevue", "nuxt-oidc-auth"],
   runtimeConfig: {
     public: {
       baseURL: process.env.HUB_ADAPTER_API_URL || "http://localhost:5000/",
@@ -16,6 +16,33 @@ export default defineNuxtConfig({
   primevue: {
     options: {
       ripple: true,
+    },
+  },
+  oidc: {
+    defaultProvider: "keycloak",
+    providers: {
+      keycloak: {
+        tokenRequestType: "form-urlencoded",
+        clientId:
+          process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_ID || "node-ui",
+        clientSecret:
+          process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET || "",
+        baseUrl:
+          process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL ||
+          "http://localhost:8080",
+        redirectUri: process.env.BASE_URL + "/auth/keycloak/callback",
+        // redirectUri: "http://localhost:3000/auth/keycloak/callback",
+        exposeAccessToken: true,
+      },
+    },
+    session: {
+      expirationCheck: true,
+      automaticRefresh: true,
+      maxAge: 60,
+    },
+    middleware: {
+      globalMiddlewareEnabled: false,
+      customLoginPage: false,
     },
   },
   css: [

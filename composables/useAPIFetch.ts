@@ -1,6 +1,4 @@
-import { useKeycloak } from "~/composables/keycloak";
-
-const { keycloak } = useKeycloak();
+// const { user } = useOidcAuth();
 
 export const useAPIFetch: typeof useFetch = (request, opts?) => {
   const config = useRuntimeConfig();
@@ -18,9 +16,9 @@ export const approveRejectAnalysis = async (
     body: {
       approval_status: approved ? "approved" : "rejected",
     },
-    headers: {
-      accept: "application/json",
-      authorization: `Bearer ${keycloak.token}`,
-    },
+    // headers: {
+    //   accept: "application/json",
+    //   authorization: `Bearer ${user.accessToken}`,
+    // },
   });
 };
