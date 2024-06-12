@@ -11,6 +11,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.4.0",
+    "@pinia/nuxt": "^0.5.1",
     "@types/eslint-config-prettier": "^6.11.3",
     "@typescript-eslint/eslint-plugin": "^7.11.0",
     "@typescript-eslint/parser": "^7.11.0",
@@ -18,8 +19,8 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-vue": "^9.26.0",
     "globals": "^15.3.0",
+    "keycloak-js": "^25.0.0",
     "nuxt": "^3.11.2",
-    "nuxt-oidc-auth": "^0.12.0",
     "nuxt-primevue": "^3.0.0",
     "pinia": "^2.1.7",
     "prettier": "^3.3.0",
