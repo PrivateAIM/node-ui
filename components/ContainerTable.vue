@@ -19,11 +19,9 @@ let testContainers = ref([
   },
 ]);
 
-const { data: APIcontainers } = await useAPIFetch<Array>(
-    "/containers", {
-      method: "GET",
-    }
-);
+const { data: APIcontainers } = await useAPIFetch<Array>("/containers", {
+  method: "GET",
+});
 
 let containers = APIcontainers || testContainers;
 </script>

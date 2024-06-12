@@ -1,3 +1,7 @@
+import { useKeycloak } from "~/composables/keycloak";
+
+const { keycloak } = useKeycloak();
+
 export const useAPIFetch: typeof useFetch = (request, opts?) => {
   const config = useRuntimeConfig();
   const baseUrl = config.public.baseURL as string;
@@ -13,6 +17,10 @@ export const approveRejectAnalysis = async (
     method: "POST",
     body: {
       approval_status: approved ? "approved" : "rejected",
+    },
+    headers: {
+      accept: "application/json",
+      authorization: `Bearer ${keycloak.token}`,
     },
   });
 };
