@@ -26,7 +26,7 @@ function logout() {
     <div v-if="authState === 'authenticated'">
       <div class="mb-2 text-p2blue-700 text-2xl">Authenticated</div>
       <div class="mb-6 text-p2blue-700 text-md">
-        <div>{{ keycloak.tokenParsed?.user }}</div>
+        <div>{{ keycloak.tokenParsed?.preferred_username }}</div>
         <div>{{ keycloak.tokenParsed?.sub }}</div>
       </div>
       <button

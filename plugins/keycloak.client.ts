@@ -18,5 +18,6 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   keycloak.init({
     onLoad: "check-sso",
+    pkceMethod: "S256",
   });
 });
