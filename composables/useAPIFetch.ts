@@ -1,10 +1,17 @@
-// const { user } = useOidcAuth();
+const { user } = useOidcAuth();
 
 export const useAPIFetch: typeof useFetch = (request, opts?) => {
   const config = useRuntimeConfig();
   const baseUrl = config.public.baseURL as string;
 
-  return useFetch(request, { baseURL: baseUrl, ...opts });
+  return useFetch(request, {
+    baseURL: baseUrl,
+    headers: {
+      accept: "application/json",
+      authorization: `Bearer ${user.value.accessToken}`,
+    },
+    ...opts,
+  });
 };
 
 export const approveRejectAnalysis = async (
@@ -16,9 +23,11 @@ export const approveRejectAnalysis = async (
     body: {
       approval_status: approved ? "approved" : "rejected",
     },
-    // headers: {
-    //   accept: "application/json",
-    //   authorization: `Bearer ${user.accessToken}`,
-    // },
+  });
+};
+
+export const getAnalyses = async () => {
+  return useAPIFetch(`/analysis-nodes`, {
+    method: "POST",
   });
 };
