@@ -1,4 +1,6 @@
 const { user } = useOidcAuth();
+import { v4 as uuidv4 } from "uuid";
+import { type ListAnalysisNodes } from "~/services/Api";
 
 export const useAPIFetch: typeof useFetch = (request, opts?) => {
   const config = useRuntimeConfig();
@@ -26,8 +28,17 @@ export const approveRejectAnalysis = async (
   });
 };
 
-export const getAnalyses = async () => {
+export const getAnalyses = async (
+  filterId?: typeof uuidv4,
+  filterNodeId?: typeof uuidv4,
+  filterAnalysisId?: typeof uuidv4,
+) => {
   return useAPIFetch(`/analysis-nodes`, {
-    method: "POST",
+    method: "GET",
+    body: {
+      filter_id: filterId ? filterId : null,
+      filter_node_id: filterNodeId ? filterNodeId : null,
+      filter_analysis_id: filterAnalysisId ? filterAnalysisId : null,
+    },
   });
 };

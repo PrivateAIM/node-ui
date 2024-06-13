@@ -1,20 +1,19 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import json from "public/analyses.json";
 import ApproveRejectButtons from "~/components/analysis/ApproveRejectButtons.vue";
+import { getAnalyses } from "~/composables/useAPIFetch";
 
 // onMounted(() => {
 //   CustomerService.getCustomersMedium().then((data) => (customers.value = data));
 // });
 
-const analyses = ref(json.data);
+const { data: analysisNodes } = await getAnalyses();
 </script>
 
 <template>
   <div class="analysisTable">
     <h2 style="color: Yellow">Analysis Table Example</h2>
     <DataTable
-      :value="analyses"
+      :value="analysisNodes"
       :pt="{
         table: 'table table-striped',
       }"
