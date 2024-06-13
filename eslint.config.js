@@ -13,12 +13,13 @@ export default [
     languageOptions: {
       globals: globals.browser,
       parserOptions: {
-        parser: '@typescript-eslint/parser'
+        parser: "@typescript-eslint/parser",
       },
     },
     rules: {
       "vue/multi-word-component-names": 0,
-      "no-unused-vars": "off"
+      "no-unused-vars": "off",
+      "no-undef": "off",
     },
     ignores: [
       "**/dist/*",
