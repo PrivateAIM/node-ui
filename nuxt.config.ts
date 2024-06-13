@@ -31,14 +31,13 @@ export default defineNuxtConfig({
           process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL ||
           "http://localhost:8080",
         redirectUri: process.env.BASE_URL + "/auth/keycloak/callback",
-        // redirectUri: "http://localhost:3000/auth/keycloak/callback",
         exposeAccessToken: true,
       },
     },
     session: {
       expirationCheck: true,
       automaticRefresh: true,
-      maxAge: 60,
+      maxAge: 3600,
     },
     middleware: {
       globalMiddlewareEnabled: false,

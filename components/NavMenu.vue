@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from "vue";
+const { loggedIn } = useOidcAuth();
 
 const items = ref([
   {
@@ -30,7 +31,7 @@ const toggle = (event) => {
 </script>
 
 <template>
-  <div>
+  <div v-if="loggedIn">
     <Button
       type="button"
       icon="pi pi-bars"
