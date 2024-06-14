@@ -1,6 +1,5 @@
-const { user } = useOidcAuth();
+// const { user } = useOidcAuth();
 import { v4 as uuidv4 } from "uuid";
-import { type ListAnalysisNodes } from "~/services/Api";
 
 export const useAPIFetch: typeof useFetch = (request, opts?) => {
   const config = useRuntimeConfig();
@@ -8,14 +7,15 @@ export const useAPIFetch: typeof useFetch = (request, opts?) => {
 
   return useFetch(request, {
     baseURL: baseUrl,
-    headers: {
-      accept: "application/json",
-      authorization: `Bearer ${user.value.accessToken}`,
-    },
+    // headers: {
+    //   accept: "application/json",
+    //   authorization: `Bearer ${user?.value.accessToken}`,
+    // },
     ...opts,
   });
 };
 
+// Not working
 export const approveRejectAnalysis = async (
   approved: boolean,
   analysis_id: string | undefined,
@@ -28,12 +28,13 @@ export const approveRejectAnalysis = async (
   });
 };
 
+// Not working
 export const getAnalyses = async (
   filterId?: typeof uuidv4,
   filterNodeId?: typeof uuidv4,
   filterAnalysisId?: typeof uuidv4,
 ) => {
-  return useAPIFetch(`/analysis-nodes`, {
+  return useAPIFetch("/analysis-nodes", {
     method: "GET",
     body: {
       filter_id: filterId ? filterId : null,

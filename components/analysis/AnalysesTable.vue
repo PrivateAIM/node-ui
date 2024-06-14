@@ -1,19 +1,25 @@
 <script setup lang="ts">
 import ApproveRejectButtons from "~/components/analysis/ApproveRejectButtons.vue";
-import { getAnalyses } from "~/composables/useAPIFetch";
+import { useAPIFetch } from "~/composables/useAPIFetch";
 
-// onMounted(() => {
-//   CustomerService.getCustomersMedium().then((data) => (customers.value = data));
-// });
+let analyses = ref();
 
-const { data: analysisNodes } = await getAnalyses();
+onMounted(async () => {
+  await useAPIFetch("/analysis-nodes", {
+    method: "GET",
+  }).then(({ data: response }) => {
+    return (analyses.value = response.value);
+  });
+});
+
+// const { data: foo } = await useAPIFetch("/analysis-nodes", { method: "GET" });
 </script>
 
 <template>
   <div class="analysisTable">
     <h2 style="color: Yellow">Analysis Table Example</h2>
     <DataTable
-      :value="analysisNodes"
+      :value="analyses"
       :pt="{
         table: 'table table-striped',
       }"
