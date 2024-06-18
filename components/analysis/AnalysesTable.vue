@@ -3,7 +3,7 @@ import ApproveRejectButtons from "~/components/analysis/ApproveRejectButtons.vue
 import { getAnalyses } from "~/composables/useAPIFetch";
 
 const { data: response } = await getAnalyses();
-const analyses = (response.value.data as []) || [];
+const analyses = (response.value!.data as unknown as []) || [];
 </script>
 
 <template>

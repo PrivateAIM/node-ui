@@ -4,7 +4,7 @@
 
 <template>
   <!--  <div v-if="loggedIn">-->
-  <ContainerTable />
+  <ProjectTable />
   <!--  </div>-->
 </template>
 

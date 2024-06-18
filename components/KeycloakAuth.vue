@@ -4,8 +4,7 @@ const { loggedIn, user, login, logout } = useOidcAuth();
 
 <template>
   <div v-if="loggedIn">
-    <h1>Welcome {{ user.providerInfo.preferred_username }}!</h1>
-    <p>Logged in since {{ user.accessToken }}</p>
+    <h3>Welcome {{ user.providerInfo.preferred_username }}!</h3>
     <button @click="logout()">Logout</button>
   </div>
   <div v-else>

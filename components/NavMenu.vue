@@ -7,9 +7,9 @@ const items = ref([
     label: "Nav Menu",
     items: [
       {
-        label: "Containers",
-        icon: "pi pi-warehouse",
-        route: "/containers",
+        label: "Projects",
+        icon: "pi pi-list",
+        route: "/projects",
       },
       {
         label: "Images",

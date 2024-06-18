@@ -45,7 +45,12 @@ export const approveRejectAnalysis = async (
   });
 };
 
-// Not working
+export const getProjects = async () => {
+  return useAPIFetch<{ data: ListAnalysisNodes }>("/projects", {
+    method: "GET",
+  });
+};
+
 export const getAnalyses = async () => {
   return useAPIFetch<{ data: ListAnalysisNodes }>("/analysis-nodes", {
     method: "GET",
