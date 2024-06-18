@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import ApproveRejectButtons from "~/components/analysis/ApproveRejectButtons.vue";
 import { getAnalyses } from "~/composables/useAPIFetch";
 
 const { data: response } = await getAnalyses();
@@ -25,11 +24,6 @@ const analyses = (response.value!.data as unknown as []) || [];
       <Column field="run_status" header="Status"></Column>
       <Column field="project_id" header="Project ID"></Column>
       <Column field="node.name" header="Node"></Column>
-      <Column field="id" header="Set Approval" :exportable="false">
-        <template #body="slotProps">
-          <ApproveRejectButtons :analysisId="slotProps.data.id" />
-        </template>
-      </Column>
     </DataTable>
   </div>
 </template>

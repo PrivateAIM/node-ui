@@ -8,8 +8,13 @@ const items = ref([
     items: [
       {
         label: "Projects",
-        icon: "pi pi-list",
+        icon: "pi pi-verified",
         route: "/projects",
+      },
+      {
+        label: "Proposals",
+        icon: "pi pi-list-check",
+        route: "/proposals",
       },
       {
         label: "Images",

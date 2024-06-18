@@ -33,15 +33,21 @@ export const useAPIFetch: typeof useFetch = (request, options?) => {
 };
 
 // Not working
-export const approveRejectAnalysis = async (
+export const approveRejectProjectProposal = async (
   approved: boolean,
-  analysis_id: string | undefined,
+  project_id: string | undefined,
 ) => {
-  return useAPIFetch(`/analysis-nodes/${analysis_id}`, {
+  return useAPIFetch(`/project-nodes/${project_id}`, {
     method: "POST",
     body: {
       approval_status: approved ? "approved" : "rejected",
     },
+  });
+};
+
+export const getProposals = async () => {
+  return useAPIFetch<{ data: ListAnalysisNodes }>("/project-nodes", {
+    method: "GET",
   });
 };
 

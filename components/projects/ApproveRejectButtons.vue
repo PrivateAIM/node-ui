@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { approveRejectAnalysis } from "~/composables/useAPIFetch";
+import { approveRejectProjectProposal } from "~/composables/useAPIFetch";
 
 const props = defineProps({
-  analysisId: String,
+  projectId: String,
 });
 
-function onSubmitAnalysisApproval(isApproved: boolean) {
-  approveRejectAnalysis(isApproved, props.analysisId);
+function onSubmitProjectApproval(isApproved: boolean) {
+  approveRejectProjectProposal(isApproved, props.projectId);
 }
 
-console.log(props.analysisId);
+console.log(props.projectId);
 </script>
 
 <template>
@@ -19,13 +19,13 @@ console.log(props.analysisId);
       aria-label="Approve"
       severity="success"
       style="margin-right: 10px"
-      @click="onSubmitAnalysisApproval(true)"
+      @click="onSubmitProjectApproval(true)"
     />
     <Button
       icon="pi pi-times"
       aria-label="Reject"
       severity="danger"
-      @click="onSubmitAnalysisApproval(false)"
+      @click="onSubmitProjectApproval(false)"
     />
   </div>
 </template>
