@@ -1,17 +1,34 @@
-// const { user } = useOidcAuth();
 import { v4 as uuidv4 } from "uuid";
+import type { ListAnalysisNodes } from "~/services/Api";
 
-export const useAPIFetch: typeof useFetch = (request, opts?) => {
+export const useAPIFetch: typeof useFetch = (request, options?) => {
   const config = useRuntimeConfig();
   const baseUrl = config.public.baseURL as string;
 
+  const { user } = useOidcAuth();
+
   return useFetch(request, {
     baseURL: baseUrl,
-    // headers: {
-    //   accept: "application/json",
-    //   authorization: `Bearer ${user?.value.accessToken}`,
-    // },
-    ...opts,
+    onRequest({ options }) {
+      // Set the request headers
+      options.headers = options.headers || {};
+      options.headers.authorization = `Bearer ${user?.value.accessToken}`;
+    },
+    onRequestError({ request, options, error }) {
+      console.log(request);
+      console.log(options);
+      console.log(error);
+    },
+    onResponse({ response }) {
+      // Process the response data
+      localStorage.setItem("token", response._data.token);
+    },
+    onResponseError({ response }) {
+      // Handle the response errors
+      console.log(response.status);
+      console.log(response);
+    },
+    ...options,
   });
 };
 
@@ -30,7 +47,7 @@ export const approveRejectAnalysis = async (
 
 // Not working
 export const getAnalyses = async () => {
-  return useAPIFetch("/analysis-nodes", {
+  return useAPIFetch<{ data: ListAnalysisNodes }>("/analysis-nodes", {
     method: "GET",
   });
 };
@@ -41,12 +58,15 @@ export const getSpecificAnalysis = async (
   filterNodeId?: typeof uuidv4,
   filterAnalysisId?: typeof uuidv4,
 ) => {
-  return useAPIFetch(`/analysis-nodes/${analysisId}`, {
-    method: "POST",
-    body: {
-      filter_id: filterId ? filterId : null,
-      filter_node_id: filterNodeId ? filterNodeId : null,
-      filter_analysis_id: filterAnalysisId ? filterAnalysisId : null,
+  return useAPIFetch<{ data: ListAnalysisNodes }>(
+    `/analysis-nodes/${analysisId}`,
+    {
+      method: "POST",
+      body: {
+        filter_id: filterId ? filterId : null,
+        filter_node_id: filterNodeId ? filterNodeId : null,
+        filter_analysis_id: filterAnalysisId ? filterAnalysisId : null,
+      },
     },
-  });
+  );
 };

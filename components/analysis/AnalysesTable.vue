@@ -2,14 +2,15 @@
 import ApproveRejectButtons from "~/components/analysis/ApproveRejectButtons.vue";
 import { getAnalyses } from "~/composables/useAPIFetch";
 
-const { data: analyses } = await getAnalyses();
+const { data: response } = await getAnalyses();
+const analyses = (response.value.data as []) || [];
 </script>
 
 <template>
   <div class="analysisTable">
     <h2 style="color: Yellow">Analysis Table Example</h2>
     <DataTable
-      :value="analyses.data"
+      :value="analyses"
       :pt="{
         table: 'table table-striped',
       }"
