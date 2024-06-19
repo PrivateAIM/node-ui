@@ -8,8 +8,6 @@ const props = defineProps({
 function onSubmitProjectApproval(isApproved: boolean) {
   approveRejectProjectProposal(isApproved, props.projectId);
 }
-
-console.log(props.projectId);
 </script>
 
 <template>

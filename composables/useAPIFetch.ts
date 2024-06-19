@@ -25,7 +25,6 @@ export const useAPIFetch: typeof useFetch = (request, options?) => {
     },
     onResponseError({ response }) {
       // Handle the response errors
-      console.log(response.status);
       console.log(response);
     },
     ...options,
@@ -37,11 +36,12 @@ export const approveRejectProjectProposal = async (
   approved: boolean,
   project_id: string | undefined,
 ) => {
+  const formData = new FormData();
+  formData.append("approval_status", approved ? "approved" : "rejected");
+
   return useAPIFetch(`/project-nodes/${project_id}`, {
     method: "POST",
-    body: {
-      approval_status: approved ? "approved" : "rejected",
-    },
+    body: formData,
   });
 };
 
