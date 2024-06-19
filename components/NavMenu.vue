@@ -17,13 +17,14 @@ const items = ref([
         route: "/proposals",
       },
       {
-        label: "Images",
-        icon: "pi pi-images",
-      },
-      {
         label: "Analyses",
         icon: "pi pi-lightbulb",
         route: "/analyses",
+      },
+      {
+        label: "Data Stores",
+        icon: "pi pi-warehouse",
+        route: "/data-stores",
       },
     ],
   },

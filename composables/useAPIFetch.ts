@@ -1,5 +1,10 @@
 import { v4 as uuidv4 } from "uuid";
-import type { ListAnalysisNodes } from "~/services/Api";
+import type {
+  AllProjects,
+  ListAnalysisNodes,
+  ListAnalysisOrProjectNodes,
+  ListRoute200Response,
+} from "~/services/Api";
 
 export const useAPIFetch: typeof useFetch = (request, options?) => {
   const config = useRuntimeConfig();
@@ -46,13 +51,13 @@ export const approveRejectProjectProposal = async (
 };
 
 export const getProposals = async () => {
-  return useAPIFetch<{ data: ListAnalysisNodes }>("/project-nodes", {
+  return useAPIFetch<{ data: ListAnalysisOrProjectNodes }>("/project-nodes", {
     method: "GET",
   });
 };
 
 export const getProjects = async () => {
-  return useAPIFetch<{ data: ListAnalysisNodes }>("/projects", {
+  return useAPIFetch<{ data: AllProjects }>("/projects", {
     method: "GET",
   });
 };
@@ -80,4 +85,10 @@ export const getSpecificAnalysis = async (
       },
     },
   );
+};
+
+export const getDataStores = async () => {
+  return useAPIFetch<{ data: ListRoute200Response }>("/kong/datastore", {
+    method: "GET",
+  });
 };
