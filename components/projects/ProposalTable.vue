@@ -2,9 +2,14 @@
 import { getProposals } from "~/composables/useAPIFetch";
 import ApproveRejectButtons from "~/components/projects/ApproveRejectButtons.vue";
 
-const { data: response } = await getProposals();
+const proposals = ref();
 
-const proposals = (response.value!.data as unknown as []) || [];
+onMounted(() => {
+  nextTick(async () => {
+    const { data: response } = await getProposals();
+    proposals.value = response.value!.data;
+  });
+});
 </script>
 
 <template>

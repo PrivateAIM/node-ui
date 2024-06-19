@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import { getAnalyses } from "~/composables/useAPIFetch";
 
-const { data: response } = await getAnalyses();
-const analyses = (response.value!.data as unknown as []) || [];
+const analyses = ref();
+
+onMounted(() => {
+  nextTick(async () => {
+    const { data: response } = await getAnalyses();
+    analyses.value = response.value!.data;
+  });
+});
 </script>
 
 <template>

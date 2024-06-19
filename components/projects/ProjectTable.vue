@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import { getProjects } from "~/composables/useAPIFetch";
 
-const { data: response } = await getProjects();
+const projects = ref();
 
-const projects = (response.value!.data as unknown as []) || [];
+onMounted(() => {
+  nextTick(async () => {
+    const { data: response } = await getProjects();
+    projects.value = response.value!.data;
+  });
+});
 </script>
 
 <template>
