@@ -1,5 +1,5 @@
 <script setup>
-// const { loggedIn } = useOidcAuth();
+import ProjectTable from "~/components/projects/ProjectTable.vue";
 </script>
 
 <template>
