@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getDataStores } from "~/composables/useAPIFetch";
+import { deleteDataStore, getDataStores } from "~/composables/useAPIFetch";
 import type { Route } from "~/services/Api";
 import { parseUnixTimestamp } from "~/utils/parse-unix-timestamp";
 
@@ -15,11 +15,16 @@ onMounted(() => {
     ) as Route[];
   });
 });
+
+function onSubmitDeleteDataStore(dsName: string) {
+  deleteDataStore(dsName);
+  window.location.reload();
+}
 </script>
 
 <template>
   <div class="dataStoreTable">
-    <h2 style="color: blue">Currently Running Projects</h2>
+    <h2 style="color: blue">Available Data Stores</h2>
     <DataTable
       :value="dataStores"
       paginator
@@ -34,6 +39,17 @@ onMounted(() => {
       <Column field="protocol" header="Protocol"></Column>
       <Column field="created_at" header="Created"></Column>
       <Column field="updated_at" header="Last Updated"></Column>
+      <Column field="name" header="Delete?" :exportable="false">
+        <template #body="slotProps">
+          <Button
+            icon="pi pi-trash"
+            aria-label="Delete"
+            severity="danger"
+            style="margin-right: 10px"
+            @click="onSubmitDeleteDataStore(slotProps.data.name)"
+          />
+        </template>
+      </Column>
     </DataTable>
   </div>
 </template>

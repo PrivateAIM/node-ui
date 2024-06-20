@@ -95,3 +95,9 @@ export const getDataStores = async () => {
     method: "GET",
   });
 };
+
+export const deleteDataStore = async (dataStoreName: string) => {
+  return useAPIFetch<{ data }>(`/kong/datastore/${dataStoreName}`, {
+    method: "DELETE",
+  });
+};
