@@ -24,7 +24,7 @@ function onSubmitDeleteDataStore(dsName: string) {
 
 <template>
   <div class="dataStoreTable">
-    <h2 style="color: blue">Available Data Stores</h2>
+    <h2 style="color: white">Available Data Stores</h2>
     <DataTable
       :value="dataStores"
       paginator
@@ -45,7 +45,6 @@ function onSubmitDeleteDataStore(dsName: string) {
             icon="pi pi-trash"
             aria-label="Delete"
             severity="danger"
-            style="margin-right: 10px"
             @click="onSubmitDeleteDataStore(slotProps.data.name)"
           />
         </template>

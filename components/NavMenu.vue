@@ -22,9 +22,14 @@ const items = ref([
         route: "/analyses",
       },
       {
-        label: "Data Stores",
-        icon: "pi pi-warehouse",
+        label: "List Data Stores",
+        icon: "pi pi-database",
         route: "/data-stores",
+      },
+      {
+        label: "Create Data Store",
+        icon: "pi pi-plus",
+        route: "/data-stores/create",
       },
     ],
   },

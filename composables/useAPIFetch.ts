@@ -4,6 +4,7 @@ import type {
   ListAnalysisNodes,
   ListAnalysisOrProjectNodes,
   ListRoute200Response,
+  Service,
 } from "~/services/Api";
 
 export const useAPIFetch: typeof useFetch = (request, options?) => {
@@ -96,8 +97,15 @@ export const getDataStores = async () => {
   });
 };
 
+export const createDataStore = async (dataStoreProps: Service) => {
+  return useAPIFetch(`/kong/datastore`, {
+    method: "POST",
+    body: dataStoreProps,
+  });
+};
+
 export const deleteDataStore = async (dataStoreName: string) => {
-  return useAPIFetch<{ data }>(`/kong/datastore/${dataStoreName}`, {
+  return useAPIFetch(`/kong/datastore/${dataStoreName}`, {
     method: "DELETE",
   });
 };
