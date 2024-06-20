@@ -34,8 +34,8 @@ console.log(dataStores);
       tableStyle="min-width: 50rem"
     >
       <Column field="name" header="Name"></Column>
-      <Column field="paths" header="Paths"></Column>
-      <Column field="hosts" header="Hosts"></Column>
+      <Column field="path" header="Path"></Column>
+      <Column field="host" header="Host"></Column>
       <Column field="port" header="Port"></Column>
       <Column field="protocol" header="Protocol"></Column>
       <Column field="created_at" header="Created"></Column>
