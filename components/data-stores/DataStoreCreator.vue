@@ -86,7 +86,7 @@ async function onSubmitCreateDataStore() {
           label="Submit"
           icon="pi pi-check"
           iconPos="right"
-          severity="success"
+          severity="info"
           style="margin-top: 20px"
           @click="onSubmitCreateDataStore"
         />
