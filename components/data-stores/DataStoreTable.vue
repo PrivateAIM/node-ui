@@ -1,12 +1,18 @@
 <script setup lang="ts">
 import { getDataStores } from "~/composables/useAPIFetch";
+import type { Route } from "~/services/Api";
+import { parseUnixTimestamp } from "~/utils/parse-unix-timestamp";
 
 const dataStores = ref();
 
 onMounted(() => {
   nextTick(async () => {
     const { data: response } = await getDataStores();
-    dataStores.value = response.value!.data;
+    const dataStroeUnixCols = ["created_at", "updated_at"];
+    dataStores.value = parseUnixTimestamp(
+      response.value!.data as Map<string, string | number | null>[],
+      dataStroeUnixCols,
+    ) as Route[];
   });
 });
 </script>
