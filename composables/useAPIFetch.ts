@@ -15,9 +15,12 @@ export const useAPIFetch: typeof useFetch = (request, options?) => {
   return useFetch(request, {
     baseURL: baseUrl,
     onRequest({ options }) {
-      // Set the request headers
-      options.headers = options.headers || {};
-      options.headers.authorization = `Bearer ${user?.value.accessToken}`;
+      // Annoying workaround to avoid typescript from complaining - cast to Headers then set explicitly
+      const headers = options.headers
+        ? new Headers(options.headers)
+        : new Headers();
+      headers.set("Authorization", `Bearer ${user?.value.accessToken}`);
+      options.headers = headers;
     },
     onRequestError({ request, options, error }) {
       console.log(request);
