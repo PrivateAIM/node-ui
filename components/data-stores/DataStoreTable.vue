@@ -20,6 +20,7 @@ function onSubmitDeleteDataStore(dsName: string) {
   deleteDataStore(dsName);
   window.location.reload();
 }
+console.log(dataStores);
 </script>
 
 <template>

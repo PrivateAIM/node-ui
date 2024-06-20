@@ -9,6 +9,8 @@ const path = ref("/baz");
 const port = ref(443);
 const protocol = ref("http");
 
+const created = ref("");
+
 async function onSubmitCreateDataStore() {
   const dataStoreProps = {
     host: host.value,
@@ -17,18 +19,15 @@ async function onSubmitCreateDataStore() {
     port: port.value,
     protocol: protocol.value,
   };
+
   for (const key in dataStoreProps) {
     if (!dataStoreProps[key]) {
       alert(`${key} is not defined!`);
       break;
     }
   }
-  const { data: response, status } = await createDataStore(dataStoreProps);
-  if (status.value === "success") {
-    alert("Data store successfully created!");
-  } else {
-    alert(`Data store creation failed`);
-  }
+  const { status } = await createDataStore(dataStoreProps);
+  created.value = status.value;
 }
 </script>
 
@@ -91,6 +90,12 @@ async function onSubmitCreateDataStore() {
           style="margin-top: 20px"
           @click="onSubmitCreateDataStore"
         />
+        <p style="color: green" v-if="created === 'success'">
+          Data store successfully created
+        </p>
+        <p style="color: red" v-if="created && created !== 'success'">
+          Failed to create data store
+        </p>
       </template>
     </Card>
   </div>
