@@ -1,26 +1,44 @@
 <script setup lang="ts">
 import { createDataStore } from "~/composables/useAPIFetch";
 import InputText from "primevue/inputtext";
+import Dropdown from "primevue/dropdown";
 import InputNumber from "primevue/inputnumber";
 
-const host = ref("foo");
-const name = ref("bar");
-const path = ref("/baz");
+const name = ref("");
+const host = ref("");
+const path = ref("");
 const port = ref(443);
 const protocol = ref("http");
+
+const acceptedProtocols = ref([
+  "grpc",
+  "grpcs",
+  "http",
+  "https",
+  "tcp",
+  "tls",
+  "tls_passthrough",
+  "udp",
+  "ws",
+  "wss",
+]);
 
 const created = ref("");
 
 async function onSubmitCreateDataStore() {
   const dataStoreProps = {
-    host: host.value,
     name: name.value,
+    host: host.value,
     path: path.value,
     port: port.value,
     protocol: protocol.value,
   };
 
   for (const key in dataStoreProps) {
+    if (key === "path" && !dataStoreProps[key].startsWith("/")) {
+      alert('The file path must start with a "/"!');
+      break;
+    }
     if (!dataStoreProps[key]) {
       alert(`${key} is not defined!`);
       break;
@@ -37,18 +55,9 @@ async function onSubmitCreateDataStore() {
     <Card>
       <template #content>
         <InputGroup>
-          <InputGroupAddon>
-            <i class="pi pi-server"></i>
-          </InputGroupAddon>
-          <InputText
-            placeholder="Server or Host"
-            v-model="host"
-            :invalid="host === ''"
-          />
-        </InputGroup>
-        <InputGroup>
-          <InputGroupAddon>
+          <InputGroupAddon class="dsField">
             <i class="pi pi-barcode"></i>
+            <p class="dsFieldName">Name</p>
           </InputGroupAddon>
           <InputText
             placeholder="Name for the data store"
@@ -57,29 +66,47 @@ async function onSubmitCreateDataStore() {
           />
         </InputGroup>
         <InputGroup>
-          <InputGroupAddon>
-            <i class="pi pi-folder"></i>
+          <InputGroupAddon class="dsField">
+            <i class="pi pi-server"></i>
+            <p class="dsFieldName">Server</p>
           </InputGroupAddon>
-          <InputText placeholder="Path" v-model="path" :invalid="path === ''" />
+          <InputText
+            placeholder="Server or hostname"
+            v-model="host"
+            :invalid="host === ''"
+          />
         </InputGroup>
         <InputGroup>
-          <InputGroupAddon>
+          <InputGroupAddon class="dsField">
+            <i class="pi pi-folder"></i>
+            <p class="dsFieldName">Data Path</p>
+          </InputGroupAddon>
+          <InputText
+            placeholder="Data path (must start with '/')"
+            v-model="path"
+            :invalid="path === '' || !path.startsWith('/')"
+          />
+        </InputGroup>
+        <InputGroup>
+          <InputGroupAddon class="dsField">
             <i class="pi pi-key"></i>
+            <p class="dsFieldName">Port</p>
           </InputGroupAddon>
           <InputNumber
             placeholder="Port e.g. 443"
             v-model="port"
-            :invalid="port === 0"
+            :invalid="port < 0 || port > 65535"
           />
         </InputGroup>
         <InputGroup>
-          <InputGroupAddon>
+          <InputGroupAddon class="dsField">
             <i class="pi pi-cog"></i>
+            <p class="dsFieldName">Protocol</p>
           </InputGroupAddon>
-          <InputText
-            placeholder="Protocol: http or ftp"
+          <Dropdown
             v-model="protocol"
-            :invalid="protocol === ''"
+            :options="acceptedProtocols"
+            class="w-full md:w-56"
           />
         </InputGroup>
         <Button
@@ -101,4 +128,14 @@ async function onSubmitCreateDataStore() {
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.dsFieldName {
+  margin-left: 10px;
+}
+
+.dsField {
+  width: 150px;
+  height: 50px;
+  align: left;
+}
+</style>
