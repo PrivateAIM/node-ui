@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { getProposals } from "~/composables/useAPIFetch";
 import ApproveRejectButtons from "~/components/projects/ApproveRejectButtons.vue";
+import { parseUnixTimestamp } from "~/utils/parse-unix-timestamp";
 
 const proposals = ref();
 
 onMounted(() => {
   nextTick(async () => {
     const { data: response } = await getProposals();
-    proposals.value = response.value!.data;
+    proposals.value = parseUnixTimestamp(
+      response.value!.data as unknown as Map<string, string | number | null>[],
+      ["created_at", "updated_at"],
+    );
   });
 });
 </script>
