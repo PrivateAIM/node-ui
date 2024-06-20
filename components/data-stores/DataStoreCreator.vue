@@ -136,6 +136,5 @@ async function onSubmitCreateDataStore() {
 .dsField {
   width: 150px;
   height: 50px;
-  align: left;
 }
 </style>

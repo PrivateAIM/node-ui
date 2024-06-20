@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { getProjects } from "~/composables/useAPIFetch";
+import { parseUnixTimestamp } from "~/utils/parse-unix-timestamp";
 
 const projects = ref();
 
 onMounted(() => {
   nextTick(async () => {
     const { data: response } = await getProjects();
-    projects.value = response.value!.data;
+    projects.value = parseUnixTimestamp(
+      response.value!.data as unknown as Map<string, string | number | null>[],
+      ["created_at", "updated_at"],
+    );
   });
 });
 </script>

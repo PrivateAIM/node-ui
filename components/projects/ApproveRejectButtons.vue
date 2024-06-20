@@ -6,13 +6,14 @@ const props = defineProps({
 });
 
 function onSubmitProjectApproval(isApproved: boolean) {
+  console.log(props.projectId);
   approveRejectProjectProposal(isApproved, props.projectId);
   window.location.reload();
 }
 </script>
 
 <template>
-  <div class="approval-buttons">
+  <div class="approvalButtons">
     <Button
       icon="pi pi-check"
       aria-label="Approve"
