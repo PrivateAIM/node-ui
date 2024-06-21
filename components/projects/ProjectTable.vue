@@ -25,6 +25,7 @@ onMounted(() => {
       :rowsPerPageOptions="[10, 20, 50]"
       tableStyle="min-width: 50rem"
     >
+      <template #empty> No projects found. </template>
       <Column field="name" header="Name"></Column>
       <Column field="created_at" header="Created"></Column>
       <Column field="updated_at" header="Last Updated"></Column>

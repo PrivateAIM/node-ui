@@ -26,6 +26,7 @@ onMounted(() => {
       :rowsPerPageOptions="[10, 20, 50]"
       tableStyle="min-width: 50rem"
     >
+      <template #empty> No proposals found. </template>
       <Column field="id" header="ID"></Column>
       <Column field="created_at" header="Created"></Column>
       <Column field="updated_at" header="Last Updated"></Column>

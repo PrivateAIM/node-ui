@@ -53,6 +53,7 @@ console.log(dataStores);
       :rowsPerPageOptions="[10, 20, 50]"
       tableStyle="min-width: 50rem"
     >
+      <template #empty> No data stores found. </template>
       <Column field="name" header="Name"></Column>
       <Column field="path" header="Path"></Column>
       <Column field="host" header="Host"></Column>
