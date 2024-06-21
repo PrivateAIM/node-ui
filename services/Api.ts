@@ -247,17 +247,36 @@ export enum ApprovalStatus {
   Rejected = "rejected",
 }
 
-/**
- * ApprovalSubmission
- * Submit approval or rejection
- */
-export interface ApprovalSubmission {
-  /** Status of project possibilities. */
+/** Body_accept_reject_analysis_node_analysis_nodes__analysis_id__post */
+export interface BodyAcceptRejectAnalysisNodeAnalysisNodesAnalysisIdPost {
+  /** Set the approval status of project for the node. Either 'rejected' or 'approved' */
   approval_status: ApprovalStatus;
 }
 
-/** Body_connect_analysis_to_project_kong_project_analysis_post */
-export interface BodyConnectAnalysisToProjectKongProjectAnalysisPost {
+/** Body_accept_reject_project_node_project_nodes__project_id__post */
+export interface BodyAcceptRejectProjectNodeProjectNodesProjectIdPost {
+  /** Set the approval status of project for the node. Either 'rejected' or 'approved' */
+  approval_status: ApprovalStatus;
+}
+
+/** Body_create_analysis_po_post */
+export interface BodyCreateAnalysisPoPost {
+  /**
+   * Analysis Id
+   * UUID of the analysis.
+   * @format uuid
+   */
+  analysis_id: string;
+  /**
+   * Project Id
+   * UUID of the analysis.
+   * @format uuid
+   */
+  project_id: string;
+}
+
+/** Body_create_and_connect_analysis_to_project_kong_analysis_post */
+export interface BodyCreateAndConnectAnalysisToProjectKongAnalysisPost {
   /**
    * Project Id
    * UUID or name of the project
@@ -270,16 +289,18 @@ export interface BodyConnectAnalysisToProjectKongProjectAnalysisPost {
   analysis_id: string;
 }
 
-/** Body_connect_project_to_datastore_kong_datastore_project_post */
-export interface BodyConnectProjectToDatastoreKongDatastoreProjectPost {
+/** Body_create_route_between_datastore_and_project_kong_route_post */
+export interface BodyCreateRouteBetweenDatastoreAndProjectKongRoutePost {
   /**
    * Data Store Id
    * UUID of the data store or 'gateway'
+   * @format uuid
    */
   data_store_id: string;
   /**
    * Project Id
    * UUID of the project
+   * @format uuid
    */
   project_id: string;
   /**
@@ -300,22 +321,6 @@ export interface BodyConnectProjectToDatastoreKongDatastoreProjectPost {
    * @default "fhir"
    */
   ds_type?: string;
-}
-
-/** Body_create_analysis_po_post */
-export interface BodyCreateAnalysisPoPost {
-  /**
-   * Analysis Id
-   * UUID of the analysis.
-   * @format uuid
-   */
-  analysis_id: string;
-  /**
-   * Project Id
-   * UUID of the analysis.
-   * @format uuid
-   */
-  project_id: string;
 }
 
 /** Body_get_token_token_post */
@@ -558,6 +563,20 @@ export interface ListAnalysisOrProjectNodes {
 export interface ListRoute200Response {
   /** Data */
   data?: Route[] | null;
+  /**
+   * Offset
+   * Offset is used to paginate through the API. Provide this value to the next list operation to fetch the next page
+   */
+  offset?: string | null;
+}
+
+/**
+ * ListService200Response
+ * ListService200Response
+ */
+export interface ListService200Response {
+  /** Data */
+  data?: Service[] | null;
   /**
    * Offset
    * Offset is used to paginate through the API. Provide this value to the next list operation to fetch the next page
@@ -1920,7 +1939,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      */
     acceptRejectProjectNodeProjectNodesProjectIdPost: (
       projectId: string,
-      data: ApprovalSubmission,
+      data: BodyAcceptRejectProjectNodeProjectNodesProjectIdPost,
       params: RequestParams = {},
     ) =>
       this.request<AnalysisOrProjectNode, void | HTTPValidationError>({
@@ -1928,7 +1947,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: "POST",
         body: data,
         secure: true,
-        type: ContentType.Json,
+        type: ContentType.UrlEncoded,
         format: "json",
         ...params,
       }),
@@ -2039,7 +2058,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      */
     acceptRejectAnalysisNodeAnalysisNodesAnalysisIdPost: (
       analysisId: string,
-      data: ApprovalSubmission,
+      data: BodyAcceptRejectAnalysisNodeAnalysisNodesAnalysisIdPost,
       params: RequestParams = {},
     ) =>
       this.request<AnalysisNode, void | HTTPValidationError>({
@@ -2047,7 +2066,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: "POST",
         body: data,
         secure: true,
-        type: ContentType.Json,
+        type: ContentType.UrlEncoded,
         format: "json",
         ...params,
       }),
@@ -2110,13 +2129,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name ListDataStoresKongDatastoreGet
      * @summary List Data Stores
      * @request GET:/kong/datastore
-     * @secure
      */
     listDataStoresKongDatastoreGet: (params: RequestParams = {}) =>
-      this.request<ListRoute200Response, void>({
+      this.request<ListService200Response, void>({
         path: `/kong/datastore`,
         method: "GET",
-        secure: true,
         format: "json",
         ...params,
       }),
@@ -2128,33 +2145,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name CreateDataStoreKongDatastorePost
      * @summary Create Data Store
      * @request POST:/kong/datastore
-     * @secure
      */
     createDataStoreKongDatastorePost: (data: ServiceRequest, params: RequestParams = {}) =>
       this.request<Service, void | HTTPValidationError>({
         path: `/kong/datastore`,
         method: "POST",
         body: data,
-        secure: true,
         type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description List all the data stores connected to this project.
-     *
-     * @tags Kong
-     * @name ListDataStoresByProjectKongDatastoreProjectNameGet
-     * @summary List Data Stores By Project
-     * @request GET:/kong/datastore/{project_name}
-     * @secure
-     */
-    listDataStoresByProjectKongDatastoreProjectNameGet: (projectName: string, params: RequestParams = {}) =>
-      this.request<ListRoute200Response, void | HTTPValidationError>({
-        path: `/kong/datastore/${projectName}`,
-        method: "GET",
-        secure: true,
         format: "json",
         ...params,
       }),
@@ -2166,35 +2163,57 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name DeleteDataStoreKongDatastoreDataStoreNameDelete
      * @summary Delete Data Store
      * @request DELETE:/kong/datastore/{data_store_name}
-     * @secure
      */
     deleteDataStoreKongDatastoreDataStoreNameDelete: (dataStoreName: string, params: RequestParams = {}) =>
       this.request<any, void | HTTPValidationError>({
         path: `/kong/datastore/${dataStoreName}`,
         method: "DELETE",
-        secure: true,
         format: "json",
         ...params,
       }),
 
     /**
-     * @description Create a new project and link it to a data store.
+     * @description List all the routes available, can be filtered by project_id.
      *
      * @tags Kong
-     * @name ConnectProjectToDatastoreKongDatastoreProjectPost
-     * @summary Connect Project To Datastore
-     * @request POST:/kong/datastore/project
-     * @secure
+     * @name ListRoutesKongRouteGet
+     * @summary List Routes
+     * @request GET:/kong/route
      */
-    connectProjectToDatastoreKongDatastoreProjectPost: (
-      data: BodyConnectProjectToDatastoreKongDatastoreProjectPost,
+    listRoutesKongRouteGet: (
+      query?: {
+        /**
+         * Project Id
+         * UUID of project.
+         */
+        project_id?: string | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ListRoute200Response, void | HTTPValidationError>({
+        path: `/kong/route`,
+        method: "GET",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Create a route between a data store and a project.
+     *
+     * @tags Kong
+     * @name CreateRouteBetweenDatastoreAndProjectKongRoutePost
+     * @summary Create Route Between Datastore And Project
+     * @request POST:/kong/route
+     */
+    createRouteBetweenDatastoreAndProjectKongRoutePost: (
+      data: BodyCreateRouteBetweenDatastoreAndProjectKongRoutePost,
       params: RequestParams = {},
     ) =>
       this.request<LinkDataStoreProject, void | HTTPValidationError>({
-        path: `/kong/datastore/project`,
+        path: `/kong/route`,
         method: "POST",
         body: data,
-        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -2204,16 +2223,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description Disconnect a project from all connected data stores.
      *
      * @tags Kong
-     * @name DisconnectProjectKongDisconnectProjectNamePut
+     * @name DisconnectProjectKongRouteDisconnectProjectIdPut
      * @summary Disconnect Project
-     * @request PUT:/kong/disconnect/{project_name}
-     * @secure
+     * @request PUT:/kong/route/disconnect/{project_id}
      */
-    disconnectProjectKongDisconnectProjectNamePut: (projectName: string, params: RequestParams = {}) =>
+    disconnectProjectKongRouteDisconnectProjectIdPut: (projectId: string, params: RequestParams = {}) =>
       this.request<Disconnect, void | HTTPValidationError>({
-        path: `/kong/disconnect/${projectName}`,
+        path: `/kong/route/disconnect/${projectId}`,
         method: "PUT",
-        secure: true,
         format: "json",
         ...params,
       }),
@@ -2222,20 +2239,18 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description Create a new analysis and link it to a project.
      *
      * @tags Kong
-     * @name ConnectAnalysisToProjectKongProjectAnalysisPost
-     * @summary Connect Analysis To Project
-     * @request POST:/kong/project/analysis
-     * @secure
+     * @name CreateAndConnectAnalysisToProjectKongAnalysisPost
+     * @summary Create And Connect Analysis To Project
+     * @request POST:/kong/analysis
      */
-    connectAnalysisToProjectKongProjectAnalysisPost: (
-      data: BodyConnectAnalysisToProjectKongProjectAnalysisPost,
+    createAndConnectAnalysisToProjectKongAnalysisPost: (
+      data: BodyCreateAndConnectAnalysisToProjectKongAnalysisPost,
       params: RequestParams = {},
     ) =>
       this.request<LinkProjectAnalysis, void | HTTPValidationError>({
-        path: `/kong/project/analysis`,
+        path: `/kong/analysis`,
         method: "POST",
         body: data,
-        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -2248,13 +2263,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name DeleteAnalysisKongAnalysisAnalysisIdDelete
      * @summary Delete Analysis
      * @request DELETE:/kong/analysis/{analysis_id}
-     * @secure
      */
     deleteAnalysisKongAnalysisAnalysisIdDelete: (analysisId: string, params: RequestParams = {}) =>
       this.request<any, void | HTTPValidationError>({
         path: `/kong/analysis/${analysisId}`,
         method: "DELETE",
-        secure: true,
         format: "json",
         ...params,
       }),
