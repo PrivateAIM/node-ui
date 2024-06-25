@@ -1,26 +1,26 @@
 <script setup lang="ts">
 import { getAnalyses } from "~/composables/useAPIFetch";
-import { parseUnixTimestamp } from "~/utils/parse-unix-timestamp";
+import { formatDataRow } from "~/utils/format-data-row";
+import { prettifyKey } from "~/utils/prettify-key";
 
 const analyses = ref();
 const expandedRows = ref({});
 const loading = ref(true);
 
+const expandRowEntries = ["created_at", "updated_at"];
+
 onMounted(() => {
   nextTick(async () => {
     const { data: response } = await getAnalyses();
 
-    analyses.value = parseUnixTimestamp(
+    analyses.value = formatDataRow(
       response.value!.data as unknown as Map<string, string | number | null>[],
       ["created_at", "updated_at"],
+      expandRowEntries,
     );
     loading.value = false;
   });
 });
-
-const onRowExpand = (event) => {
-  console.log(event);
-};
 
 const expandAll = () => {
   expandedRows.value = analyses.value.reduce(
@@ -41,7 +41,6 @@ const collapseAll = () => {
     <DataTable
       :value="analyses"
       v-model:expandedRows="expandedRows"
-      @rowExpand="onRowExpand"
       dataKey="id"
       :pt="{
         table: 'table table-striped',
@@ -80,11 +79,17 @@ const collapseAll = () => {
       <Column field="project_id" header="Project ID"></Column>
       <Column field="node.name" header="Node" :sortable="true"></Column>
       <template #expansion="slotProps">
-        <div class="p-4">
-          <DataTable :value="slotProps.data">
-            <Column field="created_at" header="Created"></Column>
-            <Column field="updated_at" header="Last Updated"></Column>
-          </DataTable>
+        <div class="p-3">
+          <Card style="border: solid">
+            <template #title>Additional Metadata</template>
+            <template #content>
+              <p v-for="(value, key) in slotProps.data.expand" :key="key">
+                <b>{{ prettifyKey(key as unknown as string) }}</b
+                >: {{ value }}
+                <Divider />
+              </p>
+            </template>
+          </Card>
         </div>
       </template>
     </DataTable>
