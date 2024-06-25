@@ -1,4 +1,3 @@
-// import { v4 as uuidv4 } from "uuid";
 import type {
   AllAnalyses,
   AllProjects,
@@ -100,5 +99,17 @@ export const startAnalysis = async (
   return useAPIFetch(`/po`, {
     method: "POST",
     body: analysisProps,
+  });
+};
+
+export const stopAnalysis = async (analysisId: string) => {
+  return useAPIFetch(`/po/${analysisId}/stop`, {
+    method: "PUT",
+  });
+};
+
+export const deleteAnalysis = async (analysisId: string) => {
+  return useAPIFetch(`/po/${analysisId}/delete`, {
+    method: "DELETE",
   });
 };

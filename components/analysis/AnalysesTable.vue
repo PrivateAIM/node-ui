@@ -7,7 +7,14 @@ const analyses = ref();
 const expandedRows = ref({});
 const loading = ref(true);
 
-const expandRowEntries = ["created_at", "updated_at"];
+const expandRowEntries = [
+  "id",
+  "project_id",
+  "registry_id",
+  "user_id",
+  "created_at",
+  "updated_at",
+];
 
 onMounted(() => {
   nextTick(async () => {
@@ -70,18 +77,27 @@ const collapseAll = () => {
         </div>
       </template>
       <Column expander style="width: 5rem" />
-      <Column field="id" header="ID" :sortable="true"></Column>
+      <Column field="name" header="Name" :sortable="true"></Column>
       <Column
         field="approval_status"
         header="Approval Status"
         :sortable="true"
       ></Column>
-      <Column field="run_status" header="Status" :sortable="true"></Column>
-      <Column field="project_id" header="Project ID"></Column>
-      <Column field="node.name" header="Node" :sortable="true"></Column>
+      <Column
+        field="build_status"
+        header="Build Status"
+        :sortable="true"
+      ></Column>
+      <Column field="run_status" header="Run Status" :sortable="true"></Column>
+      <Column field="project.name" header="Project" :sortable="true"></Column>
+      <Column field="nodes" header="Number Nodes" :sortable="true"></Column>
       <Column field="id" header="Toggle Analysis" :exportable="false">
         <template #body="slotProps">
-          <AnalysisControlButtons :analysisStatus="slotProps.data.run_status" />
+          <AnalysisControlButtons
+            :analysisStatus="slotProps.data.run_status"
+            :analysisId="slotProps.data.id"
+            :projectId="slotProps.data.project_id"
+          />
         </template>
       </Column>
       <template #expansion="slotProps">
