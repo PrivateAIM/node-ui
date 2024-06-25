@@ -34,7 +34,7 @@ export const useAPIFetch: typeof useFetch = (request, options?) => {
     },
     onResponseError({ response }) {
       // Handle the response errors
-      // console.log(response);
+      console.log(response);
     },
     ...options,
   });
