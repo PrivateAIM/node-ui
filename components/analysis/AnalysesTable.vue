@@ -79,6 +79,11 @@ const collapseAll = () => {
       <Column field="run_status" header="Status" :sortable="true"></Column>
       <Column field="project_id" header="Project ID"></Column>
       <Column field="node.name" header="Node" :sortable="true"></Column>
+      <Column field="id" header="Toggle Analysis" :exportable="false">
+        <template #body="slotProps">
+          <AnalysisControlButtons :analysisStatus="slotProps.data.run_status" />
+        </template>
+      </Column>
       <template #expansion="slotProps">
         <div class="p-3">
           <TableRowMetadata :rowMetadata="slotProps.data.expand" />
