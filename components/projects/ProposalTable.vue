@@ -4,6 +4,7 @@ import ApproveRejectButtons from "~/components/projects/ApproveRejectButtons.vue
 import { parseUnixTimestamp } from "~/utils/parse-unix-timestamp";
 
 const proposals = ref();
+const sort = ref(true);
 
 onMounted(() => {
   nextTick(async () => {
@@ -27,12 +28,16 @@ onMounted(() => {
       tableStyle="min-width: 50rem"
     >
       <template #empty> No proposals found. </template>
-      <Column field="id" header="ID"></Column>
+      <Column field="id" header="ID" :sortable="sort"></Column>
       <Column field="created_at" header="Created"></Column>
       <Column field="updated_at" header="Last Updated"></Column>
-      <Column field="project_id" header="Project ID"></Column>
-      <Column field="node_id" header="Node ID"></Column>
-      <Column field="approval_status" header="Approval Status"></Column>
+      <Column field="project_id" header="Project ID" :sortable="sort"></Column>
+      <Column field="node_id" header="Node ID" :sortable="sort"></Column>
+      <Column
+        field="approval_status"
+        header="Approval Status"
+        :sortable="sort"
+      ></Column>
       <Column field="id" header="Set Approval" :exportable="false">
         <template #body="slotProps">
           <ApproveRejectButtons :projectId="slotProps.data.id" />

@@ -5,7 +5,7 @@ import { parseUnixTimestamp } from "~/utils/parse-unix-timestamp";
 import { useConfirm } from "primevue/useconfirm";
 
 const dataStores = ref();
-
+const sort = ref(true);
 const confirm = useConfirm();
 
 onMounted(() => {
@@ -54,11 +54,11 @@ console.log(dataStores);
       tableStyle="min-width: 50rem"
     >
       <template #empty> No data stores found. </template>
-      <Column field="name" header="Name"></Column>
+      <Column field="name" header="Name" :sortable="sort"></Column>
       <Column field="path" header="Path"></Column>
-      <Column field="host" header="Host"></Column>
+      <Column field="host" header="Host" :sortable="sort"></Column>
       <Column field="port" header="Port"></Column>
-      <Column field="protocol" header="Protocol"></Column>
+      <Column field="protocol" header="Protocol" :sortable="sort"></Column>
       <Column field="created_at" header="Created"></Column>
       <Column field="updated_at" header="Last Updated"></Column>
       <Column field="name" header="Delete?" :exportable="false">

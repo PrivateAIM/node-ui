@@ -5,6 +5,7 @@ import { parseUnixTimestamp } from "~/utils/parse-unix-timestamp";
 const analyses = ref();
 const expandedRows = ref({});
 const loading = ref(true);
+const sort = ref(true);
 
 onMounted(() => {
   nextTick(async () => {
@@ -64,11 +65,15 @@ const collapseAll = () => {
         </div>
       </template>
       <Column expander style="width: 5rem" />
-      <Column field="id" header="ID"></Column>
-      <Column field="approval_status" header="Approval Status"></Column>
-      <Column field="run_status" header="Status"></Column>
+      <Column field="id" header="ID" :sortable="sort"></Column>
+      <Column
+        field="approval_status"
+        header="Approval Status"
+        :sortable="sort"
+      ></Column>
+      <Column field="run_status" header="Status" :sortable="sort"></Column>
       <Column field="project_id" header="Project ID"></Column>
-      <Column field="node.name" header="Node"></Column>
+      <Column field="node.name" header="Node" :sortable="sort"></Column>
       <template #expansion="slotProps">
         <div class="p-4">
           <DataTable :value="slotProps.data">

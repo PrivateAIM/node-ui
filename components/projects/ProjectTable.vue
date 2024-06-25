@@ -3,6 +3,7 @@ import { getProjects } from "~/composables/useAPIFetch";
 import { parseUnixTimestamp } from "~/utils/parse-unix-timestamp";
 
 const projects = ref();
+const sort = ref(true);
 
 onMounted(() => {
   nextTick(async () => {
@@ -26,10 +27,14 @@ onMounted(() => {
       tableStyle="min-width: 50rem"
     >
       <template #empty> No projects found. </template>
-      <Column field="name" header="Name"></Column>
+      <Column field="name" header="Name" :sortable="sort"></Column>
       <Column field="created_at" header="Created"></Column>
       <Column field="updated_at" header="Last Updated"></Column>
-      <Column field="analyses" header="Number Analyses"></Column>
+      <Column
+        field="analyses"
+        header="Number Analyses"
+        :sortable="sort"
+      ></Column>
       <Column field="master_image_id" header="Master Image UUID"></Column>
     </DataTable>
   </div>
