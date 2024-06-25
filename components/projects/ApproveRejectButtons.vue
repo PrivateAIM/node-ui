@@ -6,7 +6,6 @@ const props = defineProps({
 });
 
 function onSubmitProjectApproval(isApproved: boolean) {
-  console.log(props.projectId);
   approveRejectProjectProposal(isApproved, props.projectId);
   window.location.reload();
 }
