@@ -5,7 +5,6 @@ import { parseUnixTimestamp } from "~/utils/parse-unix-timestamp";
 const analyses = ref();
 const expandedRows = ref({});
 const loading = ref(true);
-const sort = ref(true);
 
 onMounted(() => {
   nextTick(async () => {
@@ -19,6 +18,10 @@ onMounted(() => {
   });
 });
 
+const onRowExpand = (event) => {
+  console.log(event);
+};
+
 const expandAll = () => {
   expandedRows.value = analyses.value.reduce(
     // eslint-disable-next-line no-constant-binary-expression
@@ -26,6 +29,7 @@ const expandAll = () => {
     {},
   );
 };
+
 const collapseAll = () => {
   expandedRows.value = {};
 };
@@ -37,6 +41,7 @@ const collapseAll = () => {
     <DataTable
       :value="analyses"
       v-model:expandedRows="expandedRows"
+      @rowExpand="onRowExpand"
       dataKey="id"
       :pt="{
         table: 'table table-striped',
@@ -65,15 +70,15 @@ const collapseAll = () => {
         </div>
       </template>
       <Column expander style="width: 5rem" />
-      <Column field="id" header="ID" :sortable="sort"></Column>
+      <Column field="id" header="ID" :sortable="true"></Column>
       <Column
         field="approval_status"
         header="Approval Status"
-        :sortable="sort"
+        :sortable="true"
       ></Column>
-      <Column field="run_status" header="Status" :sortable="sort"></Column>
+      <Column field="run_status" header="Status" :sortable="true"></Column>
       <Column field="project_id" header="Project ID"></Column>
-      <Column field="node.name" header="Node" :sortable="sort"></Column>
+      <Column field="node.name" header="Node" :sortable="true"></Column>
       <template #expansion="slotProps">
         <div class="p-4">
           <DataTable :value="slotProps.data">
