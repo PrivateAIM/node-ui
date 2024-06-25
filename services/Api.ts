@@ -44,6 +44,15 @@ export interface ACLConsumer {
 }
 
 /**
+ * AllAnalyses
+ * List of all projects.
+ */
+export interface AllAnalyses {
+  /** Data */
+  data: Analysis[];
+}
+
+/**
  * AllProjects
  * List of all projects.
  */
@@ -2067,6 +2076,36 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         body: data,
         secure: true,
         type: ContentType.UrlEncoded,
+        format: "json",
+        ...params,
+      }),
+  };
+  analyses = {
+    /**
+     * @description List project for a given UUID.
+     *
+     * @tags Hub
+     * @name ListAllAnalysesAnalysesGet
+     * @summary List All Analyses
+     * @request GET:/analyses
+     * @secure
+     */
+    listAllAnalysesAnalysesGet: (
+      query?: {
+        /**
+         * Include
+         * Whether to include additional data for the given parameter. Can only be 'node'/'analysis'
+         * @default "project"
+         */
+        include?: string | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<AllAnalyses, void | HTTPValidationError>({
+        path: `/analyses`,
+        method: "GET",
+        query: query,
+        secure: true,
         format: "json",
         ...params,
       }),
