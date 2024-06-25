@@ -17,6 +17,9 @@ export default defineNuxtConfig({
     options: {
       ripple: true,
     },
+    directives: {
+      include: ["Ripple", "Tooltip"],
+    },
   },
   oidc: {
     defaultProvider: "keycloak",

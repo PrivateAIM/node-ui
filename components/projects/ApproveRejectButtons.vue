@@ -17,6 +17,7 @@ function onSubmitProjectApproval(isApproved: boolean) {
     <Button
       icon="pi pi-check"
       aria-label="Approve"
+      v-tooltip="'Send approval'"
       severity="success"
       style="margin-right: 10px"
       @click="onSubmitProjectApproval(true)"
@@ -24,6 +25,7 @@ function onSubmitProjectApproval(isApproved: boolean) {
     <Button
       icon="pi pi-times"
       aria-label="Reject"
+      v-tooltip="'Send rejection'"
       severity="danger"
       @click="onSubmitProjectApproval(false)"
     />

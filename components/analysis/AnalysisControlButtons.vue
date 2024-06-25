@@ -15,6 +15,7 @@ function isRunning(): boolean {
     <Button
       icon="pi pi-play"
       aria-label="Start"
+      v-tooltip="'Start the analysis'"
       severity="success"
       style="margin-right: 10px"
       :disabled="!isRunning"
@@ -22,6 +23,7 @@ function isRunning(): boolean {
     <Button
       icon="pi pi-stop"
       aria-label="Stop"
+      v-tooltip="'Stop the analysis'"
       severity="danger"
       :disabled="isRunning"
     />
