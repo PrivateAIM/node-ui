@@ -1,6 +1,9 @@
 import { v4 as uuidv4 } from "uuid";
 import type {
+  AllAnalyses,
   AllProjects,
+  BodyCreateAnalysisPoPost,
+  BodyCreateAndConnectAnalysisToProjectKongAnalysisPost,
   ListAnalysisNodes,
   ListAnalysisOrProjectNodes,
   ListRoute200Response,
@@ -40,7 +43,7 @@ export const useAPIFetch: typeof useFetch = (request, options?) => {
   });
 };
 
-// Not working
+// Hub endpoints
 export const approveRejectProjectProposal = async (
   approved: boolean,
   project_id: string | undefined,
@@ -67,30 +70,12 @@ export const getProjects = async () => {
 };
 
 export const getAnalyses = async () => {
-  return useAPIFetch<{ data: ListAnalysisNodes }>("/analysis-nodes", {
+  return useAPIFetch<{ data: AllAnalyses }>("/analyses", {
     method: "GET",
   });
 };
 
-export const getSpecificAnalysis = async (
-  analysisId: typeof uuidv4,
-  filterId?: typeof uuidv4,
-  filterNodeId?: typeof uuidv4,
-  filterAnalysisId?: typeof uuidv4,
-) => {
-  return useAPIFetch<{ data: ListAnalysisNodes }>(
-    `/analysis-nodes/${analysisId}`,
-    {
-      method: "POST",
-      body: {
-        filter_id: filterId ? filterId : null,
-        filter_node_id: filterNodeId ? filterNodeId : null,
-        filter_analysis_id: filterAnalysisId ? filterAnalysisId : null,
-      },
-    },
-  );
-};
-
+// Kong endpoints
 export const getDataStores = async () => {
   return useAPIFetch<{ data: ListRoute200Response }>("/kong/datastore", {
     method: "GET",
@@ -107,5 +92,15 @@ export const createDataStore = async (dataStoreProps: Service) => {
 export const deleteDataStore = async (dataStoreName: string) => {
   return useAPIFetch(`/kong/datastore/${dataStoreName}`, {
     method: "DELETE",
+  });
+};
+
+// PodOrc endpoints
+export const startAnalysis = async (
+  analysisProps: BodyCreateAnalysisPoPost,
+) => {
+  return useAPIFetch(`/po`, {
+    method: "POST",
+    body: analysisProps,
   });
 };
