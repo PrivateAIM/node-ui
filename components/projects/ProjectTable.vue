@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import { getProjects } from "~/composables/useAPIFetch";
-import { parseUnixTimestamp } from "~/utils/parse-unix-timestamp";
+import { formatDataRow } from "~/utils/format-data-row";
 
 const projects = ref();
+
+const dataRowUnixCols = ["created_at", "updated_at"];
+const expandRowEntries = [];
 
 onMounted(() => {
   nextTick(async () => {
     const { data: response } = await getProjects();
-    projects.value = parseUnixTimestamp(
+    projects.value = formatDataRow(
       response.value!.data as unknown as Map<string, string | number | null>[],
-      ["created_at", "updated_at"],
+      dataRowUnixCols,
+      expandRowEntries,
     );
   });
 });

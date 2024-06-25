@@ -1,19 +1,23 @@
 <script setup lang="ts">
 import { deleteDataStore, getDataStores } from "~/composables/useAPIFetch";
 import type { Route } from "~/services/Api";
-import { parseUnixTimestamp } from "~/utils/parse-unix-timestamp";
+import { formatDataRow } from "~/utils/format-data-row";
 import { useConfirm } from "primevue/useconfirm";
 
 const dataStores = ref();
 const confirm = useConfirm();
 
+const dataRowUnixCols = ["created_at", "updated_at"];
+const expandRowEntries = ["created_at", "updated_at"];
+
 onMounted(() => {
   nextTick(async () => {
     const { data: response } = await getDataStores();
-    const dataStroeUnixCols = ["created_at", "updated_at"];
-    dataStores.value = parseUnixTimestamp(
+
+    dataStores.value = formatDataRow(
       response.value!.data as Map<string, string | number | null>[],
-      dataStroeUnixCols,
+      dataRowUnixCols,
+      expandRowEntries,
     ) as Route[];
   });
 });
