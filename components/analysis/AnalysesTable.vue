@@ -91,12 +91,12 @@ const collapseAll = () => {
       <Column field="run_status" header="Run Status" :sortable="true"></Column>
       <Column field="project.name" header="Project" :sortable="true"></Column>
       <Column field="nodes" header="Number Nodes" :sortable="true"></Column>
-      <Column field="id" header="Toggle Analysis" :exportable="false">
+      <Column field="expand.id" header="Toggle Analysis" :exportable="false">
         <template #body="slotProps">
           <AnalysisControlButtons
             :analysisStatus="slotProps.data.run_status"
-            :analysisId="slotProps.data.id"
-            :projectId="slotProps.data.project_id"
+            :analysisId="slotProps.data.expand.id"
+            :projectId="slotProps.data.expand.project_id"
           />
         </template>
       </Column>
