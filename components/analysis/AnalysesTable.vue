@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getAnalyses } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
-import { prettifyKey } from "~/utils/prettify-key";
+import TableRowMetadata from "~/components/TableRowMetadata.vue";
 
 const analyses = ref();
 const expandedRows = ref({});
@@ -24,8 +24,9 @@ onMounted(() => {
 
 const expandAll = () => {
   expandedRows.value = analyses.value.reduce(
-    // eslint-disable-next-line no-constant-binary-expression
-    (accordion, analysis) => (accordion[analysis.id] = true) && accordion,
+    (accordion: boolean, analysis) =>
+      // eslint-disable-next-line no-constant-binary-expression
+      (accordion[analysis.id] = true) && accordion,
     {},
   );
 };
@@ -80,16 +81,7 @@ const collapseAll = () => {
       <Column field="node.name" header="Node" :sortable="true"></Column>
       <template #expansion="slotProps">
         <div class="p-3">
-          <Card style="border: solid">
-            <template #title>Additional Metadata</template>
-            <template #content>
-              <p v-for="(value, key) in slotProps.data.expand" :key="key">
-                <b>{{ prettifyKey(key as unknown as string) }}</b
-                >: {{ value }}
-                <Divider />
-              </p>
-            </template>
-          </Card>
+          <TableRowMetadata :rowMetadata="slotProps.data.expand" />
         </div>
       </template>
     </DataTable>
