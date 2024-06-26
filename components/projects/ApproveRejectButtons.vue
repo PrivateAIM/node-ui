@@ -5,24 +5,46 @@ const props = defineProps({
   projectId: String,
 });
 
+const toast = useToast();
+
 // const emit = defineEmits(["updatedRow"]);
 
 async function onSubmitProjectApproval(isApproved: boolean) {
-  const { data: response, status } = await approveRejectProjectProposal(
+  const { status } = await approveRejectProjectProposal(
     isApproved,
     props.projectId!,
   );
   console.log(status.value);
   if (status.value === "success") {
-    console.log(response.value!);
+    showSuccessfulSubmission(isApproved);
   } else {
-    console.log("error");
+    showFailedSubmission();
   }
 }
+
+const showSuccessfulSubmission = (approval: boolean) => {
+  const submissionType = approval ? "Approval" : "Rejection";
+  toast.add({
+    severity: "info",
+    summary: "Submission successful",
+    detail: `${submissionType} successfully submitted.`,
+    life: 3000,
+  });
+};
+
+const showFailedSubmission = () => {
+  toast.add({
+    severity: "error",
+    summary: "Submission failed",
+    detail: "There was an error sending your submission.",
+    life: 3000,
+  });
+};
 </script>
 
 <template>
   <div class="approvalButtons">
+    <Toast position="top-right" />
     <Button
       icon="pi pi-check"
       aria-label="Approve"

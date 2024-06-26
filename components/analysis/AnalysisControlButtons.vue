@@ -26,7 +26,6 @@ const showFailStart = () => {
     severity: "error",
     summary: "Start failure",
     detail: "Failed to start the analysis",
-    group: "fail",
     life: 3000,
   });
 };
@@ -57,7 +56,7 @@ function onDeleteAnalysis() {
 
 <template>
   <div class="analysisButtons">
-    <Toast position="top-right" group="fail" />
+    <Toast position="top-right" />
     <Button
       icon="pi pi-play"
       aria-label="Start"
