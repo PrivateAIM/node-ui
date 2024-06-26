@@ -88,7 +88,6 @@ export interface Analysis {
   configuration_status?: ConfigurationStatus | null;
   build_status?: AnalysisBuildStatus | null;
   run_status?: AnalysisRunStatus | null;
-  result_status?: AnalysisResultStatus | null;
   registry?: Registry | null;
   /** Registry Id */
   registry_id?: string | null;
@@ -154,17 +153,9 @@ export interface AnalysisNode {
   updated_at: string;
   /** Status of project possibilities. */
   approval_status: ApprovalStatus;
+  run_status?: AnalysisRunStatus | null;
   /** Comment */
   comment?: string | null;
-  /** Project Id */
-  project_id?: string | null;
-  /** Project Realm Id */
-  project_realm_id?: string | null;
-  /** Node Id */
-  node_id?: string | null;
-  /** Node Realm Id */
-  node_realm_id?: string | null;
-  run_status?: AnalysisRunStatus | null;
   /** Index */
   index: number;
   /** Artifact Tag */
@@ -181,56 +172,18 @@ export interface AnalysisNode {
    * @format uuid
    */
   analysis_realm_id: string;
-  analysis?: Analysis | null;
-  node?: Node | null;
-}
-
-/**
- * AnalysisOrProjectNode
- * Single project or analysis by node.
- */
-export interface AnalysisOrProjectNode {
   /**
-   * Id
+   * Node Id
    * @format uuid
    */
-  id: string;
+  node_id: string;
   /**
-   * Created At
-   * @format date-time
+   * Node Realm Id
+   * @format uuid
    */
-  created_at: string;
-  /**
-   * Updated At
-   * @format date-time
-   */
-  updated_at: string;
-  /** Status of project possibilities. */
-  approval_status: ApprovalStatus;
-  /** Comment */
-  comment?: string | null;
-  /** Project Id */
-  project_id?: string | null;
-  /** Project Realm Id */
-  project_realm_id?: string | null;
-  /** Node Id */
-  node_id?: string | null;
-  /** Node Realm Id */
-  node_realm_id?: string | null;
-}
-
-/**
- * AnalysisResultStatus
- * Possible values for analysis build status.
- */
-export enum AnalysisResultStatus {
-  Started = "started",
-  Downloading = "downloading",
-  Downloaded = "downloaded",
-  Extracting = "extracting",
-  Extracted = "extracted",
-  Finished = "finished",
-  Failed = "failed",
+  node_realm_id: string;
+  analysis?: Analysis | null;
+  node?: Node | null;
 }
 
 /**
@@ -262,8 +215,8 @@ export interface BodyAcceptRejectAnalysisNodeAnalysisNodesAnalysisIdPost {
   approval_status: ApprovalStatus;
 }
 
-/** Body_accept_reject_project_node_project_nodes__project_id__post */
-export interface BodyAcceptRejectProjectNodeProjectNodesProjectIdPost {
+/** Body_accept_reject_project_proposal_project_nodes__proposal_id__post */
+export interface BodyAcceptRejectProjectProposalProjectNodesProposalIdPost {
   /** Set the approval status of project for the node. Either 'rejected' or 'approved' */
   approval_status: ApprovalStatus;
 }
@@ -559,10 +512,10 @@ export interface ListAnalysisNodes {
   data: AnalysisNode[];
 }
 
-/** ListAnalysisOrProjectNodes */
-export interface ListAnalysisOrProjectNodes {
+/** ListProjectNodes */
+export interface ListProjectNodes {
   /** Data */
-  data: AnalysisOrProjectNode[];
+  data: ProjectNode[];
 }
 
 /**
@@ -789,6 +742,42 @@ export interface Project {
   /** Master Image Id */
   master_image_id?: string | null;
   master_image?: MasterImage | null;
+}
+
+/**
+ * ProjectNode
+ * Single project or analysis by node.
+ */
+export interface ProjectNode {
+  /**
+   * Id
+   * @format uuid
+   */
+  id: string;
+  /**
+   * Created At
+   * @format date-time
+   */
+  created_at: string;
+  /**
+   * Updated At
+   * @format date-time
+   */
+  updated_at: string;
+  /** Status of project possibilities. */
+  approval_status: ApprovalStatus;
+  /** Comment */
+  comment?: string | null;
+  /** Project Id */
+  project_id?: string | null;
+  /** Project Realm Id */
+  project_realm_id?: string | null;
+  /** Node Id */
+  node_id?: string | null;
+  /** Node Realm Id */
+  node_realm_id?: string | null;
+  project?: Project | null;
+  node?: Node | null;
 }
 
 /**
@@ -1890,16 +1879,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   };
   projectNodes = {
     /**
-     * @description List project for a node.
+     * @description List project proposals.
      *
      * @tags Hub
-     * @name ListProjectsAndNodesProjectNodesGet
-     * @summary List Projects And Nodes
+     * @name ListProjectProposalsProjectNodesGet
+     * @summary List Project Proposals
      * @request GET:/project-nodes
      * @secure
      */
-    listProjectsAndNodesProjectNodesGet: (
+    listProjectProposalsProjectNodesGet: (
       query?: {
+        /**
+         * Include
+         * Whether to include additional data for the given parameter. Choices: 'node'/'project'
+         * @default "project,node"
+         */
+        include?: string | null;
         /**
          * Filter Id
          * Filter by ID of returned object.
@@ -1928,7 +1923,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       },
       params: RequestParams = {},
     ) =>
-      this.request<ListAnalysisOrProjectNodes, void | HTTPValidationError>({
+      this.request<ListProjectNodes, void | HTTPValidationError>({
         path: `/project-nodes`,
         method: "GET",
         query: query,
@@ -1938,21 +1933,21 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * @description Set the approval status of a project.
+     * @description Set the approval status of a project proposal.
      *
      * @tags Hub
-     * @name AcceptRejectProjectNodeProjectNodesProjectIdPost
-     * @summary Accept Reject Project Node
-     * @request POST:/project-nodes/{project_id}
+     * @name AcceptRejectProjectProposalProjectNodesProposalIdPost
+     * @summary Accept Reject Project Proposal
+     * @request POST:/project-nodes/{proposal_id}
      * @secure
      */
-    acceptRejectProjectNodeProjectNodesProjectIdPost: (
-      projectId: string,
-      data: BodyAcceptRejectProjectNodeProjectNodesProjectIdPost,
+    acceptRejectProjectProposalProjectNodesProposalIdPost: (
+      proposalId: string,
+      data: BodyAcceptRejectProjectProposalProjectNodesProposalIdPost,
       params: RequestParams = {},
     ) =>
-      this.request<AnalysisOrProjectNode, void | HTTPValidationError>({
-        path: `/project-nodes/${projectId}`,
+      this.request<ProjectNode, void | HTTPValidationError>({
+        path: `/project-nodes/${proposalId}`,
         method: "POST",
         body: data,
         secure: true,
