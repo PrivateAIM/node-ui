@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { NavMenu } from "#components";
 const { loggedIn } = useOidcAuth();
 
 const items = ref([
@@ -15,8 +14,41 @@ const items = ref([
     route: "/about",
   },
   {
-    label: "Settings",
-    icon: "pi pi-spin pi-cog",
+    label: "Projects",
+    icon: "pi pi-objects-column",
+    items: [
+      {
+        label: "Project List",
+        icon: "pi pi-clipboard",
+        route: "/projects",
+      },
+      {
+        label: "Proposals",
+        icon: "pi pi-list-check",
+        route: "/proposals",
+      },
+    ],
+  },
+  {
+    label: "Analyses",
+    icon: "pi pi-lightbulb",
+    route: "/analyses",
+  },
+  {
+    label: "Data Stores",
+    icon: "pi pi-warehouse",
+    items: [
+      {
+        label: "List Data Stores",
+        icon: "pi pi-database",
+        route: "/data-stores",
+      },
+      {
+        label: "Create Data Store",
+        icon: "pi pi-plus",
+        route: "/data-stores/create",
+      },
+    ],
   },
 ]);
 </script>
@@ -24,9 +56,7 @@ const items = ref([
 <template>
   <div class="menuBar">
     <Menubar :model="items">
-      <template #start>
-        <NavMenu />
-      </template>
+      <template #start> </template>
       <template #item="{ item, props, hasSubmenu }">
         <router-link
           v-if="item.route"
@@ -34,7 +64,13 @@ const items = ref([
           :to="item.route"
           custom
         >
-          <a v-ripple :href="href" v-bind="props.action" @click="navigate">
+          <a
+            v-ripple
+            :href="href"
+            v-bind="props.action"
+            @click="navigate"
+            :class="!loggedIn && item.label != 'Home' ? 'p-disabled' : ''"
+          >
             <span :class="item.icon" />
             <span class="ml-2">{{ item.label }}</span>
           </a>
@@ -45,6 +81,7 @@ const items = ref([
           :href="item.url"
           :target="item.target"
           v-bind="props.action"
+          :class="!loggedIn && item.label != 'Home' ? 'p-disabled' : ''"
         >
           <span :class="item.icon" />
           <span class="ml-2">{{ item.label }}</span>
