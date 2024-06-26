@@ -2,7 +2,7 @@ import type {
   AllAnalyses,
   AllProjects,
   BodyCreateAnalysisPoPost,
-  ListAnalysisOrProjectNodes,
+  ListProjectNodes,
   ListRoute200Response,
   Service,
 } from "~/services/Api";
@@ -43,7 +43,7 @@ export const useAPIFetch: typeof useFetch = (request, options?) => {
 // Hub endpoints
 export const approveRejectProjectProposal = (
   approved: boolean,
-  project_id: string | undefined,
+  project_id: string,
 ) => {
   const formData = new FormData();
   formData.append("approval_status", approved ? "approved" : "rejected");
@@ -55,8 +55,9 @@ export const approveRejectProjectProposal = (
 };
 
 export const getProposals = () => {
-  return useAPIFetch<{ data: ListAnalysisOrProjectNodes }>("/project-nodes", {
+  return useAPIFetch<{ data: ListProjectNodes }>("/project-nodes", {
     method: "GET",
+    query: { include: "project,node" },
   });
 };
 
