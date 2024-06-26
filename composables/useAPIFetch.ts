@@ -41,7 +41,7 @@ export const useAPIFetch: typeof useFetch = (request, options?) => {
 };
 
 // Hub endpoints
-export const approveRejectProjectProposal = async (
+export const approveRejectProjectProposal = (
   approved: boolean,
   project_id: string | undefined,
 ) => {
@@ -54,61 +54,59 @@ export const approveRejectProjectProposal = async (
   });
 };
 
-export const getProposals = async () => {
+export const getProposals = () => {
   return useAPIFetch<{ data: ListAnalysisOrProjectNodes }>("/project-nodes", {
     method: "GET",
   });
 };
 
-export const getProjects = async () => {
+export const getProjects = () => {
   return useAPIFetch<{ data: AllProjects }>("/projects", {
     method: "GET",
   });
 };
 
-export const getAnalyses = async () => {
+export const getAnalyses = () => {
   return useAPIFetch<{ data: AllAnalyses }>("/analyses", {
     method: "GET",
   });
 };
 
 // Kong endpoints
-export const getDataStores = async () => {
+export const getDataStores = () => {
   return useAPIFetch<{ data: ListRoute200Response }>("/kong/datastore", {
     method: "GET",
   });
 };
 
-export const createDataStore = async (dataStoreProps: Service) => {
+export const createDataStore = (dataStoreProps: Service) => {
   return useAPIFetch(`/kong/datastore`, {
     method: "POST",
     body: dataStoreProps,
   });
 };
 
-export const deleteDataStore = async (dataStoreName: string) => {
+export const deleteDataStore = (dataStoreName: string) => {
   return useAPIFetch(`/kong/datastore/${dataStoreName}`, {
     method: "DELETE",
   });
 };
 
 // PodOrc endpoints
-export const startAnalysis = async (
-  analysisProps: BodyCreateAnalysisPoPost,
-) => {
+export const startAnalysis = (analysisProps: BodyCreateAnalysisPoPost) => {
   return useAPIFetch(`/po`, {
     method: "POST",
     body: analysisProps,
   });
 };
 
-export const stopAnalysis = async (analysisId: string) => {
+export const stopAnalysis = (analysisId: string) => {
   return useAPIFetch(`/po/${analysisId}/stop`, {
     method: "PUT",
   });
 };
 
-export const deleteAnalysis = async (analysisId: string) => {
+export const deleteAnalysis = (analysisId: string) => {
   return useAPIFetch(`/po/${analysisId}/delete`, {
     method: "DELETE",
   });
