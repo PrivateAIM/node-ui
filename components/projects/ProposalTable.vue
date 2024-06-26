@@ -85,8 +85,12 @@ function updateTable(newData: ProjectNode) {
         header="Approval Status"
         :sortable="true"
       ></Column>
-      <Column field="created_at" header="Created"></Column>
-      <Column field="updated_at" header="Last Updated"></Column>
+      <Column field="created_at" header="Created" :sortable="true"></Column>
+      <Column
+        field="updated_at"
+        header="Last Updated"
+        :sortable="true"
+      ></Column>
       <Column field="id" header="Set Approval" :exportable="false">
         <template #body="slotProps">
           <ApproveRejectButtons

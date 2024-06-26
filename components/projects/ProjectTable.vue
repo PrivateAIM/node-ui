@@ -31,8 +31,12 @@ onMounted(() => {
     >
       <template #empty> No projects found. </template>
       <Column field="name" header="Name" :sortable="true"></Column>
-      <Column field="created_at" header="Created"></Column>
-      <Column field="updated_at" header="Last Updated"></Column>
+      <Column field="created_at" header="Created" :sortable="true"></Column>
+      <Column
+        field="updated_at"
+        header="Last Updated"
+        :sortable="true"
+      ></Column>
       <Column
         field="analyses"
         header="Number Analyses"

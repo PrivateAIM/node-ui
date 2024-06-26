@@ -62,8 +62,12 @@ console.log(dataStores);
       <Column field="host" header="Host" :sortable="true"></Column>
       <Column field="port" header="Port"></Column>
       <Column field="protocol" header="Protocol" :sortable="true"></Column>
-      <Column field="created_at" header="Created"></Column>
-      <Column field="updated_at" header="Last Updated"></Column>
+      <Column field="created_at" header="Created" :sortable="true"></Column>
+      <Column
+        field="updated_at"
+        header="Last Updated"
+        :sortable="true"
+      ></Column>
       <Column field="name" header="Delete?" :exportable="false">
         <template #body="slotProps">
           <Toast />
