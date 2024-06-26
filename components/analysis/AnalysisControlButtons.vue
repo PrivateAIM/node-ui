@@ -12,6 +12,7 @@ const props = defineProps({
   analysisId: String,
   projectId: String,
 });
+const toast = useToast();
 
 const analysisRunning = ref(isRunning());
 
@@ -20,11 +21,26 @@ function isRunning(): boolean {
   return analysisIsRunning.includes(props.analysisStatus);
 }
 
-function onStartAnalysis() {
+const showFailStart = () => {
+  toast.add({
+    severity: "error",
+    summary: "Start failure",
+    detail: "Failed to start the analysis",
+    group: "fail",
+    life: 3000,
+  });
+};
+
+async function onStartAnalysis() {
   const analysisProps = {} as BodyCreateAnalysisPoPost;
   analysisProps.analysis_id = props.analysisId!;
   analysisProps.project_id = props.projectId!;
-  const { data, error } = startAnalysis(analysisProps);
+  const { data: response, status } = await startAnalysis(analysisProps);
+  if (status.value === "success") {
+    console.log(response.value!.run_status);
+  } else {
+    showFailStart();
+  }
   analysisRunning.value = !analysisRunning.value;
 }
 
@@ -41,6 +57,7 @@ function onDeleteAnalysis() {
 
 <template>
   <div class="analysisButtons">
+    <Toast position="top-right" group="fail" />
     <Button
       icon="pi pi-play"
       aria-label="Start"

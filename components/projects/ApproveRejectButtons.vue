@@ -5,9 +5,19 @@ const props = defineProps({
   projectId: String,
 });
 
-function onSubmitProjectApproval(isApproved: boolean) {
-  approveRejectProjectProposal(isApproved, props.projectId);
-  window.location.reload();
+// const emit = defineEmits(["updatedRow"]);
+
+async function onSubmitProjectApproval(isApproved: boolean) {
+  const { data: response, status } = await approveRejectProjectProposal(
+    isApproved,
+    props.projectId!,
+  );
+  console.log(status.value);
+  if (status.value === "success") {
+    console.log(response.value!);
+  } else {
+    console.log("error");
+  }
 }
 </script>
 

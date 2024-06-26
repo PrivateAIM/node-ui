@@ -18,7 +18,7 @@ export default defineNuxtConfig({
       ripple: true,
     },
     directives: {
-      include: ["Ripple", "Tooltip"],
+      include: ["Ripple", "Tooltip", "Toast"],
     },
   },
   oidc: {
