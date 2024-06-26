@@ -7,16 +7,17 @@ const props = defineProps({
 
 const toast = useToast();
 
-// const emit = defineEmits(["updatedRow"]);
+const emit = defineEmits(["updatedRow"]);
 
 async function onSubmitProjectApproval(isApproved: boolean) {
-  const { status } = await approveRejectProjectProposal(
+  const { data: response, status } = await approveRejectProjectProposal(
     isApproved,
     props.projectId!,
   );
-  console.log(status.value);
   if (status.value === "success") {
     showSuccessfulSubmission(isApproved);
+    // Send data to parent component
+    emit("updatedRow", response.value);
   } else {
     showFailedSubmission();
   }

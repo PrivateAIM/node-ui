@@ -3,6 +3,7 @@ import { getProposals } from "~/composables/useAPIFetch";
 import ApproveRejectButtons from "~/components/projects/ApproveRejectButtons.vue";
 import { formatDataRow } from "~/utils/format-data-row";
 import TableRowMetadata from "~/components/TableRowMetadata.vue";
+import type { ProjectNode } from "~/services/Api";
 
 const proposals = ref();
 const expandedRows = ref({});
@@ -35,6 +36,14 @@ const expandAll = () => {
 const collapseAll = () => {
   expandedRows.value = {};
 };
+
+function updateTable(newData: ProjectNode) {
+  for (let row of proposals.value) {
+    if (row.id === newData.id) {
+      row.approval_status = newData.approval_status;
+    }
+  }
+}
 </script>
 
 <template>
@@ -80,7 +89,10 @@ const collapseAll = () => {
       <Column field="updated_at" header="Last Updated"></Column>
       <Column field="id" header="Set Approval" :exportable="false">
         <template #body="slotProps">
-          <ApproveRejectButtons :projectId="slotProps.data.id" />
+          <ApproveRejectButtons
+            :projectId="slotProps.data.id"
+            @updatedRow="updateTable"
+          />
         </template>
       </Column>
       <template #expansion="slotProps">
