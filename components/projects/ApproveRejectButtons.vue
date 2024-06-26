@@ -45,7 +45,6 @@ const showFailedSubmission = () => {
 
 <template>
   <div class="approvalButtons">
-    <Toast position="top-right" />
     <Button
       icon="pi pi-check"
       aria-label="Approve"

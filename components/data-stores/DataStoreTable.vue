@@ -70,7 +70,6 @@ console.log(dataStores);
       ></Column>
       <Column field="name" header="Delete?" :exportable="false">
         <template #body="slotProps">
-          <Toast />
           <ConfirmPopup group="templating">
             <template #message="slotProps">
               <div

@@ -56,7 +56,6 @@ function onDeleteAnalysis() {
 
 <template>
   <div class="analysisButtons">
-    <Toast position="top-right" />
     <Button
       icon="pi pi-play"
       aria-label="Start"

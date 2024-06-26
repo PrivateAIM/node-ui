@@ -2,10 +2,14 @@
 import { getAnalyses } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
 import TableRowMetadata from "~/components/TableRowMetadata.vue";
+import ObjectDownloadButtons from "~/components/analysis/ObjectDownloadButtons.vue";
+import type { Analysis } from "~/services/Api";
 
 const analyses = ref();
 const expandedRows = ref({});
 const loading = ref(true);
+
+const oid = "b53200bc-bd92-4dcf-8f2f-353d04a79faa";
 
 const expandRowEntries = [
   "id",
@@ -30,7 +34,7 @@ onMounted(() => {
 
 const expandAll = () => {
   expandedRows.value = analyses.value.reduce(
-    (accordion: boolean, analysis) =>
+    (accordion: boolean, analysis: Analysis) =>
       // eslint-disable-next-line no-constant-binary-expression
       (accordion[analysis.id] = true) && accordion,
     {},
@@ -44,6 +48,7 @@ const collapseAll = () => {
 
 <template>
   <h2 style="color: Yellow">Analysis Table Example</h2>
+  <ObjectDownloadButtons :objectId="oid" />
   <div class="card analysisTable">
     <DataTable
       :value="analyses"
