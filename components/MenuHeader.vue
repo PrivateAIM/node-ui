@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { NavMenu } from "#components";
+const { loggedIn } = useOidcAuth();
 
 const items = ref([
   {
@@ -52,13 +53,16 @@ const items = ref([
       </template>
       <template #end>
         <div class="flex align-items-center gap-2">
-          <InputText
-            placeholder="Search"
-            type="text"
-            class="w-8rem sm:w-auto"
+          <Avatar
+            v-if="loggedIn"
+            icon="pi pi-verified"
+            class="userIcon"
+            size="large"
+            shape="circle"
           />
           <Avatar
-            icon="pi pi-user"
+            v-else
+            icon="pi pi-question"
             class="userIcon"
             size="large"
             shape="circle"
@@ -70,10 +74,6 @@ const items = ref([
 </template>
 
 <style scoped lang="scss">
-.userIcon {
-  margin-left: 20px;
-}
-
 .ml-2 {
   margin-left: 5px;
 }
