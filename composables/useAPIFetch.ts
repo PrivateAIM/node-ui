@@ -112,3 +112,11 @@ export const deleteAnalysis = (analysisId: string) => {
     method: "DELETE",
   });
 };
+
+// Results endpoints
+export const downloadLocalObject = (objectId: string) => {
+  return useAPIFetch(`/local/${objectId}`, {
+    method: "GET",
+    headers: { "Content-Disposition": "application/octet-stream" },
+  });
+};
