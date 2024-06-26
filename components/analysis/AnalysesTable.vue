@@ -19,7 +19,6 @@ const expandRowEntries = [
 onMounted(() => {
   nextTick(async () => {
     const { data: response } = await getAnalyses();
-
     analyses.value = formatDataRow(
       response.value!.data as unknown as Map<string, string | number | null>[],
       ["created_at", "updated_at"],

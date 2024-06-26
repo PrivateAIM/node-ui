@@ -24,7 +24,7 @@ function onStartAnalysis() {
   const analysisProps = {} as BodyCreateAnalysisPoPost;
   analysisProps.analysis_id = props.analysisId!;
   analysisProps.project_id = props.projectId!;
-  startAnalysis(analysisProps);
+  const { data, error } = startAnalysis(analysisProps);
   analysisRunning.value = !analysisRunning.value;
 }
 
