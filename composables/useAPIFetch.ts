@@ -2,6 +2,7 @@ import type {
   AllAnalyses,
   AllProjects,
   BodyCreateAnalysisPoPost,
+  BodyCreateRouteBetweenDatastoreAndProjectKongRoutePost,
   ListProjectNodes,
   ListRoute200Response,
   Service,
@@ -90,6 +91,15 @@ export const createDataStore = (dataStoreProps: Service) => {
 export const deleteDataStore = (dataStoreName: string) => {
   return useAPIFetch(`/kong/datastore/${dataStoreName}`, {
     method: "DELETE",
+  });
+};
+
+export const createRoute = (
+  routeProps: BodyCreateRouteBetweenDatastoreAndProjectKongRoutePost,
+) => {
+  return useAPIFetch(`/kong/route`, {
+    method: "POST",
+    body: routeProps,
   });
 };
 

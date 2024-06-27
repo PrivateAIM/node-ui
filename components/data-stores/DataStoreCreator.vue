@@ -50,9 +50,9 @@ async function onSubmitCreateDataStore() {
 </script>
 
 <template>
-  <h2 style="color: white">Create a Data Store</h2>
   <div>
-    <Card>
+    <Card style="margin-top: 10px">
+      <template #title>Create a Data Store</template>
       <template #content>
         <InputGroup>
           <InputGroupAddon class="dsField">
