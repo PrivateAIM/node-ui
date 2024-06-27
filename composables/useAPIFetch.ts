@@ -4,7 +4,7 @@ import type {
   BodyCreateAnalysisPoPost,
   BodyCreateRouteBetweenDatastoreAndProjectKongRoutePost,
   ListProjectNodes,
-  ListRoute200Response,
+  ListServices,
   Service,
 } from "~/services/Api";
 
@@ -76,7 +76,7 @@ export const getAnalyses = () => {
 
 // Kong endpoints
 export const getDataStores = () => {
-  return useAPIFetch<{ data: ListRoute200Response }>("/kong/datastore", {
+  return useAPIFetch<{ data: ListServices }>("/kong/datastore", {
     method: "GET",
   });
 };

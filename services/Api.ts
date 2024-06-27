@@ -336,6 +336,53 @@ export interface BodySubmitIntermediateResultToLocalLocalPut {
 }
 
 /**
+ * Bucket
+ * Bucket data.
+ */
+export interface Bucket {
+  /**
+   * Id
+   * @format uuid
+   */
+  id: string;
+  /**
+   * Created At
+   * @format date-time
+   */
+  created_at: string;
+  /**
+   * Updated At
+   * @format date-time
+   */
+  updated_at: string;
+  /** Bucket types. */
+  type: BucketType;
+  /** External Id */
+  external_id?: string | null;
+  /** Analysis Id */
+  analysis_id?: string | null;
+  analysis?: Analysis | null;
+  /** Realm Id */
+  realm_id?: string | null;
+}
+
+/** BucketList */
+export interface BucketList {
+  /** Data */
+  data: Bucket[];
+}
+
+/**
+ * BucketType
+ * Bucket types.
+ */
+export enum BucketType {
+  CODE = "CODE",
+  RESULT = "RESULT",
+  TEMP = "TEMP",
+}
+
+/**
  * ConfigurationStatus
  * "Possible values for configuration status.
  */
@@ -384,6 +431,223 @@ export interface Consumer {
 export interface CreateServiceRequestClientCertificate {
   /** Id */
   id?: string | null;
+}
+
+/**
+ * DetailedRoute
+ * Custom route response model with associated services.
+ */
+export interface DetailedRoute {
+  /**
+   * Created At
+   * Unix epoch when the resource was created.
+   */
+  created_at?: number | null;
+  /**
+   * Destinations
+   * A list of IP destinations of incoming connections that match this route when using stream routing. Each entry is an object with fields "ip" (optionally in CIDR range notation) and/or "port".
+   */
+  destinations?: RouteDestinationsInner[] | null;
+  /**
+   * Headers
+   * One or more lists of values indexed by header name that will cause this route to match if present in the request. The `Host` header cannot be used with this hosts should be specified using the `hosts` attribute. When `headers` contains only one value and that value starts with the special prefix `~*`, the value is interpreted as a regular expression.
+   */
+  headers?: object | null;
+  /**
+   * Hosts
+   * A list of domain names that match this route. Note that the hosts value is case sensitive.
+   */
+  hosts?: string[] | null;
+  /**
+   * Https Redirect Status Code
+   * The status code Kong responds with when all properties of a route match except the protocol i.e. if the protocol of the request is `HTTP` instead of `HTTPS`. `Location` header is injected by Kong if the field is set to 301, 302, 307 or 308. This config applies only if the route is configured to only accept the `https` protocol.
+   * @default 426
+   */
+  https_redirect_status_code?: number | null;
+  /** Id */
+  id?: string | null;
+  /**
+   * Methods
+   * A list of HTTP methods that match this route.
+   */
+  methods?: string[] | null;
+  /**
+   * Name
+   * The name of the route. Route names must be unique, and they are case sensitive. For example, there can be two different routes named "test" and "Test".
+   */
+  name?: string | null;
+  /**
+   * Path Handling
+   * Controls how the service path, route path and requested path are combined when sending a request to the upstream. See above for a detailed description of each behavior.
+   * @default "v0"
+   */
+  path_handling?: string | null;
+  /**
+   * Paths
+   * A list of paths that match this route.
+   */
+  paths?: string[] | null;
+  /**
+   * Preserve Host
+   * When matching a route via one of the `hosts` domain names, use the request `Host` header in the upstream request headers. If set to `false`, the upstream `Host` header will be that of the services `host`.
+   * @default false
+   */
+  preserve_host?: boolean | null;
+  /**
+   * Protocols
+   * An array of the protocols this route should allow. See the [route Object](#route-object) section for a list of accepted protocols. When set to only `"https"`, HTTP requests are answered with an upgrade error. When set to only `"http"`, HTTPS requests are answered with an error.
+   */
+  protocols?: string[] | null;
+  /**
+   * Regex Priority
+   * A number used to choose which route resolves a given request when several routes match it using regexes simultaneously. When two routes match the path and have the same `regex_priority`, the older one (lowest `created_at`) is used. Note that the priority for non-regex routes is different (longer non-regex routes are matched before shorter ones).
+   * @default 0
+   */
+  regex_priority?: number | null;
+  /**
+   * Request Buffering
+   * Whether to enable request body buffering or not. With HTTP 1.1, it may make sense to turn this off on services that receive data with chunked transfer encoding.
+   * @default true
+   */
+  request_buffering?: boolean | null;
+  /**
+   * Response Buffering
+   * Whether to enable response body buffering or not. With HTTP 1.1, it may make sense to turn this off on services that send data with chunked transfer encoding.
+   * @default true
+   */
+  response_buffering?: boolean | null;
+  /** Service */
+  service?: Service | RouteService | null;
+  /**
+   * Snis
+   * A list of SNIs that match this route when using stream routing.
+   */
+  snis?: string[] | null;
+  /**
+   * Sources
+   * A list of IP sources of incoming connections that match this route when using stream routing. Each entry is an object with fields "ip" (optionally in CIDR range notation) and/or "port".
+   */
+  sources?: RouteDestinationsInner[] | null;
+  /**
+   * Strip Path
+   * When matching a route via one of the `paths`, strip the matching prefix from the upstream request URL.
+   * @default true
+   */
+  strip_path?: boolean | null;
+  /**
+   * Tags
+   * An optional set of strings associated with the route for grouping and filtering.
+   */
+  tags?: string[] | null;
+  /**
+   * Updated At
+   * Unix epoch when the resource was last updated.
+   */
+  updated_at?: number | null;
+}
+
+/**
+ * DetailedService
+ * Custom route response model with associated services.
+ */
+export interface DetailedService {
+  /**
+   * Ca Certificates
+   * Array of `CA Certificate` object UUIDs that are used to build the trust store while verifying upstream server's TLS certificate. If set to `null` when Nginx default is respected. If default CA list in Nginx are not specified and TLS verification is enabled, then handshake with upstream server will always fail (because no CA are trusted).
+   */
+  ca_certificates?: string[] | null;
+  client_certificate?: ServiceClientCertificate | null;
+  /**
+   * Connect Timeout
+   * The timeout in milliseconds for establishing a connection to the upstream server.
+   * @default 60000
+   */
+  connect_timeout?: number | null;
+  /**
+   * Created At
+   * Unix epoch when the resource was created.
+   */
+  created_at?: number | null;
+  /**
+   * Enabled
+   * Whether the service is active. If set to `false`, the proxy behavior will be as if any routes attached to it do not exist (404).
+   * @default true
+   */
+  enabled?: boolean | null;
+  /**
+   * Host
+   * The host of the upstream server. Note that the host value is case sensitive.
+   */
+  host?: string | null;
+  /** Id */
+  id?: string | null;
+  /**
+   * Name
+   * The service name.
+   */
+  name?: string | null;
+  /**
+   * Path
+   * The path to be used in requests to the upstream server.
+   */
+  path?: string | null;
+  /**
+   * Port
+   * The upstream server port.
+   * @default 80
+   */
+  port?: number | null;
+  /**
+   * Protocol
+   * The protocol used to communicate with the upstream.
+   * @default "http"
+   */
+  protocol?: string | null;
+  /**
+   * Read Timeout
+   * The timeout in milliseconds between two successive read operations for transmitting a request to the upstream server.
+   * @default 60000
+   */
+  read_timeout?: number | null;
+  /**
+   * Retries
+   * The number of retries to execute upon failure to proxy.
+   * @default 5
+   */
+  retries?: number | null;
+  /**
+   * Tags
+   * An optional set of strings associated with the service for grouping and filtering.
+   */
+  tags?: string[] | null;
+  /**
+   * Tls Verify
+   * Whether to enable verification of upstream server TLS certificate. If set to `null`, then the Nginx default is respected.
+   */
+  tls_verify?: boolean | null;
+  /**
+   * Tls Verify Depth
+   * Maximum depth of chain while verifying Upstream server's TLS certificate. If set to `null`, then the Nginx default is respected.'
+   */
+  tls_verify_depth?: number | null;
+  /**
+   * Updated At
+   * Unix epoch when the resource was last updated.
+   */
+  updated_at?: number | null;
+  /**
+   * Url
+   * Helper field to set `protocol`, `host`, `port` and `path` using a URL. This field is write-only and is not returned in responses.
+   */
+  url?: string | null;
+  /**
+   * Write Timeout
+   * The timeout in milliseconds between two successive write operations for transmitting a request to the upstream server.
+   * @default 60000
+   */
+  write_timeout?: number | null;
+  /** Routes */
+  routes?: Route[] | null;
 }
 
 /**
@@ -488,12 +752,12 @@ export interface KeycloakConfig {
 
 /** LinkDataStoreProject */
 export interface LinkDataStoreProject {
-  /** service entities are abstractions of upstream services. The main attribute of a service is its URL which can be set as a single string or by specifying the `protocol`, `host`, `port` and `path` individually. */
-  route: Service;
-  /** A Plugin entity represents a plugin configuration that will be executed during the HTTP request/response lifecycle. */
-  keyauth: Plugin;
-  /** A Plugin entity represents a plugin configuration that will be executed during the HTTP request/response lifecycle. */
-  acl: Plugin;
+  /** Route entities define rules to match client requests. Every request matching a given route will be proxied to its associated service. */
+  route: Route;
+  /** A Key-auth entity represents a key used to authenticate consumers with the key-auth plugin. The key-auth plugin is used to protect API endpoints by requiring a secret key to be sent with the request. */
+  keyauth: KeyAuth;
+  /** ACL entities are used to control access to a resource. An ACL can be applied to a Consumer */
+  acl: ACL;
 }
 
 /** LinkProjectAnalysis */
@@ -519,12 +783,12 @@ export interface ListProjectNodes {
 }
 
 /**
- * ListRoute200Response
- * ListRoute200Response
+ * ListRoutes
+ * Custom route list response model.
  */
-export interface ListRoute200Response {
+export interface ListRoutes {
   /** Data */
-  data?: Route[] | null;
+  data?: DetailedRoute[] | null;
   /**
    * Offset
    * Offset is used to paginate through the API. Provide this value to the next list operation to fetch the next page
@@ -533,12 +797,12 @@ export interface ListRoute200Response {
 }
 
 /**
- * ListService200Response
- * ListService200Response
+ * ListServices
+ * Custom route list response model.
  */
-export interface ListService200Response {
+export interface ListServices {
   /** Data */
-  data?: Service[] | null;
+  data?: DetailedService[] | null;
   /**
    * Offset
    * Offset is used to paginate through the API. Provide this value to the next list operation to fetch the next page
@@ -626,83 +890,47 @@ export interface Node {
   realm_id: string;
 }
 
-/**
- * Plugin
- * A Plugin entity represents a plugin configuration that will be executed during the HTTP request/response lifecycle.
- */
-export interface Plugin {
+/** PartialAnalysisBucketFile */
+export interface PartialAnalysisBucketFile {
   /**
-   * Config
-   * The configuration properties for the Plugin which can be found on the plugins documentation page in the [Kong Hub](https://docs.konghq.com/hub/).
+   * Id
+   * @format uuid
    */
-  config?: object | null;
-  consumer?: PluginConsumer | null;
+  id: string;
   /**
    * Created At
-   * Unix epoch when the resource was created.
+   * @format date-time
    */
-  created_at?: number | null;
-  /**
-   * Enabled
-   * Whether the plugin is applied.
-   * @default true
-   */
-  enabled?: boolean | null;
-  /** Id */
-  id?: string | null;
-  /** Instance Name */
-  instance_name?: string | null;
-  /**
-   * Name
-   * The name of the Plugin thats going to be added. Currently, the Plugin must be installed in every Kong instance separately.
-   */
-  name?: string | null;
-  /** Ordering */
-  ordering?: object | null;
-  /**
-   * Protocols
-   * A list of the request protocols that will trigger this plugin. The default value, as well as the possible values allowed on this field, may change depending on the plugin type. For example, plugins that only work in stream mode will only support `"tcp"` and `"tls"`.
-   */
-  protocols?: string[] | null;
-  route?: PluginRoute | null;
-  service?: PluginService | null;
-  /**
-   * Tags
-   * An optional set of strings associated with the Plugin for grouping and filtering.
-   */
-  tags?: string[] | null;
+  created_at: string;
   /**
    * Updated At
-   * Unix epoch when the resource was last updated.
+   * @format date-time
    */
-  updated_at?: number | null;
+  updated_at: string;
+  /** Name */
+  name?: string | null;
+  /** Root */
+  root: boolean;
+  /** External Id */
+  external_id?: string | null;
+  /** Bucket Id */
+  bucket_id?: string | null;
+  bucket?: Bucket | null;
+  /** Analysis Id */
+  analysis_id?: string | null;
+  analysis?: Analysis | null;
+  /** Realm Id */
+  realm_id?: string | null;
+  /** User Id */
+  user_id?: string | null;
+  /** Robot Id */
+  robot_id?: string | null;
 }
 
-/**
- * PluginConsumer
- * If set, the plugin will activate only for requests where the specified has been authenticated. (Note that some plugins can not be restricted to consumers this way.). Leave unset for the plugin to activate regardless of the authenticated Consumer.
- */
-export interface PluginConsumer {
-  /** Id */
-  id?: string | null;
-}
-
-/**
- * PluginRoute
- * If set, the plugin will only activate when receiving requests via the specified route. Leave unset for the plugin to activate regardless of the route being used.
- */
-export interface PluginRoute {
-  /** Id */
-  id?: string | null;
-}
-
-/**
- * PluginService
- * If set, the plugin will only activate when receiving requests via one of the routes belonging to the specified service. Leave unset for the plugin to activate regardless of the service being matched.
- */
-export interface PluginService {
-  /** Id */
-  id?: string | null;
+/** PartialBucketFilesList */
+export interface PartialBucketFilesList {
+  /** Data */
+  data: PartialAnalysisBucketFile[];
 }
 
 /**
@@ -746,7 +974,7 @@ export interface Project {
 
 /**
  * ProjectNode
- * Single project or analysis by node.
+ * Single project proposal.
  */
 export interface ProjectNode {
   /**
@@ -2155,6 +2383,176 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         ...params,
       }),
   };
+  analysisBuckets = {
+    /**
+     * @description List analysis buckets.
+     *
+     * @tags Hub
+     * @name ListAllAnalysisBucketsAnalysisBucketsGet
+     * @summary List All Analysis Buckets
+     * @request GET:/analysis-buckets
+     * @secure
+     */
+    listAllAnalysisBucketsAnalysisBucketsGet: (
+      query?: {
+        /**
+         * Include
+         * Whether to include additional registry data. Can only be 'analysis'
+         * @default "analysis"
+         */
+        include?: string | null;
+        /**
+         * Filter Analysis Id
+         * Filter by analysis UUID.
+         */
+        filter_analysis_id?: string | null;
+        /**
+         * Filter Realm Id
+         * Filter by realm UUID.
+         */
+        filter_realm_id?: string | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<BucketList, void | HTTPValidationError>({
+        path: `/analysis-buckets`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description List analysis buckets.
+     *
+     * @tags Hub
+     * @name ListSpecificAnalysisBucketsAnalysisBucketsBucketIdGet
+     * @summary List Specific Analysis Buckets
+     * @request GET:/analysis-buckets/{bucket_id}
+     * @secure
+     */
+    listSpecificAnalysisBucketsAnalysisBucketsBucketIdGet: (
+      bucketId: string,
+      query?: {
+        /**
+         * Include
+         * Whether to include additional registry data. Can only be 'analysis'
+         * @default "analysis"
+         */
+        include?: string | null;
+        /**
+         * Filter Analysis Id
+         * Filter by analysis UUID.
+         */
+        filter_analysis_id?: string | null;
+        /**
+         * Filter Realm Id
+         * Filter by realm UUID.
+         */
+        filter_realm_id?: string | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<Bucket, void | HTTPValidationError>({
+        path: `/analysis-buckets/${bucketId}`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+  };
+  analysisBucketFiles = {
+    /**
+     * @description List partial analysis bucket files.
+     *
+     * @tags Hub
+     * @name ListAllAnalysisBucketFilesAnalysisBucketFilesGet
+     * @summary List All Analysis Bucket Files
+     * @request GET:/analysis-bucket-files
+     * @secure
+     */
+    listAllAnalysisBucketFilesAnalysisBucketFilesGet: (
+      query?: {
+        /**
+         * Include
+         * Whether to include additional data for the given parameter. Choices: 'bucket'/'analysis'
+         * @default "bucket"
+         */
+        include?: string | null;
+        /**
+         * Filter Analysis Id
+         * Filter by analysis UUID.
+         */
+        filter_analysis_id?: string | null;
+        /**
+         * Filter Realm Id
+         * Filter by realm UUID.
+         */
+        filter_realm_id?: string | null;
+        /**
+         * Filter Bucket Id
+         * Filter by bucket UUID.
+         */
+        filter_bucket_id?: string | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<PartialBucketFilesList, void | HTTPValidationError>({
+        path: `/analysis-bucket-files`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description List specific partial analysis bucket file.
+     *
+     * @tags Hub
+     * @name ListSpecificAnalysisBucketFileAnalysisBucketFilesBucketFileIdGet
+     * @summary List Specific Analysis Bucket File
+     * @request GET:/analysis-bucket-files/{bucket_file_id}
+     * @secure
+     */
+    listSpecificAnalysisBucketFileAnalysisBucketFilesBucketFileIdGet: (
+      bucketFileId: string,
+      query?: {
+        /**
+         * Include
+         * Whether to include additional data for the given parameter. Choices: 'bucket'/'analysis'
+         * @default "bucket"
+         */
+        include?: string | null;
+        /**
+         * Filter Analysis Id
+         * Filter by analysis UUID.
+         */
+        filter_analysis_id?: string | null;
+        /**
+         * Filter Realm Id
+         * Filter by realm UUID.
+         */
+        filter_realm_id?: string | null;
+        /**
+         * Filter Bucket Id
+         * Filter by bucket UUID.
+         */
+        filter_bucket_id?: string | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<PartialAnalysisBucketFile, void | HTTPValidationError>({
+        path: `/analysis-bucket-files/${bucketFileId}`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+  };
   kong = {
     /**
      * @description List all available data stores.
@@ -2163,11 +2561,24 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name ListDataStoresKongDatastoreGet
      * @summary List Data Stores
      * @request GET:/kong/datastore
+     * @secure
      */
-    listDataStoresKongDatastoreGet: (params: RequestParams = {}) =>
-      this.request<ListService200Response, void>({
+    listDataStoresKongDatastoreGet: (
+      query?: {
+        /**
+         * Detailed
+         * Whether to include detailed information on projects
+         * @default false
+         */
+        detailed?: boolean;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ListServices, void | HTTPValidationError>({
         path: `/kong/datastore`,
         method: "GET",
+        query: query,
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -2179,12 +2590,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name CreateDataStoreKongDatastorePost
      * @summary Create Data Store
      * @request POST:/kong/datastore
+     * @secure
      */
     createDataStoreKongDatastorePost: (data: ServiceRequest, params: RequestParams = {}) =>
       this.request<Service, void | HTTPValidationError>({
         path: `/kong/datastore`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -2197,11 +2610,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name DeleteDataStoreKongDatastoreDataStoreNameDelete
      * @summary Delete Data Store
      * @request DELETE:/kong/datastore/{data_store_name}
+     * @secure
      */
     deleteDataStoreKongDatastoreDataStoreNameDelete: (dataStoreName: string, params: RequestParams = {}) =>
       this.request<any, void | HTTPValidationError>({
         path: `/kong/datastore/${dataStoreName}`,
         method: "DELETE",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -2213,6 +2628,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name ListRoutesKongRouteGet
      * @summary List Routes
      * @request GET:/kong/route
+     * @secure
      */
     listRoutesKongRouteGet: (
       query?: {
@@ -2221,13 +2637,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
          * UUID of project.
          */
         project_id?: string | null;
+        /**
+         * Detailed
+         * Whether to include detailed information on data stores
+         * @default false
+         */
+        detailed?: boolean;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ListRoute200Response, void | HTTPValidationError>({
+      this.request<ListRoutes, void | HTTPValidationError>({
         path: `/kong/route`,
         method: "GET",
         query: query,
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -2239,6 +2662,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name CreateRouteBetweenDatastoreAndProjectKongRoutePost
      * @summary Create Route Between Datastore And Project
      * @request POST:/kong/route
+     * @secure
      */
     createRouteBetweenDatastoreAndProjectKongRoutePost: (
       data: BodyCreateRouteBetweenDatastoreAndProjectKongRoutePost,
@@ -2248,6 +2672,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/kong/route`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -2260,11 +2685,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name DisconnectProjectKongRouteDisconnectProjectIdPut
      * @summary Disconnect Project
      * @request PUT:/kong/route/disconnect/{project_id}
+     * @secure
      */
     disconnectProjectKongRouteDisconnectProjectIdPut: (projectId: string, params: RequestParams = {}) =>
       this.request<Disconnect, void | HTTPValidationError>({
         path: `/kong/route/disconnect/${projectId}`,
         method: "PUT",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -2276,6 +2703,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name CreateAndConnectAnalysisToProjectKongAnalysisPost
      * @summary Create And Connect Analysis To Project
      * @request POST:/kong/analysis
+     * @secure
      */
     createAndConnectAnalysisToProjectKongAnalysisPost: (
       data: BodyCreateAndConnectAnalysisToProjectKongAnalysisPost,
@@ -2285,6 +2713,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/kong/analysis`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -2297,11 +2726,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name DeleteAnalysisKongAnalysisAnalysisIdDelete
      * @summary Delete Analysis
      * @request DELETE:/kong/analysis/{analysis_id}
+     * @secure
      */
     deleteAnalysisKongAnalysisAnalysisIdDelete: (analysisId: string, params: RequestParams = {}) =>
       this.request<any, void | HTTPValidationError>({
         path: `/kong/analysis/${analysisId}`,
         method: "DELETE",
+        secure: true,
         format: "json",
         ...params,
       }),
