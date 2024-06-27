@@ -6,6 +6,7 @@ import { useConfirm } from "primevue/useconfirm";
 
 const dataStores = ref();
 const confirm = useConfirm();
+const loading = ref(true);
 
 const dataRowUnixCols = ["created_at", "updated_at"];
 const expandRowEntries = ["created_at", "updated_at"];
@@ -19,6 +20,7 @@ onMounted(() => {
       dataRowUnixCols,
       expandRowEntries,
     ) as Route[];
+    loading.value = false;
   });
 });
 
@@ -54,6 +56,7 @@ console.log(dataStores);
       paginator
       :rows="10"
       :rowsPerPageOptions="[10, 20, 50]"
+      :loading="loading"
       tableStyle="min-width: 50rem"
     >
       <template #empty> No data stores found. </template>

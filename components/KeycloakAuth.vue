@@ -6,10 +6,12 @@ const { loggedIn, user, login, logout } = useOidcAuth();
   <div class="keycloakLoginButton">
     <div v-if="loggedIn">
       <h3>Welcome {{ user.providerInfo.preferred_username }}!</h3>
-      <button @click="logout()">Logout</button>
+      <Button @click="logout()" severity="warning" outlined>Logout</Button>
     </div>
     <div v-else>
-      <button @click="login()">Login with Keycloak</button>
+      <Button @click="login()" severity="success" outlined
+        >Login with Keycloak</Button
+      >
     </div>
   </div>
 </template>

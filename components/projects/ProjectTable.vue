@@ -3,6 +3,7 @@ import { getProjects } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
 
 const projects = ref();
+const loading = ref(true);
 
 const dataRowUnixCols = ["created_at", "updated_at"];
 const expandRowEntries = [];
@@ -15,6 +16,7 @@ onMounted(() => {
       dataRowUnixCols,
       expandRowEntries,
     );
+    loading.value = false;
   });
 });
 </script>
@@ -27,6 +29,7 @@ onMounted(() => {
       paginator
       :rows="10"
       :rowsPerPageOptions="[10, 20, 50]"
+      :loading="loading"
       tableStyle="min-width: 50rem"
     >
       <template #empty> No projects found. </template>
