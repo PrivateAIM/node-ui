@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-const { loggedIn, logout, login } = useOidcAuth();
+const { loggedIn, logout, login, user } = useOidcAuth();
 
 const menu = ref();
 const loggedOutUserMenuItems = ref([
@@ -19,7 +19,7 @@ const loggedOutUserMenuItems = ref([
 ]);
 const loggedInUserMenuItems = ref([
   {
-    label: "Options",
+    label: user.value.providerInfo.preferred_username,
     items: [
       {
         label: "Logout",
