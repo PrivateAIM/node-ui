@@ -9,7 +9,7 @@ const confirm = useConfirm();
 const loading = ref(true);
 
 const dataRowUnixCols = ["created_at", "updated_at"];
-const expandRowEntries = ["created_at", "updated_at"];
+const expandRowEntries = [];
 
 onMounted(() => {
   nextTick(async () => {
