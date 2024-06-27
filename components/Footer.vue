@@ -1,5 +1,4 @@
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <footer>
@@ -7,8 +6,8 @@
       <div class="footer-description">
         <a href="https://github.com/PrivateAIM" class="github-link">
           <i class="pi pi-github"></i>
+          Node UI
         </a>
-        Node UI
       </div>
     </div>
   </footer>
@@ -28,6 +27,6 @@
 }
 
 .github-link {
-  padding: 0 5px 0 0
+  padding: 0 5px 0 0;
 }
 </style>
