@@ -19,7 +19,7 @@ const loggedOutUserMenuItems = ref([
 ]);
 const loggedInUserMenuItems = ref([
   {
-    label: user.value.providerInfo.preferred_username,
+    label: "Options",
     items: [
       {
         label: "Logout",
@@ -37,7 +37,12 @@ const toggle = (event) => {
 </script>
 
 <template>
-  <div v-if="loggedIn">
+  <div v-if="loggedIn" class="authAvatarSection">
+    <div class="usernameMenuBar">
+      <p>
+        {{ user.providerInfo.preferred_username }}
+      </p>
+    </div>
     <Button
       type="button"
       icon="pi pi-user"
@@ -73,4 +78,15 @@ const toggle = (event) => {
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.authAvatarSection {
+  display: flex;
+}
+
+.usernameMenuBar {
+  vertical-align: center;
+  margin-right: 15px;
+  height: auto;
+  font-weight: bold;
+}
+</style>
