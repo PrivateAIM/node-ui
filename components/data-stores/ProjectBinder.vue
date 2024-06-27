@@ -27,7 +27,7 @@ onMounted(() => {
       return { name: proj.name, id: proj.id };
     });
 
-    const { data: r2 } = await getDataStores();
+    const { data: r2 } = await getDataStores(false);
     const dataStoreData = r2.value!.data as unknown as Array<Route>;
     availableDataStores.value = dataStoreData.map((ds: Route) => {
       return { name: ds.name, id: ds.id };
@@ -38,6 +38,7 @@ onMounted(() => {
 async function onSubmitBinding() {
   const props = {
     project_id: selectedProject.value.id,
+    project_name: selectedProject.value.name,
     data_store_id: selectedDataStore.value.id,
     methods: selectedAllowedMethods.value,
     ds_type: selectedDataStoreType.value,

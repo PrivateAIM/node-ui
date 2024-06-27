@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { deleteDataStore, getDataStores } from "~/composables/useAPIFetch";
-import type { Route } from "~/services/Api";
+import type { DetailedService, Route } from "~/services/Api";
 import { formatDataRow } from "~/utils/format-data-row";
 import { useConfirm } from "primevue/useconfirm";
+import AssociatedProjectTable from "~/components/data-stores/AssociatedProjectTable.vue";
 
 const dataStores = ref();
 const confirm = useConfirm();
+const expandedRows = ref({});
 const loading = ref(true);
 
 const dataRowUnixCols = ["created_at", "updated_at"];
@@ -13,16 +15,48 @@ const expandRowEntries = [];
 
 onMounted(() => {
   nextTick(async () => {
-    const { data: response } = await getDataStores();
+    const { data: response } = await getDataStores(true);
 
-    dataStores.value = formatDataRow(
-      response.value!.data as Map<string, string | number | null>[],
+    let formattedDataStores = formatDataRow(
+      response.value!.data,
       dataRowUnixCols,
       expandRowEntries,
-    ) as Route[];
+    ) as DetailedService[];
+
+    formattedDataStores.forEach((store: DetailedService) => {
+      if (store.routes!.length) {
+        store.routes = formatDataRow(
+          store.routes,
+          dataRowUnixCols,
+          expandRowEntries,
+        );
+        store.routes?.forEach((proj: Route) => {
+          proj["projectId"] = extractProjectIdFromPath(proj.paths! as string[]);
+        });
+      }
+    });
+
+    dataStores.value = formattedDataStores;
     loading.value = false;
   });
 });
+
+function extractProjectIdFromPath(paths: string[]): string {
+  return paths[0].split("/")[1];
+}
+
+const expandAll = () => {
+  expandedRows.value = dataStores.value.reduce(
+    (accordion: boolean, dataStore: DetailedService) =>
+      // eslint-disable-next-line no-constant-binary-expression
+      (accordion[dataStore.id!] = true) && accordion,
+    {},
+  );
+};
+
+const collapseAll = () => {
+  expandedRows.value = {};
+};
 
 function onConfirmDeleteDataStore(dsName: string) {
   deleteDataStore(dsName);
@@ -45,7 +79,6 @@ const confirmDelete = (event, dsName: string) => {
     reject: () => {},
   });
 };
-console.log(dataStores);
 </script>
 
 <template>
@@ -53,6 +86,8 @@ console.log(dataStores);
     <h2 style="color: white">Available Data Stores</h2>
     <DataTable
       :value="dataStores"
+      v-model:expandedRows="expandedRows"
+      dataKey="id"
       paginator
       :rows="10"
       :rowsPerPageOptions="[10, 20, 50]"
@@ -60,6 +95,23 @@ console.log(dataStores);
       tableStyle="min-width: 50rem"
     >
       <template #empty> No data stores found. </template>
+      <template #header>
+        <div class="flex flex-wrap justify-end gap-2">
+          <Button
+            text
+            icon="pi pi-plus"
+            label="Expand All"
+            @click="expandAll"
+          />
+          <Button
+            text
+            icon="pi pi-minus"
+            label="Collapse All"
+            @click="collapseAll"
+          />
+        </div>
+      </template>
+      <Column expander style="width: 5rem" />
       <Column field="name" header="Name" :sortable="true"></Column>
       <Column field="path" header="Path"></Column>
       <Column field="host" header="Host" :sortable="true"></Column>
@@ -94,6 +146,14 @@ console.log(dataStores);
           />
         </template>
       </Column>
+      <template #expansion="slotProps">
+        <div v-if="slotProps.data.routes.length" class="p-3">
+          <AssociatedProjectTable :associatedProjects="slotProps.data.routes" />
+        </div>
+        <div v-else>
+          <p>No associated projects found.</p>
+        </div>
+      </template>
     </DataTable>
   </div>
 </template>

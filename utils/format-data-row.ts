@@ -6,10 +6,10 @@
  * @param rowExpansionKeys - data keys that will be moved to an expandable subset
  */
 export function formatDataRow(
-  rowEntries: Map<string, string | number | null>[],
+  rowEntries,
   datetimeKeys: string[],
   rowExpansionKeys: string[],
-): Map<string, string | number | null>[] {
+) {
   rowEntries.map((row) => {
     parseUnixTimestamp(row, datetimeKeys);
     const expandData: object = {};

@@ -75,9 +75,12 @@ export const getAnalyses = () => {
 };
 
 // Kong endpoints
-export const getDataStores = () => {
+export const getDataStores = (includeProject: boolean) => {
   return useAPIFetch<{ data: ListServices }>("/kong/datastore", {
     method: "GET",
+    query: {
+      detailed: includeProject,
+    },
   });
 };
 
@@ -100,6 +103,12 @@ export const createRoute = (
   return useAPIFetch(`/kong/route`, {
     method: "POST",
     body: routeProps,
+  });
+};
+
+export const disconnectRoute = (projectId: string) => {
+  return useAPIFetch(`/kong/route/disconnect/${projectId}`, {
+    method: "PUT",
   });
 };
 
