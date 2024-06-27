@@ -25,6 +25,13 @@ import KeycloakAuth from "~/components/KeycloakAuth.vue";
   align-items: center;
 }
 
+.welcome {
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .pimg {
   height: 650px;
   float: right;

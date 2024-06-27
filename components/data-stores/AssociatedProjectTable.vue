@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { disconnectRoute } from "~/composables/useAPIFetch";
 import { useConfirm } from "primevue/useconfirm";
-// import { formatDataRow } from "~/utils/format-data-row";
-// import type { Route } from "~/services/Api";
 
 const props = defineProps({
   associatedProjects: Array,
