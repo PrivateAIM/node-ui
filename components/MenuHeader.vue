@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import AvatarButton from "~/components/login/AvatarButton.vue";
 const { loggedIn } = useOidcAuth();
 
 const items = ref([
@@ -90,20 +91,7 @@ const items = ref([
       </template>
       <template #end>
         <div class="flex align-items-center gap-2">
-          <Avatar
-            v-if="loggedIn"
-            icon="pi pi-verified"
-            class="userIcon"
-            size="large"
-            shape="circle"
-          />
-          <Avatar
-            v-else
-            icon="pi pi-question"
-            class="userIcon"
-            size="large"
-            shape="circle"
-          />
+          <AvatarButton />
         </div>
       </template>
     </Menubar>
