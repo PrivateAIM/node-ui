@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-node-ui-service
+  labels:
+    component: node-ui-service
+    version: {{ .Chart.AppVersion }}
+    deployment-id:  {{ .Release.Name }}
+spec:
+  ports:
+  - name: ui
+    port: 3000
+  selector:
+    component: node-ui-service
+    version: {{ .Chart.AppVersion }}
+    deployment-id:  {{ .Release.Name }}

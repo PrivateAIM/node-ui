@@ -1,0 +1,25 @@
+## For defining ingress specific metadata
+ingress:
+  domain: localhost
+
+env: development
+url: http://localhost:3000
+
+## Keycloak related information
+idp:
+  ## @param idp.debug If true, the clientId and clientSecret will use pre-defined values
+  ## The clientSecret will be defined using the "static" k8s secret key
+  url: false
+  ## @param idp.clientId Keycloak client ID for this service
+  clientId: node-ui
+  ## @param idp.clientSecret Keycloak client secret. Ignored if `idp.existingSecret` is provided
+  ## If not defined and no existingSecret provided, a random string is generated
+  clientSecret: ""
+  ## @param idp.realm Keycloak realm that the client exists in
+  realm: flame
+  host: "http://localhost:5000"
+
+## Downstream node services
+node:
+  ## @param node.adapter Hub adapter endpoint
+  adapter: ""
