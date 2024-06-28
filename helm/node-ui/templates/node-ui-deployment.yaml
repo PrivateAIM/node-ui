@@ -17,8 +17,8 @@ spec:
         deployment-id:  {{ .Release.Name }}
     spec:
       containers:
-        - name: api-gateway
-          image: ghcr.io/privateaim/node-hub-api-adapter:latest
+        - name: node-ui
+          image: ghcr.io/privateaim/node-ui:latest
           imagePullPolicy: Always  # Maybe "Always" during debug
           ports:
             - containerPort: 3000
