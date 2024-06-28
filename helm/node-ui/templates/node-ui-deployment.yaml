@@ -42,7 +42,7 @@ spec:
             - name: KEYCLOAK_CLIENT_ID
               value: {{ .Values.idp.clientId | default "node-ui" | quote }}
             - name: KEYCLOAK_CLIENT_SECRET
-              value: {{ required "IDP secret for UI must be set" .Values.idp.clientSecret | quote }}
+              value: {{ required "IDP secret for Node UI must be set" .Values.idp.clientSecret | quote }}
             - name: NUXT_OIDC_TOKEN_KEY
               value: {{ randAlphaNum 48 | quote }}
             - name: NUXT_OIDC_SESSION_SECRET
