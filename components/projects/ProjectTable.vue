@@ -23,7 +23,7 @@ onMounted(() => {
 
 <template>
   <div class="projectTable">
-    <h2 style="color: blue">Currently Running Projects</h2>
+    <h2 style="color: yellow">Currently Running Projects</h2>
     <DataTable
       :value="projects"
       paginator
