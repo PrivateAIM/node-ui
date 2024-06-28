@@ -11,4 +11,4 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["yarn", "run", "dev"]
+CMD ["yarn", "run", "dev", "--host", "0.0.0.0"]
