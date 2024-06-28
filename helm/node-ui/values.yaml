@@ -17,7 +17,7 @@ idp:
   clientSecret: ""
   ## @param idp.realm Keycloak realm that the client exists in
   realm: flame
-  host: "http://localhost:5000"
+  host: ""
 
 ## Downstream node services
 node:
