@@ -25,19 +25,12 @@ export default defineNuxtConfig({
     defaultProvider: "keycloak",
     providers: {
       keycloak: {
-        clientId:
-          process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_ID ||
-          process.env.KEYCLOAK_CLIENT_ID ||
-          "node-ui",
-        clientSecret:
-          process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET ||
-          process.env.KEYCLOAK_CLIENT_SECRET ||
-          "",
+        clientId: process.env.KEYCLOAK_CLIENT_ID || "node-ui",
+        clientSecret: process.env.KEYCLOAK_CLIENT_SECRET || "",
         baseUrl:
-          process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL ||
           process.env.KEYCLOAK_URL?.replace("\\/$", "") +
-            "/realms/" +
-            process.env.KEYCLOAK_REALM,
+          "/realms/" +
+          process.env.KEYCLOAK_REALM,
         redirectUri: process.env.BASE_URL + "/auth/keycloak/callback",
         exposeAccessToken: true,
       },
