@@ -31,7 +31,7 @@ Generate a random clientSecret value for the node-ui client in keycloak if none 
 {{- if .Values.idp.debug -}}
     {{- print "UU4ySGVPMkxlWE1ZMTBWclA0Y2YyeDVKSFRGSW5tNGY=" -}}
 {{- else -}}
-    {{- printf "%s" ( randAlphaNum 22 | b64enc | quote ) -}}
+    {{- print ( randAlphaNum 22 | b64enc ) -}}
 {{- end -}}
 {{- end -}}
 
