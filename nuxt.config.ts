@@ -25,7 +25,6 @@ export default defineNuxtConfig({
     defaultProvider: "keycloak",
     providers: {
       keycloak: {
-        tokenRequestType: "form-urlencoded",
         clientId:
           process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_ID ||
           process.env.KEYCLOAK_CLIENT_ID ||
