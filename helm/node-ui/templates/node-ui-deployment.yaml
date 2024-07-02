@@ -36,13 +36,16 @@ spec:
             - name: HUB_ADAPTER_API_URL
               value: {{ .Values.node.adapter | default "http://localhost:5000" | quote }}
             - name: KEYCLOAK_URL
-              value: {{ .Values.idp.host | default "http://localhost:8080" | quote }}
+              value: {{ include "ui.keycloak.endpoint" . }}
             - name: KEYCLOAK_REALM
               value: {{ .Values.idp.realm | default "flame" | quote }}
             - name: KEYCLOAK_CLIENT_ID
               value: {{ .Values.idp.clientId | default "node-ui" | quote }}
             - name: KEYCLOAK_CLIENT_SECRET
-              value: {{ required "IDP secret for Node UI must be set" .Values.idp.clientSecret | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "ui.keycloak.secretName" . }}
+                  key: {{ include "ui.keycloak.secretKey" . }}
             - name: NUXT_OIDC_TOKEN_KEY
               value: {{ randAlphaNum 48 | quote }}
             - name: NUXT_OIDC_SESSION_SECRET
