@@ -10,7 +10,7 @@ KEYCLOAK_CLIENT_SECRET="someRandomSecret"
 
 # Nuxt OIDC Tokens
 # https://nuxt.com/modules/nuxt-oidc-auth#_3-set-secrets
-# NOTE: These will automatically be generated in helm/docker
+# NOTE: These will automatically be generated in helm/docker so they do not need to be explicitly set
 # NUXT_OIDC_TOKEN_KEY is a cryptographic AES key in base64 used to encrypt the server side token store
 NUXT_OIDC_TOKEN_KEY=xxx
 # NUXT_OIDC_SESSION_SECRET is a 48 character random string that encrypts the user session
