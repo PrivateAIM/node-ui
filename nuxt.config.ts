@@ -36,12 +36,12 @@ export default defineNuxtConfig({
       },
     },
     session: {
-      expirationCheck: true,
+      expirationCheck: false,
       automaticRefresh: true,
       maxAge: 3600,
     },
     middleware: {
-      globalMiddlewareEnabled: false,
+      globalMiddlewareEnabled: true,
       customLoginPage: false,
     },
   },

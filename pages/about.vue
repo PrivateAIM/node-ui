@@ -1,9 +1,4 @@
-<script setup lang="ts">
-definePageMeta({
-  // or middleware: 'auth'
-  middleware: ["auth"],
-});
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <p>
