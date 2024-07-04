@@ -65,7 +65,7 @@ const collapseAll = () => {
     >
       <template #empty> No analyses found. </template>
       <template #header>
-        <div class="flex flex-wrap justify-end gap-2">
+        <div class="flex flex-wrap justify-end gap-2 expandButtons">
           <Button
             text
             icon="pi pi-plus"
@@ -113,4 +113,11 @@ const collapseAll = () => {
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.expandButtons {
+  display: flex;
+  justify-content: flex-end;
+  margin-left: auto;
+  margin-right: 0;
+}
+</style>
