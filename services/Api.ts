@@ -251,8 +251,8 @@ export interface BodyCreateAndConnectAnalysisToProjectKongAnalysisPost {
   analysis_id: string;
 }
 
-/** Body_create_route_between_datastore_and_project_kong_route_post */
-export interface BodyCreateRouteBetweenDatastoreAndProjectKongRoutePost {
+/** Body_create_and_connect_project_to_datastore_kong_project_post */
+export interface BodyCreateAndConnectProjectToDatastoreKongProjectPost {
   /**
    * Data Store Id
    * UUID of the data store or 'gateway'
@@ -265,6 +265,11 @@ export interface BodyCreateRouteBetweenDatastoreAndProjectKongRoutePost {
    * @format uuid
    */
   project_id: string;
+  /**
+   * Project Name
+   * Name of the project
+   */
+  project_name: string;
   /**
    * Methods
    * List of acceptable HTTP methods
@@ -2555,7 +2560,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   };
   kong = {
     /**
-     * @description List all available data stores.
+     * @description List all available data stores (referred to as services by kong).
      *
      * @tags Kong
      * @name ListDataStoresKongDatastoreGet
@@ -2584,7 +2589,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * @description Create a datastore by providing necessary metadata.
+     * @description Create a datastore (referred to as services by kong) by providing necessary metadata.
      *
      * @tags Kong
      * @name CreateDataStoreKongDatastorePost
@@ -2604,7 +2609,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * @description Delete the listed data store.
+     * @description Delete the listed data store (referred to as services by kong).
      *
      * @tags Kong
      * @name DeleteDataStoreKongDatastoreDataStoreNameDelete
@@ -2622,15 +2627,15 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * @description List all the routes available, can be filtered by project_id.
+     * @description List all projects (referred to as routes by kong) available, can be filtered by project_id. Set "detailed" to True to include detailed information on the linked data stores.
      *
      * @tags Kong
-     * @name ListRoutesKongRouteGet
-     * @summary List Routes
-     * @request GET:/kong/route
+     * @name ListProjectsKongProjectGet
+     * @summary List Projects
+     * @request GET:/kong/project
      * @secure
      */
-    listRoutesKongRouteGet: (
+    listProjectsKongProjectGet: (
       query?: {
         /**
          * Project Id
@@ -2647,7 +2652,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       params: RequestParams = {},
     ) =>
       this.request<ListRoutes, void | HTTPValidationError>({
-        path: `/kong/route`,
+        path: `/kong/project`,
         method: "GET",
         query: query,
         secure: true,
@@ -2656,20 +2661,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * @description Create a route between a data store and a project.
+     * @description Connect a project to a data store (referred to as a route by kong).
      *
      * @tags Kong
-     * @name CreateRouteBetweenDatastoreAndProjectKongRoutePost
-     * @summary Create Route Between Datastore And Project
-     * @request POST:/kong/route
+     * @name CreateAndConnectProjectToDatastoreKongProjectPost
+     * @summary Create And Connect Project To Datastore
+     * @request POST:/kong/project
      * @secure
      */
-    createRouteBetweenDatastoreAndProjectKongRoutePost: (
-      data: BodyCreateRouteBetweenDatastoreAndProjectKongRoutePost,
+    createAndConnectProjectToDatastoreKongProjectPost: (
+      data: BodyCreateAndConnectProjectToDatastoreKongProjectPost,
       params: RequestParams = {},
     ) =>
       this.request<LinkDataStoreProject, void | HTTPValidationError>({
-        path: `/kong/route`,
+        path: `/kong/project`,
         method: "POST",
         body: data,
         secure: true,
@@ -2679,17 +2684,17 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * @description Disconnect a project from all connected data stores.
+     * @description Disconnect a project from all connected data stores (i.e. delete the "route").
      *
      * @tags Kong
-     * @name DisconnectProjectKongRouteDisconnectProjectIdPut
+     * @name DisconnectProjectKongProjectDisconnectProjectIdPut
      * @summary Disconnect Project
-     * @request PUT:/kong/route/disconnect/{project_id}
+     * @request PUT:/kong/project/disconnect/{project_id}
      * @secure
      */
-    disconnectProjectKongRouteDisconnectProjectIdPut: (projectId: string, params: RequestParams = {}) =>
+    disconnectProjectKongProjectDisconnectProjectIdPut: (projectId: string, params: RequestParams = {}) =>
       this.request<Disconnect, void | HTTPValidationError>({
-        path: `/kong/route/disconnect/${projectId}`,
+        path: `/kong/project/disconnect/${projectId}`,
         method: "PUT",
         secure: true,
         format: "json",
