@@ -36,7 +36,7 @@ export default defineNuxtConfig({
       },
     },
     session: {
-      expirationCheck: true,
+      expirationCheck: false,
       automaticRefresh: true,
       maxAge: 3600,
     },
