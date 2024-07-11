@@ -12,6 +12,7 @@ import type {
 
 export const useAPIFetch: typeof useFetch = (request, options?) => {
   const config = useRuntimeConfig();
+  const nuxtApp = useNuxtApp();
   const baseUrl = config.public.baseURL as string;
 
   const { user } = useOidcAuth();
@@ -38,6 +39,10 @@ export const useAPIFetch: typeof useFetch = (request, options?) => {
     onResponseError({ response }) {
       // Handle the response errors
       console.log(response);
+      if (response.status === 401 || response.status === 403) {
+        console.log("User signed out, routing to login");
+        nuxtApp.runWithContext(() => navigateTo("/auth/login"));
+      }
     },
     ...options,
   });
