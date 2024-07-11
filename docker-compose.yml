@@ -1,0 +1,39 @@
+services:
+  nginx:
+    image: nginx:stable-alpine3.19
+    container_name: nginx
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    ports:
+      - '80:80'
+      - '443:443'
+    depends_on:
+      - nodeui
+    volumes:
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+
+  nodeui:
+    build: .
+    container_name: nodeui
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    environment:
+      NODE_ENV: "production"
+      HUB_ADAPTER_API_URL: "http://localhost:8081"
+      # The BASE_URL must match the proxy pass in default.conf for nginx in production
+      BASE_URL: "http://nodeui:3000"
+      KEYCLOAK_URL: "http://localhost:8080"
+      KEYCLOAK_REALM: "flame"
+      KEYCLOAK_CLIENT_ID: "node-ui"
+      KEYCLOAK_CLIENT_SECRET: "xv6yWnZqe83X8Tur2LRT1WG4qhbGlM5r"
+    ports:
+      - '3000:3000'
+    restart: always

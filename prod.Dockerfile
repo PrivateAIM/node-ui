@@ -3,18 +3,24 @@ LABEL maintainer="bruce.schultz@uk-koeln.de"
 
 WORKDIR /app
 
+ENV NODE_ENV=production
+
 COPY yarn.lock package.json ./
 
 RUN yarn install
 
 COPY . .
 
-RUN yarn generate
+RUN yarn build
 
-FROM nginx:stable-alpine as production
-COPY --from=builder /app/dist /usr/share/nginx/html
-COPY ./default.conf /etc/nginx/conf.d/default.conf
+FROM node:20-alpine as production
 
-EXPOSE 80
+WORKDIR /app
 
-CMD ["nginx", "-g", "daemon off;"]
+COPY --from=builder /app/.output ./.output
+
+ENV NUXT_HOST=0.0.0.0
+ENV NUXT_PORT=3000
+
+EXPOSE $NUXT_PORT
+CMD [ "node", ".output/server/index.mjs" ]
