@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { disconnectRoute } from "~/composables/useAPIFetch";
+import { disconnectProject } from "~/composables/useAPIFetch";
 import { useConfirm } from "primevue/useconfirm";
 
 const props = defineProps({
@@ -9,7 +9,7 @@ const props = defineProps({
 const confirm = useConfirm();
 
 function onConfirmDisconnectProject(foo: string) {
-  disconnectRoute(foo);
+  disconnectProject(foo);
   // window.location.reload();
 }
 

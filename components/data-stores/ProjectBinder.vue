@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Dropdown from "primevue/dropdown";
 import {
-  createRoute,
+  createProject,
   getDataStores,
   getProjects,
 } from "~/composables/useAPIFetch";
@@ -43,7 +43,7 @@ async function onSubmitBinding() {
     methods: selectedAllowedMethods.value,
     ds_type: selectedDataStoreType.value,
   };
-  const { status, error } = await createRoute(props);
+  const { status, error } = await createProject(props);
   if (error && error.value?.statusCode == 409) {
     created.value = "duplicate";
   } else {

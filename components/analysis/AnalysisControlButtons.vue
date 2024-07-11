@@ -7,18 +7,34 @@ import {
 } from "~/composables/useAPIFetch";
 
 const props = defineProps({
-  // Have to use null since [String, null] gives an error: "No overload matches this call"
-  analysisStatus: { type: null },
+  analysisStatus: String,
   analysisId: String,
   projectId: String,
 });
 const toast = useToast();
 
-const analysisRunning = ref(isRunning());
+const playButtonActiveStates = [null, "stopped", "stopping"];
+const rerunButtonActiveStates = ["failed", "finished"];
+const stopButtonActiveStates = ["running", "starting", "started"];
+const deleteButtonActiveStates = [
+  "failed",
+  "finished",
+  "stopping",
+  "stopped",
+  "running",
+  "starting",
+  "started",
+];
 
-function isRunning(): boolean {
-  const analysisIsRunning = ["running", "starting", "started"];
-  return analysisIsRunning.includes(props.analysisStatus);
+const buttonStatuses = ref(setButtonStatuses(props.analysisStatus!));
+
+function setButtonStatuses(podStatus: string) {
+  return {
+    playActive: playButtonActiveStates.includes(podStatus),
+    rerunActive: rerunButtonActiveStates.includes(podStatus),
+    stopActive: stopButtonActiveStates.includes(podStatus),
+    deleteActive: deleteButtonActiveStates.includes(podStatus),
+  };
 }
 
 const showFailStart = () => {
@@ -36,21 +52,31 @@ async function onStartAnalysis() {
   analysisProps.project_id = props.projectId!;
   const { data: response, status } = await startAnalysis(analysisProps);
   if (status.value === "success") {
-    console.log(response.value!.run_status);
+    const currentRunStatus = response.value!.status;
+    console.log(currentRunStatus);
+    buttonStatuses.value = setButtonStatuses(currentRunStatus);
   } else {
     showFailStart();
   }
-  analysisRunning.value = !analysisRunning.value;
 }
 
-function onStopAnalysis() {
-  stopAnalysis(props.analysisId!);
-  analysisRunning.value = !analysisRunning;
+async function onStopAnalysis() {
+  const { data: response } = await stopAnalysis(props.analysisId!);
+  const podStatuses = response.value!.status;
+  for (const podName in podStatuses) {
+    setButtonStatuses(podStatuses[podName]);
+  }
 }
 
-function onDeleteAnalysis() {
-  deleteAnalysis(props.analysisId!);
-  analysisRunning.value = !analysisRunning;
+async function onDeleteAnalysis() {
+  const { data: response } = await deleteAnalysis(props.analysisId!);
+  const podStatuses = response.value!.status;
+  for (const podName in podStatuses) {
+    const pp = podStatuses[podName];
+    console.log(pp);
+    setButtonStatuses(pp);
+  }
+  console.log(buttonStatuses);
 }
 </script>
 
@@ -59,10 +85,21 @@ function onDeleteAnalysis() {
     <Button
       icon="pi pi-play"
       aria-label="Start"
+      v-if="buttonStatuses.rerunActive"
       v-tooltip="'Start the analysis'"
       severity="success"
       style="margin-right: 10px"
-      :disabled="analysisRunning"
+      :disabled="!buttonStatuses.playActive"
+      @click="onStartAnalysis()"
+    />
+    <Button
+      icon="pi pi-play"
+      aria-label="Start"
+      v-else
+      v-tooltip="'Start the analysis'"
+      severity="success"
+      style="margin-right: 10px"
+      :disabled="!buttonStatuses.playActive"
       @click="onStartAnalysis()"
     />
     <Button
@@ -71,7 +108,7 @@ function onDeleteAnalysis() {
       v-tooltip="'Stop the analysis'"
       severity="warn"
       style="margin-right: 10px"
-      :disabled="!analysisRunning"
+      :disabled="!buttonStatuses.stopActive"
       @click="onStopAnalysis()"
     />
     <Button
@@ -79,7 +116,7 @@ function onDeleteAnalysis() {
       aria-label="Delete"
       v-tooltip="'Delete the analysis container'"
       severity="danger"
-      :disabled="!analysisRunning"
+      :disabled="!buttonStatuses.deleteActive"
       @click="onDeleteAnalysis()"
     />
   </div>

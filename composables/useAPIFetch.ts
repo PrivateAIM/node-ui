@@ -2,7 +2,9 @@ import type {
   AllAnalyses,
   AllProjects,
   BodyCreateAnalysisPoPost,
-  BodyCreateRouteBetweenDatastoreAndProjectKongRoutePost,
+  BodyCreateAndConnectProjectToDatastoreKongProjectPost,
+  Disconnect,
+  LinkDataStoreProject,
   ListProjectNodes,
   ListServices,
   Service,
@@ -85,7 +87,7 @@ export const getDataStores = (includeProject: boolean) => {
 };
 
 export const createDataStore = (dataStoreProps: Service) => {
-  return useAPIFetch(`/kong/datastore`, {
+  return useAPIFetch<{ data: Service }>(`/kong/datastore`, {
     method: "POST",
     body: dataStoreProps,
   });
@@ -97,19 +99,22 @@ export const deleteDataStore = (dataStoreName: string) => {
   });
 };
 
-export const createRoute = (
-  routeProps: BodyCreateRouteBetweenDatastoreAndProjectKongRoutePost,
+export const createProject = (
+  routeProps: BodyCreateAndConnectProjectToDatastoreKongProjectPost,
 ) => {
-  return useAPIFetch(`/kong/route`, {
+  return useAPIFetch<{ data: LinkDataStoreProject }>(`/kong/project`, {
     method: "POST",
     body: routeProps,
   });
 };
 
-export const disconnectRoute = (projectId: string) => {
-  return useAPIFetch(`/kong/route/disconnect/${projectId}`, {
-    method: "PUT",
-  });
+export const disconnectProject = (projectId: string) => {
+  return useAPIFetch<{ data: Disconnect }>(
+    `/kong/project/disconnect/${projectId}`,
+    {
+      method: "PUT",
+    },
+  );
 };
 
 // PodOrc endpoints
