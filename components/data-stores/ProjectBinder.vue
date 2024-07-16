@@ -38,7 +38,6 @@ onMounted(() => {
 async function onSubmitBinding() {
   const props = {
     project_id: selectedProject.value.id,
-    project_name: selectedProject.value.name,
     data_store_id: selectedDataStore.value.id,
     methods: selectedAllowedMethods.value,
     ds_type: selectedDataStoreType.value,

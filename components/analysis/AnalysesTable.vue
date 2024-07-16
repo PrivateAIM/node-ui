@@ -48,7 +48,7 @@ const collapseAll = () => {
 
 <template>
   <h2 style="color: Yellow">Analysis Table Example</h2>
-  <!--  <ObjectDownloadButtons :objectId="oid" />-->
+  <!--  <ObjectDownloadButtons :objectId="oid" :local=false />-->
   <div class="card analysisTable">
     <DataTable
       :value="analyses"

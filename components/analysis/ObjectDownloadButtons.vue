@@ -3,6 +3,7 @@ import { downloadLocalObject } from "~/composables/useAPIFetch";
 
 const props = defineProps({
   objectId: String,
+  local: Boolean,
 });
 
 const toast = useToast();

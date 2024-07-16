@@ -96,11 +96,8 @@ export interface Analysis {
    * @format uuid
    */
   realm_id: string;
-  /**
-   * User Id
-   * @format uuid
-   */
-  user_id: string;
+  /** User Id */
+  user_id?: string | null;
   /**
    * Project Id
    * @format uuid
@@ -265,11 +262,6 @@ export interface BodyCreateAndConnectProjectToDatastoreKongProjectPost {
    * @format uuid
    */
   project_id: string;
-  /**
-   * Project Name
-   * Name of the project
-   */
-  project_name: string;
   /**
    * Methods
    * List of acceptable HTTP methods
@@ -698,17 +690,6 @@ export interface HealthCheck {
 }
 
 /**
- * ImageDataResponse
- * Response model for image call.
- */
-export interface ImageDataResponse {
-  /** Pullimages */
-  pullImages: PulledImageData[];
-  /** Pushimages */
-  pushImages: ToPushImageData[];
-}
-
-/**
  * KeyAuth
  * A Key-auth entity represents a key used to authenticate consumers with the key-auth plugin. The key-auth plugin is used to protect API endpoints by requiring a secret key to be sent with the request.
  */
@@ -740,19 +721,6 @@ export interface KeyAuth {
 export interface KeyAuthConsumer {
   /** Id */
   id?: string | null;
-}
-
-/**
- * KeycloakConfig
- * Keycloak configuration.
- */
-export interface KeycloakConfig {
-  /** Realm */
-  realm: string;
-  /** Url */
-  url: string;
-  /** Clientid */
-  clientId: string;
 }
 
 /** LinkDataStoreProject */
@@ -967,11 +935,8 @@ export interface Project {
    * @format uuid
    */
   realm_id: string;
-  /**
-   * User Id
-   * @format uuid
-   */
-  user_id: string;
+  /** User Id */
+  user_id?: string | null;
   /** Master Image Id */
   master_image_id?: string | null;
   master_image?: MasterImage | null;
@@ -1011,34 +976,6 @@ export interface ProjectNode {
   node_realm_id?: string | null;
   project?: Project | null;
   node?: Node | null;
-}
-
-/**
- * PulledImageData
- * Pulled image data.
- */
-export interface PulledImageData {
-  /**
-   * Id
-   * @format uuid
-   */
-  id: string;
-  /** Train Class Id */
-  train_class_id: string;
-  /** Repo Tag */
-  repo_tag: string;
-  /**
-   * Job Id
-   * @format uuid
-   */
-  job_id: string;
-  /**
-   * Status
-   * @default "pulled"
-   */
-  status?: string;
-  /** Labels */
-  labels?: object | null;
 }
 
 /**
@@ -1437,32 +1374,6 @@ export interface ServiceRequest {
    * @default true
    */
   enabled?: boolean;
-}
-
-/**
- * ToPushImageData
- * Data for images to be pushed.
- */
-export interface ToPushImageData {
-  /**
-   * Id
-   * @format uuid
-   */
-  id: string;
-  /** Train Class Id */
-  train_class_id: string;
-  /** Repo Tag */
-  repo_tag: string;
-  /**
-   * Job Id
-   * @format uuid
-   */
-  job_id: string;
-  /**
-   * Status
-   * @default "waiting_to_push"
-   */
-  status?: string;
 }
 
 /**
@@ -1978,73 +1889,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         ...params,
       }),
   };
-  metadata = {
-    /**
-     * @description Return keycloak metadata for the frontend.
-     *
-     * @tags Metadata
-     * @name GetKeycloakConfigMetadataKeycloakConfigGet
-     * @summary Get Keycloak Config
-     * @request GET:/metadata/keycloakConfig
-     */
-    getKeycloakConfigMetadataKeycloakConfigGet: (params: RequestParams = {}) =>
-      this.request<KeycloakConfig, void>({
-        path: `/metadata/keycloakConfig`,
-        method: "GET",
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Return version of the node software/API.
-     *
-     * @tags Metadata
-     * @name GetNodeVersionMetadataVersionGet
-     * @summary Get Node Version
-     * @request GET:/metadata/version
-     */
-    getNodeVersionMetadataVersionGet: (params: RequestParams = {}) =>
-      this.request<any, void>({
-        path: `/metadata/version`,
-        method: "GET",
-        format: "json",
-        ...params,
-      }),
-  };
-  vault = {
-    /**
-     * @description Spoof vault status.
-     *
-     * @tags Metadata
-     * @name GetVaultStatusVaultStatusGet
-     * @summary Get Vault Status
-     * @request GET:/vault/status
-     */
-    getVaultStatusVaultStatusGet: (params: RequestParams = {}) =>
-      this.request<any, void>({
-        path: `/vault/status`,
-        method: "GET",
-        format: "json",
-        ...params,
-      }),
-  };
-  hub = {
-    /**
-     * @description Return list of images for the frontend.
-     *
-     * @tags Metadata
-     * @name GetImagesHubImagesGet
-     * @summary Get Images
-     * @request GET:/hub/images
-     */
-    getImagesHubImagesGet: (params: RequestParams = {}) =>
-      this.request<ImageDataResponse, void>({
-        path: `/hub/images`,
-        method: "GET",
-        format: "json",
-        ...params,
-      }),
-  };
   projects = {
     /**
      * @description List all projects.
@@ -2101,10 +1945,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/projects/{project_id}
      * @secure
      */
-    listSpecificProjectProjectsProjectIdGet: (projectId: string, params: RequestParams = {}) =>
+    listSpecificProjectProjectsProjectIdGet: (
+      projectId: string,
+      query?: {
+        /**
+         * Filter Realm Id
+         * Filter by realm UUID.
+         * @format uuid
+         */
+        filter_realm_id?: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<Project, void | HTTPValidationError>({
         path: `/projects/${projectId}`,
         method: "GET",
+        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -2272,6 +2128,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
          * @default "analysis"
          */
         include?: string | null;
+        /**
+         * Filter Analysis Realm Id
+         * Filter by analysis realm UUID.
+         */
+        filter_analysis_realm_id?: string | null;
       },
       params: RequestParams = {},
     ) =>
@@ -2326,6 +2187,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
          * @default "project"
          */
         include?: string | null;
+        /**
+         * Filter Analysis Realm Id
+         * Filter by analysis realm UUID.
+         */
+        filter_analysis_realm_id?: string | null;
       },
       params: RequestParams = {},
     ) =>
