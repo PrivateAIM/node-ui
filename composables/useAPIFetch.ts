@@ -2,9 +2,11 @@ import type {
   AllAnalyses,
   AllProjects,
   BodyCreateAnalysisPoPost,
+  BodyCreateAndConnectAnalysisToProjectKongAnalysisPost,
   BodyCreateAndConnectProjectToDatastoreKongProjectPost,
   Disconnect,
   LinkDataStoreProject,
+  LinkProjectAnalysis,
   ListProjectNodes,
   ListServices,
   Service,
@@ -120,6 +122,15 @@ export const disconnectProject = (projectId: string) => {
       method: "PUT",
     },
   );
+};
+
+export const connectAnalysisProject = (
+  consumerProps: BodyCreateAndConnectAnalysisToProjectKongAnalysisPost,
+) => {
+  return useAPIFetch<{ data: LinkProjectAnalysis }>(`/kong/analysis`, {
+    method: "POST",
+    body: consumerProps,
+  });
 };
 
 // PodOrc endpoints

@@ -42,12 +42,8 @@ async function onSubmitBinding() {
     methods: selectedAllowedMethods.value,
     ds_type: selectedDataStoreType.value,
   };
-  const { status, error } = await createProject(props);
-  if (error && error.value?.statusCode == 409) {
-    created.value = "duplicate";
-  } else {
-    created.value = status.value;
-  }
+  const { status } = await createProject(props);
+  created.value = status.value;
 }
 </script>
 
