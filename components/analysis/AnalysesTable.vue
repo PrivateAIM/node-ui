@@ -8,9 +8,6 @@ const analyses = ref();
 const expandedRows = ref({});
 const loading = ref(true);
 
-// For testing file download
-// const oid = "b53200bc-bd92-4dcf-8f2f-353d04a79fab";
-
 const expandRowEntries = [
   "id",
   "project_id",
