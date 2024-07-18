@@ -37,4 +37,11 @@ const collapseAll = () => {
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.expandButtons {
+  display: flex;
+  justify-content: flex-end;
+  margin-left: auto;
+  margin-right: 0;
+}
+</style>
