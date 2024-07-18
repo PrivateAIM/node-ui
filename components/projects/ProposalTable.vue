@@ -4,6 +4,7 @@ import ApproveRejectButtons from "~/components/projects/ApproveRejectButtons.vue
 import { formatDataRow } from "~/utils/format-data-row";
 import TableRowMetadata from "~/components/TableRowMetadata.vue";
 import type { ProjectNode } from "~/services/Api";
+import ExpandRowButtons from "~/components/table/ExpandRowButtons.vue";
 
 const proposals = ref();
 const expandedRows = ref({});
@@ -24,18 +25,9 @@ onMounted(() => {
   });
 });
 
-const expandAll = () => {
-  expandedRows.value = proposals.value.reduce(
-    (accordion: boolean, proposal) =>
-      // eslint-disable-next-line no-constant-binary-expression
-      (accordion[proposal.id] = true) && accordion,
-    {},
-  );
-};
-
-const collapseAll = () => {
-  expandedRows.value = {};
-};
+function onToggleRowExpansion(rowIds) {
+  expandedRows.value = rowIds;
+}
 
 function updateTable(newData: ProjectNode) {
   for (let row of proposals.value) {
@@ -61,20 +53,10 @@ function updateTable(newData: ProjectNode) {
     >
       <template #empty> No proposals found. </template>
       <template #header>
-        <div class="flex flex-wrap justify-end gap-2">
-          <Button
-            text
-            icon="pi pi-plus"
-            label="Expand All"
-            @click="expandAll"
-          />
-          <Button
-            text
-            icon="pi pi-minus"
-            label="Collapse All"
-            @click="collapseAll"
-          />
-        </div>
+        <ExpandRowButtons
+          :rows="proposals"
+          @expandedRowList="onToggleRowExpansion"
+        />
       </template>
       <Column expander style="width: 5rem" />
       <Column field="id" header="ID" :sortable="true"></Column>

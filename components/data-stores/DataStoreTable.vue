@@ -4,6 +4,7 @@ import type { DetailedService, Route } from "~/services/Api";
 import { formatDataRow } from "~/utils/format-data-row";
 import { useConfirm } from "primevue/useconfirm";
 import AssociatedProjectTable from "~/components/data-stores/AssociatedProjectTable.vue";
+import ExpandRowButtons from "~/components/table/ExpandRowButtons.vue";
 
 const dataStores = ref();
 const confirm = useConfirm();
@@ -45,19 +46,6 @@ function extractProjectIdFromPath(paths: string[]): string {
   return paths[0].split("/")[1];
 }
 
-const expandAll = () => {
-  expandedRows.value = dataStores.value.reduce(
-    (accordion: boolean, dataStore: DetailedService) =>
-      // eslint-disable-next-line no-constant-binary-expression
-      (accordion[dataStore.id!] = true) && accordion,
-    {},
-  );
-};
-
-const collapseAll = () => {
-  expandedRows.value = {};
-};
-
 function onConfirmDeleteDataStore(dsName: string) {
   deleteDataStore(dsName);
   window.location.reload();
@@ -79,6 +67,10 @@ const confirmDelete = (event, dsName: string) => {
     reject: () => {},
   });
 };
+
+function onToggleRowExpansion(rowIds) {
+  expandedRows.value = rowIds;
+}
 </script>
 
 <template>
@@ -96,20 +88,10 @@ const confirmDelete = (event, dsName: string) => {
     >
       <template #empty> No data stores found. </template>
       <template #header>
-        <div class="flex flex-wrap justify-end gap-2 expandButtons">
-          <Button
-            text
-            icon="pi pi-plus"
-            label="Expand All"
-            @click="expandAll"
-          />
-          <Button
-            text
-            icon="pi pi-minus"
-            label="Collapse All"
-            @click="collapseAll"
-          />
-        </div>
+        <ExpandRowButtons
+          :rows="dataStores"
+          @expandedRowList="onToggleRowExpansion"
+        />
       </template>
       <Column expander style="width: 5rem" />
       <Column field="name" header="Name" :sortable="true"></Column>

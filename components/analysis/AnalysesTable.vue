@@ -2,10 +2,10 @@
 import { getAnalyses } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
 import TableRowMetadata from "~/components/TableRowMetadata.vue";
-import type { Analysis } from "~/services/Api";
+import ExpandRowButtons from "~/components/table/ExpandRowButtons.vue";
 
 const analyses = ref();
-const expandedRows = ref({});
+const expandedRows = ref();
 const loading = ref(true);
 
 const expandRowEntries = [
@@ -29,18 +29,9 @@ onMounted(() => {
   });
 });
 
-const expandAll = () => {
-  expandedRows.value = analyses.value.reduce(
-    (accordion: boolean, analysis: Analysis) =>
-      // eslint-disable-next-line no-constant-binary-expression
-      (accordion[analysis.id] = true) && accordion,
-    {},
-  );
-};
-
-const collapseAll = () => {
-  expandedRows.value = {};
-};
+function onToggleRowExpansion(rowIds) {
+  expandedRows.value = rowIds;
+}
 </script>
 
 <template>
@@ -62,20 +53,10 @@ const collapseAll = () => {
     >
       <template #empty> No analyses found. </template>
       <template #header>
-        <div class="flex flex-wrap justify-end gap-2 expandButtons">
-          <Button
-            text
-            icon="pi pi-plus"
-            label="Expand All"
-            @click="expandAll"
-          />
-          <Button
-            text
-            icon="pi pi-minus"
-            label="Collapse All"
-            @click="collapseAll"
-          />
-        </div>
+        <ExpandRowButtons
+          :rows="analyses"
+          @expandedRowList="onToggleRowExpansion"
+        />
       </template>
       <Column expander style="width: 5rem" />
       <Column field="name" header="Name" :sortable="true"></Column>
