@@ -59,20 +59,21 @@ function onToggleRowExpansion(rowIds) {
         />
       </template>
       <Column expander style="width: 5rem" />
-      <Column field="name" header="Name" :sortable="true"></Column>
+      <Column class="namedCol" field="name" header="Name" :sortable="true" />
       <Column
         field="approval_status"
         header="Approval Status"
         :sortable="true"
-      ></Column>
+      />
+      <Column field="build_status" header="Build Status" :sortable="true" />
+      <Column field="run_status" header="Run Status" :sortable="true" />
       <Column
-        field="build_status"
-        header="Build Status"
+        class="namedCol"
+        field="project.name"
+        header="Project"
         :sortable="true"
-      ></Column>
-      <Column field="run_status" header="Run Status" :sortable="true"></Column>
-      <Column field="project.name" header="Project" :sortable="true"></Column>
-      <Column field="nodes" header="Number Nodes" :sortable="true"></Column>
+      />
+      <Column field="nodes" header="Number Nodes" :sortable="true" />
       <Column field="expand.id" header="Toggle Analysis" :exportable="false">
         <template #body="slotProps">
           <AnalysisControlButtons
@@ -91,4 +92,8 @@ function onToggleRowExpansion(rowIds) {
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style>
+.namedCol {
+  max-width: 20rem;
+}
+</style>
