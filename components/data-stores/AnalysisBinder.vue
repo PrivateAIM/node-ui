@@ -79,7 +79,7 @@ async function onSubmitProjectAnalysisBinding() {
           />
         </InputGroup>
         <Button
-          label="Create Link"
+          label="Submit"
           icon="pi pi-check"
           iconPos="right"
           severity="info"
