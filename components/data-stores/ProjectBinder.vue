@@ -17,6 +17,7 @@ const availableDataStores = ref();
 const availableMethods = ref(["GET", "POST", "PUT", "DELETE"]);
 const dataStoreTypes = ref(["FHIR", "S3"]);
 
+const loading = ref(false);
 const created = ref("");
 
 onMounted(() => {
@@ -42,8 +43,10 @@ async function onSubmitBinding() {
     methods: selectedAllowedMethods.value,
     ds_type: selectedDataStoreType.value,
   };
+  loading.value = true;
   const { status } = await createProject(props);
   created.value = status.value;
+  loading.value = false;
 }
 </script>
 
@@ -101,6 +104,7 @@ async function onSubmitBinding() {
           iconPos="right"
           severity="info"
           style="margin-top: 20px"
+          :loading="loading"
           @click="onSubmitBinding"
         />
         <p style="color: green" v-if="created === 'success'">

@@ -10,6 +10,8 @@ const path = ref("");
 const port = ref(443);
 const protocol = ref("http");
 
+const loading = ref(false);
+
 const acceptedProtocols = ref([
   "grpc",
   "grpcs",
@@ -44,8 +46,10 @@ async function onSubmitCreateDataStore() {
       break;
     }
   }
+  loading.value = true;
   const { status } = await createDataStore(dataStoreProps);
   created.value = status.value;
+  loading.value = false;
 }
 </script>
 
@@ -115,6 +119,7 @@ async function onSubmitCreateDataStore() {
           iconPos="right"
           severity="info"
           style="margin-top: 20px"
+          :loading="loading"
           @click="onSubmitCreateDataStore"
         />
         <p style="color: green" v-if="created === 'success'">

@@ -13,6 +13,7 @@ const selectedAnalysis = ref();
 const availableProjects = ref();
 const availableAnalyses = ref();
 
+const loading = ref(false);
 const created = ref("");
 
 onMounted(() => {
@@ -37,13 +38,14 @@ async function onSubmitProjectAnalysisBinding() {
     project_id: selectedProject.value.id,
     analysis_id: selectedAnalysis.value.id,
   };
-  console.log(props);
+  loading.value = true;
   const { status, error } = await connectAnalysisProject(props);
   if (error && error.value?.statusCode == 409) {
     created.value = "duplicate";
   } else {
     created.value = status.value;
   }
+  loading.value = false;
 }
 </script>
 
@@ -82,6 +84,7 @@ async function onSubmitProjectAnalysisBinding() {
           iconPos="right"
           severity="info"
           style="margin-top: 20px"
+          :loading="loading"
           @click="onSubmitProjectAnalysisBinding"
         />
         <p style="color: green" v-if="created === 'success'">
