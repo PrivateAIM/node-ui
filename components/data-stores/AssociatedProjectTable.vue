@@ -1,10 +1,21 @@
 <script setup lang="ts">
 import { disconnectProject } from "~/composables/useAPIFetch";
 import { useConfirm } from "primevue/useconfirm";
+import type { DetailedService, Route } from "~/services/Api";
 
 const props = defineProps({
-  associatedProjects: Array,
+  associatedProjects: Array<DetailedService>,
 });
+
+interface projectRow {
+  dataStore: string;
+  projectId: string;
+  projectName: string;
+  projCreatedAt: string;
+  projUpdatedAt: string;
+}
+
+const meltedValues = ref();
 
 const confirm = useConfirm();
 
@@ -29,22 +40,65 @@ const confirmDisconnect = (event, projectId: string) => {
     reject: () => {},
   });
 };
+
+onUpdated(() => {
+  meltDataStoreTable();
+});
+
+function meltDataStoreTable() {
+  let elongatedTableRows = new Array<projectRow>();
+  const projects = props.associatedProjects;
+  console.log(projects);
+  if (projects && projects.length > 0) {
+    props.associatedProjects!.forEach((store: DetailedService) => {
+      const routes = store.routes;
+      if (routes && routes.length > 0) {
+        routes.forEach((proj: Route) => {
+          const newRow = {
+            dataStore: store.name!,
+            projectId: proj.id!,
+            projectName: proj.name!,
+            projCreatedAt: proj.created_at! as unknown as string,
+            projUpdatedAt: proj.updated_at! as unknown as string,
+          };
+          elongatedTableRows.push(newRow);
+        });
+      }
+    });
+  }
+  meltedValues.value = elongatedTableRows;
+  console.log(elongatedTableRows);
+}
 </script>
 
 <template>
   <div class="card associatedProjectsTable">
-    <Card style="border: solid">
+    <Card>
       <template #title>Associated Projects</template>
       <template #content>
-        <DataTable
-          :value="props.associatedProjects"
-          tableStyle="min-width: 50rem"
-        >
-          <Column field="name" header="Name" :sortable="true"></Column>
-          <Column field="projectId" header="ID" :sortable="true"></Column>
-          <Column field="created_at" header="Created" :sortable="true"></Column>
+        <DataTable :value="meltedValues" tableStyle="min-width: 50rem">
           <Column
-            field="updated_at"
+            field="dataStore"
+            header="Data Store"
+            :sortable="true"
+          ></Column>
+          <Column
+            field="projectId"
+            header="Project ID"
+            :sortable="true"
+          ></Column>
+          <Column
+            field="projectName"
+            header="Project Name"
+            :sortable="true"
+          ></Column>
+          <Column
+            field="projCreatedAt"
+            header="Created"
+            :sortable="true"
+          ></Column>
+          <Column
+            field="projUpdatedAt"
             header="Last Updated"
             :sortable="true"
           ></Column>

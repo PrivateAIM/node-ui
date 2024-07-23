@@ -7,6 +7,7 @@ import AssociatedProjectTable from "~/components/data-stores/AssociatedProjectTa
 import ExpandRowButtons from "~/components/table/ExpandRowButtons.vue";
 
 const dataStores = ref();
+
 const confirm = useConfirm();
 const expandedRows = ref({});
 const loading = ref(true);
@@ -74,69 +75,79 @@ function onToggleRowExpansion(rowIds) {
 </script>
 
 <template>
-  <div class="dataStoreTable">
-    <h2 style="color: white">Available Data Stores</h2>
-    <DataTable
-      :value="dataStores"
-      v-model:expandedRows="expandedRows"
-      dataKey="id"
-      paginator
-      :rows="10"
-      :rowsPerPageOptions="[10, 20, 50]"
-      :loading="loading"
-      tableStyle="min-width: 50rem"
-    >
-      <template #empty> No data stores found. </template>
-      <template #header>
-        <ExpandRowButtons
-          :rows="dataStores"
-          @expandedRowList="onToggleRowExpansion"
-        />
-      </template>
-      <Column expander style="width: 5rem" />
-      <Column field="name" header="Name" :sortable="true"></Column>
-      <Column field="path" header="Path"></Column>
-      <Column field="host" header="Host" :sortable="true"></Column>
-      <Column field="port" header="Port"></Column>
-      <Column field="protocol" header="Protocol" :sortable="true"></Column>
-      <Column field="created_at" header="Created" :sortable="true"></Column>
-      <Column
-        field="updated_at"
-        header="Last Updated"
-        :sortable="true"
-      ></Column>
-      <Column field="name" header="Delete?" :exportable="false">
-        <template #body="slotProps">
-          <ConfirmPopup group="templating">
-            <template #message="slotProps">
-              <div
-                class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700 p-4 mb-4 pb-0"
-              >
-                <i
-                  :class="slotProps.message.icon"
-                  class="text-6xl text-primary-500"
-                ></i>
-                <p>{{ slotProps.message.message }}</p>
-              </div>
+  <div class="card">
+    <TabView style="margin-top: 40px">
+      <TabPanel header="Detailed Data Store View">
+        <div class="dataStoreTable">
+          <DataTable
+            :value="dataStores"
+            v-model:expandedRows="expandedRows"
+            dataKey="id"
+            paginator
+            :rows="10"
+            :rowsPerPageOptions="[10, 20, 50]"
+            :loading="loading"
+            tableStyle="min-width: 50rem"
+          >
+            <template #empty> No data stores found. </template>
+            <template #header>
+              <ExpandRowButtons
+                :rows="dataStores"
+                @expandedRowList="onToggleRowExpansion"
+              />
             </template>
-          </ConfirmPopup>
-          <Button
-            icon="pi pi-trash"
-            aria-label="Delete"
-            severity="danger"
-            @click="confirmDelete($event, slotProps.data.name)"
-          />
-        </template>
-      </Column>
-      <template #expansion="slotProps">
-        <div v-if="slotProps.data.routes.length" class="p-3">
-          <AssociatedProjectTable :associatedProjects="slotProps.data.routes" />
+            <Column expander style="width: 5rem" />
+            <Column field="name" header="Name" :sortable="true"></Column>
+            <Column field="path" header="Path"></Column>
+            <Column field="host" header="Host" :sortable="true"></Column>
+            <Column field="port" header="Port"></Column>
+            <Column
+              field="protocol"
+              header="Protocol"
+              :sortable="true"
+            ></Column>
+            <Column
+              field="created_at"
+              header="Created"
+              :sortable="true"
+            ></Column>
+            <Column
+              field="updated_at"
+              header="Last Updated"
+              :sortable="true"
+            ></Column>
+            <Column field="name" header="Delete?" :exportable="false">
+              <template #body="slotProps">
+                <ConfirmPopup group="templating">
+                  <template #message="slotProps">
+                    <div
+                      class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700 p-4 mb-4 pb-0"
+                    >
+                      <i
+                        :class="slotProps.message.icon"
+                        class="text-6xl text-primary-500"
+                      ></i>
+                      <p>{{ slotProps.message.message }}</p>
+                    </div>
+                  </template>
+                </ConfirmPopup>
+                <Button
+                  icon="pi pi-trash"
+                  aria-label="Delete"
+                  severity="danger"
+                  @click="confirmDelete($event, slotProps.data.name)"
+                />
+              </template>
+            </Column>
+          </DataTable>
         </div>
-        <div v-else>
-          <p>No associated projects found.</p>
-        </div>
-      </template>
-    </DataTable>
+      </TabPanel>
+      <TabPanel header="Associated Projects">
+        <AssociatedProjectTable :associatedProjects="dataStores" />
+        <!--        <p>Hello</p>-->
+      </TabPanel>
+      <TabPanel header="Linked Analyses" :disabled="true">Howdy</TabPanel>
+    </TabView>
   </div>
 </template>
 
