@@ -4,12 +4,10 @@ import type { DetailedService, Route } from "~/services/Api";
 import { formatDataRow } from "~/utils/format-data-row";
 import { useConfirm } from "primevue/useconfirm";
 import AssociatedProjectTable from "~/components/data-stores/AssociatedProjectTable.vue";
-import ExpandRowButtons from "~/components/table/ExpandRowButtons.vue";
 
 const dataStores = ref();
 
 const confirm = useConfirm();
-const expandedRows = ref({});
 const loading = ref(true);
 
 const dataRowUnixCols = ["created_at", "updated_at"];
@@ -68,10 +66,6 @@ const confirmDelete = (event, dsName: string) => {
     reject: () => {},
   });
 };
-
-function onToggleRowExpansion(rowIds) {
-  expandedRows.value = rowIds;
-}
 </script>
 
 <template>
@@ -81,8 +75,6 @@ function onToggleRowExpansion(rowIds) {
         <div class="dataStoreTable">
           <DataTable
             :value="dataStores"
-            v-model:expandedRows="expandedRows"
-            dataKey="id"
             paginator
             :rows="10"
             :rowsPerPageOptions="[10, 20, 50]"
@@ -90,13 +82,6 @@ function onToggleRowExpansion(rowIds) {
             tableStyle="min-width: 50rem"
           >
             <template #empty> No data stores found. </template>
-            <template #header>
-              <ExpandRowButtons
-                :rows="dataStores"
-                @expandedRowList="onToggleRowExpansion"
-              />
-            </template>
-            <Column expander style="width: 5rem" />
             <Column field="name" header="Name" :sortable="true"></Column>
             <Column field="path" header="Path"></Column>
             <Column field="host" header="Host" :sortable="true"></Column>
@@ -142,9 +127,8 @@ function onToggleRowExpansion(rowIds) {
           </DataTable>
         </div>
       </TabPanel>
-      <TabPanel header="Associated Projects">
+      <TabPanel header="Associated Projects" v-if="dataStores">
         <AssociatedProjectTable :associatedProjects="dataStores" />
-        <!--        <p>Hello</p>-->
       </TabPanel>
       <TabPanel header="Linked Analyses" :disabled="true">Howdy</TabPanel>
     </TabView>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { disconnectProject } from "~/composables/useAPIFetch";
+import { disconnectProject, getProjects } from "~/composables/useAPIFetch";
 import { useConfirm } from "primevue/useconfirm";
-import type { DetailedService, Route } from "~/services/Api";
+import type { DetailedService, Project, Route } from "~/services/Api";
 
 const props = defineProps({
   associatedProjects: Array<DetailedService>,
@@ -9,22 +9,41 @@ const props = defineProps({
 
 interface projectRow {
   dataStore: string;
-  projectId: string;
-  projectName: string;
-  projCreatedAt: string;
-  projUpdatedAt: string;
+  kongProjectId: string;
+  hubProjectUuid: string;
+  kongProjectUserName: string;
+  hubProjectName: string;
+  kongProjCreatedAt: string;
+  kongProjUpdatedAt: string;
 }
 
 const meltedValues = ref();
 
 const confirm = useConfirm();
 
-function onConfirmDisconnectProject(foo: string) {
-  disconnectProject(foo);
-  // window.location.reload();
+onBeforeMount(() => {
+  meltDataStoreTable();
+});
+
+async function getProjectsFromHub() {
+  const { data: response } = await getProjects();
+  const projects = response.value!.data as unknown as Project[];
+  let projectNameMap = new Map<string, string | null>();
+  if (projects && projects.length > 0) {
+    projects.forEach((proj: Project) => {
+      projectNameMap.set(proj.id, proj.name);
+    });
+  }
+  return projectNameMap;
 }
 
-const confirmDisconnect = (event, projectId: string) => {
+function formatProjectUuid(kongProjectName: string) {
+  const projectUuid = kongProjectName.split("-");
+  projectUuid.pop();
+  return projectUuid.join("-");
+}
+
+const confirmDisconnect = (event, projectUuid: string) => {
   confirm.require({
     target: event.currentTarget,
     group: "templating",
@@ -35,31 +54,36 @@ const confirmDisconnect = (event, projectId: string) => {
     rejectIcon: "pi pi-times",
     rejectLabel: "Cancel",
     accept: () => {
-      onConfirmDisconnectProject(projectId);
+      onConfirmDisconnectProject(projectUuid);
     },
     reject: () => {},
   });
 };
 
-onUpdated(() => {
-  meltDataStoreTable();
-});
+function onConfirmDisconnectProject(projectUuid: string) {
+  disconnectProject(projectUuid);
+}
 
-function meltDataStoreTable() {
+async function meltDataStoreTable() {
   let elongatedTableRows = new Array<projectRow>();
+  const hubNameMap = await getProjectsFromHub();
   const projects = props.associatedProjects;
-  console.log(projects);
   if (projects && projects.length > 0) {
     props.associatedProjects!.forEach((store: DetailedService) => {
       const routes = store.routes;
       if (routes && routes.length > 0) {
         routes.forEach((proj: Route) => {
+          const projectUuid = formatProjectUuid(proj.name!);
           const newRow = {
             dataStore: store.name!,
-            projectId: proj.id!,
-            projectName: proj.name!,
-            projCreatedAt: proj.created_at! as unknown as string,
-            projUpdatedAt: proj.updated_at! as unknown as string,
+            kongProjectId: proj.id!,
+            kongProjectUserName: proj.name!,
+            hubProjectUuid: projectUuid,
+            hubProjectName: hubNameMap.has(projectUuid)
+              ? hubNameMap.get(projectUuid)!
+              : "N/A",
+            kongProjCreatedAt: proj.created_at! as unknown as string,
+            kongProjUpdatedAt: proj.updated_at! as unknown as string,
           };
           elongatedTableRows.push(newRow);
         });
@@ -67,67 +91,64 @@ function meltDataStoreTable() {
     });
   }
   meltedValues.value = elongatedTableRows;
-  console.log(elongatedTableRows);
 }
 </script>
 
 <template>
-  <div class="card associatedProjectsTable">
-    <Card>
-      <template #title>Associated Projects</template>
-      <template #content>
-        <DataTable :value="meltedValues" tableStyle="min-width: 50rem">
-          <Column
-            field="dataStore"
-            header="Data Store"
-            :sortable="true"
-          ></Column>
-          <Column
-            field="projectId"
-            header="Project ID"
-            :sortable="true"
-          ></Column>
-          <Column
-            field="projectName"
-            header="Project Name"
-            :sortable="true"
-          ></Column>
-          <Column
-            field="projCreatedAt"
-            header="Created"
-            :sortable="true"
-          ></Column>
-          <Column
-            field="projUpdatedAt"
-            header="Last Updated"
-            :sortable="true"
-          ></Column>
-          <Column field="projectId" header="Disconnect?" :exportable="false">
-            <template #body="slotProps">
-              <ConfirmPopup group="templating">
-                <template #message="slotProps">
-                  <div
-                    class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700 p-4 mb-4 pb-0"
-                  >
-                    <i
-                      :class="slotProps.message.icon"
-                      class="text-6xl text-primary-500"
-                    ></i>
-                    <p>{{ slotProps.message.message }}</p>
-                  </div>
-                </template>
-              </ConfirmPopup>
-              <Button
-                icon="pi pi-trash"
-                aria-label="Disconnect"
-                severity="warning"
-                @click="confirmDisconnect($event, slotProps.data.projectId)"
-              />
+  <div class="associatedProjectsTable">
+    <DataTable
+      :value="meltedValues"
+      tableStyle="min-width: 50rem"
+      paginator
+      :rows="10"
+      :rowsPerPageOptions="[10, 20, 50]"
+    >
+      <template #empty> No associated projects found.</template>
+      <Column field="dataStore" header="Data Store" :sortable="true"></Column>
+      <Column
+        field="kongProjectId"
+        header="Kong Project ID"
+        :sortable="true"
+      ></Column>
+      <Column
+        field="hubProjectName"
+        header="Hub Project Name"
+        :sortable="true"
+      ></Column>
+      <Column
+        field="kongProjCreatedAt"
+        header="Created"
+        :sortable="true"
+      ></Column>
+      <Column
+        field="kongProjUpdatedAt"
+        header="Last Updated"
+        :sortable="true"
+      ></Column>
+      <Column field="projectId" header="Disconnect?" :exportable="false">
+        <template #body="slotProps">
+          <ConfirmPopup group="templating">
+            <template #message="slotProps">
+              <div
+                class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700 p-4 mb-4 pb-0"
+              >
+                <i
+                  :class="slotProps.message.icon"
+                  class="text-6xl text-primary-500"
+                ></i>
+                <p>{{ slotProps.message.message }}</p>
+              </div>
             </template>
-          </Column>
-        </DataTable>
-      </template>
-    </Card>
+          </ConfirmPopup>
+          <Button
+            icon="pi pi-trash"
+            aria-label="Disconnect"
+            severity="warning"
+            @click="confirmDisconnect($event, slotProps.data.hubProjectUuid)"
+          />
+        </template>
+      </Column>
+    </DataTable>
   </div>
 </template>
 
