@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { deleteProjectFromKong, getProjects } from "~/composables/useAPIFetch";
+import { deleteProjectFromKong } from "~/composables/useAPIFetch";
 import { useConfirm } from "primevue/useconfirm";
-import type { DetailedService, Project, Route } from "~/services/Api";
+import type { DetailedService, Route } from "~/services/Api";
 
 const props = defineProps({
   detailedStoreList: Array<DetailedService>,
+  projectNameMap: Map<string, string>,
 });
 
 interface projectRow {
@@ -24,18 +25,6 @@ const confirm = useConfirm();
 onMounted(() => {
   meltDataStoreTable();
 });
-
-async function getProjectsFromHub() {
-  const { data: response } = await getProjects();
-  const projects = response.value!.data as unknown as Project[];
-  let projectNameMap = new Map<string, string | null>();
-  if (projects && projects.length > 0) {
-    projects.forEach((proj: Project) => {
-      projectNameMap.set(proj.id, proj.name);
-    });
-  }
-  return projectNameMap;
-}
 
 function formatProjectUuid(kongProjectName: string) {
   const projectUuid = kongProjectName.split("-");
@@ -64,9 +53,9 @@ function onConfirmDeleteProject(projectUuid: string) {
   deleteProjectFromKong(projectUuid);
 }
 
-async function meltDataStoreTable() {
+function meltDataStoreTable() {
   let elongatedTableRows = new Array<projectRow>();
-  const hubNameMap = await getProjectsFromHub();
+  const hubNameMap = props.projectNameMap!;
   const projects = props.detailedStoreList;
   if (projects && projects.length > 0) {
     props.detailedStoreList!.forEach((store: DetailedService) => {
