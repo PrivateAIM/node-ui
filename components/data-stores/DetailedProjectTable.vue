@@ -4,7 +4,7 @@ import { useConfirm } from "primevue/useconfirm";
 import type { DetailedService, Project, Route } from "~/services/Api";
 
 const props = defineProps({
-  associatedProjects: Array<DetailedService>,
+  detailedStoreList: Array<DetailedService>,
 });
 
 interface projectRow {
@@ -21,7 +21,7 @@ const meltedValues = ref();
 
 const confirm = useConfirm();
 
-onBeforeMount(() => {
+onMounted(() => {
   meltDataStoreTable();
 });
 
@@ -43,33 +43,33 @@ function formatProjectUuid(kongProjectName: string) {
   return projectUuid.join("-");
 }
 
-const confirmDisconnect = (event, projectUuid: string) => {
+const confirmDeleteProject = (event, projectUuid: string) => {
   confirm.require({
     target: event.currentTarget,
     group: "templating",
-    message: "Are you sure you want to disconnect this project?",
+    message: "Are you sure you want to delete this project?",
     icon: "pi pi-exclamation-circle",
     acceptIcon: "pi pi-check",
     acceptLabel: "Confirm",
     rejectIcon: "pi pi-times",
     rejectLabel: "Cancel",
     accept: () => {
-      onConfirmDisconnectProject(projectUuid);
+      onConfirmDeleteProject(projectUuid);
     },
     reject: () => {},
   });
 };
 
-function onConfirmDisconnectProject(projectUuid: string) {
+function onConfirmDeleteProject(projectUuid: string) {
   deleteProjectFromKong(projectUuid);
 }
 
 async function meltDataStoreTable() {
   let elongatedTableRows = new Array<projectRow>();
   const hubNameMap = await getProjectsFromHub();
-  const projects = props.associatedProjects;
+  const projects = props.detailedStoreList;
   if (projects && projects.length > 0) {
-    props.associatedProjects!.forEach((store: DetailedService) => {
+    props.detailedStoreList!.forEach((store: DetailedService) => {
       const routes = store.routes;
       if (routes && routes.length > 0) {
         routes.forEach((proj: Route) => {
@@ -144,7 +144,7 @@ async function meltDataStoreTable() {
             icon="pi pi-trash"
             aria-label="Disconnect"
             severity="warning"
-            @click="confirmDisconnect($event, slotProps.data.hubProjectUuid)"
+            @click="confirmDeleteProject($event, slotProps.data.hubProjectUuid)"
           />
         </template>
       </Column>
