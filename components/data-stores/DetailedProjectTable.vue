@@ -22,7 +22,7 @@ const meltedValues = ref();
 
 const confirm = useConfirm();
 
-onMounted(() => {
+onBeforeMount(() => {
   meltDataStoreTable();
 });
 
