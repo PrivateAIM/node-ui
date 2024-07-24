@@ -4,7 +4,7 @@ import type {
   BodyCreateAnalysisPoPost,
   BodyCreateAndConnectAnalysisToProjectKongAnalysisPost,
   BodyCreateAndConnectProjectToDatastoreKongProjectPost,
-  Disconnect,
+  DeleteProject,
   LinkDataStoreProject,
   LinkProjectAnalysis,
   ListProjectNodes,
@@ -115,13 +115,10 @@ export const createProject = (
   });
 };
 
-export const disconnectProject = (projectId: string) => {
-  return useAPIFetch<{ data: Disconnect }>(
-    `/kong/project/disconnect/${projectId}`,
-    {
-      method: "PUT",
-    },
-  );
+export const deleteProjectFromKong = (projectId: string) => {
+  return useAPIFetch<{ data: DeleteProject }>(`/kong/project/${projectId}`, {
+    method: "DELETE",
+  });
 };
 
 export const connectAnalysisProject = (

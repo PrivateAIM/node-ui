@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { disconnectProject, getProjects } from "~/composables/useAPIFetch";
+import { deleteProjectFromKong, getProjects } from "~/composables/useAPIFetch";
 import { useConfirm } from "primevue/useconfirm";
 import type { DetailedService, Project, Route } from "~/services/Api";
 
@@ -61,7 +61,7 @@ const confirmDisconnect = (event, projectUuid: string) => {
 };
 
 function onConfirmDisconnectProject(projectUuid: string) {
-  disconnectProject(projectUuid);
+  deleteProjectFromKong(projectUuid);
 }
 
 async function meltDataStoreTable() {

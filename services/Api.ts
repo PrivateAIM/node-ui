@@ -431,6 +431,17 @@ export interface CreateServiceRequestClientCertificate {
 }
 
 /**
+ * DeleteProject
+ * Response from disconnecting a project from a datastore.
+ */
+export interface DeleteProject {
+  /** Removed Routes */
+  removed_routes: string[] | null;
+  /** Status */
+  status?: number | null;
+}
+
+/**
  * DetailedRoute
  * Custom route response model with associated services.
  */
@@ -648,17 +659,6 @@ export interface DetailedService {
 }
 
 /**
- * Disconnect
- * Response from disconnecting a project from a datastore.
- */
-export interface Disconnect {
-  /** Removed Routes */
-  removed_routes: string[] | null;
-  /** Status */
-  status?: number | null;
-}
-
-/**
  * DownstreamHealthCheck
  * Response model for downstream health checks.
  */
@@ -747,6 +747,20 @@ export interface LinkProjectAnalysis {
 export interface ListAnalysisNodes {
   /** Data */
   data: AnalysisNode[];
+}
+
+/**
+ * ListConsumers
+ * Custom route list response model.
+ */
+export interface ListConsumers {
+  /** Data */
+  data?: Consumer[] | null;
+  /**
+   * Offset
+   * Offset is used to paginate through the API. Provide this value to the next list operation to fetch the next page
+   */
+  offset?: string | null;
 }
 
 /** ListProjectNodes */
@@ -2553,15 +2567,43 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description Disconnect a project from all connected data stores (i.e. delete the "route").
      *
      * @tags Kong
-     * @name DisconnectProjectKongProjectDisconnectProjectIdPut
-     * @summary Disconnect Project
-     * @request PUT:/kong/project/disconnect/{project_id}
+     * @name DeleteProjectKongProjectProjectIdDelete
+     * @summary Delete Project
+     * @request DELETE:/kong/project/{project_id}
      * @secure
      */
-    disconnectProjectKongProjectDisconnectProjectIdPut: (projectId: string, params: RequestParams = {}) =>
-      this.request<Disconnect, void | HTTPValidationError>({
-        path: `/kong/project/disconnect/${projectId}`,
-        method: "PUT",
+    deleteProjectKongProjectProjectIdDelete: (projectId: string, params: RequestParams = {}) =>
+      this.request<DeleteProject, void | HTTPValidationError>({
+        path: `/kong/project/${projectId}`,
+        method: "DELETE",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description List all analyses (referred to as consumers by kong) available, can be filtered by analysis_id.
+     *
+     * @tags Kong
+     * @name ListAnalysesKongAnalysisGet
+     * @summary List Analyses
+     * @request GET:/kong/analysis
+     * @secure
+     */
+    listAnalysesKongAnalysisGet: (
+      query?: {
+        /**
+         * Analysis Id
+         * UUID of the analysis.
+         */
+        analysis_id?: string | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ListConsumers, void | HTTPValidationError>({
+        path: `/kong/analysis`,
+        method: "GET",
+        query: query,
         secure: true,
         format: "json",
         ...params,
