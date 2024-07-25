@@ -11,50 +11,23 @@ import type {
   ListServices,
   Service,
 } from "~/services/Api";
+import type { UseFetchOptions } from "#app";
 
-export const useAPIFetch: typeof useFetch = (request, options?) => {
-  const config = useRuntimeConfig();
-  const nuxtApp = useNuxtApp();
-  const baseUrl = config.public.baseURL as string;
-
-  const { user } = useOidcAuth();
-
+export function useAPIFetch<T>(
+  request: string | (() => string),
+  options: UseFetchOptions<T> = {},
+) {
   return useFetch(request, {
-    baseURL: baseUrl,
-    onRequest({ options }) {
-      // Annoying workaround to avoid typescript from complaining - cast to Headers then set explicitly
-      const headers = options.headers
-        ? new Headers(options.headers)
-        : new Headers();
-      headers.set("Authorization", `Bearer ${user?.value.accessToken}`);
-      options.headers = headers;
-    },
-    onRequestError({ request, options, error }) {
-      console.log(request);
-      console.log(options);
-      console.log(error);
-    },
-    onResponse({ response }) {
-      // Process the response data
-      localStorage.setItem("token", response._data.token);
-    },
-    onResponseError({ response }) {
-      // Handle the response errors
-      console.log(response);
-      if (response.status === 401 || response.status === 403) {
-        console.log("User signed out, routing to login");
-        nuxtApp.runWithContext(() => navigateTo("/auth/login"));
-      }
-    },
     ...options,
+    $fetch: useNuxtApp().$hubApi,
   });
-};
+}
 
 // Hub endpoints
-export const approveRejectProjectProposal = (
+export function approveRejectProjectProposal(
   approved: boolean,
   project_id: string,
-) => {
+) {
   const formData = new FormData();
   formData.append("approval_status", approved ? "approved" : "rejected");
 
@@ -62,98 +35,98 @@ export const approveRejectProjectProposal = (
     method: "POST",
     body: formData,
   });
-};
+}
 
-export const getProposals = () => {
+export function getProposals() {
   return useAPIFetch<{ data: ListProjectNodes }>("/project-nodes", {
     method: "GET",
     query: { include: "project,node" },
   });
-};
+}
 
-export const getProjects = () => {
+export function getProjects() {
   return useAPIFetch<{ data: AllProjects }>("/projects", {
     method: "GET",
   });
-};
+}
 
-export const getAnalyses = () => {
+export function getAnalyses() {
   return useAPIFetch<{ data: AllAnalyses }>("/analyses", {
     method: "GET",
   });
-};
+}
 
 // Kong endpoints
-export const getDataStores = (includeProject: boolean) => {
+export function getDataStores(includeProject: boolean) {
   return useAPIFetch<{ data: ListServices }>("/kong/datastore", {
     method: "GET",
     query: {
       detailed: includeProject,
     },
   });
-};
+}
 
-export const createDataStore = (dataStoreProps: Service) => {
+export function createDataStore(dataStoreProps: Service) {
   return useAPIFetch<{ data: Service }>(`/kong/datastore`, {
     method: "POST",
     body: dataStoreProps,
   });
-};
+}
 
-export const deleteDataStore = (dataStoreName: string) => {
+export function deleteDataStore(dataStoreName: string) {
   return useAPIFetch(`/kong/datastore/${dataStoreName}`, {
     method: "DELETE",
   });
-};
+}
 
-export const createProject = (
+export function createProject(
   routeProps: BodyCreateAndConnectProjectToDatastoreKongProjectPost,
-) => {
+) {
   return useAPIFetch<{ data: LinkDataStoreProject }>(`/kong/project`, {
     method: "POST",
     body: routeProps,
   });
-};
+}
 
-export const deleteProjectFromKong = (projectId: string) => {
+export function deleteProjectFromKong(projectId: string) {
   return useAPIFetch<{ data: DeleteProject }>(`/kong/project/${projectId}`, {
     method: "DELETE",
   });
-};
+}
 
-export const connectAnalysisProject = (
+export function connectAnalysisProject(
   consumerProps: BodyCreateAndConnectAnalysisToProjectKongAnalysisPost,
-) => {
+) {
   return useAPIFetch<{ data: LinkProjectAnalysis }>(`/kong/analysis`, {
     method: "POST",
     body: consumerProps,
   });
-};
+}
 
 // PodOrc endpoints
-export const startAnalysis = (analysisProps: BodyCreateAnalysisPoPost) => {
+export function startAnalysis(analysisProps: BodyCreateAnalysisPoPost) {
   return useAPIFetch(`/po`, {
     method: "POST",
     body: analysisProps,
   });
-};
+}
 
-export const stopAnalysis = (analysisId: string) => {
+export function stopAnalysis(analysisId: string) {
   return useAPIFetch(`/po/${analysisId}/stop`, {
     method: "PUT",
   });
-};
+}
 
-export const deleteAnalysis = (analysisId: string) => {
+export function deleteAnalysis(analysisId: string) {
   return useAPIFetch(`/po/${analysisId}/delete`, {
     method: "DELETE",
   });
-};
+}
 
 // Results endpoints
-export const downloadLocalObject = (objectId: string) => {
+export function downloadLocalObject(objectId: string) {
   return useAPIFetch(`/local/${objectId}`, {
     method: "GET",
     headers: { "Content-Disposition": "application/octet-stream" },
   });
-};
+}
