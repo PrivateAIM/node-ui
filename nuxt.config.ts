@@ -4,6 +4,7 @@ import { defineNuxtConfig } from "nuxt/config";
 export default defineNuxtConfig({
   ssr: true,
   modules: ["nuxt-primevue", "nuxt-oidc-auth"],
+
   runtimeConfig: {
     public: {
       baseURL: process.env.HUB_ADAPTER_API_URL || "http://localhost:5000",
@@ -13,6 +14,7 @@ export default defineNuxtConfig({
       keycloakClientSecret: process.env.KEYCLOAK_CLIENT_SECRET || "",
     },
   },
+
   primevue: {
     options: {
       ripple: true,
@@ -21,6 +23,7 @@ export default defineNuxtConfig({
       include: ["Ripple", "Tooltip", "Toast"],
     },
   },
+
   oidc: {
     defaultProvider: "keycloak",
     providers: {
@@ -45,8 +48,11 @@ export default defineNuxtConfig({
       customLoginPage: false,
     },
   },
+
   css: [
     "primevue/resources/themes/lara-dark-amber/theme.css",
     "primeicons/primeicons.css",
   ],
+
+  compatibilityDate: "2024-07-25",
 });

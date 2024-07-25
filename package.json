@@ -24,7 +24,7 @@
     "eslint-plugin-vue": "^9.26.0",
     "globals": "^15.3.0",
     "keycloak-js": "^25.0.0",
-    "nuxt": "^3.11.2",
+    "nuxt": "^3.12.3",
     "nuxt-oidc-auth": "^0.12.0",
     "nuxt-primevue": "^3.0.0",
     "pinia": "^2.1.7",
