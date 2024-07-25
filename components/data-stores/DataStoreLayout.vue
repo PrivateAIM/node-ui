@@ -2,11 +2,13 @@
 import DetailedProjectTable from "~/components/data-stores/DetailedProjectTable.vue";
 import { getDataStores } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
+const { $hubApi } = useNuxtApp();
 import type {
   AllAnalyses,
   AllProjects,
   Analysis,
   DetailedService,
+  ListConsumers,
   Project,
   Route,
 } from "~/services/Api";
@@ -14,6 +16,7 @@ import DetailedDataStoreTable from "~/components/data-stores/DetailedDataStoreTa
 import DetailedAnalysisTable from "~/components/data-stores/DetailedAnalysisTable.vue";
 
 const dataStores = ref();
+const consumers = ref();
 const projectNameMap = ref();
 const analysisNameMap = ref();
 const loading = ref(true);
@@ -23,15 +26,14 @@ const expandRowEntries = [];
 
 onBeforeMount(() => {
   nextTick(async () => {
-    const { user } = useOidcAuth();
-    const config = useRuntimeConfig();
-    const baseUrl = config.public.baseURL as string;
-
     await loadDetailedDataStoreTable();
     loading.value = false;
 
-    projectNameMap.value = await fetchDataFromHub("/projects", baseUrl, user);
-    analysisNameMap.value = await fetchDataFromHub("/analyses", baseUrl, user);
+    projectNameMap.value = await fetchDataFromHub("/projects");
+    analysisNameMap.value = await fetchDataFromHub("/analyses");
+
+    const consumerResp = (await $hubApi("/kong/analysis")) as ListConsumers;
+    consumers.value = consumerResp.data;
   });
 });
 
@@ -59,12 +61,10 @@ async function loadDetailedDataStoreTable() {
   dataStores.value = formattedDataStores;
 }
 
-async function fetchDataFromHub(route: string, hubUrl: string, currentUser) {
-  const response = (await $fetch(hubUrl + route, {
-    method: "GET",
-    headers: { Authorization: `Bearer ${currentUser?.value.accessToken}` },
-  })) as AllProjects | AllAnalyses;
-  const respData = response.data;
+async function fetchDataFromHub(route: string) {
+  const resp = (await $hubApi(route)) as AllProjects | AllAnalyses;
+  const respData = resp.data;
+
   let mappedNames = new Map<string, string | null>();
   if (respData && respData.length > 0) {
     respData.forEach((entry: Project | Analysis) => {
@@ -92,8 +92,13 @@ function extractProjectIdFromPath(paths: string[]): string {
           v-if="projectNameMap"
         />
       </TabPanel>
-      <TabPanel header="Detailed Analyses View" :disabled="true">
-        <DetailedAnalysisTable />
+      <TabPanel header="Detailed Analyses View" :disabled="!consumers">
+        <DetailedAnalysisTable
+          :detailedAnalysisList="consumers"
+          :analysisNameMap="analysisNameMap"
+          :projectNameMap="projectNameMap"
+          v-if="consumers"
+        />
       </TabPanel>
     </TabView>
   </div>

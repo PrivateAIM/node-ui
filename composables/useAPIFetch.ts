@@ -103,6 +103,12 @@ export function connectAnalysisProject(
   });
 }
 
+export function deleteAnalysisFromKong(analysisId: string) {
+  return useAPIFetch<{ data: DeleteProject }>(`/kong/analysis/${analysisId}`, {
+    method: "DELETE",
+  });
+}
+
 // PodOrc endpoints
 export function startAnalysis(analysisProps: BodyCreateAnalysisPoPost) {
   return useAPIFetch(`/po`, {

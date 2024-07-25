@@ -21,12 +21,12 @@ export default defineNuxtPlugin((nuxtApp) => {
       // Process the response data
       localStorage.setItem("token", response._data.token);
     },
-    async onResponseError({ response }) {
+    onResponseError({ response }) {
       // Handle the response errors
       console.log(response);
       if (response.status === 401 || response.status === 403) {
         console.log("User signed out, routing to login");
-        await nuxtApp.runWithContext(() => navigateTo("/auth/login"));
+        nuxtApp.runWithContext(() => navigateTo("/auth/login"));
       }
     },
   });
