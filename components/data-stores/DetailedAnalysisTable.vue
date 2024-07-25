@@ -35,7 +35,11 @@ onBeforeMount(() => {
   compileAnalysisTable();
 });
 
-const confirmDeleteAnalysis = (event, analysisUuid: string) => {
+const confirmDeleteAnalysis = (
+  event,
+  analysisUuid: string,
+  analysisUsername: string,
+) => {
   confirm.require({
     target: event.currentTarget,
     group: "templating",
@@ -46,14 +50,22 @@ const confirmDeleteAnalysis = (event, analysisUuid: string) => {
     rejectIcon: "pi pi-times",
     rejectLabel: "Cancel",
     accept: () => {
-      onConfirmDeleteAnalysis(analysisUuid);
+      onConfirmDeleteAnalysis(analysisUuid, analysisUsername);
     },
     reject: () => {},
   });
 };
 
-function onConfirmDeleteAnalysis(analysisUuid: string) {
-  deleteAnalysisFromKong(analysisUuid);
+function onConfirmDeleteAnalysis(
+  analysisUuid: string,
+  analysisUsername: string,
+) {
+  const { status } = deleteAnalysisFromKong(analysisUuid);
+  if (status.value === "success") {
+    analysisTable.value = analysisTable.value.filter(
+      (analysis: Consumer) => analysis.custom_id !== analysisUsername,
+    );
+  }
 }
 
 function formatAnalysisUuid(kongAnalysisUsername: string) {
@@ -152,7 +164,11 @@ function compileAnalysisTable() {
             aria-label="Delete"
             severity="warning"
             @click="
-              confirmDeleteAnalysis($event, slotProps.data.hubAnalysisUuid)
+              confirmDeleteAnalysis(
+                $event,
+                slotProps.data.hubAnalysisUuid,
+                slotProps.data.kongAnalysisUserName,
+              )
             "
           />
         </template>

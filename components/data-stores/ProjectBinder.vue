@@ -22,8 +22,8 @@ const created = ref("");
 
 onMounted(() => {
   nextTick(async () => {
-    const { data: r1 } = await getProjects();
-    const projectData = r1.value!.data as unknown as Array<Project>;
+    const r1 = await getProjects();
+    const projectData = r1.data as unknown as Array<Project>;
     availableProjects.value = projectData.map((proj: Project) => {
       return { name: proj.name, id: proj.id };
     });
