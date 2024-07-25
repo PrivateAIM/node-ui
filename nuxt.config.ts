@@ -3,6 +3,7 @@ import { defineNuxtConfig } from "nuxt/config";
 
 export default defineNuxtConfig({
   ssr: true,
+  devtools: { enabled: true },
   modules: ["nuxt-primevue", "nuxt-oidc-auth"],
 
   runtimeConfig: {
