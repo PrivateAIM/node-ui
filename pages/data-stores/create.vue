@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import DataStoreCreator from "~/components/data-stores/DataStoreCreator.vue";
-import ProjectBinder from "~/components/data-stores/ProjectBinder.vue";
-import AnalysisBinder from "~/components/data-stores/AnalysisBinder.vue";
+import DataStoreCreator from "~/components/data-stores/managers/DataStoreCreator.vue";
+import ProjectBinder from "~/components/data-stores/managers/ProjectBinder.vue";
+import AnalysisBinder from "~/components/data-stores/managers/AnalysisBinder.vue";
 
 definePageMeta({
   middleware: ["auth"],

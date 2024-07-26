@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DetailedProjectTable from "~/components/data-stores/DetailedProjectTable.vue";
+import DetailedProjectTable from "~/components/data-stores/tables/DetailedProjectTable.vue";
 import { getDataStores } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
 const { $hubApi } = useNuxtApp();
@@ -12,8 +12,8 @@ import type {
   Project,
   Route,
 } from "~/services/Api";
-import DetailedDataStoreTable from "~/components/data-stores/DetailedDataStoreTable.vue";
-import DetailedAnalysisTable from "~/components/data-stores/DetailedAnalysisTable.vue";
+import DetailedDataStoreTable from "~/components/data-stores/tables/DetailedDataStoreTable.vue";
+import DetailedAnalysisTable from "~/components/data-stores/tables/DetailedAnalysisTable.vue";
 
 const dataStores = ref();
 const consumers = ref();
