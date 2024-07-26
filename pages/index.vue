@@ -45,4 +45,8 @@ import KeycloakAuth from "~/components/KeycloakAuth.vue";
 .tabCard {
   margin-top: 40px;
 }
+
+.p-tabview-header {
+  margin-right: 5px;
+}
 </style>
