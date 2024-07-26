@@ -18,7 +18,7 @@ import KeycloakAuth from "~/components/KeycloakAuth.vue";
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
 #home {
   display: flex;
   justify-content: center;
@@ -40,5 +40,9 @@ import KeycloakAuth from "~/components/KeycloakAuth.vue";
 
 .row {
   display: flex;
+}
+
+.tabCard {
+  margin-top: 40px;
 }
 </style>

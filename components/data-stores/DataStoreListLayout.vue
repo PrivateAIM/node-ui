@@ -80,8 +80,8 @@ function extractProjectIdFromPath(paths: string[]): string {
 </script>
 
 <template>
-  <div class="card">
-    <TabView style="margin-top: 40px">
+  <div class="card tabCard">
+    <TabView>
       <TabPanel header="Detailed Data Store View">
         <DetailedDataStoreTable :stores="dataStores" />
       </TabPanel>

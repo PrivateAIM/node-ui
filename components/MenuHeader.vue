@@ -40,12 +40,12 @@ const items = ref([
     icon: "pi pi-warehouse",
     items: [
       {
-        label: "List Data Stores",
-        icon: "pi pi-database",
+        label: "List Resources",
+        icon: "pi pi-list",
         route: "/data-stores",
       },
       {
-        label: "Create Data Store",
+        label: "Manage Links",
         icon: "pi pi-plus",
         route: "/data-stores/create",
       },
