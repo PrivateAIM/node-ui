@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DataStoreLayout from "~/components/data-stores/DataStoreLayout.vue";
+import DataStoreLayout from "~/components/data-stores/DataStoreListLayout.vue";
 
 definePageMeta({
   middleware: ["auth"],
