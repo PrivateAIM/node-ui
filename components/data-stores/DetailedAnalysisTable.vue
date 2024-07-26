@@ -3,6 +3,7 @@ import { deleteAnalysisFromKong } from "~/composables/useAPIFetch";
 import { useConfirm } from "primevue/useconfirm";
 import type { Consumer } from "~/services/Api";
 import { formatDataRow } from "~/utils/format-data-row";
+import { extractUuid } from "~/utils/extract-uuid-from-kong-username";
 
 const props = defineProps({
   detailedAnalysisList: {
@@ -68,12 +69,6 @@ function onConfirmDeleteAnalysis(
   }
 }
 
-function formatAnalysisUuid(kongAnalysisUsername: string) {
-  const analysisUuid = kongAnalysisUsername.split("-");
-  analysisUuid.pop();
-  return analysisUuid.join("-");
-}
-
 function compileAnalysisTable() {
   let elongatedTableRows = new Array<analysisRow>();
   const analysisNameMap = props.analysisNameMap;
@@ -83,7 +78,7 @@ function compileAnalysisTable() {
 
   if (consumers && consumers.length > 0) {
     consumers.forEach((consumer: Consumer) => {
-      const analysisUuid = formatAnalysisUuid(consumer.username!);
+      const analysisUuid = extractUuid(consumer.username!);
       const analysisName = analysisNameMap.has(analysisUuid)
         ? analysisNameMap.get(analysisUuid)
         : "N/A";

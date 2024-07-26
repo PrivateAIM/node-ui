@@ -2,6 +2,7 @@
 import { deleteProjectFromKong } from "~/composables/useAPIFetch";
 import { useConfirm } from "primevue/useconfirm";
 import type { DetailedService, Route } from "~/services/Api";
+import { extractUuid } from "~/utils/extract-uuid-from-kong-username";
 
 const props = defineProps({
   detailedStoreList: Array<DetailedService>,
@@ -25,12 +26,6 @@ const confirm = useConfirm();
 onBeforeMount(() => {
   meltDataStoreTable();
 });
-
-function formatProjectUuid(kongProjectName: string) {
-  const projectUuid = kongProjectName.split("-");
-  projectUuid.pop();
-  return projectUuid.join("-");
-}
 
 const confirmDeleteProject = (event, projectUuid: string) => {
   confirm.require({
@@ -62,7 +57,7 @@ function meltDataStoreTable() {
       const routes = store.routes;
       if (routes && routes.length > 0) {
         routes.forEach((proj: Route) => {
-          const projectUuid = formatProjectUuid(proj.name!);
+          const projectUuid = extractUuid(proj.name!);
           const newRow = {
             dataStore: store.name!,
             kongProjectId: proj.id!,
