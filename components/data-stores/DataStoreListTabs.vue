@@ -20,21 +20,21 @@ const dataStores = ref();
 const consumers = ref();
 const projectNameMap = ref();
 const analysisNameMap = ref();
-const loading = ref(true);
 
 const dataRowUnixCols = ["created_at", "updated_at"];
 const expandRowEntries = [];
 
 onBeforeMount(() => {
   nextTick(async () => {
-    await loadDetailedDataStoreTable();
-    loading.value = false;
+    const tableLoadSuccessful = await loadDetailedDataStoreTable();
 
-    projectNameMap.value = await fetchDataFromHub("/projects");
-    analysisNameMap.value = await fetchDataFromHub("/analyses");
+    if (tableLoadSuccessful) {
+      projectNameMap.value = await fetchDataFromHub("/projects");
+      analysisNameMap.value = await fetchDataFromHub("/analyses");
 
-    const consumerResp = (await $hubApi("/kong/analysis")) as ListConsumers;
-    consumers.value = consumerResp.data;
+      const consumerResp = (await $hubApi("/kong/analysis")) as ListConsumers;
+      consumers.value = consumerResp.data;
+    }
   });
 });
 
@@ -61,8 +61,10 @@ async function loadDetailedDataStoreTable() {
       }
     });
     dataStores.value = formattedDataStores;
+    return true;
   } else if (error.value?.statusCode === 500) {
     showConnectionErrorToast();
+    dataStores.value = [];
   }
 }
 
