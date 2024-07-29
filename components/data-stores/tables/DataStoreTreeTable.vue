@@ -28,7 +28,6 @@ const loading = ref(true);
 onMounted(() => {
   nextTick(async () => {
     const pNodes = formatAnalysisNodes();
-    console.log(pNodes);
     formatDataStoreNodes(pNodes);
     loading.value = false;
   });
