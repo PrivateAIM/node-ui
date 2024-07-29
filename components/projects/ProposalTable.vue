@@ -77,11 +77,17 @@ function updateTable(newData: ProjectNode) {
       ></Column>
       <Column field="created_at" header="Created" :sortable="true"></Column>
       <Column
+        class="timeCol"
         field="updated_at"
         header="Last Updated"
         :sortable="true"
       ></Column>
-      <Column field="id" header="Set Approval" :exportable="false">
+      <Column
+        field="id"
+        header="Set Approval"
+        style="min-width: 10em"
+        :exportable="false"
+      >
         <template #body="slotProps">
           <ApproveRejectButtons
             :projectId="slotProps.data.id"
@@ -98,4 +104,4 @@ function updateTable(newData: ProjectNode) {
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style lang="scss"></style>

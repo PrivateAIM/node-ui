@@ -75,14 +75,14 @@ function onToggleRowExpansion(rowIds) {
       />
       <Column field="build_status" header="Build Status" :sortable="true" />
       <Column field="run_status" header="Run Status" :sortable="true" />
-      <Column
-        class="namedCol"
-        field="project.name"
-        header="Project"
-        :sortable="true"
-      />
+      <Column field="project.name" header="Project" :sortable="true" />
       <Column field="nodes" header="Number Nodes" :sortable="true" />
-      <Column field="expand.id" header="Toggle Analysis" :exportable="false">
+      <Column
+        field="expand.id"
+        header="Toggle Analysis"
+        style="min-width: 13em"
+        :exportable="false"
+      >
         <template #body="slotProps">
           <AnalysisControlButtons
             :analysisStatus="slotProps.data.run_status"
@@ -100,8 +100,4 @@ function onToggleRowExpansion(rowIds) {
   </div>
 </template>
 
-<style>
-.namedCol {
-  max-width: 20rem;
-}
-</style>
+<style></style>
