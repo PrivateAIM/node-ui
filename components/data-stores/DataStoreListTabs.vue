@@ -15,6 +15,7 @@ import type {
 import DetailedDataStoreTable from "~/components/data-stores/tables/DetailedDataStoreTable.vue";
 import DetailedAnalysisTable from "~/components/data-stores/tables/DetailedAnalysisTable.vue";
 import { showConnectionErrorToast } from "~/composables/connectionErrorToast";
+import DataStoreTreeTable from "~/components/data-stores/tables/DataStoreTreeTable.vue";
 
 const dataStores = ref();
 const consumers = ref();
@@ -89,6 +90,15 @@ function extractProjectIdFromPath(paths: string[]): string {
 <template>
   <div class="card tabCard">
     <TabView>
+      <TabPanel header="Detailed Data Store View">
+        <DataStoreTreeTable
+          v-if="consumers"
+          :dataStoreList="dataStores"
+          :analyses="consumers"
+          :analysisNameMap="analysisNameMap"
+          :projectNameMap="projectNameMap"
+        />
+      </TabPanel>
       <TabPanel header="Detailed Data Store View">
         <DetailedDataStoreTable :stores="dataStores" />
       </TabPanel>
