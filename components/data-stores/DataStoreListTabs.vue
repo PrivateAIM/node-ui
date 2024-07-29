@@ -90,7 +90,7 @@ function extractProjectIdFromPath(paths: string[]): string {
 <template>
   <div class="card tabCard">
     <TabView>
-      <TabPanel header="Detailed Data Store View">
+      <TabPanel header="Data Store Tree Table">
         <DataStoreTreeTable
           v-if="consumers"
           :dataStoreList="dataStores"
