@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { approveRejectProjectProposal } from "~/composables/useAPIFetch";
+import { useToastService } from "~/composables/connectionErrorToast";
 
 const props = defineProps({
   projectId: String,
 });
 
-const toast = useToast();
+const toast = useToastService();
 
 const emit = defineEmits(["updatedRow"]);
 

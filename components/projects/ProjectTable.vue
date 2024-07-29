@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { getProjects } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
+import { showConnectionErrorToast } from "~/composables/connectionErrorToast";
 
 const projects = ref();
 const loading = ref(true);
@@ -10,12 +11,20 @@ const expandRowEntries = [];
 
 onMounted(() => {
   nextTick(async () => {
-    const { data: response } = await getProjects();
-    projects.value = formatDataRow(
-      response.value!.data as unknown as Map<string, string | number | null>[],
-      dataRowUnixCols,
-      expandRowEntries,
-    );
+    const { data: response, status, error } = await getProjects();
+    if (status.value === "success") {
+      projects.value = formatDataRow(
+        response.value!.data as unknown as Map<
+          string,
+          string | number | null
+        >[],
+        dataRowUnixCols,
+        expandRowEntries,
+      );
+    } else if (error.value?.statusCode === 500) {
+      showConnectionErrorToast();
+    }
+
     loading.value = false;
   });
 });

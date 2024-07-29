@@ -14,6 +14,7 @@ import type {
 } from "~/services/Api";
 import DetailedDataStoreTable from "~/components/data-stores/tables/DetailedDataStoreTable.vue";
 import DetailedAnalysisTable from "~/components/data-stores/tables/DetailedAnalysisTable.vue";
+import { showConnectionErrorToast } from "~/composables/connectionErrorToast";
 
 const dataStores = ref();
 const consumers = ref();
@@ -38,27 +39,31 @@ onBeforeMount(() => {
 });
 
 async function loadDetailedDataStoreTable() {
-  const { data: response } = await getDataStores(true);
+  const { data: response, status, error } = await getDataStores(true);
 
-  let formattedDataStores = formatDataRow(
-    response.value!.data,
-    dataRowUnixCols,
-    expandRowEntries,
-  ) as DetailedService[];
+  if (status.value === "success") {
+    let formattedDataStores = formatDataRow(
+      response.value!.data,
+      dataRowUnixCols,
+      expandRowEntries,
+    ) as DetailedService[];
 
-  formattedDataStores.forEach((store: DetailedService) => {
-    if (store.routes!.length) {
-      store.routes = formatDataRow(
-        store.routes,
-        dataRowUnixCols,
-        expandRowEntries,
-      );
-      store.routes?.forEach((proj: Route) => {
-        proj["projectId"] = extractProjectIdFromPath(proj.paths! as string[]);
-      });
-    }
-  });
-  dataStores.value = formattedDataStores;
+    formattedDataStores.forEach((store: DetailedService) => {
+      if (store.routes!.length) {
+        store.routes = formatDataRow(
+          store.routes,
+          dataRowUnixCols,
+          expandRowEntries,
+        );
+        store.routes?.forEach((proj: Route) => {
+          proj["projectId"] = extractProjectIdFromPath(proj.paths! as string[]);
+        });
+      }
+    });
+    dataStores.value = formattedDataStores;
+  } else if (error.value?.statusCode === 500) {
+    showConnectionErrorToast();
+  }
 }
 
 async function fetchDataFromHub(route: string) {

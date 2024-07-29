@@ -5,6 +5,7 @@ import { formatDataRow } from "~/utils/format-data-row";
 import TableRowMetadata from "~/components/TableRowMetadata.vue";
 import type { ProjectNode } from "~/services/Api";
 import ExpandRowButtons from "~/components/table/ExpandRowButtons.vue";
+import { showConnectionErrorToast } from "~/composables/connectionErrorToast";
 
 const proposals = ref();
 const expandedRows = ref({});
@@ -15,12 +16,19 @@ const expandRowEntries = ["project_id", "node_id"];
 
 onMounted(() => {
   nextTick(async () => {
-    const { data: response } = await getProposals();
-    proposals.value = formatDataRow(
-      response.value!.data as unknown as Map<string, string | number | null>[],
-      dataRowUnixCols,
-      expandRowEntries,
-    );
+    const { data: response, status, error } = await getProposals();
+    if (status.value === "success") {
+      proposals.value = formatDataRow(
+        response.value!.data as unknown as Map<
+          string,
+          string | number | null
+        >[],
+        dataRowUnixCols,
+        expandRowEntries,
+      );
+    } else if (error.value?.statusCode === 500) {
+      showConnectionErrorToast();
+    }
     loading.value = false;
   });
 });

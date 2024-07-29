@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ResourceManagerLayout from "~/components/data-stores/ResourceManagerLayout.vue";
+import ResourceManagerLayout from "~/components/data-stores/ResourceManagerTabs.vue";
 
 definePageMeta({
   middleware: ["auth"],

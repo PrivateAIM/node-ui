@@ -12,9 +12,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       headers.set("Authorization", `Bearer ${user?.value.accessToken}`);
       options.headers = headers;
     },
-    onRequestError({ request, options, error }) {
-      console.log(request);
-      console.log(options);
+    onRequestError({ error }) {
       console.log(error);
     },
     onResponse({ response }) {

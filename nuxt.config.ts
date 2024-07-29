@@ -54,4 +54,6 @@ export default defineNuxtConfig({
     "primevue/resources/themes/lara-dark-amber/theme.css",
     "primeicons/primeicons.css",
   ],
+
+  compatibilityDate: "2024-07-29",
 });

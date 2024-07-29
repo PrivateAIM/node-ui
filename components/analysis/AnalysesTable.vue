@@ -3,6 +3,7 @@ import { getAnalyses } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
 import TableRowMetadata from "~/components/TableRowMetadata.vue";
 import ExpandRowButtons from "~/components/table/ExpandRowButtons.vue";
+import { showConnectionErrorToast } from "~/composables/connectionErrorToast";
 
 const analyses = ref();
 const expandedRows = ref();
@@ -19,12 +20,19 @@ const expandRowEntries = [
 
 onMounted(() => {
   nextTick(async () => {
-    const { data: response } = await getAnalyses();
-    analyses.value = formatDataRow(
-      response.value!.data as unknown as Map<string, string | number | null>[],
-      ["created_at", "updated_at"],
-      expandRowEntries,
-    );
+    const { data: response, status, error } = await getAnalyses();
+    if (status.value === "success") {
+      analyses.value = formatDataRow(
+        response.value!.data as unknown as Map<
+          string,
+          string | number | null
+        >[],
+        ["created_at", "updated_at"],
+        expandRowEntries,
+      );
+    } else if (error.value?.statusCode === 500) {
+      showConnectionErrorToast();
+    }
     loading.value = false;
   });
 });
