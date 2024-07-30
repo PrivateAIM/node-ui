@@ -20,20 +20,16 @@ const dataStoreTypes = ref(["FHIR", "S3"]);
 const loading = ref(false);
 const created = ref("");
 
-onMounted(() => {
-  nextTick(async () => {
-    const { data: projects } = await getProjects();
-    const projectData = projects.value!.data as unknown as Array<Project>;
-    availableProjects.value = projectData.map((proj: Project) => {
-      return { name: proj.name, id: proj.id };
-    });
+const { data: projects } = await getProjects();
+const projectData = projects.value!.data as unknown as Array<Project>;
+availableProjects.value = projectData.map((proj: Project) => {
+  return { name: proj.name, id: proj.id };
+});
 
-    const { data: r2 } = await getDataStores(false);
-    const dataStoreData = r2.value!.data as unknown as Array<Route>;
-    availableDataStores.value = dataStoreData.map((ds: Route) => {
-      return { name: ds.name, id: ds.id };
-    });
-  });
+const { data: r2 } = await getDataStores(false);
+const dataStoreData = r2.value!.data as unknown as Array<Route>;
+availableDataStores.value = dataStoreData.map((ds: Route) => {
+  return { name: ds.name, id: ds.id };
 });
 
 async function onSubmitBinding() {

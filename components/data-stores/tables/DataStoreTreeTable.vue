@@ -23,15 +23,9 @@ const props = defineProps({
 });
 
 const nodes = ref();
-const loading = ref(true);
 
-onMounted(() => {
-  nextTick(async () => {
-    const pNodes = formatAnalysisNodes();
-    formatDataStoreNodes(pNodes);
-    loading.value = false;
-  });
-});
+const pNodes = formatAnalysisNodes();
+formatDataStoreNodes(pNodes);
 
 function formatAnalysisNodes() {
   let projectNodes = new Map<string, TreeNode[]>();
@@ -99,7 +93,7 @@ function formatDataStoreNodes(projectNodeMap: Map<string, TreeNode[]>) {
 
 <template>
   <div class="card">
-    <TreeTable :value="nodes" :loading="loading">
+    <TreeTable :value="nodes">
       <Column field="name" header="Name" expander></Column>
       <Column field="uuid" header="UUID"></Column>
       <Column field="resourceType" header="Type"></Column>

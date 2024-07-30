@@ -16,20 +16,16 @@ const availableAnalyses = ref();
 const loading = ref(false);
 const created = ref("");
 
-onMounted(() => {
-  nextTick(async () => {
-    const { data: projects } = await getProjects();
-    const projectData = projects.value!.data as unknown as Array<Project>;
-    availableProjects.value = projectData.map((proj: Project) => {
-      return { name: proj.name, id: proj.id };
-    });
+const { data: projects } = await getProjects({ lazy: true });
+const projectData = projects.value!.data as unknown as Array<Project>;
+availableProjects.value = projectData.map((proj: Project) => {
+  return { name: proj.name, id: proj.id };
+});
 
-    const { data: analyses } = await getAnalyses();
-    const analysisData = analyses.value!.data as unknown as Array<Analysis>;
-    availableAnalyses.value = analysisData.map((analysis: Analysis) => {
-      return { id: analysis.id, name: analysis.name };
-    });
-  });
+const { data: analyses } = await getAnalyses({ lazy: true });
+const analysisData = analyses.value!.data as unknown as Array<Analysis>;
+availableAnalyses.value = analysisData.map((analysis: Analysis) => {
+  return { id: analysis.id, name: analysis.name };
 });
 
 async function onSubmitProjectAnalysisBinding() {

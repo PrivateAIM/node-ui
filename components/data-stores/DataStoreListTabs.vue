@@ -1,17 +1,13 @@
 <script setup lang="ts">
 import DetailedProjectTable from "~/components/data-stores/tables/DetailedProjectTable.vue";
-import { getDataStores } from "~/composables/useAPIFetch";
+import {
+  getAnalyses,
+  getAnalysesFromKong,
+  getDataStores,
+  getProjects,
+} from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
-const { $hubApi } = useNuxtApp();
-import type {
-  AllAnalyses,
-  AllProjects,
-  Analysis,
-  DetailedService,
-  ListConsumers,
-  Project,
-  Route,
-} from "~/services/Api";
+import type { Analysis, DetailedService, Project, Route } from "~/services/Api";
 import DetailedDataStoreTable from "~/components/data-stores/tables/DetailedDataStoreTable.vue";
 import DetailedAnalysisTable from "~/components/data-stores/tables/DetailedAnalysisTable.vue";
 import { showConnectionErrorToast } from "~/composables/connectionErrorToast";
@@ -25,19 +21,15 @@ const analysisNameMap = ref();
 const dataRowUnixCols = ["created_at", "updated_at"];
 const expandRowEntries = [];
 
-onBeforeMount(() => {
-  nextTick(async () => {
-    const tableLoadSuccessful = await loadDetailedDataStoreTable();
+const tableLoadSuccessful = await loadDetailedDataStoreTable();
 
-    if (tableLoadSuccessful) {
-      projectNameMap.value = await fetchDataFromHub("/projects");
-      analysisNameMap.value = await fetchDataFromHub("/analyses");
+if (tableLoadSuccessful) {
+  projectNameMap.value = await fetchDataFromHub(true);
+  analysisNameMap.value = await fetchDataFromHub(false);
 
-      const consumerResp = (await $hubApi("/kong/analysis")) as ListConsumers;
-      consumers.value = consumerResp.data;
-    }
-  });
-});
+  const { data: consumerResp } = await getAnalysesFromKong();
+  consumers.value = consumerResp.value!.data;
+}
 
 async function loadDetailedDataStoreTable() {
   const { data: response, status, error } = await getDataStores(true);
@@ -69,13 +61,19 @@ async function loadDetailedDataStoreTable() {
   }
 }
 
-async function fetchDataFromHub(route: string) {
-  const resp = (await $hubApi(route)) as AllProjects | AllAnalyses;
-  const respData = resp.data;
+async function fetchDataFromHub(projects: boolean) {
+  let hubData;
+  if (projects) {
+    const { data: resp } = await getProjects();
+    hubData = resp.value!.data;
+  } else {
+    const { data: resp } = await getAnalyses();
+    hubData = resp.value!.data;
+  }
 
   let mappedNames = new Map<string, string | null>();
-  if (respData && respData.length > 0) {
-    respData.forEach((entry: Project | Analysis) => {
+  if (hubData && hubData.length > 0) {
+    hubData.forEach((entry: Project | Analysis) => {
       mappedNames.set(entry.id, entry.name ? entry.name : "N/A");
     });
   }
@@ -92,14 +90,13 @@ function extractProjectIdFromPath(paths: string[]): string {
     <TabView>
       <TabPanel header="Data Store Tree Table">
         <DataStoreTreeTable
-          v-if="consumers"
           :dataStoreList="dataStores"
           :analyses="consumers"
           :analysisNameMap="analysisNameMap"
           :projectNameMap="projectNameMap"
         />
       </TabPanel>
-      <TabPanel header="Detailed Data Store View">
+      <TabPanel header="Detailed Data Store View" :disabled="!dataStores">
         <DetailedDataStoreTable :stores="dataStores" />
       </TabPanel>
       <TabPanel header="Detailed Projects View" :disabled="!projectNameMap">
@@ -109,7 +106,7 @@ function extractProjectIdFromPath(paths: string[]): string {
           v-if="projectNameMap"
         />
       </TabPanel>
-      <TabPanel header="Detailed Analyses View" :disabled="!consumers">
+      <TabPanel header="Detailed Analyses View">
         <DetailedAnalysisTable
           :detailedAnalysisList="consumers"
           :analysisNameMap="analysisNameMap"

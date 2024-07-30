@@ -5,9 +5,8 @@ import TableRowMetadata from "~/components/TableRowMetadata.vue";
 import ExpandRowButtons from "~/components/table/ExpandRowButtons.vue";
 import { showConnectionErrorToast } from "~/composables/connectionErrorToast";
 
-const analyses = ref();
 const expandedRows = ref();
-const loading = ref(true);
+const analyses = ref();
 
 const expandRowEntries = [
   "id",
@@ -18,24 +17,17 @@ const expandRowEntries = [
   "updated_at",
 ];
 
-onMounted(() => {
-  nextTick(async () => {
-    const { data: response, status, error } = await getAnalyses();
-    if (status.value === "success") {
-      analyses.value = formatDataRow(
-        response.value!.data as unknown as Map<
-          string,
-          string | number | null
-        >[],
-        ["created_at", "updated_at"],
-        expandRowEntries,
-      );
-    } else if (error.value?.statusCode === 500) {
-      showConnectionErrorToast();
-    }
-    loading.value = false;
-  });
-});
+const { data: response, status, error } = await getAnalyses();
+
+if (status.value === "success") {
+  analyses.value = formatDataRow(
+    response.value!.data,
+    ["created_at", "updated_at"],
+    expandRowEntries,
+  );
+} else if (error.value?.statusCode === 500) {
+  showConnectionErrorToast();
+}
 
 function onToggleRowExpansion(rowIds) {
   expandedRows.value = rowIds;
@@ -56,7 +48,6 @@ function onToggleRowExpansion(rowIds) {
       paginator
       :rows="10"
       :rowsPerPageOptions="[10, 20, 50]"
-      :loading="loading"
       tableStyle="min-width: 50rem"
     >
       <template #empty> No analyses found. </template>

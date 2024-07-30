@@ -4,14 +4,9 @@ import { useConfirm } from "primevue/useconfirm";
 import type { DetailedService } from "~/services/Api";
 
 const confirm = useConfirm();
-const loading = ref(true);
 
 const props = defineProps({
   stores: Array<DetailedService>,
-});
-
-onUpdated(() => {
-  loading.value = false;
 });
 
 function onConfirmDeleteDataStore(dsName: string) {
@@ -43,7 +38,6 @@ const confirmDelete = (event, dsName: string) => {
       paginator
       :rows="10"
       :rowsPerPageOptions="[10, 20, 50]"
-      :loading="loading"
       tableStyle="min-width: 50rem"
     >
       <template #empty> No data stores found. </template>
