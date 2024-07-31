@@ -4,10 +4,18 @@
   <footer>
     <div class="page-footer">
       <div class="footer-description">
-        <a href="https://github.com/PrivateAIM" class="github-link">
-          <i class="pi pi-github"></i>
-          Node UI
-        </a>
+        <div class="github">
+          <a
+            href="https://github.com/PrivateAIM/node-ui/issues"
+            class="github-link"
+          >
+            <i class="pi pi-github"></i>
+            Submit an Issue
+          </a>
+          - © 2024
+          <a href="https://privateaim.de/">PrivateAim</a>
+        </div>
+        <div class="copyright"></div>
       </div>
     </div>
   </footer>

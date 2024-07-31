@@ -32,6 +32,7 @@ function updateTable(newData: ProjectNode) {
   for (let row of proposals.value) {
     if (row.id === newData.id) {
       row.approval_status = newData.approval_status;
+      return;
     }
   }
 }
