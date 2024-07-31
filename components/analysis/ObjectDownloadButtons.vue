@@ -1,19 +1,33 @@
 <script setup lang="ts">
-import { downloadLocalObject } from "~/composables/useAPIFetch";
+import {
+  downloadIntermediateObject,
+  downloadLocalObject,
+} from "~/composables/useAPIFetch";
 
 const props = defineProps({
-  objectId: String,
-  local: Boolean,
+  objectId: {
+    type: String,
+    required: true,
+  },
+  isLocal: {
+    type: Boolean,
+    default() {
+      return true;
+    },
+  },
 });
 
 const toast = useToast();
 
-async function onDownloadLocalObject() {
+async function onDownloadObject() {
   const {
     data: response,
     status,
     error,
-  } = await downloadLocalObject(props.objectId!);
+  } = props.isLocal
+    ? await downloadLocalObject(props.objectId!)
+    : await downloadIntermediateObject(props.objectId!);
+
   if (status.value === "success") {
     const a = document.createElement("a");
     a.href = window.URL.createObjectURL(response.value as Blob);
@@ -25,7 +39,7 @@ async function onDownloadLocalObject() {
       severity: "error",
       summary: "Download failed",
       detail: `Unable to download object ${props.objectId}`,
-      life: 3000,
+      life: 6000,
     });
   }
 }
@@ -39,7 +53,7 @@ async function onDownloadLocalObject() {
       v-tooltip="'Download file'"
       severity="info"
       style="margin-right: 10px"
-      @click="onDownloadLocalObject"
+      @click="onDownloadObject"
     />
   </div>
 </template>

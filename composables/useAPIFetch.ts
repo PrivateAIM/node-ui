@@ -163,3 +163,11 @@ export function downloadLocalObject(objectId: string, opts?) {
     headers: { "Content-Disposition": "application/octet-stream" },
   });
 }
+
+export function downloadIntermediateObject(objectId: string, opts?) {
+  return useAPIFetch(`/intermediate/${objectId}`, {
+    ...opts,
+    method: "GET",
+    headers: { "Content-Disposition": "application/octet-stream" },
+  });
+}
