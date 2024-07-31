@@ -24,8 +24,10 @@ const props = defineProps({
 
 const nodes = ref();
 
-const pNodes = formatAnalysisNodes();
-formatDataStoreNodes(pNodes);
+onMounted(() => {
+  const pNodes = formatAnalysisNodes();
+  formatDataStoreNodes(pNodes);
+});
 
 function formatAnalysisNodes() {
   let projectNodes = new Map<string, TreeNode[]>();

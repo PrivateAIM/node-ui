@@ -14,29 +14,50 @@ import { showConnectionErrorToast } from "~/composables/connectionErrorToast";
 import DataStoreTreeTable from "~/components/data-stores/tables/DataStoreTreeTable.vue";
 
 const dataStores = ref();
-const consumers = ref();
+const consumersAnalyses = ref();
 const projectNameMap = ref();
 const analysisNameMap = ref();
+
+const loading = ref(true);
 
 const dataRowUnixCols = ["created_at", "updated_at"];
 const expandRowEntries = [];
 
-const tableLoadSuccessful = await loadDetailedDataStoreTable();
+const {
+  data: dsResp,
+  status: dsStatus,
+  error: dsError,
+} = await getDataStores(true, { lazy: true });
 
-if (tableLoadSuccessful) {
-  projectNameMap.value = await fetchDataFromHub(true);
-  analysisNameMap.value = await fetchDataFromHub(false);
+const { data: projectResp } = await getProjects({ lazy: true });
+const { data: analysisResp } = await getAnalyses({ lazy: true });
+const { data: consumerResp } = await getAnalysesFromKong({
+  lazy: true,
+});
 
-  const { data: consumerResp } = await getAnalysesFromKong();
-  consumers.value = consumerResp.value!.data;
-}
+watch(dsResp, (parsedStores) => {
+  const dataStoreData = parsedStores!.data as unknown as Array<Route>;
+  loadDetailedDataStoreTable(dataStoreData, dsStatus, dsError);
+});
 
-async function loadDetailedDataStoreTable() {
-  const { data: response, status, error } = await getDataStores(true);
+watch(projectResp, (projectArray) => {
+  const projects = projectArray!.data as unknown as Project[];
+  projectNameMap.value = mapDataFromHub(projects);
+});
 
+watch(analysisResp, (analysisArray) => {
+  const analyses = analysisArray!.data as unknown as Analysis[];
+  analysisNameMap.value = mapDataFromHub(analyses);
+});
+
+watch(consumerResp, (consumerData) => {
+  consumersAnalyses.value = consumerData!.data;
+});
+
+async function loadDetailedDataStoreTable(responseData, status, error) {
   if (status.value === "success") {
     let formattedDataStores = formatDataRow(
-      response.value!.data,
+      responseData,
       dataRowUnixCols,
       expandRowEntries,
     ) as DetailedService[];
@@ -54,23 +75,14 @@ async function loadDetailedDataStoreTable() {
       }
     });
     dataStores.value = formattedDataStores;
-    return true;
   } else if (error.value?.statusCode === 500) {
     showConnectionErrorToast();
     dataStores.value = [];
   }
+  loading.value = false;
 }
 
-async function fetchDataFromHub(projects: boolean) {
-  let hubData;
-  if (projects) {
-    const { data: resp } = await getProjects();
-    hubData = resp.value!.data;
-  } else {
-    const { data: resp } = await getAnalyses();
-    hubData = resp.value!.data;
-  }
-
+function mapDataFromHub(hubData: Project[] | Analysis[]) {
   let mappedNames = new Map<string, string | null>();
   if (hubData && hubData.length > 0) {
     hubData.forEach((entry: Project | Analysis) => {
@@ -88,30 +100,31 @@ function extractProjectIdFromPath(paths: string[]): string {
 <template>
   <div class="card tabCard">
     <TabView>
-      <TabPanel header="Data Store Tree Table">
-        <DataStoreTreeTable
-          :dataStoreList="dataStores"
-          :analyses="consumers"
-          :analysisNameMap="analysisNameMap"
-          :projectNameMap="projectNameMap"
-        />
-      </TabPanel>
-      <TabPanel header="Detailed Data Store View" :disabled="!dataStores">
-        <DetailedDataStoreTable :stores="dataStores" />
+      <TabPanel header="Detailed Data Store View">
+        <DetailedDataStoreTable :stores="dataStores" :loading="loading" />
       </TabPanel>
       <TabPanel header="Detailed Projects View" :disabled="!projectNameMap">
         <DetailedProjectTable
+          v-if="projectNameMap"
           :detailedStoreList="dataStores"
           :projectNameMap="projectNameMap"
-          v-if="projectNameMap"
         />
       </TabPanel>
-      <TabPanel header="Detailed Analyses View">
+      <TabPanel header="Detailed Analyses View" :disabled="!analysisNameMap">
         <DetailedAnalysisTable
-          :detailedAnalysisList="consumers"
+          v-if="analysisNameMap && projectNameMap"
+          :detailedAnalysisList="consumersAnalyses"
           :analysisNameMap="analysisNameMap"
           :projectNameMap="projectNameMap"
-          v-if="consumers"
+        />
+      </TabPanel>
+      <TabPanel header="Data Store Tree Table" :disabled="!analysisNameMap">
+        <DataStoreTreeTable
+          v-if="analysisNameMap"
+          :dataStoreList="dataStores"
+          :analyses="consumersAnalyses"
+          :analysisNameMap="analysisNameMap"
+          :projectNameMap="projectNameMap"
         />
       </TabPanel>
     </TabView>

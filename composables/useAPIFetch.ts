@@ -104,13 +104,10 @@ export function deleteProjectFromKong(projectId: string, opts?) {
   });
 }
 
-export function getAnalysesFromKong(analysisId?: string, opts?) {
+export function getAnalysesFromKong(opts?) {
   return useAPIFetch<{ data: ListConsumers }>(`/kong/analysis`, {
     ...opts,
     method: "GET",
-    query: {
-      analysis_id: analysisId,
-    },
   });
 }
 

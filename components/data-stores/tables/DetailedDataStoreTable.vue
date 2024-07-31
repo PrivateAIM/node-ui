@@ -7,6 +7,7 @@ const confirm = useConfirm();
 
 const props = defineProps({
   stores: Array<DetailedService>,
+  loading: Boolean,
 });
 
 function onConfirmDeleteDataStore(dsName: string) {
@@ -36,6 +37,7 @@ const confirmDelete = (event, dsName: string) => {
     <DataTable
       :value="props.stores"
       paginator
+      :loading="props.loading"
       :rows="10"
       :rowsPerPageOptions="[10, 20, 50]"
       tableStyle="min-width: 50rem"
