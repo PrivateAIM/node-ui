@@ -39,58 +39,66 @@ function updateTable(newData: ProjectNode) {
 
 <template>
   <div class="proposalTable">
-    <h2 style="color: blue">Proposals</h2>
-    <DataTable
-      :value="proposals"
-      v-model:expandedRows="expandedRows"
-      dataKey="id"
-      paginator
-      :rows="10"
-      :rowsPerPageOptions="[10, 20, 50]"
-      tableStyle="min-width: 50rem"
-    >
-      <template #empty> No proposals found. </template>
-      <template #header>
-        <ExpandRowButtons
-          :rows="proposals"
-          @expandedRowList="onToggleRowExpansion"
-        />
+    <Card class="contentCard">
+      <template #title>Project Proposals</template>
+      <template #content>
+        <DataTable
+          :value="proposals"
+          v-model:expandedRows="expandedRows"
+          dataKey="id"
+          paginator
+          :rows="10"
+          :rowsPerPageOptions="[10, 20, 50]"
+          tableStyle="min-width: 50rem"
+        >
+          <template #empty> No proposals found. </template>
+          <template #header>
+            <ExpandRowButtons
+              :rows="proposals"
+              @expandedRowList="onToggleRowExpansion"
+            />
+          </template>
+          <Column expander style="width: 5rem" />
+          <Column field="id" header="ID" :sortable="true"></Column>
+          <Column
+            field="project.name"
+            header="Project"
+            :sortable="true"
+          ></Column>
+          <Column field="node.name" header="Node" :sortable="true"></Column>
+          <Column
+            field="approval_status"
+            header="Approval Status"
+            :sortable="true"
+          ></Column>
+          <Column field="created_at" header="Created" :sortable="true"></Column>
+          <Column
+            class="timeCol"
+            field="updated_at"
+            header="Last Updated"
+            :sortable="true"
+          ></Column>
+          <Column
+            field="id"
+            header="Set Approval"
+            style="min-width: 10em"
+            :exportable="false"
+          >
+            <template #body="slotProps">
+              <ApproveRejectButtons
+                :projectId="slotProps.data.id"
+                @updatedRow="updateTable"
+              />
+            </template>
+          </Column>
+          <template #expansion="slotProps">
+            <div class="p-3">
+              <TableRowMetadata :rowMetadata="slotProps.data.expand" />
+            </div>
+          </template>
+        </DataTable>
       </template>
-      <Column expander style="width: 5rem" />
-      <Column field="id" header="ID" :sortable="true"></Column>
-      <Column field="project.name" header="Project" :sortable="true"></Column>
-      <Column field="node.name" header="Node" :sortable="true"></Column>
-      <Column
-        field="approval_status"
-        header="Approval Status"
-        :sortable="true"
-      ></Column>
-      <Column field="created_at" header="Created" :sortable="true"></Column>
-      <Column
-        class="timeCol"
-        field="updated_at"
-        header="Last Updated"
-        :sortable="true"
-      ></Column>
-      <Column
-        field="id"
-        header="Set Approval"
-        style="min-width: 10em"
-        :exportable="false"
-      >
-        <template #body="slotProps">
-          <ApproveRejectButtons
-            :projectId="slotProps.data.id"
-            @updatedRow="updateTable"
-          />
-        </template>
-      </Column>
-      <template #expansion="slotProps">
-        <div class="p-3">
-          <TableRowMetadata :rowMetadata="slotProps.data.expand" />
-        </div>
-      </template>
-    </DataTable>
+    </Card>
   </div>
 </template>
 

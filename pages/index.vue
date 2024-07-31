@@ -42,11 +42,15 @@ import KeycloakAuth from "~/components/KeycloakAuth.vue";
   display: flex;
 }
 
-.tabCard {
-  margin-top: 40px;
-}
-
 .p-tabview-header {
   margin-right: 5px;
+}
+
+.contentCard {
+  margin-top: 1em;
+}
+
+.tabCard {
+  margin-top: 1em;
 }
 </style>
