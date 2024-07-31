@@ -1,32 +1,17 @@
 <script setup lang="ts">
 import Dropdown from "primevue/dropdown";
-import {
-  getProjects,
-  getAnalyses,
-  connectAnalysisProject,
-} from "~/composables/useAPIFetch";
-import type { Analysis, Project } from "~/services/Api";
+import { connectAnalysisProject } from "~/composables/useAPIFetch";
+
+const props = defineProps({
+  projects: Array,
+  analyses: Array,
+});
 
 const selectedProject = ref();
 const selectedAnalysis = ref();
 
-const availableProjects = ref();
-const availableAnalyses = ref();
-
 const loading = ref(false);
 const created = ref("");
-
-const { data: projects } = await getProjects({ lazy: true });
-const projectData = projects.value!.data as unknown as Array<Project>;
-availableProjects.value = projectData.map((proj: Project) => {
-  return { name: proj.name, id: proj.id };
-});
-
-const { data: analyses } = await getAnalyses({ lazy: true });
-const analysisData = analyses.value!.data as unknown as Array<Analysis>;
-availableAnalyses.value = analysisData.map((analysis: Analysis) => {
-  return { id: analysis.id, name: analysis.name };
-});
 
 async function onSubmitProjectAnalysisBinding() {
   created.value = "";
@@ -57,7 +42,7 @@ async function onSubmitProjectAnalysisBinding() {
           </InputGroupAddon>
           <Dropdown
             v-model="selectedProject"
-            :options="availableProjects"
+            :options="props.projects"
             optionLabel="name"
             placeholder="Select a Project"
           />
@@ -69,7 +54,7 @@ async function onSubmitProjectAnalysisBinding() {
           </InputGroupAddon>
           <Dropdown
             v-model="selectedAnalysis"
-            :options="availableAnalyses"
+            :options="props.analyses"
             optionLabel="name"
             placeholder="Select an Analysis"
           />

@@ -1,36 +1,22 @@
 <script setup lang="ts">
 import Dropdown from "primevue/dropdown";
-import {
-  createProject,
-  getDataStores,
-  getProjects,
-} from "~/composables/useAPIFetch";
-import type { Project, Route } from "~/services/Api";
+import { createProject } from "~/composables/useAPIFetch";
+
+const props = defineProps({
+  projects: Array,
+  dataStores: Array,
+});
 
 const selectedProject = ref();
 const selectedDataStore = ref();
 const selectedAllowedMethods = ref([]);
 const selectedDataStoreType = ref("FHIR");
 
-const availableProjects = ref();
-const availableDataStores = ref();
 const availableMethods = ref(["GET", "POST", "PUT", "DELETE"]);
 const dataStoreTypes = ref(["FHIR", "S3"]);
 
 const loading = ref(false);
 const created = ref("");
-
-const { data: projects } = await getProjects();
-const projectData = projects.value!.data as unknown as Array<Project>;
-availableProjects.value = projectData.map((proj: Project) => {
-  return { name: proj.name, id: proj.id };
-});
-
-const { data: r2 } = await getDataStores(false);
-const dataStoreData = r2.value!.data as unknown as Array<Route>;
-availableDataStores.value = dataStoreData.map((ds: Route) => {
-  return { name: ds.name, id: ds.id };
-});
 
 async function onSubmitBinding() {
   const props = {
@@ -58,7 +44,7 @@ async function onSubmitBinding() {
           </InputGroupAddon>
           <Dropdown
             v-model="selectedProject"
-            :options="availableProjects"
+            :options="props.projects"
             optionLabel="name"
             placeholder="Select a Project"
           />
@@ -70,7 +56,7 @@ async function onSubmitBinding() {
           </InputGroupAddon>
           <Dropdown
             v-model="selectedDataStore"
-            :options="availableDataStores"
+            :options="props.dataStores"
             optionLabel="name"
             placeholder="Select a Data Store"
           />
