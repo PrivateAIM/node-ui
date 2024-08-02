@@ -2,6 +2,9 @@
   <Toast position="top-right" />
   <NuxtLoadingIndicator />
   <MenuHeader />
-  <NuxtPage />
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
   <Footer />
 </template>
+<script setup lang="ts"></script>
