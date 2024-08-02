@@ -47,11 +47,11 @@ spec:
                   name: {{ include "ui.keycloak.secretName" . }}
                   key: {{ include "ui.keycloak.secretKey" . }}
             - name: NUXT_OIDC_TOKEN_KEY
-              value: {{ randAlphaNum 48 | quote }}
+              value: {{ randAlphaNum 32 | b64enc }}
             - name: NUXT_OIDC_SESSION_SECRET
               value: {{ randAlphaNum 48 | quote }}
             - name: NUXT_OIDC_AUTH_SESSION_SECRET
-              value: {{ randAlphaNum 32 | b64enc }}
+              value: {{ randAlphaNum 48 | quote }}
 {{/*          livenessProbe:*/}}
 {{/*            httpGet:*/}}
 {{/*              path: /healthz*/}}
