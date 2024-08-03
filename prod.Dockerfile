@@ -3,8 +3,6 @@ LABEL maintainer="bruce.schultz@uk-koeln.de"
 
 WORKDIR /app
 
-ENV NODE_ENV=production
-
 COPY yarn.lock package.json ./
 
 RUN yarn install
@@ -19,6 +17,7 @@ WORKDIR /app
 
 COPY --from=builder /app/.output ./.output
 
+ENV NODE_ENV=production
 ENV NUXT_HOST=0.0.0.0
 ENV NUXT_PORT=3000
 

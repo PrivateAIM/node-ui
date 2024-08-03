@@ -1,7 +1,33 @@
 services:
-  nodeuidev:
-    build: ..
-    container_name: nodeui-dev
+#  nodeuidev:
+#    image: node-ui:latest
+#    container_name: nodeui-dev
+#    deploy:
+#      restart_policy:
+#        condition: on-failure
+#        delay: 5s
+#        max_attempts: 3
+#        window: 120s
+#    environment:
+#      NODE_ENV: "development"
+#      HUB_ADAPTER_API_URL: "http://localhost:8081"
+#      BASE_URL: "http://localhost:3000"
+#      KEYCLOAK_URL: "http://localhost:8080"
+#      KEYCLOAK_REALM: "flame"
+#      KEYCLOAK_CLIENT_ID: "node-ui"
+#      KEYCLOAK_CLIENT_SECRET: "w9sThil4yyMNb4rnG2zuHtKa6EkfxHVV"
+#      NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL: http://localhost:8080/realms/flame
+#      NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_ID: node-ui
+#      NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET: w9sThil4yyMNb4rnG2zuHtKa6EkfxHVV
+#    ports:
+#      - '3000:3000'
+#    restart: always
+#    networks:
+#      - flame
+
+  nodeuiprod:
+    image: node-prod:latest
+    container_name: nodeui-prod
     deploy:
       restart_policy:
         condition: on-failure
@@ -9,7 +35,7 @@ services:
         max_attempts: 3
         window: 120s
     environment:
-      NODE_ENV: "development"
+      NODE_ENV: "production"
       HUB_ADAPTER_API_URL: "http://localhost:8081"
       BASE_URL: "http://localhost:3000"
       KEYCLOAK_URL: "http://localhost:8080"
@@ -20,8 +46,23 @@ services:
       NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_ID: node-ui
       NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET: w9sThil4yyMNb4rnG2zuHtKa6EkfxHVV
     ports:
-      - '3000:3000'
+      - '3001:3000'
     restart: always
+    networks:
+      - flame
+
+  nginx:
+    image: nginx:1.27.0-alpine
+    container_name: reverse-proxy
+    volumes:
+      - ../default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - 10880:80
+    depends_on:
+      - nodeuiprod
+    restart: unless-stopped
+    networks:
+      - flame
 
   keycloakdb:
     image: postgres
@@ -57,3 +98,9 @@ services:
       - keycloakdb
     restart:
       always
+    networks:
+      - flame
+
+networks:
+  flame:
+    driver: bridge
