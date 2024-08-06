@@ -31,17 +31,15 @@ spec:
           env:
             - name: NODE_ENV
               value: {{ .Values.env | default "development" | quote }}
-            - name: BASE_URL
+            - name: NUXT_PUBLIC_BASE_URL
               value: {{ .Values.url | default "http://localhost:3000" | quote }}
-            - name: HUB_ADAPTER_API_URL
+            - name: NUXT_PUBLIC_HUB_ADAPTER_URL
               value: {{ .Values.node.adapter | default "http://localhost:5000" | quote }}
-            - name: KEYCLOAK_URL
+            - name: NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL
               value: {{ include "ui.keycloak.endpoint" . }}
-            - name: KEYCLOAK_REALM
-              value: {{ .Values.idp.realm | default "flame" | quote }}
-            - name: KEYCLOAK_CLIENT_ID
+            - name: NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_ID
               value: {{ .Values.idp.clientId | default "node-ui" | quote }}
-            - name: KEYCLOAK_CLIENT_SECRET
+            - name: NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: {{ include "ui.keycloak.secretName" . }}
