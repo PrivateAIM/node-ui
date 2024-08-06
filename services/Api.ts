@@ -126,6 +126,14 @@ export enum AnalysisBuildStatus {
 export interface AnalysisImageUrl {
   /** Image Url */
   image_url: string;
+  /** Project Id */
+  project_id?: string | null;
+  /** Registry Url */
+  registry_url: string;
+  /** Registry User */
+  registry_user?: string | null;
+  /** Registry Password */
+  registry_password?: string | null;
 }
 
 /**
@@ -282,6 +290,22 @@ export interface BodyCreateAndConnectProjectToDatastoreKongProjectPost {
   ds_type?: string;
 }
 
+/** Body_get_analysis_image_url_analysis_image_post */
+export interface BodyGetAnalysisImageUrlAnalysisImagePost {
+  /**
+   * Analysis Id
+   * Analysis UUID
+   * @format uuid
+   */
+  analysis_id: string;
+  /**
+   * Node Id
+   * Node UUID
+   * @format uuid
+   */
+  node_id: string;
+}
+
 /** Body_get_token_token_post */
 export interface BodyGetTokenTokenPost {
   /**
@@ -294,6 +318,16 @@ export interface BodyGetTokenTokenPost {
    * Keycloak password
    */
   password: string;
+  /**
+   * Client Id
+   * Keycloak Client ID
+   */
+  client_id?: null;
+  /**
+   * Client Secret
+   * Keycloak Client ID
+   */
+  client_secret?: null;
 }
 
 /** Body_inspect_token_token_inspect_post */
@@ -419,6 +453,12 @@ export interface Consumer {
    * The unique username of the Consumer. You must send either this field or `custom_id` with the request.
    */
   username?: string | null;
+}
+
+/** CreatePodResponse */
+export interface CreatePodResponse {
+  /** Status */
+  status: string;
 }
 
 /**
@@ -654,7 +694,10 @@ export interface DetailedService {
    * @default 60000
    */
   write_timeout?: number | null;
-  /** Routes */
+  /**
+   * Routes
+   * @default []
+   */
   routes?: Route[] | null;
 }
 
@@ -797,6 +840,12 @@ export interface ListServices {
   offset?: string | null;
 }
 
+/** LogResponse */
+export interface LogResponse {
+  /** Logs */
+  logs?: object | null;
+}
+
 /**
  * MasterImage
  * Master image details.
@@ -918,6 +967,12 @@ export interface PartialAnalysisBucketFile {
 export interface PartialBucketFilesList {
   /** Data */
   data: PartialAnalysisBucketFile[];
+}
+
+/** PodResponse */
+export interface PodResponse {
+  /** Pods */
+  pods?: object | null;
 }
 
 /**
@@ -1390,6 +1445,12 @@ export interface ServiceRequest {
   enabled?: boolean;
 }
 
+/** StatusResponse */
+export interface StatusResponse {
+  /** Status */
+  status?: object | null;
+}
+
 /**
  * Token
  * IDP token model.
@@ -1635,59 +1696,6 @@ export class HttpClient<SecurityDataType = unknown> {
  * FLAME project API for interacting with various microservices within the node for the UI.
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
-  token = {
-    /**
-     * @description Get a JWT from the IDP by passing a valid username and password. This token can then be used to authenticate yourself with this API.
-     *
-     * @tags Auth
-     * @name GetTokenTokenPost
-     * @summary Get a token from the IDP
-     * @request POST:/token
-     */
-    getTokenTokenPost: (data: BodyGetTokenTokenPost, params: RequestParams = {}) =>
-      this.request<Token, HTTPValidationError>({
-        path: `/token`,
-        method: "POST",
-        body: data,
-        type: ContentType.UrlEncoded,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Return information about the provided token.
-     *
-     * @tags Auth
-     * @name InspectTokenTokenInspectPost
-     * @summary Get information about a provided token from the IDP
-     * @request POST:/token/inspect
-     */
-    inspectTokenTokenInspectPost: (data: BodyInspectTokenTokenInspectPost, params: RequestParams = {}) =>
-      this.request<object, HTTPValidationError>({
-        path: `/token/inspect`,
-        method: "POST",
-        body: data,
-        type: ContentType.UrlEncoded,
-        format: "json",
-        ...params,
-      }),
-  };
-  containers = {
-    /**
-     * @description Return information about the provided token.
-     *
-     * @name FetchContainersContainersGet
-     * @summary Fetch Containers
-     * @request GET:/containers
-     */
-    fetchContainersContainersGet: (params: RequestParams = {}) =>
-      this.request<any[], any>({
-        path: `/containers`,
-        method: "GET",
-        format: "json",
-        ...params,
-      }),
-  };
   po = {
     /**
      * @description Create an analysis pod.
@@ -1699,7 +1707,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     createAnalysisPoPost: (data: BodyCreateAnalysisPoPost, params: RequestParams = {}) =>
-      this.request<any, void | HTTPValidationError>({
+      this.request<CreatePodResponse, void | HTTPValidationError>({
         path: `/po`,
         method: "POST",
         body: data,
@@ -1719,7 +1727,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     getAnalysisLogsPoAnalysisIdLogsGet: (analysisId: string | null, params: RequestParams = {}) =>
-      this.request<any, void | HTTPValidationError>({
+      this.request<LogResponse, void | HTTPValidationError>({
         path: `/po/${analysisId}/logs`,
         method: "GET",
         secure: true,
@@ -1737,7 +1745,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     getAnalysisStatusPoAnalysisIdStatusGet: (analysisId: string | null, params: RequestParams = {}) =>
-      this.request<any, void | HTTPValidationError>({
+      this.request<StatusResponse, void | HTTPValidationError>({
         path: `/po/${analysisId}/status`,
         method: "GET",
         secure: true,
@@ -1755,7 +1763,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     getAnalysisPodsPoAnalysisIdPodsGet: (analysisId: string | null, params: RequestParams = {}) =>
-      this.request<any, void | HTTPValidationError>({
+      this.request<PodResponse, void | HTTPValidationError>({
         path: `/po/${analysisId}/pods`,
         method: "GET",
         secure: true,
@@ -1773,7 +1781,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     stopAnalysisPoAnalysisIdStopPut: (analysisId: string | null, params: RequestParams = {}) =>
-      this.request<any, void | HTTPValidationError>({
+      this.request<StatusResponse, void | HTTPValidationError>({
         path: `/po/${analysisId}/stop`,
         method: "PUT",
         secure: true,
@@ -1791,7 +1799,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     deleteAnalysisPoAnalysisIdDeleteDelete: (analysisId: string | null, params: RequestParams = {}) =>
-      this.request<any, void | HTTPValidationError>({
+      this.request<StatusResponse, void | HTTPValidationError>({
         path: `/po/${analysisId}/delete`,
         method: "DELETE",
         secure: true,
@@ -2254,16 +2262,21 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description Build an analysis image URL using its metadata from the Hub.
      *
      * @tags Hub
-     * @name GetAnalysisImageUrlAnalysisImageAnalysisIdGet
+     * @name GetAnalysisImageUrlAnalysisImagePost
      * @summary Get Analysis Image Url
-     * @request GET:/analysis/image/{analysis_id}
+     * @request POST:/analysis/image
      * @secure
      */
-    getAnalysisImageUrlAnalysisImageAnalysisIdGet: (analysisId: string, params: RequestParams = {}) =>
+    getAnalysisImageUrlAnalysisImagePost: (
+      data: BodyGetAnalysisImageUrlAnalysisImagePost,
+      params: RequestParams = {},
+    ) =>
       this.request<AnalysisImageUrl, void | HTTPValidationError>({
-        path: `/analysis/image/${analysisId}`,
-        method: "GET",
+        path: `/analysis/image`,
+        method: "POST",
+        body: data,
         secure: true,
+        type: ContentType.UrlEncoded,
         format: "json",
         ...params,
       }),
@@ -2680,6 +2693,77 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       this.request<DownstreamHealthCheck, any>({
         path: `/health/services`,
         method: "GET",
+        format: "json",
+        ...params,
+      }),
+  };
+  token = {
+    /**
+     * @description Get a JWT from the IDP by passing a valid username and password. This token can then be used to authenticate yourself with this API. If no client ID/secret is provided, it will be autofilled using the hub adapter.
+     *
+     * @tags Auth
+     * @name GetTokenTokenPost
+     * @summary Get a token from the IDP
+     * @request POST:/token
+     */
+    getTokenTokenPost: (data: BodyGetTokenTokenPost, params: RequestParams = {}) =>
+      this.request<Token, void | HTTPValidationError>({
+        path: `/token`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Return information about the provided token.
+     *
+     * @tags Auth
+     * @name InspectTokenTokenInspectPost
+     * @summary Get information about a provided token from the IDP
+     * @request POST:/token/inspect
+     */
+    inspectTokenTokenInspectPost: (data: BodyInspectTokenTokenInspectPost, params: RequestParams = {}) =>
+      this.request<object, void | HTTPValidationError>({
+        path: `/token/inspect`,
+        method: "POST",
+        body: data,
+        type: ContentType.UrlEncoded,
+        format: "json",
+        ...params,
+      }),
+  };
+  authorize = {
+    /**
+     * @description Check token authorization.
+     *
+     * @tags Auth
+     * @name AuthorizeAuthorizePost
+     * @summary Authorize
+     * @request POST:/authorize
+     */
+    authorizeAuthorizePost: (params: RequestParams = {}) =>
+      this.request<any, void>({
+        path: `/authorize`,
+        method: "POST",
+        format: "json",
+        ...params,
+      }),
+  };
+  userinfo = {
+    /**
+     * @description Get user information.
+     *
+     * @tags Auth
+     * @name UserInfoUserinfoPost
+     * @summary User Info
+     * @request POST:/userinfo
+     */
+    userInfoUserinfoPost: (params: RequestParams = {}) =>
+      this.request<any, void>({
+        path: `/userinfo`,
+        method: "POST",
         format: "json",
         ...params,
       }),
