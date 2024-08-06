@@ -3160,7 +3160,7 @@
         "clientAuthenticatorType": "client-secret",
         "secret": "9xVV5RrzpBLGR3dGIWuQJQY4ogFwcHN8",
         "redirectUris": [
-          "*"
+          "http://*", "https://*"
         ],
         "webOrigins": [
           "*"
@@ -3291,18 +3291,19 @@
         "clientId": "node-ui",
         "name": "Node UI App",
         "description": "",
-        "rootUrl": "http://localhost:3000/",
-        "adminUrl": "http://localhost:3000/",
+        "rootUrl": "http://localhost:3000",
+        "adminUrl": "http://localhost:3000",
         "baseUrl": "",
         "surrogateAuthRequired": false,
         "enabled": true,
         "alwaysDisplayInConsole": false,
         "clientAuthenticatorType": "client-secret",
         "redirectUris": [
-          "*"
+          "http://localhost:3000/auth/keycloak/callback",
+          "http://*"
         ],
         "webOrigins": [
-          "*"
+          "http://localhost:3000"
         ],
         "notBefore": 0,
         "bearerOnly": false,
