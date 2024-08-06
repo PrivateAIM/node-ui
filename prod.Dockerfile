@@ -1,4 +1,4 @@
-FROM node:20-alpine as builder
+FROM node:20-alpine AS builder
 LABEL maintainer="bruce.schultz@uk-koeln.de"
 
 WORKDIR /app
@@ -11,7 +11,7 @@ COPY . .
 
 RUN yarn build
 
-FROM node:20-alpine as production
+FROM node:20-alpine AS production
 
 WORKDIR /app
 
