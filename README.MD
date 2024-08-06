@@ -1,12 +1,12 @@
 # Node UI
 ## Needed `.env`
 ```dotenv
-HUB_ADAPTER_API_URL="http://localhost:8081"
-BASE_URL="http://localhost:3000"
-KEYCLOAK_URL="http://localhost:8080"
-KEYCLOAK_REALM="flame"
-KEYCLOAK_CLIENT_ID="node-ui"
-KEYCLOAK_CLIENT_SECRET="someRandomSecret"
+NUXT_PUBLIC_BASE_URL="http://localhost:3000"  # URL of the website
+NUXT_PUBLIC_HUB_ADAPTER_URL="http://urlForHubAdapterApi.de"  # URL for hub adapter API
+
+NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL="http://your.keycloak.instance.de/realms/flame"
+NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_ID="node-ui"
+NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET="someSecret"
 
 # Nuxt OIDC Tokens
 # https://nuxt.com/modules/nuxt-oidc-auth#_3-set-secrets

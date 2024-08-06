@@ -1,7 +1,7 @@
 export default defineNuxtPlugin((nuxtApp) => {
   const { user } = useOidcAuth();
   const config = useRuntimeConfig();
-  const baseUrl = config.public.baseURL as string;
+  const baseUrl = config.public.hubAdapterUrl as string;
   const hubApi = $fetch.create({
     baseURL: baseUrl,
     onRequest({ options }) {

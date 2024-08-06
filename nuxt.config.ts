@@ -3,16 +3,13 @@ import { defineNuxtConfig } from "nuxt/config";
 
 export default defineNuxtConfig({
   ssr: true,
-  devtools: { enabled: true },
+  devtools: { enabled: false },
   modules: ["nuxt-primevue", "nuxt-oidc-auth"],
 
   runtimeConfig: {
     public: {
-      baseURL: process.env.HUB_ADAPTER_API_URL || "http://localhost:5000",
-      keycloakUrl: process.env.KEYCLOAK_URL || "http://localhost:8080",
-      keycloakRealm: process.env.KEYCLOAK_REALM || "flame",
-      keycloakClientId: process.env.KEYCLOAK_CLIENT_ID || "node-ui",
-      keycloakClientSecret: process.env.KEYCLOAK_CLIENT_SECRET || "",
+      baseUrl: process.env.NUXT_PUBLIC_BASE_URL || "http://localhost:3000",
+      hubAdapterUrl: process.env.HUB_ADAPTER_API_URL || "http://localhost:5000",
     },
   },
 
@@ -29,13 +26,14 @@ export default defineNuxtConfig({
     defaultProvider: "keycloak",
     providers: {
       keycloak: {
-        clientId: process.env.KEYCLOAK_CLIENT_ID || "node-ui",
-        clientSecret: process.env.KEYCLOAK_CLIENT_SECRET || "",
-        baseUrl:
-          process.env.KEYCLOAK_URL?.replace("\\/$", "") +
-          "/realms/" +
-          process.env.KEYCLOAK_REALM,
-        redirectUri: process.env.BASE_URL + "/auth/keycloak/callback",
+        baseUrl: process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL,
+        clientId:
+          process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_ID || "node-ui",
+        clientSecret: process.env
+          .NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET as string,
+        redirectUri:
+          process.env.NUXT_PUBLIC_BASE_URL.replace("\\/$", "") +
+          "/auth/keycloak/callback",
         exposeAccessToken: true,
       },
     },
