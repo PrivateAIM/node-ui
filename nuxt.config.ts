@@ -26,13 +26,19 @@ export default defineNuxtConfig({
     defaultProvider: "keycloak",
     providers: {
       keycloak: {
-        baseUrl: process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL,
+        baseUrl: process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL as string,
+        tokenUrl:
+          process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL +
+          "/protocol/openid-connect/token",
+        authorizationUrl:
+          process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL +
+          "/protocol/openid-connect/auth",
         clientId:
           process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_ID || "node-ui",
         clientSecret: process.env
           .NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET as string,
         redirectUri:
-          process.env.NUXT_PUBLIC_BASE_URL.replace("\\/$", "") +
+          process.env.NUXT_PUBLIC_BASE_URL!.replace("\\/$", "") +
           "/auth/keycloak/callback",
         exposeAccessToken: true,
       },
