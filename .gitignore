@@ -7,6 +7,7 @@ tsconfig.build.tsbuildinfo
 .env
 .env.*.local
 .env.production
+.env.backup
 
 # Logs
 /logs
