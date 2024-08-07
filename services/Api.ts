@@ -128,6 +128,8 @@ export interface AnalysisImageUrl {
   image_url: string;
   /** Project Id */
   project_id?: string | null;
+  /** Analysis Id */
+  analysis_id: string;
   /** Registry Url */
   registry_url: string;
   /** Registry User */
@@ -230,16 +232,22 @@ export interface BodyAcceptRejectProjectProposalProjectNodesProposalIdPost {
 export interface BodyCreateAnalysisPoPost {
   /**
    * Analysis Id
-   * UUID of the analysis.
+   * Analysis UUID
    * @format uuid
    */
   analysis_id: string;
   /**
    * Project Id
-   * UUID of the analysis.
+   * Project UUID
    * @format uuid
    */
   project_id: string;
+  /**
+   * Node Id
+   * Node UUID
+   * @format uuid
+   */
+  node_id: string;
 }
 
 /** Body_create_and_connect_analysis_to_project_kong_analysis_post */
@@ -299,6 +307,12 @@ export interface BodyGetAnalysisImageUrlAnalysisImagePost {
    */
   analysis_id: string;
   /**
+   * Project Id
+   * Project UUID
+   * @format uuid
+   */
+  project_id: string;
+  /**
    * Node Id
    * Node UUID
    * @format uuid
@@ -328,15 +342,6 @@ export interface BodyGetTokenTokenPost {
    * Keycloak Client ID
    */
   client_secret?: null;
-}
-
-/** Body_inspect_token_token_inspect_post */
-export interface BodyInspectTokenTokenInspectPost {
-  /**
-   * Token
-   * JSON web token
-   */
-  token: string;
 }
 
 /** Body_submit_final_result_to_hub_final_put */
@@ -1698,11 +1703,11 @@ export class HttpClient<SecurityDataType = unknown> {
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
   po = {
     /**
-     * @description Create an analysis pod.
+     * @description Gather the image URL for the requested analysis container and send information to the PO.
      *
      * @tags PodOrc
      * @name CreateAnalysisPoPost
-     * @summary Create Analysis
+     * @summary Get the analysis image URL and forward information to PO to start a container.
      * @request POST:/po
      * @secure
      */
@@ -1712,7 +1717,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: "POST",
         body: data,
         secure: true,
-        type: ContentType.Json,
+        type: ContentType.UrlEncoded,
         format: "json",
         ...params,
       }),
@@ -2724,12 +2729,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Get information about a provided token from the IDP
      * @request POST:/token/inspect
      */
-    inspectTokenTokenInspectPost: (data: BodyInspectTokenTokenInspectPost, params: RequestParams = {}) =>
+    inspectTokenTokenInspectPost: (data: string, params: RequestParams = {}) =>
       this.request<object, void | HTTPValidationError>({
         path: `/token/inspect`,
         method: "POST",
         body: data,
-        type: ContentType.UrlEncoded,
+        type: ContentType.Json,
         format: "json",
         ...params,
       }),
