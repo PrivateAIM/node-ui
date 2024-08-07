@@ -4,9 +4,11 @@ import type {
   BodyCreateAnalysisPoPost,
   BodyCreateAndConnectAnalysisToProjectKongAnalysisPost,
   BodyCreateAndConnectProjectToDatastoreKongProjectPost,
+  CreatePodResponse,
   DeleteProject,
   LinkDataStoreProject,
   LinkProjectAnalysis,
+  ListAnalysisNodes,
   ListConsumers,
   ListProjectNodes,
   ListServices,
@@ -58,6 +60,16 @@ export function getAnalyses(opts?) {
     ...opts,
     method: "GET",
   });
+}
+
+export function getAnalysisNodes(opts?) {
+  return useAPIFetch<{ data: ListAnalysisNodes }>(
+    "/analysis-nodes?include=analysis",
+    {
+      ...opts,
+      method: "GET",
+    },
+  );
 }
 
 // Kong endpoints
@@ -131,7 +143,7 @@ export function deleteAnalysisFromKong(analysisId: string, opts?) {
 
 // PodOrc endpoints
 export function startAnalysis(analysisProps: BodyCreateAnalysisPoPost, opts?) {
-  return useAPIFetch(`/po`, {
+  return useAPIFetch<{ data: CreatePodResponse }>(`/po`, {
     ...opts,
     method: "POST",
     body: analysisProps,
@@ -139,14 +151,14 @@ export function startAnalysis(analysisProps: BodyCreateAnalysisPoPost, opts?) {
 }
 
 export function stopAnalysis(analysisId: string, opts?) {
-  return useAPIFetch(`/po/${analysisId}/stop`, {
+  return useAPIFetch<{ data: CreatePodResponse }>(`/po/${analysisId}/stop`, {
     ...opts,
     method: "PUT",
   });
 }
 
 export function deleteAnalysis(analysisId: string, opts?) {
-  return useAPIFetch(`/po/${analysisId}/delete`, {
+  return useAPIFetch<{ data: CreatePodResponse }>(`/po/${analysisId}/delete`, {
     ...opts,
     method: "DELETE",
   });

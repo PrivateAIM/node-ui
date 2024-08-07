@@ -9,7 +9,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       baseUrl: process.env.NUXT_PUBLIC_BASE_URL || "http://localhost:3000",
-      hubAdapterUrl: process.env.HUB_ADAPTER_API_URL || "http://localhost:5000",
+      hubAdapterUrl:
+        process.env.NUXT_PUBLIC_HUB_ADAPTER_URL || "http://localhost:5000",
     },
   },
 
@@ -27,12 +28,6 @@ export default defineNuxtConfig({
     providers: {
       keycloak: {
         baseUrl: process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL as string,
-        tokenUrl:
-          process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL +
-          "/protocol/openid-connect/token",
-        authorizationUrl:
-          process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL +
-          "/protocol/openid-connect/auth",
         clientId:
           process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_ID || "node-ui",
         clientSecret: process.env

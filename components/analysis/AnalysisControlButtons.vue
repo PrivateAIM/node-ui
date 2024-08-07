@@ -10,6 +10,7 @@ const props = defineProps({
   analysisStatus: String,
   analysisId: String,
   projectId: String,
+  nodeId: String,
 });
 const toast = useToast();
 
@@ -50,10 +51,10 @@ async function onStartAnalysis() {
   const analysisProps = {} as BodyCreateAnalysisPoPost;
   analysisProps.analysis_id = props.analysisId!;
   analysisProps.project_id = props.projectId!;
+  analysisProps.node_id = props.nodeId!;
   const { data: response, status } = await startAnalysis(analysisProps);
   if (status.value === "success") {
     const currentRunStatus = response.value!.status;
-    console.log(currentRunStatus);
     buttonStatuses.value = setButtonStatuses(currentRunStatus);
   } else {
     showFailStart();

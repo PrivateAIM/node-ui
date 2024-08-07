@@ -17,7 +17,9 @@ const { data: dataResp } = await getDataStores(false, { lazy: true });
 const { data: projects, status: projStatus } = await getProjects({
   lazy: true,
 });
-const { data: analyses, status: anStatus } = await getAnalyses({ lazy: true });
+const { data: analyses, status: anStatus } = await getAnalyses({
+  lazy: true,
+});
 
 watch(dataResp, (parsedStores) => {
   const dataStoreData = parsedStores!.data as unknown as Array<Route>;

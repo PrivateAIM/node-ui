@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getAnalyses } from "~/composables/useAPIFetch";
+import { getAnalysisNodes } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
 import TableRowMetadata from "~/components/TableRowMetadata.vue";
 import ExpandRowButtons from "~/components/table/ExpandRowButtons.vue";
@@ -11,13 +11,12 @@ const analyses = ref();
 const expandRowEntries = [
   "id",
   "project_id",
-  "registry_id",
-  "user_id",
+  "node_id",
   "created_at",
   "updated_at",
 ];
 
-const { data: response, status, error } = await getAnalyses();
+const { data: response, status, error } = await getAnalysisNodes();
 
 if (status.value === "success") {
   analyses.value = formatDataRow(
@@ -62,7 +61,7 @@ function onToggleRowExpansion(rowIds) {
           <Column expander style="width: 5rem" />
           <Column
             class="namedCol"
-            field="name"
+            field="analysis.name"
             header="Name"
             :sortable="true"
           />
@@ -71,10 +70,26 @@ function onToggleRowExpansion(rowIds) {
             header="Approval Status"
             :sortable="true"
           />
-          <Column field="build_status" header="Build Status" :sortable="true" />
-          <Column field="run_status" header="Run Status" :sortable="true" />
-          <Column field="project.name" header="Project" :sortable="true" />
-          <Column field="nodes" header="Number Nodes" :sortable="true" />
+          <Column
+            field="analysis.build_status"
+            header="Build Status"
+            :sortable="true"
+          />
+          <Column
+            field="analysis.run_status"
+            header="Run Status"
+            :sortable="true"
+          />
+          <Column
+            field="analysis.project_id"
+            header="Project"
+            :sortable="true"
+          />
+          <Column
+            field="analysis.nodes"
+            header="Number Nodes"
+            :sortable="true"
+          />
           <Column
             field="expand.id"
             header="Toggle Analysis"
@@ -84,8 +99,9 @@ function onToggleRowExpansion(rowIds) {
             <template #body="slotProps">
               <AnalysisControlButtons
                 :analysisStatus="slotProps.data.run_status"
-                :analysisId="slotProps.data.expand.id"
-                :projectId="slotProps.data.expand.project_id"
+                :analysisId="slotProps.data.analysis_id"
+                :projectId="slotProps.data.analysis.project_id"
+                :nodeId="slotProps.data.expand.node_id"
               />
             </template>
           </Column>
