@@ -4,9 +4,10 @@ tsconfig.tsbuildinfo
 tsconfig.build.tsbuildinfo
 
 # local env files
-.env
+.env.backup
 .env.*.local
 .env.production
+.env
 
 # Logs
 /logs
