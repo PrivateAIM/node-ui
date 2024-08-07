@@ -77,7 +77,6 @@ async function onDeleteAnalysis() {
     console.log(pp);
     setButtonStatuses(pp);
   }
-  console.log(buttonStatuses);
 }
 </script>
 
