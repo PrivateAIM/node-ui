@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import AvatarButton from "~/components/login/AvatarButton.vue";
-const { loggedIn } = useOidcAuth();
+const { data } = useAuth();
 
 const items = ref([
   {
@@ -70,7 +70,7 @@ const items = ref([
             :href="href"
             v-bind="props.action"
             @click="navigate"
-            :class="!loggedIn && item.label != 'Home' ? 'p-disabled' : ''"
+            :class="!data && item.label != 'Home' ? 'p-disabled' : ''"
           >
             <span :class="item.icon" />
             <span class="ml-2">{{ item.label }}</span>
@@ -82,7 +82,7 @@ const items = ref([
           :href="item.url"
           :target="item.target"
           v-bind="props.action"
-          :class="!loggedIn && item.label != 'Home' ? 'p-disabled' : ''"
+          :class="!data && item.label != 'Home' ? 'p-disabled' : ''"
         >
           <span :class="item.icon" />
           <span class="ml-2">{{ item.label }}</span>
