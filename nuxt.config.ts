@@ -27,19 +27,15 @@ export default defineNuxtConfig({
     },
   },
 
-  oidc: {
-    defaultProvider: "keycloak",
-    providers: {
-      keycloak: {
-        baseUrl: process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL as string,
-        clientId:
-          process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_ID || "node-ui",
-        clientSecret: process.env
-          .NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET as string,
-        redirectUri:
-          process.env.NUXT_PUBLIC_BASE_URL + "/auth/keycloak/callback",
-        exposeAccessToken: true,
-      },
+  auth: {
+    isEnabled: true,
+    disableServerSideAuth: false,
+    // baseURL: "http://localhost:3000",
+    provider: {
+      type: "authjs",
+      trustHost: false,
+      defaultProvider: "keycloak",
+      addDefaultCallbackUrl: "/",
     },
     sessionRefresh: {
       enablePeriodically: true,
