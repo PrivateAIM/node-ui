@@ -1,7 +1,11 @@
 import { User } from "oidc-client-ts";
 import { useAuth } from "@/stores/auth";
 
-const authFlowRoutes = ["/auth", "/silent-refresh", "/logout"];
+const authFlowRoutes = [
+  "/auth/callback",
+  "/auth/silent-refresh",
+  "/auth/logout",
+];
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
   const authStore = useAuth();

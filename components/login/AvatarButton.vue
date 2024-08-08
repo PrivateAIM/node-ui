@@ -1,11 +1,7 @@
 <script setup lang="ts">
-import { useAuth } from "~/stores/auth";
 import { useServices } from "~/composables/useServices";
 
-const authStore = useAuth();
 const services = useServices();
-
-const user = authStore.user;
 
 const menu = ref();
 const loggedOutUserMenuItems = ref([
@@ -36,6 +32,13 @@ const loggedInUserMenuItems = ref([
     ],
   },
 ]);
+
+const user = ref();
+
+onMounted(async () => {
+  user.value = await services.$auth.getUser();
+});
+
 const toggle = (event) => {
   menu.value.toggle(event);
 };
