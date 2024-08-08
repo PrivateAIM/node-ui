@@ -1,15 +1,24 @@
 <script setup lang="ts">
-const { loggedIn, user, login, logout } = useOidcAuth();
+import { useAuth } from "~/stores/auth";
+import { useServices } from "~/composables/useServices";
+
+const authStore = useAuth();
+const services = useServices();
+
+const user = authStore.user;
+
+const signIn = () => services.$auth.signInRedirect();
+const signOut = () => services.$auth.logout();
 </script>
 
 <template>
   <div class="keycloakLoginButton">
-    <div v-if="loggedIn">
-      <h3>Welcome {{ user.providerInfo.preferred_username }}!</h3>
-      <Button @click="logout()" severity="warning" outlined>Logout</Button>
+    <div v-if="user">
+      <h3>Welcome {{ user.profile.name }}!</h3>
+      <Button @click="signOut" severity="warning" outlined>Logout</Button>
     </div>
     <div v-else>
-      <Button @click="login()" severity="success" outlined
+      <Button @click="signIn" severity="success" outlined
         >Login with Keycloak</Button
       >
     </div>

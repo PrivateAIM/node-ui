@@ -1,0 +1,22 @@
+<script lang="ts" setup>
+import { useServices } from "~/composables/useServices";
+
+const services = useServices();
+
+const authenticateOidc = async () => {
+  try {
+    await services.$auth.signInCallback();
+    navigateTo("/");
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+await authenticateOidc();
+</script>
+
+<template>
+  <div class="mb-6 text-p2blue-700 text-2xl">
+    Loading authentication... (checking local state or redirecting)
+  </div>
+</template>
