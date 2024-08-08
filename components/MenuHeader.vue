@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import AvatarButton from "~/components/login/AvatarButton.vue";
-import { useAuth } from "~/stores/auth";
 
-const authStore = useAuth();
+const services = useServices();
 
-const user = authStore.user;
+const user = ref();
+
+onMounted(async () => {
+  user.value = await services.$auth.getUser();
+});
 
 const items = ref([
   {
@@ -73,9 +76,7 @@ const items = ref([
             :href="href"
             v-bind="props.action"
             @click="navigate"
-            :class="
-              !authStore.isLoggedIn && item.label != 'Home' ? 'p-disabled' : ''
-            "
+            :class="!user && item.label != 'Home' ? 'p-disabled' : ''"
           >
             <span :class="item.icon" />
             <span class="ml-2">{{ item.label }}</span>
