@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import { useKeycloak } from "@/stores/keycloak";
+import { useAuth } from "~/stores/auth";
+import { useServices } from "~/composables/useServices";
 
-const kc = useKeycloak();
+const authStore = useAuth();
+const services = useServices();
+
+const user = authStore.user;
 
 const menu = ref();
 const loggedOutUserMenuItems = ref([
@@ -12,7 +16,7 @@ const loggedOutUserMenuItems = ref([
         label: "Login",
         icon: "pi pi-sign-in",
         command: () => {
-          kc!.login();
+          services.$auth.signInRedirect();
         },
       },
     ],
@@ -26,7 +30,7 @@ const loggedInUserMenuItems = ref([
         label: "Logout",
         icon: "pi pi-sign-out",
         command: () => {
-          kc!.login();
+          services.$auth.logout();
         },
       },
     ],
@@ -38,44 +42,44 @@ const toggle = (event) => {
 </script>
 
 <template>
-  <div v-if="kc" class="authAvatarSection">
-    <!--    <div class="usernameMenuBar">-->
-    <!--      <p>-->
-    <!--        {{ kc.keycloak!.userProfile.Name }}-->
-    <!--      </p>-->
-    <!--    </div>-->
-    <!--    <Button-->
-    <!--      type="button"-->
-    <!--      icon="pi pi-user"-->
-    <!--      @click="toggle"-->
-    <!--      aria-haspopup="true"-->
-    <!--      aria-controls="overlay_menu"-->
-    <!--      rounded-->
-    <!--      severity="contrast"-->
-    <!--    />-->
-    <!--    <Menu-->
-    <!--      ref="menu"-->
-    <!--      id="overlay_menu"-->
-    <!--      :model="loggedInUserMenuItems"-->
-    <!--      :popup="true"-->
-    <!--    />-->
-    <!--  </div>-->
-    <!--  <div v-else>-->
-    <!--    <Button-->
-    <!--      type="button"-->
-    <!--      icon="pi pi-question"-->
-    <!--      @click="toggle"-->
-    <!--      aria-haspopup="true"-->
-    <!--      aria-controls="overlay_menu"-->
-    <!--      rounded-->
-    <!--      severity="secondary"-->
-    <!--    />-->
-    <!--    <Menu-->
-    <!--      ref="menu"-->
-    <!--      id="overlay_menu"-->
-    <!--      :model="loggedOutUserMenuItems"-->
-    <!--      :popup="true"-->
-    <!--    />-->
+  <div v-if="user" class="authAvatarSection">
+    <div class="usernameMenuBar">
+      <p>
+        {{ user.profile.name }}
+      </p>
+    </div>
+    <Button
+      type="button"
+      icon="pi pi-user"
+      @click="toggle"
+      aria-haspopup="true"
+      aria-controls="overlay_menu"
+      rounded
+      severity="contrast"
+    />
+    <Menu
+      ref="menu"
+      id="overlay_menu"
+      :model="loggedInUserMenuItems"
+      :popup="true"
+    />
+  </div>
+  <div v-else>
+    <Button
+      type="button"
+      icon="pi pi-question"
+      @click="toggle"
+      aria-haspopup="true"
+      aria-controls="overlay_menu"
+      rounded
+      severity="secondary"
+    />
+    <Menu
+      ref="menu"
+      id="overlay_menu"
+      :model="loggedOutUserMenuItems"
+      :popup="true"
+    />
   </div>
 </template>
 
