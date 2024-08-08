@@ -26,7 +26,7 @@ export default class AuthService {
         authority: url,
         client_id: clientId,
         client_secret: clientSecret,
-        redirect_uri: "http://localhost:3000/auth/callback",
+        redirect_uri: `${window.location.origin}/auth/callback`,
         silent_redirect_uri: `${window.location.origin}/auth/silent-refresh`,
         post_logout_redirect_uri: `${window.location.origin}`,
         response_type: "code",
