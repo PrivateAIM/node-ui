@@ -1,5 +1,9 @@
+import { useKeycloak } from "~/stores/keycloak";
+
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig();
+  const keycloakStore = useKeycloak();
+
   const baseUrl = config.public.hubAdapterUrl as string;
   const hubApi = $fetch.create({
     baseURL: baseUrl,
@@ -8,7 +12,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       const headers = options.headers
         ? new Headers(options.headers)
         : new Headers();
-      headers.set("Authorization", `Bearer ${user?.value.accessToken}`);
+      headers.set("Authorization", `Bearer ${keycloakStore.keycloak.token}`);
       options.headers = headers;
     },
     onRequestError({ error }) {
