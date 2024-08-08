@@ -9,6 +9,9 @@ RUN yarn install
 
 COPY . .
 
+ENV NUXT_HOST=0.0.0.0
+ENV NUXT_PORT=3000
+
 EXPOSE 3000
 
-CMD ["yarn", "run", "dev", "--host", "0.0.0.0"]
+CMD ["npm", "run", "dev"]
