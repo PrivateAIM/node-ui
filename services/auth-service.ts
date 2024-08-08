@@ -9,7 +9,6 @@ export default class AuthService {
 
     const keycloakInitOptions = {
       url: rtConfig.public.keycloakUrl as string,
-      realm: rtConfig.public.keycloakRealm as string,
       clientId: rtConfig.public.keycloakClientId as string,
       clientSecret: rtConfig.public.keycloakClientSecret,
     };

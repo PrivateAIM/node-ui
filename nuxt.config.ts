@@ -8,14 +8,12 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      baseUrl: process.env.NUXT_PUBLIC_BASE_URL || "http://localhost:3000",
+      baseUrl: process.env.NUXT_BASE_URL || "http://localhost:3000",
       hubAdapterUrl:
-        process.env.NUXT_PUBLIC_HUB_ADAPTER_URL || "http://localhost:5000",
-      keycloakUrl: process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL as string,
-      keycloakRealm: process.env.NUXT_KEYCLOAK_REALM || "flame",
-      keycloakClientId: process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_ID,
-      keycloakClientSecret:
-        process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET,
+        process.env.NUXT_HUB_ADAPTER_URL || "http://localhost:5000",
+      keycloakUrl: process.env.NUXT_KEYCLOAK_BASE_URL as string,
+      keycloakClientId: process.env.NUXT_KEYCLOAK_CLIENT_ID,
+      keycloakClientSecret: process.env.NUXT_KEYCLOAK_CLIENT_SECRET,
     },
   },
 
