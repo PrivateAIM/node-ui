@@ -1,8 +1,13 @@
-import { useKeycloak } from "~/stores/keycloak";
+import { useAuth } from "~/stores/auth";
+import { useServices } from "~/composables/useServices";
 
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig();
-  const keycloakStore = useKeycloak();
+  const authStore = useAuth();
+
+  const token = authStore.user?.access_token;
+  console.log(authStore.user);
+  console.log(authStore);
 
   const baseUrl = config.public.hubAdapterUrl as string;
   const hubApi = $fetch.create({
@@ -12,7 +17,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       const headers = options.headers
         ? new Headers(options.headers)
         : new Headers();
-      headers.set("Authorization", `Bearer ${keycloakStore.keycloak.token}`);
+      headers.set("Authorization", `Bearer ${token}`);
       options.headers = headers;
     },
     onRequestError({ error }) {
@@ -22,8 +27,9 @@ export default defineNuxtPlugin((nuxtApp) => {
       // Handle the response errors
       console.log(response);
       if (response.status === 401 || response.status === 403) {
+        console.log("Token: " + token);
         console.warn("User signed out, routing to login");
-        nuxtApp.runWithContext(() => navigateTo("/auth/login"));
+        nuxtApp.runWithContext(() => navigateTo("/"));
       }
     },
   });

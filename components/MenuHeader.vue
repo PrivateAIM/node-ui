@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import AvatarButton from "~/components/login/AvatarButton.vue";
-import { useKeycloak } from "@/stores/keycloak";
+import { useAuth } from "~/stores/auth";
 
-const kc = useKeycloak();
+const authStore = useAuth();
+
+const user = authStore.user;
 
 const items = ref([
   {
@@ -71,7 +73,9 @@ const items = ref([
             :href="href"
             v-bind="props.action"
             @click="navigate"
-            :class="!kc.isSet() && item.label != 'Home' ? 'p-disabled' : ''"
+            :class="
+              !authStore.isLoggedIn && item.label != 'Home' ? 'p-disabled' : ''
+            "
           >
             <span :class="item.icon" />
             <span class="ml-2">{{ item.label }}</span>
@@ -83,7 +87,7 @@ const items = ref([
           :href="item.url"
           :target="item.target"
           v-bind="props.action"
-          :class="!kc.isSet() && item.label != 'Home' ? 'p-disabled' : ''"
+          :class="!user && item.label != 'Home' ? 'p-disabled' : ''"
         >
           <span :class="item.icon" />
           <span class="ml-2">{{ item.label }}</span>
