@@ -49,7 +49,7 @@ export interface ACLConsumer {
  */
 export interface AllAnalyses {
   /** Data */
-  data: Analysis[];
+  data: DetailedAnalysis[];
 }
 
 /**
@@ -63,7 +63,7 @@ export interface AllProjects {
 
 /**
  * Analysis
- * Model representing a single analysis.
+ * Model representing a single detailed analysis.
  */
 export interface Analysis {
   /**
@@ -88,7 +88,6 @@ export interface Analysis {
   configuration_status?: ConfigurationStatus | null;
   build_status?: AnalysisBuildStatus | null;
   run_status?: AnalysisRunStatus | null;
-  registry?: Registry | null;
   /** Registry Id */
   registry_id?: string | null;
   /**
@@ -103,10 +102,8 @@ export interface Analysis {
    * @format uuid
    */
   project_id: string;
-  project?: Project | null;
   /** Master Image Id */
   master_image_id?: string | null;
-  master_image?: MasterImage | null;
 }
 
 /**
@@ -120,22 +117,6 @@ export enum AnalysisBuildStatus {
   Stopped = "stopped",
   Finished = "finished",
   Failed = "failed",
-}
-
-/** AnalysisImageUrl */
-export interface AnalysisImageUrl {
-  /** Image Url */
-  image_url: string;
-  /** Project Id */
-  project_id?: string | null;
-  /** Analysis Id */
-  analysis_id: string;
-  /** Registry Url */
-  registry_url: string;
-  /** Registry User */
-  registry_user?: string | null;
-  /** Registry Password */
-  registry_password?: string | null;
 }
 
 /**
@@ -160,7 +141,8 @@ export interface AnalysisNode {
   updated_at: string;
   /** Status of project possibilities. */
   approval_status: ApprovalStatus;
-  run_status?: AnalysisRunStatus | null;
+  /** Run Status */
+  run_status?: string | null;
   /** Comment */
   comment?: string | null;
   /** Index */
@@ -189,7 +171,7 @@ export interface AnalysisNode {
    * @format uuid
    */
   node_realm_id: string;
-  analysis?: Analysis | null;
+  analysis?: DetailedAnalysis | null;
   node?: Node | null;
 }
 
@@ -332,16 +314,6 @@ export interface BodyGetTokenTokenPost {
    * Keycloak password
    */
   password: string;
-  /**
-   * Client Id
-   * Keycloak Client ID
-   */
-  client_id?: null;
-  /**
-   * Client Secret
-   * Keycloak Client ID
-   */
-  client_secret?: null;
 }
 
 /** Body_submit_final_result_to_hub_final_put */
@@ -397,7 +369,7 @@ export interface Bucket {
   external_id?: string | null;
   /** Analysis Id */
   analysis_id?: string | null;
-  analysis?: Analysis | null;
+  analysis?: DetailedAnalysis | null;
   /** Realm Id */
   realm_id?: string | null;
 }
@@ -484,6 +456,54 @@ export interface DeleteProject {
   removed_routes: string[] | null;
   /** Status */
   status?: number | null;
+}
+
+/**
+ * DetailedAnalysis
+ * Model representing a single detailed analysis.
+ */
+export interface DetailedAnalysis {
+  /**
+   * Id
+   * @format uuid
+   */
+  id: string;
+  /**
+   * Created At
+   * @format date-time
+   */
+  created_at: string;
+  /**
+   * Updated At
+   * @format date-time
+   */
+  updated_at: string;
+  /** Name */
+  name?: string | null;
+  /** Nodes */
+  nodes: number;
+  configuration_status?: ConfigurationStatus | null;
+  build_status?: AnalysisBuildStatus | null;
+  run_status?: AnalysisRunStatus | null;
+  /** Registry Id */
+  registry_id?: string | null;
+  /**
+   * Realm Id
+   * @format uuid
+   */
+  realm_id: string;
+  /** User Id */
+  user_id?: string | null;
+  /**
+   * Project Id
+   * @format uuid
+   */
+  project_id: string;
+  /** Master Image Id */
+  master_image_id?: string | null;
+  registry?: Registry | null;
+  project?: Project | null;
+  master_image?: MasterImage | null;
 }
 
 /**
@@ -959,7 +979,7 @@ export interface PartialAnalysisBucketFile {
   bucket?: Bucket | null;
   /** Analysis Id */
   analysis_id?: string | null;
-  analysis?: Analysis | null;
+  analysis?: DetailedAnalysis | null;
   /** Realm Id */
   realm_id?: string | null;
   /** User Id */
@@ -1707,17 +1727,15 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags PodOrc
      * @name CreateAnalysisPoPost
-     * @summary Get the analysis image URL and forward information to PO to start a container.
+     * @summary Create Analysis
      * @request POST:/po
-     * @secure
      */
     createAnalysisPoPost: (data: BodyCreateAnalysisPoPost, params: RequestParams = {}) =>
       this.request<CreatePodResponse, void | HTTPValidationError>({
         path: `/po`,
         method: "POST",
         body: data,
-        secure: true,
-        type: ContentType.UrlEncoded,
+        type: ContentType.Json,
         format: "json",
         ...params,
       }),
@@ -1729,13 +1747,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name GetAnalysisLogsPoAnalysisIdLogsGet
      * @summary Get Analysis Logs
      * @request GET:/po/{analysis_id}/logs
-     * @secure
      */
     getAnalysisLogsPoAnalysisIdLogsGet: (analysisId: string | null, params: RequestParams = {}) =>
       this.request<LogResponse, void | HTTPValidationError>({
         path: `/po/${analysisId}/logs`,
         method: "GET",
-        secure: true,
         format: "json",
         ...params,
       }),
@@ -1747,13 +1763,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name GetAnalysisStatusPoAnalysisIdStatusGet
      * @summary Get Analysis Status
      * @request GET:/po/{analysis_id}/status
-     * @secure
      */
     getAnalysisStatusPoAnalysisIdStatusGet: (analysisId: string | null, params: RequestParams = {}) =>
       this.request<StatusResponse, void | HTTPValidationError>({
         path: `/po/${analysisId}/status`,
         method: "GET",
-        secure: true,
         format: "json",
         ...params,
       }),
@@ -1765,13 +1779,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name GetAnalysisPodsPoAnalysisIdPodsGet
      * @summary Get Analysis Pods
      * @request GET:/po/{analysis_id}/pods
-     * @secure
      */
     getAnalysisPodsPoAnalysisIdPodsGet: (analysisId: string | null, params: RequestParams = {}) =>
       this.request<PodResponse, void | HTTPValidationError>({
         path: `/po/${analysisId}/pods`,
         method: "GET",
-        secure: true,
         format: "json",
         ...params,
       }),
@@ -1783,13 +1795,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name StopAnalysisPoAnalysisIdStopPut
      * @summary Stop Analysis
      * @request PUT:/po/{analysis_id}/stop
-     * @secure
      */
     stopAnalysisPoAnalysisIdStopPut: (analysisId: string | null, params: RequestParams = {}) =>
       this.request<StatusResponse, void | HTTPValidationError>({
         path: `/po/${analysisId}/stop`,
         method: "PUT",
-        secure: true,
         format: "json",
         ...params,
       }),
@@ -1801,13 +1811,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name DeleteAnalysisPoAnalysisIdDeleteDelete
      * @summary Delete Analysis
      * @request DELETE:/po/{analysis_id}/delete
-     * @secure
      */
     deleteAnalysisPoAnalysisIdDeleteDelete: (analysisId: string | null, params: RequestParams = {}) =>
       this.request<StatusResponse, void | HTTPValidationError>({
         path: `/po/${analysisId}/delete`,
         method: "DELETE",
-        secure: true,
         format: "json",
         ...params,
       }),
@@ -2141,12 +2149,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description List project for a given UUID.
      *
      * @tags Hub
-     * @name ListSpecificAnalysisAnalysisNodesAnalysisIdGet
-     * @summary List Specific Analysis
+     * @name ListSpecificAnalysisNodeAnalysisNodesAnalysisIdGet
+     * @summary List Specific Analysis Node
      * @request GET:/analysis-nodes/{analysis_id}
      * @secure
      */
-    listSpecificAnalysisAnalysisNodesAnalysisIdGet: (
+    listSpecificAnalysisNodeAnalysisNodesAnalysisIdGet: (
       analysisId: string,
       query?: {
         /**
@@ -2230,6 +2238,61 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+
+    /**
+     * @description List project for a given UUID.
+     *
+     * @tags Hub
+     * @name ListSpecificAnalysisAnalysesAnalysisIdGet
+     * @summary List Specific Analysis
+     * @request GET:/analyses/{analysis_id}
+     * @secure
+     */
+    listSpecificAnalysisAnalysesAnalysisIdGet: (
+      analysisId: string,
+      query?: {
+        /**
+         * Include
+         * Whether to include additional data for the given parameter. Can only be 'node'/'analysis'
+         * @default "project"
+         */
+        include?: string | null;
+        /**
+         * Filter Analysis Realm Id
+         * Filter by analysis realm UUID.
+         */
+        filter_analysis_realm_id?: string | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<Analysis, void | HTTPValidationError>({
+        path: `/analyses/${analysisId}`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Update analysis with a given UUID.
+     *
+     * @tags Hub
+     * @name UpdateSpecificAnalysisAnalysesAnalysisIdPost
+     * @summary Update Specific Analysis
+     * @request POST:/analyses/{analysis_id}
+     * @secure
+     */
+    updateSpecificAnalysisAnalysesAnalysisIdPost: (analysisId: string, data: Analysis, params: RequestParams = {}) =>
+      this.request<DetailedAnalysis, void | HTTPValidationError>({
+        path: `/analyses/${analysisId}`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
   };
   registryProjects = {
     /**
@@ -2276,12 +2339,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       data: BodyGetAnalysisImageUrlAnalysisImagePost,
       params: RequestParams = {},
     ) =>
-      this.request<AnalysisImageUrl, void | HTTPValidationError>({
+      this.request<any, void | HTTPValidationError>({
         path: `/analysis/image`,
         method: "POST",
         body: data,
         secure: true,
-        type: ContentType.UrlEncoded,
+        type: ContentType.Json,
         format: "json",
         ...params,
       }),
@@ -2716,7 +2779,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/token`,
         method: "POST",
         body: data,
-        type: ContentType.Json,
+        type: ContentType.UrlEncoded,
         format: "json",
         ...params,
       }),

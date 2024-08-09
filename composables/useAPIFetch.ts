@@ -1,6 +1,7 @@
 import type {
   AllAnalyses,
   AllProjects,
+  Analysis,
   BodyCreateAnalysisPoPost,
   BodyCreateAndConnectAnalysisToProjectKongAnalysisPost,
   BodyCreateAndConnectProjectToDatastoreKongProjectPost,
@@ -100,6 +101,16 @@ export function getAnalysisNodes(opts?) {
       method: "GET",
     },
   );
+}
+
+export function updateAnalysis(analysis_id: string, updates) {
+  // const formData = new FormData();
+  // formData.append("approval_status", approved ? "approved" : "rejected");
+
+  return useAPIFetch(`/analyses/${analysis_id}`, {
+    method: "POST",
+    body: updates,
+  });
 }
 
 // Kong endpoints

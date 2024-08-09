@@ -4,7 +4,6 @@ import {
   deleteAnalysis,
   startAnalysis,
   stopAnalysis,
-  updateAnalysis,
 } from "~/composables/useAPIFetch";
 
 const props = defineProps({
