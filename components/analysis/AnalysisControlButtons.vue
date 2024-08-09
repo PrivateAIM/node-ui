@@ -38,11 +38,20 @@ function setButtonStatuses(podStatus: string) {
   };
 }
 
-const showFailStart = () => {
+const showFailure = (summary: string, msg: string) => {
   toast.add({
     severity: "error",
-    summary: "Start failure",
-    detail: "Failed to start the analysis",
+    summary: summary,
+    detail: msg,
+    life: 3000,
+  });
+};
+
+const showSuccess = (summary: string, msg: string) => {
+  toast.add({
+    severity: "info",
+    summary: summary,
+    detail: msg,
     life: 3000,
   });
 };
@@ -56,26 +65,36 @@ async function onStartAnalysis() {
   if (status.value === "success") {
     const currentRunStatus = response.value!.status;
     buttonStatuses.value = setButtonStatuses(currentRunStatus);
+    showSuccess("Start success", "Successfully started the container");
   } else {
-    showFailStart();
+    showFailure("Start failure", "Failed to start the analysis");
   }
 }
 
 async function onStopAnalysis() {
-  const { data: response } = await stopAnalysis(props.analysisId!);
+  const { data: response, status } = await stopAnalysis(props.analysisId!);
   const podStatuses = response.value!.status;
-  for (const podName in podStatuses) {
-    setButtonStatuses(podStatuses[podName]);
+  if (status.value === "success") {
+    for (const podName in podStatuses) {
+      buttonStatuses.value = setButtonStatuses(podStatuses[podName]);
+      showSuccess("Stop success", "Successfully stopped the container");
+    }
+  } else {
+    showFailure("Stop failure", "Failed to stop the analysis container");
   }
 }
 
 async function onDeleteAnalysis() {
-  const { data: response } = await deleteAnalysis(props.analysisId!);
+  const { data: response, status } = await deleteAnalysis(props.analysisId!);
   const podStatuses = response.value!.status;
-  for (const podName in podStatuses) {
-    const pp = podStatuses[podName];
-    console.log(pp);
-    setButtonStatuses(pp);
+  if (status.value === "success") {
+    for (const podName in podStatuses) {
+      const pp = podStatuses[podName];
+      buttonStatuses.value = setButtonStatuses(pp);
+      showSuccess("Delete success", "Successfully removed the container");
+    }
+  } else {
+    showFailure("Delete failure", "Failed to delete the analysis container");
   }
 }
 </script>
