@@ -4,18 +4,22 @@ import {
   deleteAnalysis,
   startAnalysis,
   stopAnalysis,
+  updateAnalysis,
 } from "~/composables/useAPIFetch";
 
 const props = defineProps({
-  analysisStatus: String,
+  analysisRunStatus: String,
   analysisId: String,
   projectId: String,
   nodeId: String,
 });
+
 const toast = useToast();
 
-const playButtonActiveStates = [null, "stopped", "stopping"];
-const rerunButtonActiveStates = ["failed", "finished"];
+const loading = ref(false);
+
+const playButtonActiveStates = [null, ""];
+const rerunButtonActiveStates = ["failed", "finished", "stopped", "stopping"];
 const stopButtonActiveStates = ["running", "starting", "started"];
 const deleteButtonActiveStates = [
   "failed",
@@ -27,7 +31,7 @@ const deleteButtonActiveStates = [
   "started",
 ];
 
-const buttonStatuses = ref(setButtonStatuses(props.analysisStatus!));
+const buttonStatuses = ref(setButtonStatuses(props.analysisRunStatus!));
 
 function setButtonStatuses(podStatus: string) {
   return {
@@ -56,7 +60,12 @@ const showSuccess = (summary: string, msg: string) => {
   });
 };
 
+// async function updateHubAnalysisRunStatus(update: string) {
+//   await updateAnalysis(props.analysisId!, { run_status: update });
+// }
+
 async function onStartAnalysis() {
+  loading.value = true;
   const analysisProps = {} as BodyCreateAnalysisPoPost;
   analysisProps.analysis_id = props.analysisId!;
   analysisProps.project_id = props.projectId!;
@@ -66,12 +75,15 @@ async function onStartAnalysis() {
     const currentRunStatus = response.value!.status;
     buttonStatuses.value = setButtonStatuses(currentRunStatus);
     showSuccess("Start success", "Successfully started the container");
+    // await updateHubAnalysisRunStatus("running");
   } else {
     showFailure("Start failure", "Failed to start the analysis");
   }
+  loading.value = false;
 }
 
 async function onStopAnalysis() {
+  loading.value = true;
   const { data: response, status } = await stopAnalysis(props.analysisId!);
   const podStatuses = response.value!.status;
   if (status.value === "success") {
@@ -79,23 +91,23 @@ async function onStopAnalysis() {
       buttonStatuses.value = setButtonStatuses(podStatuses[podName]);
       showSuccess("Stop success", "Successfully stopped the container");
     }
+    // await updateHubAnalysisRunStatus("stopped");
   } else {
     showFailure("Stop failure", "Failed to stop the analysis container");
   }
+  loading.value = false;
 }
 
 async function onDeleteAnalysis() {
-  const { data: response, status } = await deleteAnalysis(props.analysisId!);
-  const podStatuses = response.value!.status;
+  loading.value = true;
+  const { status } = await deleteAnalysis(props.analysisId!);
   if (status.value === "success") {
-    for (const podName in podStatuses) {
-      const pp = podStatuses[podName];
-      buttonStatuses.value = setButtonStatuses(pp);
-      showSuccess("Delete success", "Successfully removed the container");
-    }
+    buttonStatuses.value = setButtonStatuses("");
+    showSuccess("Delete success", "Successfully removed the container");
   } else {
     showFailure("Delete failure", "Failed to delete the analysis container");
   }
+  loading.value = false;
 }
 </script>
 
@@ -104,21 +116,23 @@ async function onDeleteAnalysis() {
     <Button
       icon="pi pi-play"
       aria-label="Start"
-      v-if="buttonStatuses.rerunActive"
+      v-if="buttonStatuses.playActive"
       v-tooltip="'Start the analysis'"
       severity="success"
       style="margin-right: 10px"
       :disabled="!buttonStatuses.playActive"
+      :loading="loading"
       @click="onStartAnalysis()"
     />
     <Button
-      icon="pi pi-play"
-      aria-label="Start"
+      icon="pi pi-replay"
+      aria-label="Rerun"
       v-else
-      v-tooltip="'Start the analysis'"
+      v-tooltip="'Rerun the analysis'"
       severity="success"
       style="margin-right: 10px"
-      :disabled="!buttonStatuses.playActive"
+      :disabled="!buttonStatuses.rerunActive"
+      :loading="loading"
       @click="onStartAnalysis()"
     />
     <Button
@@ -128,6 +142,7 @@ async function onDeleteAnalysis() {
       severity="warn"
       style="margin-right: 10px"
       :disabled="!buttonStatuses.stopActive"
+      :loading="loading"
       @click="onStopAnalysis()"
     />
     <Button
@@ -136,6 +151,7 @@ async function onDeleteAnalysis() {
       v-tooltip="'Delete the analysis container'"
       severity="danger"
       :disabled="!buttonStatuses.deleteActive"
+      :loading="loading"
       @click="onDeleteAnalysis()"
     />
   </div>

@@ -98,7 +98,7 @@ function onToggleRowExpansion(rowIds) {
           >
             <template #body="slotProps">
               <AnalysisControlButtons
-                :analysisStatus="slotProps.data.run_status"
+                :analysisRunStatus="slotProps.data.run_status"
                 :analysisId="slotProps.data.analysis_id"
                 :projectId="slotProps.data.analysis.project_id"
                 :nodeId="slotProps.data.expand.node_id"

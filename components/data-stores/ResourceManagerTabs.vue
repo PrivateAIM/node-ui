@@ -7,7 +7,7 @@ import {
   getDataStores,
   getProjects,
 } from "~/composables/useAPIFetch";
-import type { Analysis, Project, Route } from "~/services/Api";
+import type { DetailedAnalysis, Project, Route } from "~/services/Api";
 
 const availableDataStores = ref();
 const availableProjects = ref();
@@ -36,8 +36,9 @@ watch(projects, (parsedProjects) => {
 });
 
 watch(analyses, (parsedAnalyses) => {
-  const analysisData = parsedAnalyses!.data as unknown as Array<Analysis>;
-  availableAnalyses.value = analysisData.map((analysis: Analysis) => {
+  const analysisData = parsedAnalyses!
+    .data as unknown as Array<DetailedAnalysis>;
+  availableAnalyses.value = analysisData.map((analysis: DetailedAnalysis) => {
     return { name: analysis.name, id: analysis.id };
   });
 });
