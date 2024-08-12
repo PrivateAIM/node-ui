@@ -118,9 +118,12 @@ function extractProjectIdFromPath(paths: string[]): string {
           :projectNameMap="projectNameMap"
         />
       </TabPanel>
-      <TabPanel header="Data Store Tree Table" :disabled="!analysisNameMap">
+      <TabPanel
+        header="Data Store Tree Table"
+        :disabled="!analysisNameMap && !projectNameMap"
+      >
         <DataStoreTreeTable
-          v-if="analysisNameMap"
+          v-if="analysisNameMap && projectNameMap"
           :dataStoreList="dataStores"
           :analyses="consumersAnalyses"
           :analysisNameMap="analysisNameMap"
