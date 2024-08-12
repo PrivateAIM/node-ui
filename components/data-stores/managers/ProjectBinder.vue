@@ -10,10 +10,10 @@ const props = defineProps({
 const selectedProject = ref();
 const selectedDataStore = ref();
 const selectedAllowedMethods = ref([]);
-const selectedDataStoreType = ref("FHIR");
+const selectedDataStoreType = ref("fhir");
 
 const availableMethods = ref(["GET", "POST", "PUT", "DELETE"]);
-const dataStoreTypes = ref(["FHIR", "S3"]);
+const dataStoreTypes = ref(["fhir", "s3"]);
 
 const loading = ref(false);
 const created = ref("");
