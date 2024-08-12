@@ -17,6 +17,6 @@ await authenticateOidc();
 
 <template>
   <div class="mb-6 text-p2blue-700 text-2xl">
-    Loading authentication... (checking local state or redirecting)
+    Loading authentication, checking local state or redirecting...
   </div>
 </template>

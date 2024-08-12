@@ -1,7 +1,6 @@
 import type {
   AllAnalyses,
   AllProjects,
-  Analysis,
   BodyCreateAnalysisPoPost,
   BodyCreateAndConnectAnalysisToProjectKongAnalysisPost,
   BodyCreateAndConnectProjectToDatastoreKongProjectPost,
