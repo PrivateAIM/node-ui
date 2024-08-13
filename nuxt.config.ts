@@ -2,18 +2,15 @@
 import { defineNuxtConfig } from "nuxt/config";
 
 export default defineNuxtConfig({
-  ssr: false,
+  ssr: true,
   devtools: { enabled: false },
-  modules: ["nuxt-primevue", "@pinia/nuxt"],
+  modules: ["nuxt-primevue", "nuxt-oidc-auth"],
 
   runtimeConfig: {
     public: {
-      baseUrl: process.env.NUXT_BASE_URL || "http://localhost:3000",
+      baseUrl: process.env.NUXT_PUBLIC_BASE_URL || "http://localhost:3000",
       hubAdapterUrl:
-        process.env.NUXT_HUB_ADAPTER_URL || "http://localhost:5000",
-      keycloakUrl: process.env.NUXT_KEYCLOAK_BASE_URL as string,
-      keycloakClientId: process.env.NUXT_KEYCLOAK_CLIENT_ID,
-      keycloakClientSecret: process.env.NUXT_KEYCLOAK_CLIENT_SECRET,
+        process.env.NUXT_PUBLIC_HUB_ADAPTER_URL || "http://localhost:5000",
     },
   },
 
@@ -21,9 +18,42 @@ export default defineNuxtConfig({
     options: {
       ripple: true,
     },
-
     directives: {
       include: ["Ripple", "Tooltip", "Toast"],
+    },
+  },
+
+  oidc: {
+    defaultProvider: "keycloak",
+    providers: {
+      keycloak: {
+        clientId:
+          process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_ID || "node-ui",
+        clientSecret: process.env
+          .NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET as string,
+        redirectUri:
+          process.env.NUXT_PUBLIC_BASE_URL + "/auth/keycloak/callback",
+        exposeAccessToken: true,
+        // The auth is different since that is accessed via a frontend client
+        authorizationUrl:
+          process.env.KEYCLOAK_LOGIN_URL + "/protocol/openid-connect/auth",
+        tokenUrl:
+          process.env.KEYCLOAK_SERVICE_URL + "/protocol/openid-connect/token",
+        userinfoUrl:
+          process.env.KEYCLOAK_SERVICE_URL +
+          "/protocol/openid-connect/userinfo",
+        logoutUrl:
+          process.env.KEYCLOAK_SERVICE_URL + "/protocol/openid-connect/auth",
+      },
+    },
+    session: {
+      expirationCheck: false,
+      automaticRefresh: true,
+      maxAge: 3600,
+    },
+    middleware: {
+      globalMiddlewareEnabled: false,
+      customLoginPage: false,
     },
   },
 

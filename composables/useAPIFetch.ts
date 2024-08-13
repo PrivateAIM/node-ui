@@ -14,47 +14,17 @@ import type {
   ListServices,
   Service,
 } from "~/services/Api";
-import { useServices } from "~/composables/useServices";
+import type { UseFetchOptions } from "#app";
 
-export const useAPIFetch: typeof useFetch = (request, options?) => {
-  const config = useRuntimeConfig();
-  const nuxtApp = useNuxtApp();
-  const baseUrl = config.public.hubAdapterUrl as string;
-
-  const services = useServices();
-
-  const token = services.$application.getToken();
-
+export function useAPIFetch<T>(
+  request: string | (() => string),
+  options: UseFetchOptions<T> = {},
+) {
   return useFetch(request, {
-    baseURL: baseUrl,
-    onRequest({ options }) {
-      // Annoying workaround to avoid typescript from complaining - cast to Headers then set explicitly
-      const headers = options.headers
-        ? new Headers(options.headers)
-        : new Headers();
-      headers.set("Authorization", `Bearer ${token}`);
-      options.headers = headers;
-    },
-    onRequestError({ request, options, error }) {
-      console.log(request);
-      console.log(options);
-      console.log(error);
-    },
-    onResponse({ response }) {
-      // Process the response data
-      localStorage.setItem("token", response._data.token);
-    },
-    onResponseError({ response }) {
-      // Handle the response errors
-      console.log(response);
-      if (response.status === 401 || response.status === 403) {
-        console.log("User signed out, routing to login");
-        nuxtApp.runWithContext(() => navigateTo("/"));
-      }
-    },
     ...options,
+    $fetch: useNuxtApp().$hubApi,
   });
-};
+}
 
 // Hub endpoints
 export function approveRejectProjectProposal(

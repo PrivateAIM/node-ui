@@ -7,7 +7,7 @@ import InputNumber from "primevue/inputnumber";
 const name = ref("");
 const host = ref("");
 const path = ref("");
-const port = ref(443);
+const port = ref(80);
 const protocol = ref("http");
 
 const loading = ref(false);

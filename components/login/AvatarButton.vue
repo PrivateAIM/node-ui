@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { useServices } from "~/composables/useServices";
-
-const services = useServices();
+import { ref } from "vue";
+const { loggedIn, logout, login, user } = useOidcAuth();
 
 const menu = ref();
 const loggedOutUserMenuItems = ref([
@@ -12,7 +11,7 @@ const loggedOutUserMenuItems = ref([
         label: "Login",
         icon: "pi pi-sign-in",
         command: () => {
-          services.$auth.signInRedirect();
+          login();
         },
       },
     ],
@@ -26,29 +25,22 @@ const loggedInUserMenuItems = ref([
         label: "Logout",
         icon: "pi pi-sign-out",
         command: () => {
-          services.$auth.logout();
+          logout();
         },
       },
     ],
   },
 ]);
-
-const user = ref();
-
-onMounted(async () => {
-  user.value = await services.$auth.getUser();
-});
-
 const toggle = (event) => {
   menu.value.toggle(event);
 };
 </script>
 
 <template>
-  <div v-if="user" class="authAvatarSection">
+  <div v-if="loggedIn" class="authAvatarSection">
     <div class="usernameMenuBar">
       <p>
-        {{ user.profile.name }}
+        {{ user.providerInfo.preferred_username }}
       </p>
     </div>
     <Button

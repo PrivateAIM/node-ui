@@ -1,19 +1,18 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import AvatarButton from "~/components/login/AvatarButton.vue";
-
-const services = useServices();
-
-const user = ref();
-
-onMounted(async () => {
-  user.value = await services.$auth.getUser();
-});
+const { loggedIn } = useOidcAuth();
 
 const items = ref([
   {
     label: "Home",
     icon: "pi pi-home",
     route: "/",
+  },
+  {
+    label: "Test",
+    icon: "pi pi-at",
+    route: "/test",
   },
   {
     label: "Projects",
@@ -71,7 +70,7 @@ const items = ref([
             :href="href"
             v-bind="props.action"
             @click="navigate"
-            :class="!user && item.label != 'Home' ? 'p-disabled' : ''"
+            :class="!loggedIn && item.label != 'Home' ? 'p-disabled' : ''"
           >
             <span :class="item.icon" />
             <span class="ml-2">{{ item.label }}</span>
@@ -83,7 +82,7 @@ const items = ref([
           :href="item.url"
           :target="item.target"
           v-bind="props.action"
-          :class="!user && item.label != 'Home' ? 'p-disabled' : ''"
+          :class="!loggedIn && item.label != 'Home' ? 'p-disabled' : ''"
         >
           <span :class="item.icon" />
           <span class="ml-2">{{ item.label }}</span>
