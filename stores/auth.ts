@@ -30,6 +30,7 @@ export const useAuth = defineStore("auth", () => {
   };
 });
 
+// Allows changes made to the store code to be applied automatically without having to restart the app
 if (import.meta.hot) {
   import.meta.hot.accept(acceptHMRUpdate(useAuth, import.meta.hot));
 }

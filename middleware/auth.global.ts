@@ -5,6 +5,7 @@ const authFlowRoutes = [
   "/auth/callback",
   "/auth/silent-refresh",
   "/auth/logout",
+  "/",
 ];
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
@@ -14,8 +15,9 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
   if (!user && !authFlowRoutes.includes(to.path)) {
     // use this to automatically force a sign in and redirect
-    // services.$auth.signInRedirect();
+    console.warn("Not logged in");
+    return await services.$auth.signInRedirect();
   } else {
-    authStore.setUpUserCredentials(user);
+    return authStore.setUpUserCredentials(user);
   }
 });

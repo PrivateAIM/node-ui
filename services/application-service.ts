@@ -8,6 +8,4 @@ export default class ApplicationService {
   getToken() {
     return this.accessToken;
   }
-
-  // use this to add to API calls or the like
 }
