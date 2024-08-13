@@ -42,8 +42,6 @@ export default defineNuxtConfig({
         userinfoUrl:
           process.env.KEYCLOAK_SERVICE_URL +
           "/protocol/openid-connect/userinfo",
-        logoutUrl:
-          process.env.KEYCLOAK_SERVICE_URL + "/protocol/openid-connect/logout",
       },
     },
     session: {
