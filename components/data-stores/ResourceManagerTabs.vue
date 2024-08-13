@@ -7,7 +7,7 @@ import {
   getDataStores,
   getProjects,
 } from "~/composables/useAPIFetch";
-import type { DetailedAnalysis, Project, Route } from "~/services/Api";
+import type { DetailedAnalysis, Project, Route, Service } from "~/services/Api";
 
 const availableDataStores = ref();
 const availableProjects = ref();
@@ -42,13 +42,23 @@ watch(analyses, (parsedAnalyses) => {
     return { name: analysis.name, id: analysis.id };
   });
 });
+
+function updateDataStores(newDataStoreCreation: Service) {
+  const newDataStoreEntry = {
+    name: newDataStoreCreation.name,
+    id: newDataStoreCreation.id,
+  };
+  availableDataStores.value = availableDataStores.value.push(newDataStoreEntry);
+  console.log(availableDataStores.value);
+  return;
+}
 </script>
 
 <template>
   <div class="card tabCard">
     <TabView>
       <TabPanel header="Create a Data Store">
-        <DataStoreCreator />
+        <DataStoreCreator @updatedRow="updateDataStores" />
       </TabPanel>
       <TabPanel
         header="Bind a Project to a Data Store"

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 const { loggedIn, user, login, logout } = useOidcAuth();
-console.log(user.value);
 
 async function customLogout() {
   await logout();

@@ -12,6 +12,8 @@ const protocol = ref("http");
 
 const loading = ref(false);
 
+const emit = defineEmits(["newDataStore"]);
+
 const acceptedProtocols = ref([
   "grpc",
   "grpcs",
@@ -47,8 +49,9 @@ async function onSubmitCreateDataStore() {
     }
   }
   loading.value = true;
-  const { status } = await createDataStore(dataStoreProps);
+  const { data: newDataStore, status } = await createDataStore(dataStoreProps);
   created.value = status.value;
+  emit("newDataStore", newDataStore.value);
   loading.value = false;
 }
 </script>

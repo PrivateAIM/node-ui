@@ -4,14 +4,33 @@ import { useConfirm } from "primevue/useconfirm";
 import type { DetailedService } from "~/services/Api";
 
 const confirm = useConfirm();
+const toast = useToast();
+const deleteLoading = ref(false);
 
 const props = defineProps({
   stores: Array<DetailedService>,
   loading: Boolean,
 });
 
-function onConfirmDeleteDataStore(dsName: string) {
-  deleteDataStore(dsName);
+async function onConfirmDeleteDataStore(dsName: string) {
+  deleteLoading.value = true;
+  const { status } = await deleteDataStore(dsName);
+  if (status.value === "success") {
+    toast.add({
+      severity: "info",
+      summary: "Delete success",
+      detail: "The data store was successfully deleted",
+      life: 3000,
+    });
+  } else {
+    toast.add({
+      severity: "error",
+      summary: "Delete failure",
+      detail: "An error occurred while trying to delete the data store",
+      life: 3000,
+    });
+  }
+  deleteLoading.value = false;
 }
 
 const confirmDelete = (event, dsName: string) => {
@@ -73,6 +92,7 @@ const confirmDelete = (event, dsName: string) => {
             icon="pi pi-trash"
             aria-label="Delete"
             severity="danger"
+            :loading="deleteLoading"
             @click="confirmDelete($event, slotProps.data.name)"
           />
         </template>
