@@ -10,11 +10,6 @@ const items = ref([
     route: "/",
   },
   {
-    label: "Test",
-    icon: "pi pi-at",
-    route: "/test",
-  },
-  {
     label: "Projects",
     icon: "pi pi-objects-column",
     items: [
