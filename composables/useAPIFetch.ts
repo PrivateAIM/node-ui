@@ -84,6 +84,13 @@ export function updateAnalysis(analysis_id: string, updates) {
 
 // Kong endpoints
 export function getDataStores(includeProject: boolean, opts?) {
+  // return nuxtApp.$hubApi("/kong/datastore", {
+  //   ...opts,
+  //   method: "GET",
+  //   query: {
+  //     detailed: includeProject,
+  //   },
+  // });
   return useAPIFetch<{ data: ListServices }>("/kong/datastore", {
     ...opts,
     method: "GET",

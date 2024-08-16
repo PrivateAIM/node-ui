@@ -1,5 +1,10 @@
+import {
+  showKongConnectionErrorToast,
+  showHubAdapterConnectionErrorToast,
+} from "~/composables/connectionErrorToast";
+
 export default defineNuxtPlugin((nuxtApp) => {
-  const { user } = useOidcAuth();
+  const { user, login } = useOidcAuth();
   const config = useRuntimeConfig();
   const baseUrl = config.public.hubAdapterUrl as string;
   const hubApi = $fetch.create({
@@ -15,12 +20,20 @@ export default defineNuxtPlugin((nuxtApp) => {
     onRequestError({ error }) {
       console.log(error);
     },
-    onResponseError({ response }) {
+    onResponseError({ request, response }) {
       // Handle the response errors
       console.log(response);
-      if (response.status === 401 || response.status === 403) {
-        console.warn("User signed out, routing to login");
-        nuxtApp.runWithContext(() => navigateTo("/auth/login"));
+      // if (response.status === 401 || response.status === 403) {
+      //   console.warn("User not signed in, routing to login");
+      //   return login();
+      // }
+
+      if (response.status === 500) {
+        if (typeof request === "string" && request.includes("kong")) {
+          showKongConnectionErrorToast();
+        } else {
+          showHubAdapterConnectionErrorToast();
+        }
       }
     },
   });

@@ -10,7 +10,6 @@ import { formatDataRow } from "~/utils/format-data-row";
 import type { Analysis, DetailedService, Project, Route } from "~/services/Api";
 import DetailedDataStoreTable from "~/components/data-stores/tables/DetailedDataStoreTable.vue";
 import DetailedAnalysisTable from "~/components/data-stores/tables/DetailedAnalysisTable.vue";
-import { showConnectionErrorToast } from "~/composables/connectionErrorToast";
 import DataStoreTreeTable from "~/components/data-stores/tables/DataStoreTreeTable.vue";
 
 const dataStores = ref();
@@ -76,7 +75,6 @@ async function loadDetailedDataStoreTable(responseData, status, error) {
     });
     dataStores.value = formattedDataStores;
   } else if (error.value?.statusCode === 500) {
-    showConnectionErrorToast();
     dataStores.value = [];
   }
   loading.value = false;

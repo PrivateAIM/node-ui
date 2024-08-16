@@ -7,7 +7,7 @@ export const useToastService = () => {
   return getToast();
 };
 
-export const showConnectionErrorToast = () => {
+export const showHubAdapterConnectionErrorToast = () => {
   const toast = useToastService();
   toast.add({
     severity: "error",
@@ -15,4 +15,16 @@ export const showConnectionErrorToast = () => {
     detail: "Unable to contact the API.",
     life: 3000,
   });
+  console.warn("Hub Adapter API service unreachable");
+};
+
+export const showKongConnectionErrorToast = () => {
+  const toast = useToastService();
+  toast.add({
+    severity: "error",
+    summary: "Connection error",
+    detail: "Unable to contact the Kong gateway service.",
+    life: 3000,
+  });
+  console.warn("Kong service unreachable");
 };

@@ -42,11 +42,12 @@ export default defineNuxtConfig({
         userinfoUrl:
           process.env.KEYCLOAK_SERVICE_URL +
           "/protocol/openid-connect/userinfo",
+        pkce: true,
       },
     },
     session: {
       expirationCheck: false,
-      automaticRefresh: true,
+      automaticRefresh: false,
       maxAge: 3600,
     },
     middleware: {

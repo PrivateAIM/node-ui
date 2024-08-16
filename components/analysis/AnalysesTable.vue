@@ -3,7 +3,7 @@ import { getAnalysisNodes } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
 import TableRowMetadata from "~/components/TableRowMetadata.vue";
 import ExpandRowButtons from "~/components/table/ExpandRowButtons.vue";
-import { showConnectionErrorToast } from "~/composables/connectionErrorToast";
+import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
 
 const expandedRows = ref();
 const analyses = ref();
@@ -25,7 +25,7 @@ if (status.value === "success") {
     expandRowEntries,
   );
 } else if (error.value?.statusCode === 500) {
-  showConnectionErrorToast();
+  showHubAdapterConnectionErrorToast();
 }
 
 function onToggleRowExpansion(rowIds) {

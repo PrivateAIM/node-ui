@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getProjects } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
-import { showConnectionErrorToast } from "~/composables/connectionErrorToast";
+import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
 
 const projects = ref();
 
@@ -16,7 +16,7 @@ if (status.value === "success") {
     expandRowEntries,
   );
 } else if (error.value?.statusCode === 500) {
-  showConnectionErrorToast();
+  showHubAdapterConnectionErrorToast();
 }
 </script>
 

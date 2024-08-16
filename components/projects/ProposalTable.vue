@@ -5,7 +5,7 @@ import { formatDataRow } from "~/utils/format-data-row";
 import TableRowMetadata from "~/components/TableRowMetadata.vue";
 import type { ProjectNode } from "~/services/Api";
 import ExpandRowButtons from "~/components/table/ExpandRowButtons.vue";
-import { showConnectionErrorToast } from "~/composables/connectionErrorToast";
+import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
 
 const proposals = ref();
 const expandedRows = ref({});
@@ -21,7 +21,7 @@ if (status.value === "success") {
     expandRowEntries,
   );
 } else if (error.value?.statusCode === 500) {
-  showConnectionErrorToast();
+  showHubAdapterConnectionErrorToast();
 }
 
 function onToggleRowExpansion(rowIds) {
