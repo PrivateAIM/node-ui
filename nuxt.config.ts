@@ -42,7 +42,7 @@ export default defineNuxtConfig({
         userinfoUrl:
           process.env.KEYCLOAK_SERVICE_URL +
           "/protocol/openid-connect/userinfo",
-        pkce: true,
+        pkce: false,
       },
     },
     session: {
