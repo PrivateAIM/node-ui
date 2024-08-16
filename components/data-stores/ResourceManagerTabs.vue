@@ -48,8 +48,7 @@ function updateDataStores(newDataStoreCreation: Service) {
     name: newDataStoreCreation.name,
     id: newDataStoreCreation.id,
   };
-  availableDataStores.value = availableDataStores.value.push(newDataStoreEntry);
-  console.log(availableDataStores.value);
+  availableDataStores.value.push(newDataStoreEntry);
   return;
 }
 </script>
@@ -58,7 +57,7 @@ function updateDataStores(newDataStoreCreation: Service) {
   <div class="card tabCard">
     <TabView>
       <TabPanel header="Create a Data Store">
-        <DataStoreCreator @updatedRow="updateDataStores" />
+        <DataStoreCreator @newDataStore="updateDataStores" />
       </TabPanel>
       <TabPanel
         header="Bind a Project to a Data Store"

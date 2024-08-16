@@ -23,10 +23,10 @@ export default defineNuxtPlugin((nuxtApp) => {
     onResponseError({ request, response }) {
       // Handle the response errors
       console.log(response);
-      // if (response.status === 401 || response.status === 403) {
-      //   console.warn("User not signed in, routing to login");
-      //   return login();
-      // }
+      if (response.status === 401 || response.status === 403) {
+        console.warn("User not signed in, routing to login");
+        return login();
+      }
 
       if (response.status === 500) {
         if (typeof request === "string" && request.includes("kong")) {
