@@ -3,7 +3,7 @@ import {
   showHubAdapterConnectionErrorToast,
 } from "~/composables/connectionErrorToast";
 
-export default defineNuxtPlugin((nuxtApp) => {
+export default defineNuxtPlugin(() => {
   const { user, login } = useOidcAuth();
   const config = useRuntimeConfig();
   const baseUrl = config.public.hubAdapterUrl as string;
@@ -22,11 +22,12 @@ export default defineNuxtPlugin((nuxtApp) => {
     },
     onResponseError({ request, response }) {
       // Handle the response errors
-      console.log(response);
       if (response.status === 401 || response.status === 403) {
-        console.warn("User not signed in, routing to login");
+        console.warn("User not signed in, returning to login");
         return login();
       }
+
+      console.log(response);
 
       if (response.status === 500) {
         if (typeof request === "string" && request.includes("kong")) {
