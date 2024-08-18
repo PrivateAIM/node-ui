@@ -32,16 +32,20 @@ export default defineNuxtConfig({
         clientSecret: process.env
           .NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET as string,
         redirectUri:
-          process.env.NUXT_PUBLIC_BASE_URL + "/auth/keycloak/callback",
-        exposeAccessToken: true,
+          process.env.NUXT_PUBLIC_BASE_URL + "/auth/keycloak/callback" ||
+          process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_REDIRECT_URI,
         // The auth is different since that is accessed via a frontend client
         authorizationUrl:
-          process.env.KEYCLOAK_LOGIN_URL + "/protocol/openid-connect/auth",
+          process.env.KEYCLOAK_LOGIN_URL + "/protocol/openid-connect/auth" ||
+          process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_AUTHORIZATION_URL,
         tokenUrl:
-          process.env.KEYCLOAK_SERVICE_URL + "/protocol/openid-connect/token",
+          process.env.KEYCLOAK_SERVICE_URL + "/protocol/openid-connect/token" ||
+          process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_TOKEN_URL,
         userinfoUrl:
           process.env.KEYCLOAK_SERVICE_URL +
-          "/protocol/openid-connect/userinfo",
+            "/protocol/openid-connect/userinfo" ||
+          process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_USERINFO_URL,
+        exposeAccessToken: true,
         pkce: false,
       },
     },

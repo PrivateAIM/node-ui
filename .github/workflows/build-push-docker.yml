@@ -39,5 +39,6 @@ jobs:
           file: ./Dockerfile
           push: true
           platforms: linux/amd64
-          tags: ${{ steps.meta.outputs.tags }},ghcr.io/privateaim/node-ui:latest
+          tags: ${{ steps.meta.outputs.tags }},ghcr.io/privateaim/node-ui:prod
           labels: ${{ steps.meta.outputs.labels }}
+
