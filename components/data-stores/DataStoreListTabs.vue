@@ -99,7 +99,11 @@ function extractProjectIdFromPath(paths: string[]): string {
   <div class="card tabCard">
     <TabView>
       <TabPanel header="Detailed Data Store View">
-        <DetailedDataStoreTable :stores="dataStores" :loading="loading" />
+        <DetailedDataStoreTable
+          v-if="dataStores"
+          :stores="dataStores"
+          :loading="loading"
+        />
       </TabPanel>
       <TabPanel header="Detailed Projects View" :disabled="!projectNameMap">
         <DetailedProjectTable

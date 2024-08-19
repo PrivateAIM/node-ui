@@ -3,14 +3,15 @@ import { deleteDataStore } from "~/composables/useAPIFetch";
 import { useConfirm } from "primevue/useconfirm";
 import type { DetailedService } from "~/services/Api";
 
-const confirm = useConfirm();
-const toast = useToast();
-const deleteLoading = ref(false);
-
 const props = defineProps({
   stores: Array<DetailedService>,
   loading: Boolean,
 });
+
+const dataStores = ref(props.stores);
+const confirm = useConfirm();
+const toast = useToast();
+const deleteLoading = ref(false);
 
 async function onConfirmDeleteDataStore(dsName: string) {
   deleteLoading.value = true;
@@ -22,6 +23,9 @@ async function onConfirmDeleteDataStore(dsName: string) {
       detail: "The data store was successfully deleted",
       life: 3000,
     });
+    dataStores.value = dataStores.value?.filter(
+      (store: DetailedService) => store.name !== dsName,
+    );
   } else {
     toast.add({
       severity: "error",
@@ -54,7 +58,7 @@ const confirmDelete = (event, dsName: string) => {
 <template>
   <div class="dataStoreTable">
     <DataTable
-      :value="props.stores"
+      :value="dataStores"
       paginator
       :loading="props.loading"
       :rows="10"
