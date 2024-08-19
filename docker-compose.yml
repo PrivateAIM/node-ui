@@ -1,28 +1,7 @@
 services:
-  nodeuidev:
-    image: node-ui:latest
-    container_name: nodeui-dev
-    deploy:
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
-        window: 120s
-    environment:
-      NODE_ENV: "development"
-      # The "NUXT_" prefix overrides the env variable set during build time (for prod only)
-      NUXT_PUBLIC_BASE_URL: "http://localhost:3000"  # URL of the website
-      NUXT_PUBLIC_HUB_ADAPTER_URL: "http://localhost:5000"
-      NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL: "http://localhost:8080/realms/flame"
-      NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_ID: "node-ui"
-      NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET: "xxx"
-    ports:
-      - '3000:3000'
-    restart: always
-
-#  nodeui:
-#    image: node-prod:latest
-#    container_name: nodeui-prod
+#  nodeuidev:
+#    image: node-ui:latest
+#    container_name: nodeui-dev
 #    deploy:
 #      restart_policy:
 #        condition: on-failure
@@ -30,28 +9,39 @@ services:
 #        max_attempts: 3
 #        window: 120s
 #    environment:
-#      NODE_ENV: "production"
+#      NODE_ENV: "development"
 #      # The "NUXT_" prefix overrides the env variable set during build time (for prod only)
 #      NUXT_PUBLIC_BASE_URL: "http://localhost:3000"  # URL of the website
-#      NUXT_PUBLIC_HUB_ADAPTER_URL: "http://localhost:8081"
-#      NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL: "http://some.keycloak.com/realms/flame"
+#      NUXT_PUBLIC_HUB_ADAPTER_URL: "http://localhost:5000"
+#      NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL: "http://localhost:8080/realms/flame"
 #      NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_ID: "node-ui"
-#      NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET: ""
-#      NUXT_OIDC_PROVIDERS_KEYCLOAK_REDIRECT_URI: "http://localhost:3000/auth/keycloak/callback"
-##    ports:
-##      - '3000:3000'
-#    restart: always
-#
-#  nginx:
-#    image: nginx:1.27.0-alpine
-#    container_name: reverse-proxy
-#    volumes:
-#      - ./default.conf:/etc/nginx/conf.d/default.conf
+#      NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET: "xxx"
 #    ports:
-#      - 3000:3000
-#    depends_on:
-#      - nodeui
-#    restart: unless-stopped
+#      - '3000:3000'
+#    restart: always
+
+  nodeui:
+    image: node-prod:latest
+    container_name: nodeui-prod
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    environment:
+      NODE_ENV: "production"
+      NUXT_PUBLIC_BASE_URL: "http://localhost:3000"  # URL of the website
+      NUXT_PUBLIC_HUB_ADAPTER_URL: "http://localhost:8081"
+      NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_ID: "node-ui"
+      NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET: "xxx"
+      NUXT_OIDC_PROVIDERS_KEYCLOAK_REDIRECT_URI: "http://localhost:3000/auth/keycloak/callback"
+      NUXT_OIDC_PROVIDERS_KEYCLOAK_AUTHORIZATION_URL: "http://localhost:8080/realms/flame/protocol/openid-connect/auth"
+      NUXT_OIDC_PROVIDERS_KEYCLOAK_TOKEN_URL: "http://localhost:8080/realms/flame/protocol/openid-connect/token"
+      NUXT_OIDC_PROVIDERS_KEYCLOAK_USERINFO_URL: "http://localhost:8080/realms/flame/protocol/openid-connect/userinfo"
+    ports:
+      - '3000:3000'
+    restart: always
 
 networks:
   flame:
