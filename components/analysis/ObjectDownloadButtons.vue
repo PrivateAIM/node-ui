@@ -20,11 +20,7 @@ const props = defineProps({
 const toast = useToast();
 
 async function onDownloadObject() {
-  const {
-    data: response,
-    status,
-    error,
-  } = props.isLocal
+  const { data: response, status } = props.isLocal
     ? await downloadLocalObject(props.objectId!)
     : await downloadIntermediateObject(props.objectId!);
 
