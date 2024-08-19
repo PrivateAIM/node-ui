@@ -24,7 +24,6 @@ if (status.value === "success") {
     ["created_at", "updated_at"],
     expandRowEntries,
   );
-  console.log(analyses.value);
 } else if (error.value?.statusCode === 500) {
   showHubAdapterConnectionErrorToast();
 }

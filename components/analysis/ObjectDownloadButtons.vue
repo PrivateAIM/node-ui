@@ -34,7 +34,6 @@ async function onDownloadObject() {
     a.download = props.objectId!;
     a.click();
   } else {
-    console.log(error);
     toast.add({
       severity: "error",
       summary: "Download failed",
