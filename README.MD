@@ -17,7 +17,7 @@ NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_ID="node-ui"
 NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET="someSecret"
 
 # The following need to be explicitly set in order to apply them to the Nuxt config, they can't be built from the domain
-NUXT_OIDC_PROVIDERS_KEYCLOAK_REDIRECT_URI="https://my.keycloak.domain.de/auth/keycloak/callback"  # Be sure this redirect URI is defined in your keycloak for this client
+NUXT_OIDC_PROVIDERS_KEYCLOAK_REDIRECT_URI="http://localhost:3000/auth/keycloak/callback"  # Be sure this redirect URI is defined in your keycloak for this client
 NUXT_OIDC_PROVIDERS_KEYCLOAK_AUTHORIZATION_URL="https://my.keycloak.domain.de/protocol/openid-connect/auth"
 NUXT_OIDC_PROVIDERS_KEYCLOAK_TOKEN_URL="https://my.keycloak.domain.de/protocol/openid-connect/token"
 NUXT_OIDC_PROVIDERS_KEYCLOAK_USERINFO_URL="https://my.keycloak.domain.de/protocol/openid-connect/userinfo"
