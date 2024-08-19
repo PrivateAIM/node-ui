@@ -19,9 +19,10 @@ interface projectRow {
   kongProjUpdatedAt: string;
 }
 
-const meltedValues = ref();
-
+const projectTable = ref();
+const toast = useToast();
 const confirm = useConfirm();
+const loading = ref(false);
 
 onMounted(() => {
   meltDataStoreTable();
@@ -44,8 +45,28 @@ const confirmDeleteProject = (event, projectUuid: string) => {
   });
 };
 
-function onConfirmDeleteProject(projectUuid: string) {
-  deleteProjectFromKong(projectUuid);
+async function onConfirmDeleteProject(projectUuid: string) {
+  loading.value = true;
+  const { status } = await deleteProjectFromKong(projectUuid);
+  if (status.value === "success") {
+    toast.add({
+      severity: "info",
+      summary: "Delete success",
+      detail: "The project link to the data was successfully deleted",
+      life: 3000,
+    });
+    projectTable.value = projectTable.value.filter(
+      (project: Route) => project.id !== projectUuid,
+    );
+  } else {
+    toast.add({
+      severity: "error",
+      summary: "Delete failure",
+      detail: "An error occurred while trying to remove this connection",
+      life: 3000,
+    });
+  }
+  loading.value = false;
 }
 
 function meltDataStoreTable() {
@@ -74,14 +95,14 @@ function meltDataStoreTable() {
       }
     });
   }
-  meltedValues.value = elongatedTableRows;
+  projectTable.value = elongatedTableRows;
 }
 </script>
 
 <template>
   <div class="associatedProjectsTable">
     <DataTable
-      :value="meltedValues"
+      :value="projectTable"
       tableStyle="min-width: 50rem"
       paginator
       :rows="10"
@@ -128,6 +149,7 @@ function meltDataStoreTable() {
             icon="pi pi-trash"
             aria-label="Disconnect"
             severity="warning"
+            :loading="loading"
             @click="confirmDeleteProject($event, slotProps.data.hubProjectUuid)"
           />
         </template>

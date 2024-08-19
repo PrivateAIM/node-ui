@@ -29,7 +29,8 @@ interface analysisRow {
 }
 
 const analysisTable = ref();
-
+const loading = ref(false);
+const toast = useToast();
 const confirm = useConfirm();
 
 onMounted(() => {
@@ -57,15 +58,30 @@ const confirmDeleteAnalysis = (
   });
 };
 
-function onConfirmDeleteAnalysis(
+async function onConfirmDeleteAnalysis(
   analysisUuid: string,
   analysisUsername: string,
 ) {
-  const { status } = deleteAnalysisFromKong(analysisUuid);
+  loading.value = true;
+  const { status } = await deleteAnalysisFromKong(analysisUuid);
   if (status.value === "success") {
+    toast.add({
+      severity: "info",
+      summary: "Delete success",
+      detail: "The analysis link to the data was successfully deleted",
+      life: 3000,
+    });
     analysisTable.value = analysisTable.value.filter(
       (analysis: Consumer) => analysis.custom_id !== analysisUsername,
     );
+  } else {
+    toast.add({
+      severity: "error",
+      summary: "Delete failure",
+      detail: "An error occurred while trying to remove this connection",
+      life: 3000,
+    });
+    loading.value = false;
   }
 }
 
@@ -158,6 +174,7 @@ function compileAnalysisTable() {
             icon="pi pi-trash"
             aria-label="Delete"
             severity="warning"
+            :loading="loading"
             @click="
               confirmDeleteAnalysis(
                 $event,
