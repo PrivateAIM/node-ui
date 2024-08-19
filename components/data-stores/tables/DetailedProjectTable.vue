@@ -56,7 +56,7 @@ async function onConfirmDeleteProject(projectUuid: string) {
       life: 3000,
     });
     projectTable.value = projectTable.value.filter(
-      (project: Route) => project.id !== projectUuid,
+      (project: projectRow) => project.hubProjectUuid !== projectUuid,
     );
   } else {
     toast.add({
