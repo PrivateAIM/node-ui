@@ -24,6 +24,7 @@ if (status.value === "success") {
     ["created_at", "updated_at"],
     expandRowEntries,
   );
+  console.log(analyses.value);
 } else if (error.value?.statusCode === 500) {
   showHubAdapterConnectionErrorToast();
 }
@@ -42,7 +43,7 @@ function onToggleRowExpansion(rowIds) {
         <DataTable
           :value="analyses"
           v-model:expandedRows="expandedRows"
-          dataKey="id"
+          dataKey="analysis_id"
           :pt="{
             table: 'table table-striped',
           }"
