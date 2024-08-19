@@ -33,7 +33,15 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=sha
-      - name: Build and push Docker image
+      - name: Build and push development Docker image
+        uses: docker/build-push-action@v5
+        with:
+          file: ./Dockerfile
+          push: true
+          platforms: linux/amd64
+          tags: ${{ steps.meta.outputs.tags }},ghcr.io/privateaim/node-ui:dev,ghcr.io/privateaim/node-ui:latest
+          labels: ${{ steps.meta.outputs.labels }}
+      - name: Build and push production Docker image
         uses: docker/build-push-action@v5
         with:
           file: ./prod.Dockerfile
