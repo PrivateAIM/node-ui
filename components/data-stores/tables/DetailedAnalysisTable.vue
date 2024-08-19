@@ -72,7 +72,8 @@ async function onConfirmDeleteAnalysis(
       life: 3000,
     });
     analysisTable.value = analysisTable.value.filter(
-      (analysis: Consumer) => analysis.custom_id !== analysisUsername,
+      (analysis: analysisRow) =>
+        analysis.kongAnalysisUserName !== analysisUsername,
     );
   } else {
     toast.add({
@@ -81,8 +82,8 @@ async function onConfirmDeleteAnalysis(
       detail: "An error occurred while trying to remove this connection",
       life: 3000,
     });
-    loading.value = false;
   }
+  loading.value = false;
 }
 
 function compileAnalysisTable() {
