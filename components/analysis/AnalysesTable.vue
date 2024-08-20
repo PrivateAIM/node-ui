@@ -85,11 +85,7 @@ function onToggleRowExpansion(rowIds) {
             header="Project"
             :sortable="true"
           />
-          <Column
-            field="analysis.nodes"
-            header="Number Nodes"
-            :sortable="true"
-          />
+          <Column field="node.name" header="Node" :sortable="true" />
           <Column
             field="expand.id"
             header="Toggle Analysis"

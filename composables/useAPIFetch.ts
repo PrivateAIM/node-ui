@@ -64,7 +64,7 @@ export function getAnalyses(opts?) {
 
 export function getAnalysisNodes(opts?) {
   return useAPIFetch<{ data: ListAnalysisNodes }>(
-    "/analysis-nodes?include=analysis",
+    "/analysis-nodes?include=analysis,node",
     {
       ...opts,
       method: "GET",
