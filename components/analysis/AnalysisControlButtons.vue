@@ -116,7 +116,7 @@ async function onDeleteAnalysis() {
       icon="pi pi-play"
       aria-label="Start"
       v-if="buttonStatuses.playActive"
-      v-tooltip="'Start the analysis'"
+      v-tooltip.top="'Start the analysis'"
       severity="success"
       style="margin-right: 10px"
       :disabled="!buttonStatuses.playActive"
@@ -127,7 +127,7 @@ async function onDeleteAnalysis() {
       icon="pi pi-replay"
       aria-label="Rerun"
       v-else
-      v-tooltip="'Rerun the analysis'"
+      v-tooltip.top="'Rerun the analysis'"
       severity="success"
       style="margin-right: 10px"
       :disabled="!buttonStatuses.rerunActive"
@@ -137,7 +137,7 @@ async function onDeleteAnalysis() {
     <Button
       icon="pi pi-stop"
       aria-label="Stop"
-      v-tooltip="'Stop the analysis'"
+      v-tooltip.top="'Stop the analysis'"
       severity="warn"
       style="margin-right: 10px"
       :disabled="!buttonStatuses.stopActive"
@@ -147,7 +147,7 @@ async function onDeleteAnalysis() {
     <Button
       icon="pi pi-trash"
       aria-label="Delete"
-      v-tooltip="'Delete the analysis container'"
+      v-tooltip.top="'Delete the analysis container'"
       severity="danger"
       :disabled="!buttonStatuses.deleteActive"
       :loading="loading"

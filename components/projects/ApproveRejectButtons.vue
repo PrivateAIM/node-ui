@@ -52,7 +52,7 @@ const showFailedSubmission = () => {
     <Button
       icon="pi pi-check"
       aria-label="Approve"
-      v-tooltip="'Send approval'"
+      v-tooltip.top="'Send approval'"
       severity="success"
       :loading="loading"
       style="margin-right: 10px"
@@ -61,7 +61,7 @@ const showFailedSubmission = () => {
     <Button
       icon="pi pi-times"
       aria-label="Reject"
-      v-tooltip="'Send rejection'"
+      v-tooltip.top="'Send rejection'"
       severity="danger"
       :loading="loading"
       @click="onSubmitProjectApproval(false)"
