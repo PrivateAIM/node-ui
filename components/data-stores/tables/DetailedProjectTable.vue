@@ -109,17 +109,17 @@ function meltDataStoreTable() {
       :rowsPerPageOptions="[10, 20, 50]"
     >
       <template #empty> No associated projects found.</template>
-      <Column field="dataStore" header="Data Store" :sortable="true"></Column>
-      <Column
-        field="kongProjectId"
-        header="Kong Project ID"
-        :sortable="true"
-      ></Column>
       <Column
         field="hubProjectName"
         header="Hub Project Name"
         :sortable="true"
       ></Column>
+      <Column
+        field="kongProjectId"
+        header="Kong Project ID"
+        :sortable="true"
+      ></Column>
+      <Column field="dataStore" header="Data Store" :sortable="true"></Column>
       <Column
         field="kongProjCreatedAt"
         header="Created"

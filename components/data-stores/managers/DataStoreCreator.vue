@@ -3,7 +3,6 @@ import { createDataStore } from "~/composables/useAPIFetch";
 import InputText from "primevue/inputtext";
 import Dropdown from "primevue/dropdown";
 import InputNumber from "primevue/inputnumber";
-import type { DetailedService } from "~/services/Api";
 
 const name = ref("");
 const host = ref("");
