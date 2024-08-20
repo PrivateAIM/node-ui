@@ -3,6 +3,7 @@ import { createDataStore } from "~/composables/useAPIFetch";
 import InputText from "primevue/inputtext";
 import Dropdown from "primevue/dropdown";
 import InputNumber from "primevue/inputnumber";
+import type { DetailedService } from "~/services/Api";
 
 const name = ref("");
 const host = ref("");
@@ -11,6 +12,7 @@ const port = ref(80);
 const protocol = ref("http");
 
 const loading = ref(false);
+const toast = useToast();
 
 const emit = defineEmits(["newDataStore"]);
 
@@ -26,8 +28,6 @@ const acceptedProtocols = ref([
   "ws",
   "wss",
 ]);
-
-const created = ref("");
 
 async function onSubmitCreateDataStore() {
   const dataStoreProps = {
@@ -50,7 +50,23 @@ async function onSubmitCreateDataStore() {
   }
   loading.value = true;
   const { data: newDataStore, status } = await createDataStore(dataStoreProps);
-  created.value = status.value;
+
+  if (status.value === "success") {
+    toast.add({
+      severity: "info",
+      summary: "Creation success",
+      detail: "The data store was successfully created",
+      life: 3000,
+    });
+  } else {
+    toast.add({
+      severity: "error",
+      summary: "Creation failure",
+      detail: "An error occurred while trying to create the data store",
+      life: 3000,
+    });
+  }
+
   emit("newDataStore", newDataStore.value);
   loading.value = false;
 }
@@ -125,12 +141,6 @@ async function onSubmitCreateDataStore() {
           :loading="loading"
           @click="onSubmitCreateDataStore"
         />
-        <p style="color: green" v-if="created === 'success'">
-          Data store successfully created
-        </p>
-        <p style="color: red" v-if="created && created !== 'success'">
-          Failed to create data store
-        </p>
       </template>
     </Card>
   </div>

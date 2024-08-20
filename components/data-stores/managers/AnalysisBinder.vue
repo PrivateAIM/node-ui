@@ -11,20 +11,38 @@ const selectedProject = ref();
 const selectedAnalysis = ref();
 
 const loading = ref(false);
-const created = ref("");
+const toast = useToast();
 
 async function onSubmitProjectAnalysisBinding() {
-  created.value = "";
   const props = {
     project_id: selectedProject.value.id,
     analysis_id: selectedAnalysis.value.id,
   };
   loading.value = true;
   const { status, error } = await connectAnalysisProject(props);
-  if (error && error.value?.statusCode == 409) {
-    created.value = "duplicate";
+  if (status.value === "success") {
+    toast.add({
+      severity: "info",
+      summary: "Link success",
+      detail: "The project was successfully bound to the data store",
+      life: 3000,
+    });
+    // Conflict
+  } else if (error.value?.statusCode === 409) {
+    toast.add({
+      severity: "warn",
+      summary: "Duplicate entry",
+      detail: "Link already exists between this project and data store!",
+      life: 4000,
+    });
   } else {
-    created.value = status.value;
+    toast.add({
+      severity: "error",
+      summary: "Link failure",
+      detail:
+        "An error occurred while trying to link the project to the data store",
+      life: 3000,
+    });
   }
   loading.value = false;
 }
@@ -68,15 +86,6 @@ async function onSubmitProjectAnalysisBinding() {
           :loading="loading"
           @click="onSubmitProjectAnalysisBinding"
         />
-        <p style="color: green" v-if="created === 'success'">
-          Link successfully created
-        </p>
-        <p style="color: yellow" v-if="created === 'duplicate'">
-          This project and analysis are already linked!
-        </p>
-        <p style="color: red" v-else-if="created && created !== 'success'">
-          Failed to create link
-        </p>
       </template>
     </Card>
   </div>

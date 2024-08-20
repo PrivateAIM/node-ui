@@ -16,7 +16,7 @@ const availableMethods = ref(["GET", "POST", "PUT", "DELETE"]);
 const dataStoreTypes = ref(["fhir", "s3"]);
 
 const loading = ref(false);
-const created = ref("");
+const toast = useToast();
 
 async function onSubmitBinding() {
   const props = {
@@ -26,8 +26,33 @@ async function onSubmitBinding() {
     ds_type: selectedDataStoreType.value,
   };
   loading.value = true;
-  const { status } = await createProject(props);
-  created.value = status.value;
+  const { status, error } = await createProject(props);
+
+  if (status.value === "success") {
+    toast.add({
+      severity: "info",
+      summary: "Link success",
+      detail: "The project was successfully bound to the data store",
+      life: 3000,
+    });
+    // Conflict
+  } else if (error.value?.statusCode === 409) {
+    toast.add({
+      severity: "warn",
+      summary: "Duplicate entry",
+      detail: "Link already exists between this project and data store!",
+      life: 4000,
+    });
+  } else {
+    toast.add({
+      severity: "error",
+      summary: "Link failure",
+      detail:
+        "An error occurred while trying to link the project to the data store",
+      life: 3000,
+    });
+  }
+
   loading.value = false;
 }
 </script>
@@ -89,15 +114,6 @@ async function onSubmitBinding() {
           :loading="loading"
           @click="onSubmitBinding"
         />
-        <p style="color: green" v-if="created === 'success'">
-          Link successfully created
-        </p>
-        <p style="color: yellow" v-if="created === 'duplicate'">
-          Link already exists between this project and data store!
-        </p>
-        <p style="color: red" v-else-if="created && created !== 'success'">
-          Failed to create link
-        </p>
       </template>
     </Card>
   </div>
