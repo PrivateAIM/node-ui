@@ -61,6 +61,10 @@ async function loadDetailedDataStoreTable(responseData, status, error) {
       expandRowEntries,
     ) as DetailedService[];
 
+    formattedDataStores = formattedDataStores.filter(
+      (store: DetailedService) => store.name !== "kong-admin-service",
+    );
+
     formattedDataStores.forEach((store: DetailedService) => {
       if (store.routes!.length) {
         store.routes = formatDataRow(
