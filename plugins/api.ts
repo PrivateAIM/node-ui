@@ -18,7 +18,7 @@ export default defineNuxtPlugin(() => {
       options.headers = headers;
     },
     onRequestError({ error }) {
-      console.log(error);
+      console.error(error);
     },
     async onResponseError({ request, response }) {
       // Handle the response errors
@@ -26,9 +26,7 @@ export default defineNuxtPlugin(() => {
         console.warn("User not signed in, returning to login");
         return login();
       }
-
-      console.log(response);
-
+      console.error(response);
       if (response.status === 500) {
         if (typeof request === "string" && request.includes("kong")) {
           showKongConnectionErrorToast();
