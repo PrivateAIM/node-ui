@@ -19,14 +19,14 @@ const loading = ref(false);
 const toast = useToast();
 
 async function onSubmitBinding() {
-  const props = {
+  const linkProps = {
     project_id: selectedProject.value.id,
     data_store_id: selectedDataStore.value.id,
     methods: selectedAllowedMethods.value,
     ds_type: selectedDataStoreType.value,
   };
   loading.value = true;
-  const { status, error } = await createProject(props);
+  const { status, error } = await createProject(linkProps);
 
   if (status.value === "success") {
     toast.add({
@@ -70,7 +70,7 @@ async function onSubmitBinding() {
           <Dropdown
             v-model="selectedProject"
             :options="props.projects"
-            optionLabel="name"
+            optionLabel="dropdown"
             placeholder="Select a Project"
           />
         </InputGroup>

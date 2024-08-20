@@ -7,7 +7,13 @@ import {
   getDataStores,
   getProjects,
 } from "~/composables/useAPIFetch";
-import type { DetailedAnalysis, Project, Route, Service } from "~/services/Api";
+import type {
+  DetailedAnalysis,
+  DetailedService,
+  Project,
+  Route,
+  Service,
+} from "~/services/Api";
 
 const availableDataStores = ref();
 const availableProjects = ref();
@@ -22,7 +28,10 @@ const { data: analyses, status: anStatus } = await getAnalyses({
 });
 
 watch(dataResp, (parsedStores) => {
-  const dataStoreData = parsedStores!.data as unknown as Array<Route>;
+  let dataStoreData = parsedStores!.data as unknown as Array<Route>;
+  dataStoreData = dataStoreData.filter(
+    (store: DetailedService) => store.name !== "kong-admin-service",
+  );
   availableDataStores.value = dataStoreData.map((ds: Route) => {
     return { name: ds.name, id: ds.id };
   });
@@ -31,7 +40,11 @@ watch(dataResp, (parsedStores) => {
 watch(projects, (parsedProjects) => {
   const projectData = parsedProjects!.data as unknown as Array<Project>;
   availableProjects.value = projectData.map((proj: Project) => {
-    return { name: proj.name, id: proj.id };
+    return {
+      name: proj.name,
+      id: proj.id,
+      dropdown: `${proj.name} (${proj.id})`,
+    };
   });
 });
 
