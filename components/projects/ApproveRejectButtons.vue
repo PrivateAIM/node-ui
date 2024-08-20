@@ -7,10 +7,12 @@ const props = defineProps({
 });
 
 const toast = useToastService();
+const loading = ref(false);
 
 const emit = defineEmits(["updatedRow"]);
 
 async function onSubmitProjectApproval(isApproved: boolean) {
+  loading.value = true;
   const { data: response, status } = await approveRejectProjectProposal(
     isApproved,
     props.projectId!,
@@ -22,6 +24,7 @@ async function onSubmitProjectApproval(isApproved: boolean) {
   } else {
     showFailedSubmission();
   }
+  loading.value = false;
 }
 
 const showSuccessfulSubmission = (approval: boolean) => {
@@ -51,6 +54,7 @@ const showFailedSubmission = () => {
       aria-label="Approve"
       v-tooltip="'Send approval'"
       severity="success"
+      :loading="loading"
       style="margin-right: 10px"
       @click="onSubmitProjectApproval(true)"
     />
@@ -59,6 +63,7 @@ const showFailedSubmission = () => {
       aria-label="Reject"
       v-tooltip="'Send rejection'"
       severity="danger"
+      :loading="loading"
       @click="onSubmitProjectApproval(false)"
     />
   </div>
