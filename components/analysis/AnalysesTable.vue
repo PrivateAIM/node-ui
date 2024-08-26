@@ -4,6 +4,7 @@ import { formatDataRow } from "~/utils/format-data-row";
 import TableRowMetadata from "~/components/TableRowMetadata.vue";
 import ExpandRowButtons from "~/components/table/ExpandRowButtons.vue";
 import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
+import { FilterMatchMode } from "primevue/api";
 
 const expandedRows = ref();
 const analyses = ref();
@@ -15,6 +16,16 @@ const expandRowEntries = [
   "created_at",
   "updated_at",
 ];
+
+const filters = ref({
+  "analysis.name": { value: null, matchMode: FilterMatchMode.CONTAINS },
+  "analysis.project_id": { value: null, matchMode: FilterMatchMode.CONTAINS },
+  "node.name": { value: null, matchMode: FilterMatchMode.CONTAINS },
+  // Below are more examples
+  // status: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  // verified: { value: null, matchMode: FilterMatchMode.EQUALS },
+  // name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+});
 
 const { data: response, status, error } = await getAnalysisNodes();
 
@@ -50,6 +61,13 @@ function onToggleRowExpansion(rowIds) {
           :rows="10"
           :rowsPerPageOptions="[10, 20, 50]"
           tableStyle="min-width: 50rem"
+          v-model:filters="filters"
+          filterDisplay="menu"
+          :globalFilterFields="[
+            'analysis.name',
+            'analysis.project_id',
+            'node.name',
+          ]"
         >
           <template #empty> No analyses found. </template>
           <template #header>
@@ -59,12 +77,22 @@ function onToggleRowExpansion(rowIds) {
             />
           </template>
           <Column expander style="width: 5rem" />
-          <Column
-            class="namedCol"
-            field="analysis.name"
-            header="Name"
-            :sortable="true"
-          />
+          <Column class="namedCol" filterField="analysis.name" header="Name">
+            <template #body="{ data }">
+              <div class="flex align-items-center gap-2">
+                <span>{{ data.analysis.name }}</span>
+              </div>
+            </template>
+            <template #filter="{ filterModel, filterCallback }">
+              <InputText
+                v-model="filterModel.value"
+                type="text"
+                @input="filterCallback()"
+                class="p-column-filter"
+                placeholder="Search by analysis"
+              />
+            </template>
+          </Column>
           <Column
             field="approval_status"
             header="Approval Status"
@@ -80,11 +108,22 @@ function onToggleRowExpansion(rowIds) {
             header="Run Status"
             :sortable="true"
           />
-          <Column
-            field="analysis.project_id"
-            header="Project"
-            :sortable="true"
-          />
+          <Column field="analysis.project_id" header="Project">
+            <template #body="{ data }">
+              <div class="flex align-items-center gap-2">
+                <span>{{ data.analysis.name }}</span>
+              </div>
+            </template>
+            <template #filter="{ filterModel, filterCallback }">
+              <InputText
+                v-model="filterModel.value"
+                type="text"
+                @input="filterCallback()"
+                class="p-column-filter"
+                placeholder="Search by analysis"
+              />
+            </template>
+          </Column>
           <Column field="node.name" header="Node" :sortable="true" />
           <Column
             field="expand.id"
