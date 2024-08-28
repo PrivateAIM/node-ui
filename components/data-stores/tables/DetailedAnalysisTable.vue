@@ -5,6 +5,7 @@ import type { Consumer } from "~/services/Api";
 import { formatDataRow } from "~/utils/format-data-row";
 import { extractUuid } from "~/utils/extract-uuid-from-kong-username";
 import { FilterMatchMode } from "primevue/api";
+import SearchBar from "~/components/table/SearchBar.vue";
 
 const props = defineProps({
   detailedAnalysisList: {
@@ -33,10 +34,6 @@ const analysisTable = ref();
 const loading = ref(false);
 const toast = useToast();
 const confirm = useConfirm();
-
-const filters = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-});
 
 onMounted(() => {
   compileAnalysisTable();
@@ -124,6 +121,30 @@ function compileAnalysisTable() {
   }
   analysisTable.value = elongatedTableRows;
 }
+
+// Table filters
+const defaultFilters = {
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  "created_at.short": { value: null, matchMode: FilterMatchMode.DATE_IS },
+  "updated_at.short": { value: null, matchMode: FilterMatchMode.DATE_IS },
+};
+
+const filters = ref(defaultFilters);
+
+function resetFilters() {
+  const clearedFilters = {};
+  for (const filterKey in defaultFilters) {
+    clearedFilters[filterKey] = {
+      ...defaultFilters[filterKey],
+    };
+    clearedFilters[filterKey].value = null;
+  }
+  filters.value = clearedFilters;
+}
+
+const updateFilters = (filterText: string) => {
+  filters.value.global.value = filterText;
+};
 </script>
 
 <template>
@@ -146,17 +167,11 @@ function compileAnalysisTable() {
       <template #empty> No associated linked analyses found.</template>
       <template #header>
         <div class="table-header-row">
-          <div class="flex justify-content-end search-bar">
-            <IconField iconPosition="left">
-              <InputIcon>
-                <i class="pi pi-search" />
-              </InputIcon>
-              <InputText
-                v-model="filters['global'].value"
-                placeholder="Keyword Search"
-              />
-            </IconField>
-          </div>
+          <SearchBar
+            :searchTerm="defaultFilters.global.value"
+            @clearFilters="resetFilters"
+            @updateSearch="updateFilters"
+          />
         </div>
       </template>
       <Column
@@ -180,10 +195,16 @@ function compileAnalysisTable() {
         :sortable="true"
       ></Column>
       <Column
-        field="kongProjCreatedAt"
-        header="Created"
-        :sortable="true"
-      ></Column>
+        header="Created On"
+        filterField="kongAnalysisCreatedAt.long"
+        dataType="date"
+      >
+        <template #body="{ data }">
+          <p v-tooltip.top="data.kongAnalysisCreatedAt.long">
+            {{ data.kongAnalysisCreatedAt.short }}
+          </p>
+        </template>
+      </Column>
       <Column field="hubAnalysisUuid" header="Delete?" :exportable="false">
         <template #body="slotProps">
           <ConfirmPopup group="templating">

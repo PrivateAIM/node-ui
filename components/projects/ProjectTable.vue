@@ -2,24 +2,13 @@
 import { getProjects } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
 import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
-import { FilterMatchMode, FilterOperator } from "primevue/api";
+import { FilterMatchMode } from "primevue/api";
+import SearchBar from "~/components/table/SearchBar.vue";
 
 const projects = ref();
 
 const dataRowUnixCols = ["created_at", "updated_at"];
 const expandRowEntries = [];
-
-const filters = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  "created_at.short": {
-    operator: FilterOperator.AND,
-    constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }],
-  },
-  "updated_at.short": {
-    operator: FilterOperator.AND,
-    constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }],
-  },
-});
 
 const { data: response, status, error } = await getProjects();
 
@@ -33,8 +22,28 @@ if (status.value === "success") {
   showHubAdapterConnectionErrorToast();
 }
 
-const clearFilter = () => {
-  initFilters();
+// Table filters
+const defaultFilters = {
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  "created_at.short": { value: null, matchMode: FilterMatchMode.DATE_IS },
+  "updated_at.short": { value: null, matchMode: FilterMatchMode.DATE_IS },
+};
+
+const filters = ref(defaultFilters);
+
+function resetFilters() {
+  const clearedFilters = {};
+  for (const filterKey in defaultFilters) {
+    clearedFilters[filterKey] = {
+      ...defaultFilters[filterKey],
+    };
+    clearedFilters[filterKey].value = null;
+  }
+  filters.value = clearedFilters;
+}
+
+const updateFilters = (filterText: string) => {
+  filters.value.global.value = filterText;
 };
 </script>
 
@@ -56,17 +65,11 @@ const clearFilter = () => {
           <template #empty> No projects found. </template>
           <template #header>
             <div class="table-header-row">
-              <div class="flex justify-content-end search-bar">
-                <IconField iconPosition="left">
-                  <InputIcon>
-                    <i class="pi pi-search" />
-                  </InputIcon>
-                  <InputText
-                    v-model="filters['global'].value"
-                    placeholder="Keyword Search"
-                  />
-                </IconField>
-              </div>
+              <SearchBar
+                :searchTerm="defaultFilters.global.value"
+                @clearFilters="resetFilters"
+                @updateSearch="updateFilters"
+              />
             </div>
           </template>
           <Column field="name" header="Name" :sortable="true"></Column>
