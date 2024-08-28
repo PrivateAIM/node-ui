@@ -18,11 +18,11 @@ const expandRowEntries = [
 ];
 
 const filters = ref({
-  "analysis.name": { value: null, matchMode: FilterMatchMode.CONTAINS },
-  "analysis.project_id": { value: null, matchMode: FilterMatchMode.CONTAINS },
-  "node.name": { value: null, matchMode: FilterMatchMode.CONTAINS },
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   // Below are more examples
+  // "analysis.name": { value: null, matchMode: FilterMatchMode.CONTAINS },
+  // "analysis.project_id": { value: null, matchMode: FilterMatchMode.CONTAINS },
+  // "node.name": { value: null, matchMode: FilterMatchMode.CONTAINS },
   // status: { value: null, matchMode: FilterMatchMode.CONTAINS },
   // verified: { value: null, matchMode: FilterMatchMode.EQUALS },
   // name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
