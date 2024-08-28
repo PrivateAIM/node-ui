@@ -5,18 +5,11 @@ import TableRowMetadata from "~/components/TableRowMetadata.vue";
 import ExpandRowButtons from "~/components/table/ExpandRowButtons.vue";
 import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
 import { FilterMatchMode } from "primevue/api";
-import type { AnalysisNode } from "~/services/Api";
 
 const expandedRows = ref();
 const analyses = ref();
 
-const expandRowEntries = [
-  "id",
-  "project_id",
-  "node_id",
-  "created_at",
-  "updated_at",
-];
+const expandRowEntries = ["project_id", "node_id", "created_at", "updated_at"];
 
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -30,16 +23,11 @@ const filters = ref({
 const { data: response, status, error } = await getAnalysisNodes();
 
 if (status.value === "success") {
-  const formattedData = formatDataRow(
+  analyses.value = formatDataRow(
     response.value!.data,
     ["created_at", "updated_at"],
     expandRowEntries,
   );
-
-  analyses.value = formattedData.map((analysisNode: AnalysisNode) => ({
-    ...analysisNode,
-    uniqueId: analysisNode.analysis_id + "-" + analysisNode.node.id,
-  }));
 } else if (error.value?.statusCode === 500) {
   showHubAdapterConnectionErrorToast();
 }
@@ -58,7 +46,7 @@ function onToggleRowExpansion(rowIds) {
         <DataTable
           :value="analyses"
           v-model:expandedRows="expandedRows"
-          dataKey="uniqueId"
+          dataKey="id"
           :pt="{
             table: 'table table-striped',
           }"
@@ -91,7 +79,7 @@ function onToggleRowExpansion(rowIds) {
               <div class="expand-buttons">
                 <ExpandRowButtons
                   :rows="analyses"
-                  :uniqueId="'uniqueId'"
+                  :uniqueId="'id'"
                   @expandedRowList="onToggleRowExpansion"
                 />
               </div>
