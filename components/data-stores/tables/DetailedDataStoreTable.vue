@@ -2,6 +2,7 @@
 import { deleteDataStore } from "~/composables/useAPIFetch";
 import { useConfirm } from "primevue/useconfirm";
 import type { DetailedService } from "~/services/Api";
+import { FilterMatchMode } from "primevue/api";
 
 const props = defineProps({
   stores: Array<DetailedService>,
@@ -12,6 +13,10 @@ const dataStores = ref(props.stores);
 const confirm = useConfirm();
 const toast = useToast();
 const deleteLoading = ref(false);
+
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 
 async function onConfirmDeleteDataStore(dsName: string) {
   deleteLoading.value = true;
@@ -64,8 +69,26 @@ const confirmDelete = (event, dsName: string) => {
       :rows="10"
       :rowsPerPageOptions="[10, 20, 50]"
       tableStyle="min-width: 50rem"
+      v-model:filters="filters"
+      filterDisplay="menu"
+      :globalFilterFields="['name', 'path', 'host']"
     >
       <template #empty> No data stores found. </template>
+      <template #header>
+        <div class="table-header-row">
+          <div class="flex justify-content-end search-bar">
+            <IconField iconPosition="left">
+              <InputIcon>
+                <i class="pi pi-search" />
+              </InputIcon>
+              <InputText
+                v-model="filters['global'].value"
+                placeholder="Keyword Search"
+              />
+            </IconField>
+          </div>
+        </div>
+      </template>
       <Column field="name" header="Name" :sortable="true"></Column>
       <Column field="path" header="Path"></Column>
       <Column field="host" header="Host" :sortable="true"></Column>

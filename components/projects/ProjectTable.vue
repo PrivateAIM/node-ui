@@ -2,11 +2,16 @@
 import { getProjects } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
 import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
+import { FilterMatchMode } from "primevue/api";
 
 const projects = ref();
 
 const dataRowUnixCols = ["created_at", "updated_at"];
 const expandRowEntries = [];
+
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 
 const { data: response, status, error } = await getProjects();
 if (status.value === "success") {
@@ -31,8 +36,26 @@ if (status.value === "success") {
           :rows="10"
           :rowsPerPageOptions="[10, 20, 50]"
           tableStyle="min-width: 50rem"
+          v-model:filters="filters"
+          filterDisplay="menu"
+          :globalFilterFields="['name', 'master_image_id']"
         >
           <template #empty> No projects found. </template>
+          <template #header>
+            <div class="table-header-row">
+              <div class="flex justify-content-end search-bar">
+                <IconField iconPosition="left">
+                  <InputIcon>
+                    <i class="pi pi-search" />
+                  </InputIcon>
+                  <InputText
+                    v-model="filters['global'].value"
+                    placeholder="Keyword Search"
+                  />
+                </IconField>
+              </div>
+            </div>
+          </template>
           <Column field="name" header="Name" :sortable="true"></Column>
           <Column field="created_at" header="Created" :sortable="true"></Column>
           <Column

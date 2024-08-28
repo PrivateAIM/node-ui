@@ -4,6 +4,7 @@ import { useConfirm } from "primevue/useconfirm";
 import type { Consumer } from "~/services/Api";
 import { formatDataRow } from "~/utils/format-data-row";
 import { extractUuid } from "~/utils/extract-uuid-from-kong-username";
+import { FilterMatchMode } from "primevue/api";
 
 const props = defineProps({
   detailedAnalysisList: {
@@ -32,6 +33,10 @@ const analysisTable = ref();
 const loading = ref(false);
 const toast = useToast();
 const confirm = useConfirm();
+
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 
 onMounted(() => {
   compileAnalysisTable();
@@ -129,8 +134,31 @@ function compileAnalysisTable() {
       paginator
       :rows="10"
       :rowsPerPageOptions="[10, 20, 50]"
+      v-model:filters="filters"
+      filterDisplay="menu"
+      :globalFilterFields="[
+        'hubAnalysisName',
+        'hubAnalysisUuid',
+        'kongAnalysisUserName',
+        'hubProjectName',
+      ]"
     >
       <template #empty> No associated linked analyses found.</template>
+      <template #header>
+        <div class="table-header-row">
+          <div class="flex justify-content-end search-bar">
+            <IconField iconPosition="left">
+              <InputIcon>
+                <i class="pi pi-search" />
+              </InputIcon>
+              <InputText
+                v-model="filters['global'].value"
+                placeholder="Keyword Search"
+              />
+            </IconField>
+          </div>
+        </div>
+      </template>
       <Column
         field="hubAnalysisName"
         header="Analysis"
