@@ -21,6 +21,7 @@ const filters = ref({
   "analysis.name": { value: null, matchMode: FilterMatchMode.CONTAINS },
   "analysis.project_id": { value: null, matchMode: FilterMatchMode.CONTAINS },
   "node.name": { value: null, matchMode: FilterMatchMode.CONTAINS },
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   // Below are more examples
   // status: { value: null, matchMode: FilterMatchMode.CONTAINS },
   // verified: { value: null, matchMode: FilterMatchMode.EQUALS },
@@ -71,28 +72,32 @@ function onToggleRowExpansion(rowIds) {
         >
           <template #empty> No analyses found. </template>
           <template #header>
-            <ExpandRowButtons
-              :rows="analyses"
-              @expandedRowList="onToggleRowExpansion"
-            />
+            <div class="table-header-row">
+              <div class="flex justify-content-end search-bar">
+                <IconField iconPosition="left">
+                  <InputIcon>
+                    <i class="pi pi-search" />
+                  </InputIcon>
+                  <InputText
+                    v-model="filters['global'].value"
+                    placeholder="Keyword Search"
+                  />
+                </IconField>
+              </div>
+              <div class="expand-buttons">
+                <ExpandRowButtons
+                  :rows="analyses"
+                  @expandedRowList="onToggleRowExpansion"
+                />
+              </div>
+            </div>
           </template>
           <Column expander style="width: 5rem" />
-          <Column class="namedCol" filterField="analysis.name" header="Name">
-            <template #body="{ data }">
-              <div class="flex align-items-center gap-2">
-                <span>{{ data.analysis.name }}</span>
-              </div>
-            </template>
-            <template #filter="{ filterModel, filterCallback }">
-              <InputText
-                v-model="filterModel.value"
-                type="text"
-                @input="filterCallback()"
-                class="p-column-filter"
-                placeholder="Search by analysis"
-              />
-            </template>
-          </Column>
+          <Column
+            field="analysis.name"
+            header="Approval Status"
+            :sortable="true"
+          />
           <Column
             field="approval_status"
             header="Approval Status"
@@ -108,22 +113,11 @@ function onToggleRowExpansion(rowIds) {
             header="Run Status"
             :sortable="true"
           />
-          <Column field="analysis.project_id" header="Project">
-            <template #body="{ data }">
-              <div class="flex align-items-center gap-2">
-                <span>{{ data.analysis.name }}</span>
-              </div>
-            </template>
-            <template #filter="{ filterModel, filterCallback }">
-              <InputText
-                v-model="filterModel.value"
-                type="text"
-                @input="filterCallback()"
-                class="p-column-filter"
-                placeholder="Search by analysis"
-              />
-            </template>
-          </Column>
+          <Column
+            field="analysis.project_id"
+            header="Project"
+            :sortable="true"
+          />
           <Column field="node.name" header="Node" :sortable="true" />
           <Column
             field="expand.id"
