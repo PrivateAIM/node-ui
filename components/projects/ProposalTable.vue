@@ -16,13 +16,6 @@ const expandRowEntries = ["project_id", "node_id"];
 
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  // Below are more examples
-  // "analysis.name": { value: null, matchMode: FilterMatchMode.CONTAINS },
-  // "analysis.project_id": { value: null, matchMode: FilterMatchMode.CONTAINS },
-  // "node.name": { value: null, matchMode: FilterMatchMode.CONTAINS },
-  // status: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  // verified: { value: null, matchMode: FilterMatchMode.EQUALS },
-  // name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
 });
 
 const { data: response, status, error } = await getProposals();
@@ -84,6 +77,7 @@ function updateTable(newData: ProjectNode) {
               <div class="expand-buttons">
                 <ExpandRowButtons
                   :rows="proposals"
+                  :uniqueId="'id'"
                   @expandedRowList="onToggleRowExpansion"
                 />
               </div>
