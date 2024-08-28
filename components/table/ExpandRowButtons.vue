@@ -1,15 +1,22 @@
 <script setup lang="ts">
 const props = defineProps({
-  rows: [Object],
+  rows: {
+    type: [Object],
+    required: true,
+  },
+  uniqueId: {
+    type: String,
+    required: true,
+  },
 });
 
 const emit = defineEmits(["expandedRowList"]);
 
 const expandAll = () => {
-  const rowIds = props.rows!.reduce(
+  const rowIds = props.rows.reduce(
     (accordion: boolean, row) =>
       // eslint-disable-next-line no-constant-binary-expression
-      (accordion[row.id] = true) && accordion,
+      (accordion[row[props.uniqueId]] = true) && accordion,
     {},
   );
   emit("expandedRowList", rowIds);

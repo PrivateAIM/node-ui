@@ -6,12 +6,17 @@ import TableRowMetadata from "~/components/TableRowMetadata.vue";
 import type { ProjectNode } from "~/services/Api";
 import ExpandRowButtons from "~/components/table/ExpandRowButtons.vue";
 import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
+import { FilterMatchMode } from "primevue/api";
 
 const proposals = ref();
 const expandedRows = ref({});
 
 const dataRowUnixCols = ["created_at", "updated_at"];
 const expandRowEntries = ["project_id", "node_id"];
+
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 
 const { data: response, status, error } = await getProposals();
 if (status.value === "success") {
@@ -51,13 +56,32 @@ function updateTable(newData: ProjectNode) {
           :rows="10"
           :rowsPerPageOptions="[10, 20, 50]"
           tableStyle="min-width: 50rem"
+          v-model:filters="filters"
+          filterDisplay="menu"
+          :globalFilterFields="['id', 'project.name', 'node.name']"
         >
           <template #empty> No proposals found. </template>
           <template #header>
-            <ExpandRowButtons
-              :rows="proposals"
-              @expandedRowList="onToggleRowExpansion"
-            />
+            <div class="table-header-row">
+              <div class="flex justify-content-end search-bar">
+                <IconField iconPosition="left">
+                  <InputIcon>
+                    <i class="pi pi-search" />
+                  </InputIcon>
+                  <InputText
+                    v-model="filters['global'].value"
+                    placeholder="Keyword Search"
+                  />
+                </IconField>
+              </div>
+              <div class="expand-buttons">
+                <ExpandRowButtons
+                  :rows="proposals"
+                  :uniqueId="'id'"
+                  @expandedRowList="onToggleRowExpansion"
+                />
+              </div>
+            </div>
           </template>
           <Column expander style="width: 5rem" />
           <Column field="id" header="ID" :sortable="true"></Column>

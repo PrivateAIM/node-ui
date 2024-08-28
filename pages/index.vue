@@ -10,7 +10,7 @@ import KeycloakAuth from "~/components/KeycloakAuth.vue";
     </div>
     <div class="col-6">
       <img
-        src="../assets/hospital_network.jpg"
+        src="../assets/img/hospital_network.jpg"
         alt="Hospital Network"
         class="pimg networkImg"
       />

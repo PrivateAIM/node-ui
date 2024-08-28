@@ -3,6 +3,7 @@ import { deleteProjectFromKong } from "~/composables/useAPIFetch";
 import { useConfirm } from "primevue/useconfirm";
 import type { DetailedService, Route } from "~/services/Api";
 import { extractUuid } from "~/utils/extract-uuid-from-kong-username";
+import { FilterMatchMode } from "primevue/api";
 
 const props = defineProps({
   detailedStoreList: Array<DetailedService>,
@@ -23,6 +24,10 @@ const projectTable = ref();
 const toast = useToast();
 const confirm = useConfirm();
 const loading = ref(false);
+
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 
 onMounted(() => {
   meltDataStoreTable();
@@ -107,8 +112,26 @@ function meltDataStoreTable() {
       paginator
       :rows="10"
       :rowsPerPageOptions="[10, 20, 50]"
+      v-model:filters="filters"
+      filterDisplay="menu"
+      :globalFilterFields="['hubProjectName', 'kongProjectId', 'dataStore']"
     >
       <template #empty> No associated projects found.</template>
+      <template #header>
+        <div class="table-header-row">
+          <div class="flex justify-content-end search-bar">
+            <IconField iconPosition="left">
+              <InputIcon>
+                <i class="pi pi-search" />
+              </InputIcon>
+              <InputText
+                v-model="filters['global'].value"
+                placeholder="Keyword Search"
+              />
+            </IconField>
+          </div>
+        </div>
+      </template>
       <Column
         field="hubProjectName"
         header="Hub Project Name"
