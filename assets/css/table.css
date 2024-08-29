@@ -3,3 +3,13 @@
     width: 100%;
     justify-content: space-between;
 }
+
+.search-bar {
+    display: flex;
+    width: 50%;
+    justify-content: left;
+}
+
+.search-text-bar {
+    margin-right: 10px;
+}

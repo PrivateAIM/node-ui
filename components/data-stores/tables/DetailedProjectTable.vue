@@ -4,6 +4,7 @@ import { useConfirm } from "primevue/useconfirm";
 import type { DetailedService, Route } from "~/services/Api";
 import { extractUuid } from "~/utils/extract-uuid-from-kong-username";
 import { FilterMatchMode } from "primevue/api";
+import SearchBar from "~/components/table/SearchBar.vue";
 
 const props = defineProps({
   detailedStoreList: Array<DetailedService>,
@@ -24,10 +25,6 @@ const projectTable = ref();
 const toast = useToast();
 const confirm = useConfirm();
 const loading = ref(false);
-
-const filters = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-});
 
 onMounted(() => {
   meltDataStoreTable();
@@ -102,6 +99,30 @@ function meltDataStoreTable() {
   }
   projectTable.value = elongatedTableRows;
 }
+
+// Table filters
+const defaultFilters = {
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  "created_at.short": { value: null, matchMode: FilterMatchMode.DATE_IS },
+  "updated_at.short": { value: null, matchMode: FilterMatchMode.DATE_IS },
+};
+
+const filters = ref(defaultFilters);
+
+function resetFilters() {
+  const clearedFilters = {};
+  for (const filterKey in defaultFilters) {
+    clearedFilters[filterKey] = {
+      ...defaultFilters[filterKey],
+    };
+    clearedFilters[filterKey].value = null;
+  }
+  filters.value = clearedFilters;
+}
+
+const updateFilters = (filterText: string) => {
+  filters.value.global.value = filterText;
+};
 </script>
 
 <template>
@@ -119,17 +140,11 @@ function meltDataStoreTable() {
       <template #empty> No associated projects found.</template>
       <template #header>
         <div class="table-header-row">
-          <div class="flex justify-content-end search-bar">
-            <IconField iconPosition="left">
-              <InputIcon>
-                <i class="pi pi-search" />
-              </InputIcon>
-              <InputText
-                v-model="filters['global'].value"
-                placeholder="Keyword Search"
-              />
-            </IconField>
-          </div>
+          <SearchBar
+            :searchTerm="defaultFilters.global.value"
+            @clearFilters="resetFilters"
+            @updateSearch="updateFilters"
+          />
         </div>
       </template>
       <Column
@@ -144,15 +159,31 @@ function meltDataStoreTable() {
       ></Column>
       <Column field="dataStore" header="Data Store" :sortable="true"></Column>
       <Column
-        field="kongProjCreatedAt"
-        header="Created"
+        header="Created On"
+        field="kongProjCreatedAt.long"
+        filterField="kongProjCreatedAt.date"
+        dataType="date"
         :sortable="true"
-      ></Column>
+      >
+        <template #body="{ data }">
+          <p v-tooltip.top="data.kongProjCreatedAt.long">
+            {{ data.kongProjCreatedAt.short }}
+          </p>
+        </template>
+      </Column>
       <Column
-        field="kongProjUpdatedAt"
         header="Last Updated"
+        field="kongProjUpdatedAt.long"
+        filterField="kongProjUpdatedAt.date"
+        dataType="date"
         :sortable="true"
-      ></Column>
+      >
+        <template #body="{ data }">
+          <p v-tooltip.top="data.kongProjUpdatedAt.long">
+            {{ data.kongProjUpdatedAt.short }}
+          </p>
+        </template>
+      </Column>
       <Column field="projectId" header="Disconnect?" :exportable="false">
         <template #body="slotProps">
           <ConfirmPopup group="templating">

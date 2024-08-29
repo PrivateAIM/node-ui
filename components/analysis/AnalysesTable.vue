@@ -5,41 +5,21 @@ import TableRowMetadata from "~/components/TableRowMetadata.vue";
 import ExpandRowButtons from "~/components/table/ExpandRowButtons.vue";
 import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
 import { FilterMatchMode } from "primevue/api";
-import type { AnalysisNode } from "~/services/Api";
+import SearchBar from "~/components/table/SearchBar.vue";
 
 const expandedRows = ref();
 const analyses = ref();
 
-const expandRowEntries = [
-  "id",
-  "project_id",
-  "node_id",
-  "created_at",
-  "updated_at",
-];
-
-const filters = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  // Below are more examples
-  // "analysis.name": { value: null, matchMode: FilterMatchMode.CONTAINS },
-  // status: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  // verified: { value: null, matchMode: FilterMatchMode.EQUALS },
-  // name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-});
+const expandRowEntries = ["project_id", "node_id"];
 
 const { data: response, status, error } = await getAnalysisNodes();
 
 if (status.value === "success") {
-  const formattedData = formatDataRow(
+  analyses.value = formatDataRow(
     response.value!.data,
     ["created_at", "updated_at"],
     expandRowEntries,
   );
-
-  analyses.value = formattedData.map((analysisNode: AnalysisNode) => ({
-    ...analysisNode,
-    uniqueId: analysisNode.analysis_id + "-" + analysisNode.node.id,
-  }));
 } else if (error.value?.statusCode === 500) {
   showHubAdapterConnectionErrorToast();
 }
@@ -47,6 +27,32 @@ if (status.value === "success") {
 function onToggleRowExpansion(rowIds) {
   expandedRows.value = rowIds;
 }
+
+// Table filters
+const defaultFilters = {
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  // Below are more examples
+  // "analysis.name": { value: null, matchMode: FilterMatchMode.CONTAINS },
+  // status: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  // verified: { value: null, matchMode: FilterMatchMode.EQUALS },
+  // name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+};
+const filters = ref(defaultFilters);
+
+function resetFilters() {
+  const clearedFilters = {};
+  for (const filterKey in defaultFilters) {
+    clearedFilters[filterKey] = {
+      ...defaultFilters[filterKey],
+    };
+    clearedFilters[filterKey].value = null;
+  }
+  filters.value = clearedFilters;
+}
+
+const updateFilters = (filterText: string) => {
+  filters.value.global.value = filterText;
+};
 </script>
 
 <template>
@@ -58,7 +64,7 @@ function onToggleRowExpansion(rowIds) {
         <DataTable
           :value="analyses"
           v-model:expandedRows="expandedRows"
-          dataKey="uniqueId"
+          dataKey="id"
           :pt="{
             table: 'table table-striped',
           }"
@@ -77,21 +83,15 @@ function onToggleRowExpansion(rowIds) {
           <template #empty> No analyses found. </template>
           <template #header>
             <div class="table-header-row">
-              <div class="flex justify-content-end search-bar">
-                <IconField iconPosition="left">
-                  <InputIcon>
-                    <i class="pi pi-search" />
-                  </InputIcon>
-                  <InputText
-                    v-model="filters['global'].value"
-                    placeholder="Keyword Search"
-                  />
-                </IconField>
-              </div>
+              <SearchBar
+                :searchTerm="defaultFilters.global.value"
+                @clearFilters="resetFilters"
+                @updateSearch="updateFilters"
+              />
               <div class="expand-buttons">
                 <ExpandRowButtons
                   :rows="analyses"
-                  :uniqueId="'uniqueId'"
+                  :uniqueId="'id'"
                   @expandedRowList="onToggleRowExpansion"
                 />
               </div>
@@ -119,6 +119,32 @@ function onToggleRowExpansion(rowIds) {
             header="Project"
             :sortable="true"
           />
+          <Column
+            header="Created On"
+            field="created_at.long"
+            filterField="created_at.date"
+            dataType="date"
+            :sortable="true"
+          >
+            <template #body="{ data }">
+              <p v-tooltip.top="data.created_at.long">
+                {{ data.created_at.short }}
+              </p>
+            </template>
+          </Column>
+          <Column
+            header="Last Updated"
+            field="updated_at.long"
+            filterField="updated_at.date"
+            dataType="date"
+            :sortable="true"
+          >
+            <template #body="{ data }">
+              <p v-tooltip.top="data.updated_at.long">
+                {{ data.updated_at.short }}
+              </p>
+            </template>
+          </Column>
           <Column field="node.name" header="Node" :sortable="true" />
           <Column
             field="expand.id"

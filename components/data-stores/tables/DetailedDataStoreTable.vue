@@ -3,6 +3,7 @@ import { deleteDataStore } from "~/composables/useAPIFetch";
 import { useConfirm } from "primevue/useconfirm";
 import type { DetailedService } from "~/services/Api";
 import { FilterMatchMode } from "primevue/api";
+import SearchBar from "~/components/table/SearchBar.vue";
 
 const props = defineProps({
   stores: Array<DetailedService>,
@@ -13,10 +14,6 @@ const dataStores = ref(props.stores);
 const confirm = useConfirm();
 const toast = useToast();
 const deleteLoading = ref(false);
-
-const filters = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-});
 
 async function onConfirmDeleteDataStore(dsName: string) {
   deleteLoading.value = true;
@@ -58,6 +55,30 @@ const confirmDelete = (event, dsName: string) => {
     reject: () => {},
   });
 };
+
+// Table filters
+const defaultFilters = {
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  "created_at.short": { value: null, matchMode: FilterMatchMode.DATE_IS },
+  "updated_at.short": { value: null, matchMode: FilterMatchMode.DATE_IS },
+};
+
+const filters = ref(defaultFilters);
+
+function resetFilters() {
+  const clearedFilters = {};
+  for (const filterKey in defaultFilters) {
+    clearedFilters[filterKey] = {
+      ...defaultFilters[filterKey],
+    };
+    clearedFilters[filterKey].value = null;
+  }
+  filters.value = clearedFilters;
+}
+
+const updateFilters = (filterText: string) => {
+  filters.value.global.value = filterText;
+};
 </script>
 
 <template>
@@ -76,30 +97,49 @@ const confirmDelete = (event, dsName: string) => {
       <template #empty> No data stores found. </template>
       <template #header>
         <div class="table-header-row">
-          <div class="flex justify-content-end search-bar">
-            <IconField iconPosition="left">
-              <InputIcon>
-                <i class="pi pi-search" />
-              </InputIcon>
-              <InputText
-                v-model="filters['global'].value"
-                placeholder="Keyword Search"
-              />
-            </IconField>
-          </div>
+          <SearchBar
+            :searchTerm="defaultFilters.global.value"
+            @clearFilters="resetFilters"
+            @updateSearch="updateFilters"
+          />
         </div>
       </template>
-      <Column field="name" header="Name" :sortable="true"></Column>
+      <Column
+        field="name"
+        header="Name"
+        :sortable="true"
+        style="width: 30rem"
+      ></Column>
       <Column field="path" header="Path"></Column>
       <Column field="host" header="Host" :sortable="true"></Column>
       <Column field="port" header="Port"></Column>
       <Column field="protocol" header="Protocol" :sortable="true"></Column>
-      <Column field="created_at" header="Created" :sortable="true"></Column>
       <Column
-        field="updated_at"
-        header="Last Updated"
+        header="Created On"
+        field="created_at.long"
+        filterField="created_at.date"
+        dataType="date"
         :sortable="true"
-      ></Column>
+      >
+        <template #body="{ data }">
+          <p v-tooltip.top="data.created_at.long">
+            {{ data.created_at.short }}
+          </p>
+        </template>
+      </Column>
+      <Column
+        header="Last Updated"
+        field="updated_at.long"
+        filterField="updated_at.date"
+        dataType="date"
+        :sortable="true"
+      >
+        <template #body="{ data }">
+          <p v-tooltip.top="data.updated_at.long">
+            {{ data.updated_at.short }}
+          </p>
+        </template>
+      </Column>
       <Column field="name" header="Delete?" :exportable="false">
         <template #body="slotProps">
           <ConfirmPopup group="templating">

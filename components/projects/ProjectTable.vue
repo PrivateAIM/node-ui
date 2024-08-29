@@ -3,17 +3,15 @@ import { getProjects } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
 import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
 import { FilterMatchMode } from "primevue/api";
+import SearchBar from "~/components/table/SearchBar.vue";
 
 const projects = ref();
 
 const dataRowUnixCols = ["created_at", "updated_at"];
 const expandRowEntries = [];
 
-const filters = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-});
-
 const { data: response, status, error } = await getProjects();
+
 if (status.value === "success") {
   projects.value = formatDataRow(
     response.value!.data as unknown as Map<string, string | number | null>[],
@@ -23,6 +21,33 @@ if (status.value === "success") {
 } else if (error.value?.statusCode === 500) {
   showHubAdapterConnectionErrorToast();
 }
+
+// Table filters
+const defaultFilters = {
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  "created_at.date": {
+    value: null,
+    matchMode: FilterMatchMode.DATE_IS | FilterMatchMode.DATE_BEFORE,
+  },
+  "updated_at.date": { value: null, matchMode: FilterMatchMode.DATE_IS },
+};
+
+const filters = ref(defaultFilters);
+
+function resetFilters() {
+  const clearedFilters = {};
+  for (const filterKey in defaultFilters) {
+    clearedFilters[filterKey] = {
+      ...defaultFilters[filterKey],
+    };
+    clearedFilters[filterKey].value = null;
+  }
+  filters.value = clearedFilters;
+}
+
+const updateFilters = (filterText: string) => {
+  filters.value.global.value = filterText;
+};
 </script>
 
 <template>
@@ -43,26 +68,52 @@ if (status.value === "success") {
           <template #empty> No projects found. </template>
           <template #header>
             <div class="table-header-row">
-              <div class="flex justify-content-end search-bar">
-                <IconField iconPosition="left">
-                  <InputIcon>
-                    <i class="pi pi-search" />
-                  </InputIcon>
-                  <InputText
-                    v-model="filters['global'].value"
-                    placeholder="Keyword Search"
-                  />
-                </IconField>
-              </div>
+              <SearchBar
+                :searchTerm="defaultFilters.global.value"
+                @clearFilters="resetFilters"
+                @updateSearch="updateFilters"
+              />
             </div>
           </template>
-          <Column field="name" header="Name" :sortable="true"></Column>
-          <Column field="created_at" header="Created" :sortable="true"></Column>
           <Column
-            field="updated_at"
-            header="Last Updated"
+            field="name"
+            header="Name"
             :sortable="true"
+            style="width: 30rem"
           ></Column>
+          <Column
+            header="Created On"
+            field="created_at.long"
+            filterField="created_at.date"
+            dataType="date"
+            :sortable="true"
+          >
+            <template #body="{ data }">
+              <p v-tooltip.top="data.created_at.long">
+                {{ data.created_at.short }}
+              </p>
+            </template>
+            <!--            <template #filter="{ filterModel }">-->
+            <!--              <Calendar-->
+            <!--                v-model="filterModel.value"-->
+            <!--                dateFormat="dd.mm.yyyy"-->
+            <!--                placeholder="dd.mm.yyyy"-->
+            <!--              />-->
+            <!--            </template>-->
+          </Column>
+          <Column
+            header="Last Updated"
+            field="updated_at.long"
+            filterField="updated_at.date"
+            dataType="date"
+            :sortable="true"
+          >
+            <template #body="{ data }">
+              <p v-tooltip.top="data.updated_at.long">
+                {{ data.updated_at.short }}
+              </p>
+            </template>
+          </Column>
           <Column
             field="analyses"
             header="Number Analyses"

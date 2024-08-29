@@ -39,11 +39,23 @@ function parseUnixTimestamp(
         // If a UTC T/Z timestamp returned
         date = new Date(timestamp);
       }
-      dataRow[key] = date.toUTCString();
+      dataRow[key] = {
+        short: formatDate(date),
+        long: date.toUTCString(),
+        date: date,
+      };
     }
   });
   return dataRow;
 }
+
+const formatDate = (value) => {
+  return value.toLocaleDateString("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+};
 
 function isUnixTimestamp(value: number): boolean {
   // Unix timestamp should be a number and within reasonable range

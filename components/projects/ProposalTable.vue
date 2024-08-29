@@ -7,16 +7,13 @@ import type { ProjectNode } from "~/services/Api";
 import ExpandRowButtons from "~/components/table/ExpandRowButtons.vue";
 import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
 import { FilterMatchMode } from "primevue/api";
+import SearchBar from "~/components/table/SearchBar.vue";
 
 const proposals = ref();
 const expandedRows = ref({});
 
 const dataRowUnixCols = ["created_at", "updated_at"];
 const expandRowEntries = ["project_id", "node_id"];
-
-const filters = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-});
 
 const { data: response, status, error } = await getProposals();
 if (status.value === "success") {
@@ -41,6 +38,27 @@ function updateTable(newData: ProjectNode) {
     }
   }
 }
+
+// Table filters
+const defaultFilters = {
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+};
+const filters = ref(defaultFilters);
+
+function resetFilters() {
+  const clearedFilters = {};
+  for (const filterKey in defaultFilters) {
+    clearedFilters[filterKey] = {
+      ...defaultFilters[filterKey],
+    };
+    clearedFilters[filterKey].value = null;
+  }
+  filters.value = clearedFilters;
+}
+
+const updateFilters = (filterText: string) => {
+  filters.value.global.value = filterText;
+};
 </script>
 
 <template>
@@ -63,17 +81,11 @@ function updateTable(newData: ProjectNode) {
           <template #empty> No proposals found. </template>
           <template #header>
             <div class="table-header-row">
-              <div class="flex justify-content-end search-bar">
-                <IconField iconPosition="left">
-                  <InputIcon>
-                    <i class="pi pi-search" />
-                  </InputIcon>
-                  <InputText
-                    v-model="filters['global'].value"
-                    placeholder="Keyword Search"
-                  />
-                </IconField>
-              </div>
+              <SearchBar
+                :searchTerm="defaultFilters.global.value"
+                @clearFilters="resetFilters"
+                @updateSearch="updateFilters"
+              />
               <div class="expand-buttons">
                 <ExpandRowButtons
                   :rows="proposals"
@@ -96,13 +108,32 @@ function updateTable(newData: ProjectNode) {
             header="Approval Status"
             :sortable="true"
           ></Column>
-          <Column field="created_at" header="Created" :sortable="true"></Column>
           <Column
-            class="timeCol"
-            field="updated_at"
-            header="Last Updated"
+            header="Created On"
+            field="created_at.long"
+            filterField="created_at.date"
+            dataType="date"
             :sortable="true"
-          ></Column>
+          >
+            <template #body="{ data }">
+              <p v-tooltip.top="data.created_at.long">
+                {{ data.created_at.short }}
+              </p>
+            </template>
+          </Column>
+          <Column
+            header="Last Updated"
+            field="updated_at.long"
+            filterField="updated_at.date"
+            dataType="date"
+            :sortable="true"
+          >
+            <template #body="{ data }">
+              <p v-tooltip.top="data.updated_at.long">
+                {{ data.updated_at.short }}
+              </p>
+            </template>
+          </Column>
           <Column
             field="id"
             header="Set Approval"
