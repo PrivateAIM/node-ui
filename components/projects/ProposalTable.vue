@@ -3,17 +3,20 @@ import { getProposals } from "~/composables/useAPIFetch";
 import ApproveRejectButtons from "~/components/projects/ApproveRejectButtons.vue";
 import { formatDataRow } from "~/utils/format-data-row";
 import TableRowMetadata from "~/components/TableRowMetadata.vue";
-import type { ProjectNode } from "~/services/Api";
+import { ApprovalStatus, type ProjectNode } from "~/services/Api";
 import ExpandRowButtons from "~/components/table/ExpandRowButtons.vue";
 import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
 import { FilterMatchMode } from "primevue/api";
 import SearchBar from "~/components/table/SearchBar.vue";
+import { getApprovalStatusSeverity } from "~/utils/status-tag-severity";
 
 const proposals = ref();
 const expandedRows = ref({});
 
 const dataRowUnixCols = ["created_at", "updated_at"];
 const expandRowEntries = ["project_id", "node_id"];
+
+const approvalStatuses = Object.values(ApprovalStatus);
 
 const { data: response, status, error } = await getProposals();
 if (status.value === "success") {
@@ -42,6 +45,7 @@ function updateTable(newData: ProjectNode) {
 // Table filters
 const defaultFilters = {
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  approval_status: { value: null, matchMode: FilterMatchMode.IN },
 };
 const filters = ref(defaultFilters);
 
@@ -106,8 +110,36 @@ const updateFilters = (filterText: string) => {
           <Column
             field="approval_status"
             header="Approval Status"
-            :sortable="true"
-          ></Column>
+            filterField="approval_status"
+            :showFilterMatchModes="false"
+          >
+            <template #body="{ data }">
+              <Tag
+                v-if="data.approval_status"
+                :value="data.approval_status"
+                :severity="getApprovalStatusSeverity(data.approval_status)"
+              />
+            </template>
+            <template #filter="{ filterModel }">
+              <MultiSelect
+                v-model="filterModel.value"
+                :options="approvalStatuses"
+                optionLabel=""
+                placeholder="Any"
+                class="p-column-filter"
+              >
+                <template #option="slotProps">
+                  <div class="flex align-items-center gap-2">
+                    <Tag
+                      v-if="slotProps.option"
+                      :value="slotProps.option"
+                      :severity="getApprovalStatusSeverity(slotProps.option)"
+                    />
+                  </div>
+                </template>
+              </MultiSelect>
+            </template>
+          </Column>
           <Column
             header="Created On"
             field="created_at.long"
