@@ -160,8 +160,10 @@ const updateFilters = (filterText: string) => {
       <Column field="dataStore" header="Data Store" :sortable="true"></Column>
       <Column
         header="Created On"
-        filterField="kongProjCreatedAt.short"
+        field="kongProjCreatedAt.long"
+        filterField="kongProjCreatedAt.date"
         dataType="date"
+        :sortable="true"
       >
         <template #body="{ data }">
           <p v-tooltip.top="data.kongProjCreatedAt.long">
@@ -171,8 +173,10 @@ const updateFilters = (filterText: string) => {
       </Column>
       <Column
         header="Last Updated"
-        filterField="kongProjUpdatedAt.short"
+        field="kongProjUpdatedAt.long"
+        filterField="kongProjUpdatedAt.date"
         dataType="date"
+        :sortable="true"
       >
         <template #body="{ data }">
           <p v-tooltip.top="data.kongProjUpdatedAt.long">

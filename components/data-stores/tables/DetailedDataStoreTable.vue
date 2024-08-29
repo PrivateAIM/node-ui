@@ -104,19 +104,36 @@ const updateFilters = (filterText: string) => {
           />
         </div>
       </template>
-      <Column field="name" header="Name" :sortable="true"></Column>
+      <Column
+        field="name"
+        header="Name"
+        :sortable="true"
+        style="width: 30rem"
+      ></Column>
       <Column field="path" header="Path"></Column>
       <Column field="host" header="Host" :sortable="true"></Column>
       <Column field="port" header="Port"></Column>
       <Column field="protocol" header="Protocol" :sortable="true"></Column>
-      <Column header="Created On" filterField="created_at.long" dataType="date">
+      <Column
+        header="Created On"
+        field="created_at.long"
+        filterField="created_at.date"
+        dataType="date"
+        :sortable="true"
+      >
         <template #body="{ data }">
           <p v-tooltip.top="data.created_at.long">
             {{ data.created_at.short }}
           </p>
         </template>
       </Column>
-      <Column header="Last Updated" filterField="date" dataType="date">
+      <Column
+        header="Last Updated"
+        field="updated_at.long"
+        filterField="updated_at.date"
+        dataType="date"
+        :sortable="true"
+      >
         <template #body="{ data }">
           <p v-tooltip.top="data.updated_at.long">
             {{ data.updated_at.short }}

@@ -10,7 +10,7 @@ import SearchBar from "~/components/table/SearchBar.vue";
 const expandedRows = ref();
 const analyses = ref();
 
-const expandRowEntries = ["project_id", "node_id", "created_at", "updated_at"];
+const expandRowEntries = ["project_id", "node_id"];
 
 const { data: response, status, error } = await getAnalysisNodes();
 
@@ -119,6 +119,32 @@ const updateFilters = (filterText: string) => {
             header="Project"
             :sortable="true"
           />
+          <Column
+            header="Created On"
+            field="created_at.long"
+            filterField="created_at.date"
+            dataType="date"
+            :sortable="true"
+          >
+            <template #body="{ data }">
+              <p v-tooltip.top="data.created_at.long">
+                {{ data.created_at.short }}
+              </p>
+            </template>
+          </Column>
+          <Column
+            header="Last Updated"
+            field="updated_at.long"
+            filterField="updated_at.date"
+            dataType="date"
+            :sortable="true"
+          >
+            <template #body="{ data }">
+              <p v-tooltip.top="data.updated_at.long">
+                {{ data.updated_at.short }}
+              </p>
+            </template>
+          </Column>
           <Column field="node.name" header="Node" :sortable="true" />
           <Column
             field="expand.id"

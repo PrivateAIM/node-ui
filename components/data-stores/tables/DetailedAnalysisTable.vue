@@ -196,8 +196,10 @@ const updateFilters = (filterText: string) => {
       ></Column>
       <Column
         header="Created On"
+        field="kongProjCreatedAt.long"
         filterField="kongAnalysisCreatedAt.long"
         dataType="date"
+        :sortable="true"
       >
         <template #body="{ data }">
           <p v-tooltip.top="data.kongAnalysisCreatedAt.long">
