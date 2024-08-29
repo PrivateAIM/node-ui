@@ -6,11 +6,24 @@ import ExpandRowButtons from "~/components/table/ExpandRowButtons.vue";
 import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
 import { FilterMatchMode } from "primevue/api";
 import SearchBar from "~/components/table/SearchBar.vue";
+import {
+  getApprovalStatusSeverity,
+  getBuildStatusSeverity,
+  getRunStatusSeverity,
+} from "~/utils/status-tag-severity";
+import {
+  AnalysisBuildStatus,
+  AnalysisRunStatus,
+  ApprovalStatus,
+} from "~/services/Api";
 
 const expandedRows = ref();
 const analyses = ref();
 
 const expandRowEntries = ["project_id", "node_id"];
+const buildStatuses = Object.values(AnalysisBuildStatus);
+const runStatuses = Object.values(AnalysisRunStatus);
+const approvalStatuses = Object.values(ApprovalStatus);
 
 const { data: response, status, error } = await getAnalysisNodes();
 
@@ -31,6 +44,9 @@ function onToggleRowExpansion(rowIds) {
 // Table filters
 const defaultFilters = {
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  approval_status: { value: null, matchMode: FilterMatchMode.IN },
+  "analysis.build_status": { value: null, matchMode: FilterMatchMode.IN },
+  "analysis.run_status": { value: null, matchMode: FilterMatchMode.IN },
   // Below are more examples
   // "analysis.name": { value: null, matchMode: FilterMatchMode.CONTAINS },
   // status: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -102,18 +118,102 @@ const updateFilters = (filterText: string) => {
           <Column
             field="approval_status"
             header="Approval Status"
-            :sortable="true"
-          />
+            filterField="approval_status"
+            :showFilterMatchModes="false"
+          >
+            <template #body="{ data }">
+              <Tag
+                v-if="data.approval_status"
+                :value="data.approval_status"
+                :severity="getApprovalStatusSeverity(data.approval_status)"
+              />
+            </template>
+            <template #filter="{ filterModel }">
+              <MultiSelect
+                v-model="filterModel.value"
+                :options="approvalStatuses"
+                optionLabel=""
+                placeholder="Any"
+                class="p-column-filter"
+              >
+                <template #option="slotProps">
+                  <div class="flex align-items-center gap-2">
+                    <Tag
+                      v-if="slotProps.option"
+                      :value="slotProps.option"
+                      :severity="getApprovalStatusSeverity(slotProps.option)"
+                    />
+                  </div>
+                </template>
+              </MultiSelect>
+            </template>
+          </Column>
           <Column
-            field="analysis.build_status"
             header="Build Status"
-            :sortable="true"
-          />
+            field="analysis.build_status"
+            filterField="analysis.build_status"
+            :showFilterMatchModes="false"
+          >
+            <template #body="{ data }">
+              <Tag
+                v-if="data.analysis.build_status"
+                :value="data.analysis.build_status"
+                :severity="getBuildStatusSeverity(data.analysis.build_status)"
+              />
+            </template>
+            <template #filter="{ filterModel }">
+              <MultiSelect
+                v-model="filterModel.value"
+                :options="buildStatuses"
+                optionLabel=""
+                placeholder="Any"
+                class="p-column-filter"
+              >
+                <template #option="slotProps">
+                  <div class="flex align-items-center gap-2">
+                    <Tag
+                      v-if="slotProps.option"
+                      :value="slotProps.option"
+                      :severity="getBuildStatusSeverity(slotProps.option)"
+                    />
+                  </div>
+                </template>
+              </MultiSelect>
+            </template>
+          </Column>
           <Column
             field="analysis.run_status"
             header="Run Status"
-            :sortable="true"
-          />
+            filterField="analysis.run_status"
+            :showFilterMatchModes="false"
+          >
+            <template #body="{ data }">
+              <Tag
+                v-if="data.analysis.run_status"
+                :value="data.analysis.run_status"
+                :severity="getRunStatusSeverity(data.analysis.run_status)"
+              />
+            </template>
+            <template #filter="{ filterModel }">
+              <MultiSelect
+                v-model="filterModel.value"
+                :options="runStatuses"
+                optionLabel=""
+                placeholder="Any"
+                class="p-column-filter"
+              >
+                <template #option="slotProps">
+                  <div class="flex align-items-center gap-2">
+                    <Tag
+                      v-if="slotProps.option"
+                      :value="slotProps.option"
+                      :severity="getRunStatusSeverity(slotProps.option)"
+                    />
+                  </div>
+                </template>
+              </MultiSelect>
+            </template>
+          </Column>
           <Column
             field="analysis.project_id"
             header="Project"
