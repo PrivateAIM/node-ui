@@ -39,7 +39,11 @@ function parseUnixTimestamp(
         // If a UTC T/Z timestamp returned
         date = new Date(timestamp);
       }
-      dataRow[key] = { short: formatDate(date), long: date.toUTCString() };
+      dataRow[key] = {
+        short: formatDate(date),
+        long: date.toUTCString(),
+        date: date,
+      };
     }
   });
   return dataRow;
