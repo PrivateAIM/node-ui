@@ -100,12 +100,7 @@ const updateFilters = (filterText: string) => {
             </div>
           </template>
           <Column expander style="width: 5rem" />
-          <Column field="id" header="ID" :sortable="true"></Column>
-          <Column
-            field="project.name"
-            header="Project"
-            :sortable="true"
-          ></Column>
+          <Column field="project.name" header="Name" :sortable="true"></Column>
           <Column field="node.name" header="Node" :sortable="true"></Column>
           <Column
             field="approval_status"

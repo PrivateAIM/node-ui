@@ -20,7 +20,7 @@ import {
 const expandedRows = ref();
 const analyses = ref();
 
-const expandRowEntries = ["project_id", "node_id"];
+const expandRowEntries = [];
 const buildStatuses = Object.values(AnalysisBuildStatus);
 const runStatuses = Object.values(AnalysisRunStatus);
 const approvalStatuses = Object.values(ApprovalStatus);
@@ -104,7 +104,7 @@ const updateFilters = (filterText: string) => {
                 @clearFilters="resetFilters"
                 @updateSearch="updateFilters"
               />
-              <div class="expand-buttons">
+              <div class="expand-buttons" v-if="expandRowEntries.length">
                 <ExpandRowButtons
                   :rows="analyses"
                   :uniqueId="'id'"
@@ -113,7 +113,7 @@ const updateFilters = (filterText: string) => {
               </div>
             </div>
           </template>
-          <Column expander style="width: 5rem" />
+          <Column expander style="width: 5rem" v-if="expandRowEntries.length" />
           <Column field="analysis.name" header="Name" :sortable="true" />
           <Column
             field="approval_status"

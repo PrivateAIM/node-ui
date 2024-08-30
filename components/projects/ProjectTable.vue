@@ -119,7 +119,6 @@ const updateFilters = (filterText: string) => {
             header="Number Analyses"
             :sortable="true"
           ></Column>
-          <Column field="master_image_id" header="Master Image UUID"></Column>
         </DataTable>
       </template>
     </Card>
