@@ -44,7 +44,10 @@ export function getProposals(opts?) {
   return useAPIFetch<{ data: ListProjectNodes }>("/project-nodes", {
     ...opts,
     method: "GET",
-    query: { include: "project,node" },
+    query: {
+      include: "project,node",
+      sort: "-updated_at",
+    },
   });
 }
 
@@ -52,6 +55,9 @@ export function getProjects(opts?) {
   return useAPIFetch<{ data: AllProjects }>("/projects", {
     ...opts,
     method: "GET",
+    query: {
+      sort: "-updated_at",
+    },
   });
 }
 
@@ -59,6 +65,9 @@ export function getAnalyses(opts?) {
   return useAPIFetch<{ data: AllAnalyses }>("/analyses", {
     ...opts,
     method: "GET",
+    query: {
+      sort: "-updated_at",
+    },
   });
 }
 
@@ -68,6 +77,9 @@ export function getAnalysisNodes(opts?) {
     {
       ...opts,
       method: "GET",
+      query: {
+        sort: "-updated_at",
+      },
     },
   );
 }
