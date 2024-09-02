@@ -14,7 +14,7 @@ const proposals = ref();
 const expandedRows = ref({});
 
 const dataRowUnixCols = ["created_at", "updated_at"];
-const expandRowEntries = ["project_id", "node_id"];
+const expandRowEntries = [];
 
 const approvalStatuses = Object.values(ApprovalStatus);
 
@@ -90,7 +90,7 @@ const updateFilters = (filterText: string) => {
                 @clearFilters="resetFilters"
                 @updateSearch="updateFilters"
               />
-              <div class="expand-buttons">
+              <div class="expand-buttons" v-if="expandRowEntries.length">
                 <ExpandRowButtons
                   :rows="proposals"
                   :uniqueId="'id'"
@@ -99,7 +99,7 @@ const updateFilters = (filterText: string) => {
               </div>
             </div>
           </template>
-          <Column expander style="width: 5rem" />
+          <Column expander style="width: 5rem" v-if="expandRowEntries.length" />
           <Column field="project.name" header="Name" :sortable="true"></Column>
           <Column field="node.name" header="Node" :sortable="true"></Column>
           <Column
