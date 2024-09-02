@@ -9,9 +9,9 @@
             href="https://github.com/PrivateAIM/node-ui/issues"
             class="github-link"
           >
-            <i class="pi pi-github"></i>
-            Submit an Issue
-          </a>
+            <i class="pi pi-github" style="padding-right: 5px"></i>Submit an
+            Issue</a
+          >
           - © 2024
           <a href="https://privateaim.de/">PrivateAim</a>
         </div>
