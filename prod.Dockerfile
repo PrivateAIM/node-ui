@@ -1,15 +1,19 @@
 FROM node:20-alpine AS builder
 LABEL maintainer="bruce.schultz@uk-koeln.de"
 
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
 WORKDIR /app
 
-COPY yarn.lock package.json ./
+COPY pnpm-lock.yaml package.json ./
 
-RUN yarn install
+RUN pnpm install
 
 COPY . .
 
-RUN yarn build
+RUN pnpm build
 
 FROM node:20-alpine AS production
 
