@@ -50,6 +50,8 @@ export interface ACLConsumer {
 export interface AllAnalyses {
   /** Data */
   data: DetailedAnalysis[];
+  /** Meta */
+  meta: object;
 }
 
 /**
@@ -59,13 +61,15 @@ export interface AllAnalyses {
 export interface AllProjects {
   /** Data */
   data: Project[];
+  /** Meta */
+  meta: object;
 }
 
 /**
  * Analysis
  * Model representing a single detailed analysis.
  */
-export interface Analysis {
+export interface AnalysisInput {
   /**
    * Id
    * @format uuid
@@ -102,6 +106,53 @@ export interface Analysis {
    * @format uuid
    */
   project_id: string;
+  project?: Project | null;
+  /** Master Image Id */
+  master_image_id?: string | null;
+}
+
+/**
+ * Analysis
+ * Model representing a single detailed analysis.
+ */
+export interface AnalysisOutput {
+  /**
+   * Id
+   * @format uuid
+   */
+  id: string;
+  /**
+   * Created At
+   * @format date-time
+   */
+  created_at: string;
+  /**
+   * Updated At
+   * @format date-time
+   */
+  updated_at: string;
+  /** Name */
+  name?: string | null;
+  /** Nodes */
+  nodes: number;
+  configuration_status?: ConfigurationStatus | null;
+  build_status?: AnalysisBuildStatus | null;
+  run_status?: AnalysisRunStatus | null;
+  /** Registry Id */
+  registry_id?: string | null;
+  /**
+   * Realm Id
+   * @format uuid
+   */
+  realm_id: string;
+  /** User Id */
+  user_id?: string | null;
+  /**
+   * Project Id
+   * @format uuid
+   */
+  project_id: string;
+  project?: Project | null;
   /** Master Image Id */
   master_image_id?: string | null;
 }
@@ -141,8 +192,7 @@ export interface AnalysisNode {
   updated_at: string;
   /** Status of project possibilities. */
   approval_status: ApprovalStatus;
-  /** Run Status */
-  run_status?: string | null;
+  run_status?: AnalysisNodeRunStatus | null;
   /** Comment */
   comment?: string | null;
   /** Index */
@@ -176,6 +226,20 @@ export interface AnalysisNode {
 }
 
 /**
+ * AnalysisNodeRunStatus
+ * Possible values for analysis run status.
+ */
+export enum AnalysisNodeRunStatus {
+  Running = "running",
+  Starting = "starting",
+  Started = "started",
+  Stopping = "stopping",
+  Stopped = "stopped",
+  Finished = "finished",
+  Failed = "failed",
+}
+
+/**
  * AnalysisRunStatus
  * Possible values for analysis run status.
  */
@@ -187,6 +251,13 @@ export enum AnalysisRunStatus {
   Stopped = "stopped",
   Finished = "finished",
   Failed = "failed",
+}
+
+/** AnalysisStatus */
+export enum AnalysisStatus {
+  Created = "created",
+  Running = "running",
+  Stopped = "stopped",
 }
 
 /**
@@ -378,6 +449,8 @@ export interface Bucket {
 export interface BucketList {
   /** Data */
   data: Bucket[];
+  /** Meta */
+  meta: object;
 }
 
 /**
@@ -434,8 +507,7 @@ export interface Consumer {
 
 /** CreatePodResponse */
 export interface CreatePodResponse {
-  /** Status */
-  status: string;
+  status: AnalysisStatus;
 }
 
 /**
@@ -499,10 +571,10 @@ export interface DetailedAnalysis {
    * @format uuid
    */
   project_id: string;
+  project?: Project | null;
   /** Master Image Id */
   master_image_id?: string | null;
   registry?: Registry | null;
-  project?: Project | null;
   master_image?: MasterImage | null;
 }
 
@@ -815,6 +887,8 @@ export interface LinkProjectAnalysis {
 export interface ListAnalysisNodes {
   /** Data */
   data: AnalysisNode[];
+  /** Meta */
+  meta: object;
 }
 
 /**
@@ -835,6 +909,8 @@ export interface ListConsumers {
 export interface ListProjectNodes {
   /** Data */
   data: ProjectNode[];
+  /** Meta */
+  meta: object;
 }
 
 /**
@@ -992,12 +1068,14 @@ export interface PartialAnalysisBucketFile {
 export interface PartialBucketFilesList {
   /** Data */
   data: PartialAnalysisBucketFile[];
+  /** Meta */
+  meta: object;
 }
 
 /** PodResponse */
 export interface PodResponse {
   /** Pods */
-  pods?: object | null;
+  pods?: any[] | null;
 }
 
 /**
@@ -1729,12 +1807,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name CreateAnalysisPoPost
      * @summary Create Analysis
      * @request POST:/po
+     * @secure
      */
     createAnalysisPoPost: (data: BodyCreateAnalysisPoPost, params: RequestParams = {}) =>
       this.request<CreatePodResponse, void | HTTPValidationError>({
         path: `/po`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -1747,11 +1827,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name GetAnalysisLogsPoAnalysisIdLogsGet
      * @summary Get Analysis Logs
      * @request GET:/po/{analysis_id}/logs
+     * @secure
      */
     getAnalysisLogsPoAnalysisIdLogsGet: (analysisId: string | null, params: RequestParams = {}) =>
       this.request<LogResponse, void | HTTPValidationError>({
         path: `/po/${analysisId}/logs`,
         method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -1763,11 +1845,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name GetAnalysisStatusPoAnalysisIdStatusGet
      * @summary Get Analysis Status
      * @request GET:/po/{analysis_id}/status
+     * @secure
      */
     getAnalysisStatusPoAnalysisIdStatusGet: (analysisId: string | null, params: RequestParams = {}) =>
       this.request<StatusResponse, void | HTTPValidationError>({
         path: `/po/${analysisId}/status`,
         method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -1779,11 +1863,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name GetAnalysisPodsPoAnalysisIdPodsGet
      * @summary Get Analysis Pods
      * @request GET:/po/{analysis_id}/pods
+     * @secure
      */
     getAnalysisPodsPoAnalysisIdPodsGet: (analysisId: string | null, params: RequestParams = {}) =>
       this.request<PodResponse, void | HTTPValidationError>({
         path: `/po/${analysisId}/pods`,
         method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -1795,11 +1881,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name StopAnalysisPoAnalysisIdStopPut
      * @summary Stop Analysis
      * @request PUT:/po/{analysis_id}/stop
+     * @secure
      */
     stopAnalysisPoAnalysisIdStopPut: (analysisId: string | null, params: RequestParams = {}) =>
       this.request<StatusResponse, void | HTTPValidationError>({
         path: `/po/${analysisId}/stop`,
         method: "PUT",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -1811,11 +1899,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name DeleteAnalysisPoAnalysisIdDeleteDelete
      * @summary Delete Analysis
      * @request DELETE:/po/{analysis_id}/delete
+     * @secure
      */
     deleteAnalysisPoAnalysisIdDeleteDelete: (analysisId: string | null, params: RequestParams = {}) =>
       this.request<StatusResponse, void | HTTPValidationError>({
         path: `/po/${analysisId}/delete`,
         method: "DELETE",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -1934,38 +2024,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/projects
      * @secure
      */
-    listAllProjectsProjectsGet: (
-      query?: {
-        /**
-         * Include
-         * Whether to include additional data. Can only be 'master_image' or null
-         */
-        include?: string | null;
-        /**
-         * Filter Id
-         * Filter by object UUID.
-         * @format uuid
-         */
-        filter_id?: string;
-        /**
-         * Filter Realm Id
-         * Filter by realm UUID.
-         * @format uuid
-         */
-        filter_realm_id?: string;
-        /**
-         * Filter User Id
-         * Filter by user UUID.
-         * @format uuid
-         */
-        filter_user_id?: string;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<AllProjects, void | HTTPValidationError>({
+    listAllProjectsProjectsGet: (params: RequestParams = {}) =>
+      this.request<AllProjects, void>({
         path: `/projects`,
         method: "GET",
-        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -1980,22 +2042,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/projects/{project_id}
      * @secure
      */
-    listSpecificProjectProjectsProjectIdGet: (
-      projectId: string,
-      query?: {
-        /**
-         * Filter Realm Id
-         * Filter by realm UUID.
-         * @format uuid
-         */
-        filter_realm_id?: string;
-      },
-      params: RequestParams = {},
-    ) =>
+    listSpecificProjectProjectsProjectIdGet: (projectId: string, params: RequestParams = {}) =>
       this.request<Project, void | HTTPValidationError>({
         path: `/projects/${projectId}`,
         method: "GET",
-        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -2011,46 +2061,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/project-nodes
      * @secure
      */
-    listProjectProposalsProjectNodesGet: (
-      query?: {
-        /**
-         * Include
-         * Whether to include additional data for the given parameter. Choices: 'node'/'project'
-         * @default "project,node"
-         */
-        include?: string | null;
-        /**
-         * Filter Id
-         * Filter by ID of returned object.
-         */
-        filter_id?: string | null;
-        /**
-         * Filter Project Id
-         * Filter by project UUID.
-         */
-        filter_project_id?: string | null;
-        /**
-         * Filter Project Realm Id
-         * Filter by project realm UUID.
-         */
-        filter_project_realm_id?: string | null;
-        /**
-         * Filter Node Id
-         * Filter by node UUID.
-         */
-        filter_node_id?: string | null;
-        /**
-         * Filter Node Realm Id
-         * Filter by node realm UUID.
-         */
-        filter_node_realm_id?: string | null;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<ListProjectNodes, void | HTTPValidationError>({
+    listProjectProposalsProjectNodesGet: (params: RequestParams = {}) =>
+      this.request<ListProjectNodes, void>({
         path: `/project-nodes`,
         method: "GET",
-        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -2090,56 +2104,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/analysis-nodes
      * @secure
      */
-    listAnalysesOfNodesAnalysisNodesGet: (
-      query?: {
-        /**
-         * Include
-         * Whether to include additional data for the given parameter. Can only be 'node'/'analysis'
-         * @default "analysis"
-         */
-        include?: string | null;
-        /**
-         * Filter Id
-         * Filter by ID of returned object.
-         */
-        filter_id?: string | null;
-        /**
-         * Filter Project Id
-         * Filter by project UUID.
-         */
-        filter_project_id?: string | null;
-        /**
-         * Filter Project Realm Id
-         * Filter by project realm UUID.
-         */
-        filter_project_realm_id?: string | null;
-        /**
-         * Filter Node Id
-         * Filter by node UUID.
-         */
-        filter_node_id?: string | null;
-        /**
-         * Filter Node Realm Id
-         * Filter by node realm UUID.
-         */
-        filter_node_realm_id?: string | null;
-        /**
-         * Filter Analysis Id
-         * Filter by analysis UUID.
-         */
-        filter_analysis_id?: string | null;
-        /**
-         * Filter Analysis Realm Id
-         * Filter by analysis realm UUID.
-         */
-        filter_analysis_realm_id?: string | null;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<ListAnalysisNodes, void | HTTPValidationError>({
+    listAnalysesOfNodesAnalysisNodesGet: (params: RequestParams = {}) =>
+      this.request<ListAnalysisNodes, void>({
         path: `/analysis-nodes`,
         method: "GET",
-        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -2154,27 +2122,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/analysis-nodes/{analysis_id}
      * @secure
      */
-    listSpecificAnalysisNodeAnalysisNodesAnalysisIdGet: (
-      analysisId: string,
-      query?: {
-        /**
-         * Include
-         * Whether to include additional data for the given parameter. Can only be 'node'/'analysis'
-         * @default "analysis"
-         */
-        include?: string | null;
-        /**
-         * Filter Analysis Realm Id
-         * Filter by analysis realm UUID.
-         */
-        filter_analysis_realm_id?: string | null;
-      },
-      params: RequestParams = {},
-    ) =>
+    listSpecificAnalysisNodeAnalysisNodesAnalysisIdGet: (analysisId: string, params: RequestParams = {}) =>
       this.request<AnalysisNode, void | HTTPValidationError>({
         path: `/analysis-nodes/${analysisId}`,
         method: "GET",
-        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -2214,26 +2165,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/analyses
      * @secure
      */
-    listAllAnalysesAnalysesGet: (
-      query?: {
-        /**
-         * Include
-         * Whether to include additional data for the given parameter. Can only be 'node'/'analysis'
-         * @default "project"
-         */
-        include?: string | null;
-        /**
-         * Filter Analysis Realm Id
-         * Filter by analysis realm UUID.
-         */
-        filter_analysis_realm_id?: string | null;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<AllAnalyses, void | HTTPValidationError>({
+    listAllAnalysesAnalysesGet: (params: RequestParams = {}) =>
+      this.request<AllAnalyses, void>({
         path: `/analyses`,
         method: "GET",
-        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -2248,27 +2183,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/analyses/{analysis_id}
      * @secure
      */
-    listSpecificAnalysisAnalysesAnalysisIdGet: (
-      analysisId: string,
-      query?: {
-        /**
-         * Include
-         * Whether to include additional data for the given parameter. Can only be 'node'/'analysis'
-         * @default "project"
-         */
-        include?: string | null;
-        /**
-         * Filter Analysis Realm Id
-         * Filter by analysis realm UUID.
-         */
-        filter_analysis_realm_id?: string | null;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<Analysis, void | HTTPValidationError>({
+    listSpecificAnalysisAnalysesAnalysisIdGet: (analysisId: string, params: RequestParams = {}) =>
+      this.request<AnalysisOutput, void | HTTPValidationError>({
         path: `/analyses/${analysisId}`,
         method: "GET",
-        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -2283,7 +2201,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request POST:/analyses/{analysis_id}
      * @secure
      */
-    updateSpecificAnalysisAnalysesAnalysisIdPost: (analysisId: string, data: Analysis, params: RequestParams = {}) =>
+    updateSpecificAnalysisAnalysesAnalysisIdPost: (
+      analysisId: string,
+      data: AnalysisInput,
+      params: RequestParams = {},
+    ) =>
       this.request<DetailedAnalysis, void | HTTPValidationError>({
         path: `/analyses/${analysisId}`,
         method: "POST",
@@ -2306,20 +2228,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      */
     getRegistryMetadataForProjectRegistryProjectsRegistryProjectIdGet: (
       registryProjectId: string,
-      query?: {
-        /**
-         * Include
-         * Whether to include additional registry data. Can only be 'registry'
-         * @default "registry"
-         */
-        include?: string | null;
-      },
       params: RequestParams = {},
     ) =>
-      this.request<RegistryProject, void | HTTPValidationError>({
+      this.request<RegistryProject, void>({
         path: `/registry-projects/${registryProjectId}`,
         method: "GET",
-        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -2359,31 +2272,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/analysis-buckets
      * @secure
      */
-    listAllAnalysisBucketsAnalysisBucketsGet: (
-      query?: {
-        /**
-         * Include
-         * Whether to include additional registry data. Can only be 'analysis'
-         * @default "analysis"
-         */
-        include?: string | null;
-        /**
-         * Filter Analysis Id
-         * Filter by analysis UUID.
-         */
-        filter_analysis_id?: string | null;
-        /**
-         * Filter Realm Id
-         * Filter by realm UUID.
-         */
-        filter_realm_id?: string | null;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<BucketList, void | HTTPValidationError>({
+    listAllAnalysisBucketsAnalysisBucketsGet: (params: RequestParams = {}) =>
+      this.request<BucketList, void>({
         path: `/analysis-buckets`,
         method: "GET",
-        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -2398,32 +2290,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/analysis-buckets/{bucket_id}
      * @secure
      */
-    listSpecificAnalysisBucketsAnalysisBucketsBucketIdGet: (
-      bucketId: string,
-      query?: {
-        /**
-         * Include
-         * Whether to include additional registry data. Can only be 'analysis'
-         * @default "analysis"
-         */
-        include?: string | null;
-        /**
-         * Filter Analysis Id
-         * Filter by analysis UUID.
-         */
-        filter_analysis_id?: string | null;
-        /**
-         * Filter Realm Id
-         * Filter by realm UUID.
-         */
-        filter_realm_id?: string | null;
-      },
-      params: RequestParams = {},
-    ) =>
+    listSpecificAnalysisBucketsAnalysisBucketsBucketIdGet: (bucketId: string, params: RequestParams = {}) =>
       this.request<Bucket, void | HTTPValidationError>({
         path: `/analysis-buckets/${bucketId}`,
         method: "GET",
-        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -2439,36 +2309,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/analysis-bucket-files
      * @secure
      */
-    listAllAnalysisBucketFilesAnalysisBucketFilesGet: (
-      query?: {
-        /**
-         * Include
-         * Whether to include additional data for the given parameter. Choices: 'bucket'/'analysis'
-         * @default "bucket"
-         */
-        include?: string | null;
-        /**
-         * Filter Analysis Id
-         * Filter by analysis UUID.
-         */
-        filter_analysis_id?: string | null;
-        /**
-         * Filter Realm Id
-         * Filter by realm UUID.
-         */
-        filter_realm_id?: string | null;
-        /**
-         * Filter Bucket Id
-         * Filter by bucket UUID.
-         */
-        filter_bucket_id?: string | null;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<PartialBucketFilesList, void | HTTPValidationError>({
+    listAllAnalysisBucketFilesAnalysisBucketFilesGet: (params: RequestParams = {}) =>
+      this.request<PartialBucketFilesList, void>({
         path: `/analysis-bucket-files`,
         method: "GET",
-        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -2485,35 +2329,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      */
     listSpecificAnalysisBucketFileAnalysisBucketFilesBucketFileIdGet: (
       bucketFileId: string,
-      query?: {
-        /**
-         * Include
-         * Whether to include additional data for the given parameter. Choices: 'bucket'/'analysis'
-         * @default "bucket"
-         */
-        include?: string | null;
-        /**
-         * Filter Analysis Id
-         * Filter by analysis UUID.
-         */
-        filter_analysis_id?: string | null;
-        /**
-         * Filter Realm Id
-         * Filter by realm UUID.
-         */
-        filter_realm_id?: string | null;
-        /**
-         * Filter Bucket Id
-         * Filter by bucket UUID.
-         */
-        filter_bucket_id?: string | null;
-      },
       params: RequestParams = {},
     ) =>
       this.request<PartialAnalysisBucketFile, void | HTTPValidationError>({
         path: `/analysis-bucket-files/${bucketFileId}`,
         method: "GET",
-        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -2565,6 +2385,36 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description List all available data stores (referred to as services by kong).
+     *
+     * @tags Kong
+     * @name ListSpecificDataStoreKongDatastoreDataStoreNameGet
+     * @summary List Specific Data Store
+     * @request GET:/kong/datastore/{data_store_name}
+     * @secure
+     */
+    listSpecificDataStoreKongDatastoreDataStoreNameGet: (
+      dataStoreName: string | null,
+      query?: {
+        /**
+         * Detailed
+         * Whether to include detailed information on projects
+         * @default false
+         */
+        detailed?: boolean;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ListServices, void | HTTPValidationError>({
+        path: `/kong/datastore/${dataStoreName}`,
+        method: "GET",
+        query: query,
+        secure: true,
         format: "json",
         ...params,
       }),
