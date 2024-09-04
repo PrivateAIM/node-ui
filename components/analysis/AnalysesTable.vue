@@ -10,13 +10,13 @@ import {
   getApprovalStatusSeverity,
   getRunStatusSeverity,
 } from "~/utils/status-tag-severity";
-import { AnalysisRunStatus, ApprovalStatus } from "~/services/Api";
+import { AnalysisNodeRunStatus, ApprovalStatus } from "~/services/Api";
 
 const expandedRows = ref();
 const analyses = ref();
 
 const expandRowEntries = [];
-const runStatuses = Object.values(AnalysisRunStatus);
+const runStatuses = Object.values(AnalysisNodeRunStatus);
 const approvalStatuses = Object.values(ApprovalStatus);
 
 const { data: response, status, error } = await getAnalysisNodes();
@@ -39,8 +39,8 @@ function onToggleRowExpansion(rowIds) {
 const defaultFilters = {
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   approval_status: { value: null, matchMode: FilterMatchMode.IN },
-  "analysis.build_status": { value: null, matchMode: FilterMatchMode.IN },
-  "analysis.run_status": { value: null, matchMode: FilterMatchMode.IN },
+  // "analysis.build_status": { value: null, matchMode: FilterMatchMode.IN },
+  run_status: { value: null, matchMode: FilterMatchMode.IN },
   // Below are more examples
   // "analysis.name": { value: null, matchMode: FilterMatchMode.CONTAINS },
   // status: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -142,50 +142,17 @@ const updateFilters = (filterText: string) => {
               </MultiSelect>
             </template>
           </Column>
-          <!--          <Column-->
-          <!--            header="Build Status"-->
-          <!--            field="analysis.build_status"-->
-          <!--            filterField="analysis.build_status"-->
-          <!--            :showFilterMatchModes="false"-->
-          <!--          >-->
-          <!--            <template #body="{ data }">-->
-          <!--              <Tag-->
-          <!--                v-if="data.analysis.build_status"-->
-          <!--                :value="data.analysis.build_status"-->
-          <!--                :severity="getBuildStatusSeverity(data.analysis.build_status)"-->
-          <!--              />-->
-          <!--            </template>-->
-          <!--            <template #filter="{ filterModel }">-->
-          <!--              <MultiSelect-->
-          <!--                v-model="filterModel.value"-->
-          <!--                :options="buildStatuses"-->
-          <!--                optionLabel=""-->
-          <!--                placeholder="Any"-->
-          <!--                class="p-column-filter"-->
-          <!--              >-->
-          <!--                <template #option="slotProps">-->
-          <!--                  <div class="flex align-items-center gap-2">-->
-          <!--                    <Tag-->
-          <!--                      v-if="slotProps.option"-->
-          <!--                      :value="slotProps.option"-->
-          <!--                      :severity="getBuildStatusSeverity(slotProps.option)"-->
-          <!--                    />-->
-          <!--                  </div>-->
-          <!--                </template>-->
-          <!--              </MultiSelect>-->
-          <!--            </template>-->
-          <!--          </Column>-->
           <Column
-            field="analysis.run_status"
+            field="run_status"
             header="Run Status"
-            filterField="analysis.run_status"
+            filterField="run_status"
             :showFilterMatchModes="false"
           >
             <template #body="{ data }">
               <Tag
-                v-if="data.analysis.run_status"
-                :value="data.analysis.run_status"
-                :severity="getRunStatusSeverity(data.analysis.run_status)"
+                v-if="data.run_status"
+                :value="data.run_status"
+                :severity="getRunStatusSeverity(data.run_status)"
               />
             </template>
             <template #filter="{ filterModel }">
