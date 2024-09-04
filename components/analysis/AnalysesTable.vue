@@ -8,20 +8,14 @@ import { FilterMatchMode } from "primevue/api";
 import SearchBar from "~/components/table/SearchBar.vue";
 import {
   getApprovalStatusSeverity,
-  getBuildStatusSeverity,
   getRunStatusSeverity,
 } from "~/utils/status-tag-severity";
-import {
-  AnalysisBuildStatus,
-  AnalysisRunStatus,
-  ApprovalStatus,
-} from "~/services/Api";
+import { AnalysisRunStatus, ApprovalStatus } from "~/services/Api";
 
 const expandedRows = ref();
 const analyses = ref();
 
 const expandRowEntries = [];
-const buildStatuses = Object.values(AnalysisBuildStatus);
 const runStatuses = Object.values(AnalysisRunStatus);
 const approvalStatuses = Object.values(ApprovalStatus);
 
@@ -148,39 +142,39 @@ const updateFilters = (filterText: string) => {
               </MultiSelect>
             </template>
           </Column>
-          <Column
-            header="Build Status"
-            field="analysis.build_status"
-            filterField="analysis.build_status"
-            :showFilterMatchModes="false"
-          >
-            <template #body="{ data }">
-              <Tag
-                v-if="data.analysis.build_status"
-                :value="data.analysis.build_status"
-                :severity="getBuildStatusSeverity(data.analysis.build_status)"
-              />
-            </template>
-            <template #filter="{ filterModel }">
-              <MultiSelect
-                v-model="filterModel.value"
-                :options="buildStatuses"
-                optionLabel=""
-                placeholder="Any"
-                class="p-column-filter"
-              >
-                <template #option="slotProps">
-                  <div class="flex align-items-center gap-2">
-                    <Tag
-                      v-if="slotProps.option"
-                      :value="slotProps.option"
-                      :severity="getBuildStatusSeverity(slotProps.option)"
-                    />
-                  </div>
-                </template>
-              </MultiSelect>
-            </template>
-          </Column>
+          <!--          <Column-->
+          <!--            header="Build Status"-->
+          <!--            field="analysis.build_status"-->
+          <!--            filterField="analysis.build_status"-->
+          <!--            :showFilterMatchModes="false"-->
+          <!--          >-->
+          <!--            <template #body="{ data }">-->
+          <!--              <Tag-->
+          <!--                v-if="data.analysis.build_status"-->
+          <!--                :value="data.analysis.build_status"-->
+          <!--                :severity="getBuildStatusSeverity(data.analysis.build_status)"-->
+          <!--              />-->
+          <!--            </template>-->
+          <!--            <template #filter="{ filterModel }">-->
+          <!--              <MultiSelect-->
+          <!--                v-model="filterModel.value"-->
+          <!--                :options="buildStatuses"-->
+          <!--                optionLabel=""-->
+          <!--                placeholder="Any"-->
+          <!--                class="p-column-filter"-->
+          <!--              >-->
+          <!--                <template #option="slotProps">-->
+          <!--                  <div class="flex align-items-center gap-2">-->
+          <!--                    <Tag-->
+          <!--                      v-if="slotProps.option"-->
+          <!--                      :value="slotProps.option"-->
+          <!--                      :severity="getBuildStatusSeverity(slotProps.option)"-->
+          <!--                    />-->
+          <!--                  </div>-->
+          <!--                </template>-->
+          <!--              </MultiSelect>-->
+          <!--            </template>-->
+          <!--          </Column>-->
           <Column
             field="analysis.run_status"
             header="Run Status"
@@ -257,7 +251,7 @@ const updateFilters = (filterText: string) => {
                 :analysisRunStatus="slotProps.data.run_status"
                 :analysisId="slotProps.data.analysis_id"
                 :projectId="slotProps.data.analysis.project_id"
-                :nodeId="slotProps.data.expand.node_id"
+                :nodeId="slotProps.data.node_id"
               />
             </template>
           </Column>
