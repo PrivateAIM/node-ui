@@ -65,8 +65,6 @@ const updateFilters = (filterText: string) => {
 };
 
 function updateRunStatus(analysisNodeId: string, newStatus: string) {
-  console.log(analysisNodeId);
-  console.log(newStatus);
   for (let row of analyses.value) {
     if (row.id === analysisNodeId) {
       row.run_status = newStatus;
