@@ -24,7 +24,18 @@ export const showKongConnectionErrorToast = () => {
     severity: "error",
     summary: "Connection error",
     detail: "Unable to contact the Kong gateway service.",
-    life: 3000,
+    life: 5000,
   });
   console.warn("Kong service unreachable");
+};
+
+export const showDownstreamConnectionErrorToast = () => {
+  const toast = useToastService();
+  toast.add({
+    severity: "error",
+    summary: "Connection error",
+    detail: "Unable to contact the downstream service.",
+    life: 5000,
+  });
+  console.warn("A downstream service unreachable");
 };

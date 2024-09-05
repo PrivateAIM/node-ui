@@ -73,10 +73,6 @@ const showSuccess = (summary: string, msg: string) => {
   });
 };
 
-// async function updateHubAnalysisRunStatus(update: string) {
-//   await updateAnalysis(props.analysisId!, { run_status: update });
-// }
-
 async function onStartAnalysis() {
   loading.value = true;
   setButtonStatuses(AnalysisNodeRunStatus.Starting);

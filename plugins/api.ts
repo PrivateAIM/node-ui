@@ -1,6 +1,7 @@
 import {
   showKongConnectionErrorToast,
   showHubAdapterConnectionErrorToast,
+  showDownstreamConnectionErrorToast,
 } from "~/composables/connectionErrorToast";
 
 export default defineNuxtPlugin(() => {
@@ -33,6 +34,8 @@ export default defineNuxtPlugin(() => {
         } else {
           showHubAdapterConnectionErrorToast();
         }
+      } else if (response.status === 503) {
+        showDownstreamConnectionErrorToast();
       }
     },
   });
