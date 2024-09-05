@@ -1,0 +1,21 @@
+.analysisLogs {
+    display: flex;
+}
+
+.analysisDataCard {
+    width: 30em;
+    margin-right: 1em;
+    border: 1px solid lightgray
+}
+
+.analysisLogCard {
+    width: 70em;
+    border: 1px solid lightgray
+}
+
+.logScrollPanel {
+    width: 100%;
+    height: 25em;
+    background: #000000;
+    padding: 1em;
+}
