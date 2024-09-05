@@ -214,12 +214,17 @@ const updateFilters = (filterText: string) => {
             :exportable="false"
           >
             <template #body="slotProps">
-              <AnalysisControlButtons
-                :analysisRunStatus="slotProps.data.run_status"
-                :analysisId="slotProps.data.analysis_id"
-                :projectId="slotProps.data.analysis.project_id"
-                :nodeId="slotProps.data.node_id"
-              />
+              <div
+                class="control-buttons"
+                v-if="slotProps.data.approval_status === 'approved'"
+              >
+                <AnalysisControlButtons
+                  :analysisRunStatus="slotProps.data.run_status"
+                  :analysisId="slotProps.data.analysis_id"
+                  :projectId="slotProps.data.analysis.project_id"
+                  :nodeId="slotProps.data.node_id"
+                />
+              </div>
             </template>
           </Column>
           <template #expansion="slotProps">
