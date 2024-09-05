@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import type { BodyCreateAnalysisPoPost } from "~/services/Api";
+import {
+  AnalysisNodeRunStatus,
+  type BodyCreateAnalysisPoPost,
+} from "~/services/Api";
 import {
   deleteAnalysis,
   startAnalysis,
@@ -8,31 +11,42 @@ import {
 
 const props = defineProps({
   analysisRunStatus: String,
+  analysisNodeId: String,
   analysisId: String,
   projectId: String,
   nodeId: String,
 });
 
+const emit = defineEmits(["newRunStatus"]);
 const toast = useToast();
-
 const loading = ref(false);
 
 const playButtonActiveStates = [null, ""];
-const rerunButtonActiveStates = ["failed", "finished", "stopped", "stopping"];
-const stopButtonActiveStates = ["running", "starting", "started"];
+const rerunButtonActiveStates = [
+  AnalysisNodeRunStatus.Failed,
+  AnalysisNodeRunStatus.Finished,
+  AnalysisNodeRunStatus.Stopped,
+  AnalysisNodeRunStatus.Stopping,
+];
+const stopButtonActiveStates = [
+  AnalysisNodeRunStatus.Running,
+  AnalysisNodeRunStatus.Starting,
+  AnalysisNodeRunStatus.Started,
+];
 const deleteButtonActiveStates = [
-  "failed",
-  "finished",
-  "stopping",
-  "stopped",
-  "running",
-  "starting",
-  "started",
+  AnalysisNodeRunStatus.Failed,
+  AnalysisNodeRunStatus.Finished,
+  AnalysisNodeRunStatus.Stopped,
+  AnalysisNodeRunStatus.Stopping,
+  AnalysisNodeRunStatus.Running,
+  AnalysisNodeRunStatus.Starting,
+  AnalysisNodeRunStatus.Started,
 ];
 
 const buttonStatuses = ref(setButtonStatuses(props.analysisRunStatus!));
 
 function setButtonStatuses(podStatus: string) {
+  emit("newRunStatus", props.analysisNodeId, podStatus);
   return {
     playActive: playButtonActiveStates.includes(podStatus),
     rerunActive: rerunButtonActiveStates.includes(podStatus),
@@ -65,17 +79,19 @@ const showSuccess = (summary: string, msg: string) => {
 
 async function onStartAnalysis() {
   loading.value = true;
+  setButtonStatuses(AnalysisNodeRunStatus.Starting);
   const analysisProps = {} as BodyCreateAnalysisPoPost;
   analysisProps.analysis_id = props.analysisId!;
   analysisProps.project_id = props.projectId!;
   analysisProps.node_id = props.nodeId!;
   const { data: response, status } = await startAnalysis(analysisProps);
+
   if (status.value === "success") {
     const currentRunStatus = response.value!.status;
     buttonStatuses.value = setButtonStatuses(currentRunStatus);
     showSuccess("Start success", "Successfully started the container");
-    // await updateHubAnalysisRunStatus("running");
   } else {
+    setButtonStatuses(AnalysisNodeRunStatus.Failed);
     showFailure("Start failure", "Failed to start the analysis");
   }
   loading.value = false;
@@ -83,6 +99,7 @@ async function onStartAnalysis() {
 
 async function onStopAnalysis() {
   loading.value = true;
+  setButtonStatuses(AnalysisNodeRunStatus.Stopping);
   const { data: response, status } = await stopAnalysis(props.analysisId!);
   const podStatuses = response.value!.status;
   if (status.value === "success") {
@@ -90,8 +107,8 @@ async function onStopAnalysis() {
       buttonStatuses.value = setButtonStatuses(podStatuses[podName]);
       showSuccess("Stop success", "Successfully stopped the container");
     }
-    // await updateHubAnalysisRunStatus("stopped");
   } else {
+    setButtonStatuses(AnalysisNodeRunStatus.Running);
     showFailure("Stop failure", "Failed to stop the analysis container");
   }
   loading.value = false;
@@ -99,6 +116,7 @@ async function onStopAnalysis() {
 
 async function onDeleteAnalysis() {
   loading.value = true;
+  setButtonStatuses(AnalysisNodeRunStatus.Stopping);
   const { status } = await deleteAnalysis(props.analysisId!);
   if (status.value === "success") {
     buttonStatuses.value = setButtonStatuses("");

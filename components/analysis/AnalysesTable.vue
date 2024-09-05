@@ -63,6 +63,17 @@ function resetFilters() {
 const updateFilters = (filterText: string) => {
   filters.value.global.value = filterText;
 };
+
+function updateRunStatus(analysisNodeId: string, newStatus: string) {
+  console.log(analysisNodeId);
+  console.log(newStatus);
+  for (let row of analyses.value) {
+    if (row.id === analysisNodeId) {
+      row.run_status = newStatus;
+      return;
+    }
+  }
+}
 </script>
 
 <template>
@@ -220,9 +231,11 @@ const updateFilters = (filterText: string) => {
               >
                 <AnalysisControlButtons
                   :analysisRunStatus="slotProps.data.run_status"
+                  :analysisNodeId="slotProps.data.id"
                   :analysisId="slotProps.data.analysis_id"
                   :projectId="slotProps.data.analysis.project_id"
                   :nodeId="slotProps.data.node_id"
+                  @newRunStatus="updateRunStatus"
                 />
               </div>
             </template>
