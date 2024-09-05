@@ -12,6 +12,7 @@ import type {
   ListConsumers,
   ListProjectNodes,
   ListServices,
+  LogResponse,
   Service,
 } from "~/services/Api";
 import type { UseFetchOptions } from "#app";
@@ -68,6 +69,13 @@ export function getAnalyses(opts?) {
     query: {
       sort: "-updated_at",
     },
+  });
+}
+
+export function getSpecificAnalysis(analysis_id: string, opts?) {
+  return useAPIFetch<{ data: Analysis }>(`/analyses/${analysis_id}`, {
+    ...opts,
+    method: "GET",
   });
 }
 
@@ -190,6 +198,13 @@ export function deleteAnalysis(analysisId: string, opts?) {
   return useAPIFetch<{ data: CreatePodResponse }>(`/po/${analysisId}/delete`, {
     ...opts,
     method: "DELETE",
+  });
+}
+
+export function getAnalysisLogs(analysisId: string, opts?) {
+  return useAPIFetch<{ data: LogResponse }>(`/po/${analysisId}/logs`, {
+    ...opts,
+    method: "GET",
   });
 }
 
