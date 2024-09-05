@@ -1,5 +1,6 @@
 .analysisLogs {
     display: flex;
+    /*justify-content: space-between;*/
 }
 
 .analysisDataCard {

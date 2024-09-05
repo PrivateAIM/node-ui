@@ -1,12 +1,7 @@
 <script setup lang="ts">
-import { getAnalysisLogs } from "~/composables/useAPIFetch";
+const route = useRoute();
 
-const props = defineProps({
-  analysisId: String,
-});
-
-const foo = "sheet";
-const foo2 = props.analysisId;
+const analysisId = route.params.id;
 
 // let analysisMetaData = {
 //   analysisId: "",
@@ -24,13 +19,13 @@ const foo2 = props.analysisId;
 //   };
 // }
 
-const { data, refresh } = await getAnalysisLogs(props.analysisId);
+// const { data, refresh } = await getAnalysisLogs(analysisId);
 </script>
 
 <template>
   <Card class="contentCard">
-    <template #title>Analysis {{ analysisId }} </template>
-    <template #subtitle>Foo {{ analysisId }}</template>
+    <template #title>Analysis</template>
+    <template #subtitle>{{ analysisId }}</template>
     <template #content>
       <div class="card analysisLogs">
         <Card class="analysisDataCard">
