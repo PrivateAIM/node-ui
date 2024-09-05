@@ -35,7 +35,13 @@ export default defineNuxtPlugin(() => {
           showHubAdapterConnectionErrorToast();
         }
       } else if (response.status === 503) {
-        showDownstreamConnectionErrorToast();
+        let downstreamService;
+        if (response._data.detail.service) {
+          downstreamService = response._data.detail.service;
+        } else {
+          downstreamService = "service";
+        }
+        showDownstreamConnectionErrorToast(downstreamService);
       }
     },
   });

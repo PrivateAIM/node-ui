@@ -29,13 +29,13 @@ export const showKongConnectionErrorToast = () => {
   console.warn("Kong service unreachable");
 };
 
-export const showDownstreamConnectionErrorToast = () => {
+export const showDownstreamConnectionErrorToast = (service: string) => {
   const toast = useToastService();
   toast.add({
     severity: "error",
-    summary: "Connection error",
-    detail: "Unable to contact the downstream service.",
+    summary: "Service unavailable error",
+    detail: `Unable to contact the ${service} service.`,
     life: 5000,
   });
-  console.warn("A downstream service unreachable");
+  console.warn(`The ${service} service is unreachable`);
 };

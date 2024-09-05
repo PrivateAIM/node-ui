@@ -3,11 +3,6 @@ import {
   AnalysisNodeRunStatus,
   type BodyCreateAnalysisPoPost,
 } from "~/services/Api";
-import {
-  deleteAnalysis,
-  startAnalysis,
-  stopAnalysis,
-} from "~/composables/useAPIFetch";
 
 const props = defineProps({
   analysisRunStatus: String,
@@ -80,10 +75,15 @@ async function onStartAnalysis() {
   analysisProps.analysis_id = props.analysisId!;
   analysisProps.project_id = props.projectId!;
   analysisProps.node_id = props.nodeId!;
-  const { data: response, status } = await startAnalysis(analysisProps);
+  const startResp = await useNuxtApp()
+    .$hubApi("/po", {
+      method: "POST",
+      body: analysisProps,
+    })
+    .catch(() => null); // Set the response to null if an error occurs
 
-  if (status.value === "success") {
-    const currentRunStatus = response.value!.status;
+  if (startResp) {
+    const currentRunStatus = startResp.status;
     buttonStatuses.value = setButtonStatuses(currentRunStatus);
     showSuccess("Start success", "Successfully started the container");
   } else {
@@ -96,9 +96,15 @@ async function onStartAnalysis() {
 async function onStopAnalysis() {
   loading.value = true;
   setButtonStatuses(AnalysisNodeRunStatus.Stopping);
-  const { data: response, status } = await stopAnalysis(props.analysisId!);
-  const podStatuses = response.value!.status;
-  if (status.value === "success") {
+
+  const stopResp = await useNuxtApp()
+    .$hubApi(`/po/${props.analysisId}/stop`, {
+      method: "PUT",
+    })
+    .catch(() => null);
+
+  if (stopResp) {
+    const podStatuses = stopResp.status;
     for (const podName in podStatuses) {
       buttonStatuses.value = setButtonStatuses(podStatuses[podName]);
       showSuccess("Stop success", "Successfully stopped the container");
@@ -113,8 +119,14 @@ async function onStopAnalysis() {
 async function onDeleteAnalysis() {
   loading.value = true;
   setButtonStatuses(AnalysisNodeRunStatus.Stopping);
-  const { status } = await deleteAnalysis(props.analysisId!);
-  if (status.value === "success") {
+
+  const deleteResp = await useNuxtApp()
+    .$hubApi(`/po/${props.analysisId}/delete`, {
+      method: "DELETE",
+    })
+    .catch(() => null);
+
+  if (deleteResp) {
     buttonStatuses.value = setButtonStatuses("");
     showSuccess("Delete success", "Successfully removed the container");
   } else {
