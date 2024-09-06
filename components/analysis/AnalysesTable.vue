@@ -44,7 +44,7 @@ function onToggleRowExpansion(rowIds) {
 // Table filters
 const defaultFilters = {
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  approval_status: { value: null, matchMode: FilterMatchMode.IN },
+  approval_status: { value: null, matchMode: FilterMatchMode.EQUALS },
   "analysis.build_status": { value: null, matchMode: FilterMatchMode.IN },
   run_status: { value: null, matchMode: FilterMatchMode.IN },
   // Below are more examples
@@ -134,8 +134,11 @@ function updateRunStatus(analysisNodeId: string, newStatus: string) {
           <Column
             field="approval_status"
             header="Approval Status"
-            filterField="approval_status"
             :showFilterMatchModes="false"
+            :showClearButton="false"
+            :showApplyButton="false"
+            :showFilterOperator="false"
+            :showAddButton="false"
           >
             <template #body="{ data }">
               <Tag
@@ -144,25 +147,22 @@ function updateRunStatus(analysisNodeId: string, newStatus: string) {
                 :severity="getApprovalStatusSeverity(data.approval_status)"
               />
             </template>
-            <template #filter="{ filterModel }">
-              <MultiSelect
+            <template #filter="{ filterModel, filterCallback }">
+              <Dropdown
                 v-model="filterModel.value"
+                @change="filterCallback()"
                 :options="approvalStatuses"
-                optionLabel=""
-                placeholder="Any"
-                display="chip"
+                placeholder="Select One"
                 class="p-column-filter"
+                :showClear="true"
               >
                 <template #option="slotProps">
-                  <div class="flex align-items-center gap-2">
-                    <Tag
-                      v-if="slotProps.option"
-                      :value="slotProps.option"
-                      :severity="getApprovalStatusSeverity(slotProps.option)"
-                    />
-                  </div>
+                  <Tag
+                    :value="slotProps.option"
+                    :severity="getApprovalStatusSeverity(slotProps.option)"
+                  />
                 </template>
-              </MultiSelect>
+              </Dropdown>
             </template>
           </Column>
           <Column
@@ -170,6 +170,10 @@ function updateRunStatus(analysisNodeId: string, newStatus: string) {
             header="Build Status"
             filterField="analysis.build_status"
             :showFilterMatchModes="false"
+            :showClearButton="false"
+            :showApplyButton="false"
+            :showFilterOperator="false"
+            :showAddButton="false"
           >
             <template #body="{ data }">
               <Tag
@@ -178,9 +182,10 @@ function updateRunStatus(analysisNodeId: string, newStatus: string) {
                 :severity="getBuildStatusSeverity(data.analysis.build_status)"
               />
             </template>
-            <template #filter="{ filterModel }">
+            <template #filter="{ filterModel, filterCallback }">
               <MultiSelect
                 v-model="filterModel.value"
+                @change="filterCallback()"
                 :options="buildStatuses"
                 optionLabel=""
                 placeholder="Any"
@@ -204,6 +209,10 @@ function updateRunStatus(analysisNodeId: string, newStatus: string) {
             header="Run Status"
             filterField="run_status"
             :showFilterMatchModes="false"
+            :showClearButton="false"
+            :showApplyButton="false"
+            :showFilterOperator="false"
+            :showAddButton="false"
           >
             <template #body="{ data }">
               <Tag
@@ -212,9 +221,10 @@ function updateRunStatus(analysisNodeId: string, newStatus: string) {
                 :severity="getRunStatusSeverity(data.run_status)"
               />
             </template>
-            <template #filter="{ filterModel }">
+            <template #filter="{ filterModel, filterCallback }">
               <MultiSelect
                 v-model="filterModel.value"
+                @change="filterCallback()"
                 :options="runStatuses"
                 optionLabel=""
                 placeholder="Any"
