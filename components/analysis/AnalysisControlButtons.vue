@@ -144,7 +144,6 @@ async function onDeleteAnalysis() {
       v-if="buttonStatuses.playActive"
       v-tooltip.top="'Start the analysis'"
       severity="success"
-      style="margin-right: 10px"
       :disabled="!buttonStatuses.playActive"
       :loading="loading"
       @click="onStartAnalysis()"
@@ -155,7 +154,6 @@ async function onDeleteAnalysis() {
       v-else
       v-tooltip.top="'Rerun the analysis'"
       severity="success"
-      style="margin-right: 10px"
       :disabled="!buttonStatuses.rerunActive"
       :loading="loading"
       @click="onStartAnalysis()"
@@ -165,7 +163,6 @@ async function onDeleteAnalysis() {
       aria-label="Stop"
       v-tooltip.top="'Stop the analysis'"
       severity="warn"
-      style="margin-right: 10px"
       :disabled="!buttonStatuses.stopActive"
       :loading="loading"
       @click="onStopAnalysis()"
@@ -179,6 +176,18 @@ async function onDeleteAnalysis() {
       :loading="loading"
       @click="onDeleteAnalysis()"
     />
+    <NuxtLink
+      :to="{ name: 'analyses-id', params: { id: props.analysisId } }"
+      target="_blank"
+    >
+      <Button
+        icon="pi pi-bars"
+        aria-label="Logs"
+        v-tooltip.top="'View the logs'"
+        severity="contrast"
+        :loading="loading"
+      />
+    </NuxtLink>
   </div>
 </template>
 

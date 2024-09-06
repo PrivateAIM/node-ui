@@ -13,3 +13,9 @@
 .search-text-bar {
     margin-right: 10px;
 }
+
+.analysisButtons {
+    display: flex;
+    justify-content: flex-start;
+    column-gap: 0.3em;
+}
