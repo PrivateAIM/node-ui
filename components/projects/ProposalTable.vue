@@ -45,7 +45,7 @@ function updateTable(newData: ProjectNode) {
 // Table filters
 const defaultFilters = {
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  approval_status: { value: null, matchMode: FilterMatchMode.IN },
+  approval_status: { value: null, matchMode: FilterMatchMode.EQUALS },
 };
 const filters = ref(defaultFilters);
 
@@ -105,8 +105,11 @@ const updateFilters = (filterText: string) => {
           <Column
             field="approval_status"
             header="Approval Status"
-            filterField="approval_status"
             :showFilterMatchModes="false"
+            :showClearButton="false"
+            :showApplyButton="false"
+            :showFilterOperator="false"
+            :showAddButton="false"
           >
             <template #body="{ data }">
               <Tag
@@ -115,24 +118,22 @@ const updateFilters = (filterText: string) => {
                 :severity="getApprovalStatusSeverity(data.approval_status)"
               />
             </template>
-            <template #filter="{ filterModel }">
-              <MultiSelect
+            <template #filter="{ filterModel, filterCallback }">
+              <Dropdown
                 v-model="filterModel.value"
+                @change="filterCallback()"
                 :options="approvalStatuses"
-                optionLabel=""
-                placeholder="Any"
+                placeholder="Select One"
                 class="p-column-filter"
+                :showClear="true"
               >
                 <template #option="slotProps">
-                  <div class="flex align-items-center gap-2">
-                    <Tag
-                      v-if="slotProps.option"
-                      :value="slotProps.option"
-                      :severity="getApprovalStatusSeverity(slotProps.option)"
-                    />
-                  </div>
+                  <Tag
+                    :value="slotProps.option"
+                    :severity="getApprovalStatusSeverity(slotProps.option)"
+                  />
                 </template>
-              </MultiSelect>
+              </Dropdown>
             </template>
           </Column>
           <Column

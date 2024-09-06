@@ -3,14 +3,14 @@ import DataStoreCreator from "~/components/data-stores/managers/DataStoreCreator
 import ProjectBinder from "~/components/data-stores/managers/ProjectBinder.vue";
 import AnalysisBinder from "~/components/data-stores/managers/AnalysisBinder.vue";
 import {
-  getAnalyses,
+  getAnalysisNodes,
   getDataStores,
-  getProjects,
+  getProposals,
 } from "~/composables/useAPIFetch";
 import type {
-  DetailedAnalysis,
+  AnalysisNode,
   DetailedService,
-  Project,
+  ProjectNode,
   Route,
   Service,
 } from "~/services/Api";
@@ -20,10 +20,10 @@ const availableProjects = ref();
 const availableAnalyses = ref();
 
 const { data: dataResp } = await getDataStores(false, { lazy: true });
-const { data: projects, status: projStatus } = await getProjects({
+const { data: projects, status: projStatus } = await getProposals({
   lazy: true,
 });
-const { data: analyses, status: anStatus } = await getAnalyses({
+const { data: analyses, status: anStatus } = await getAnalysisNodes({
   lazy: true,
 });
 
@@ -38,21 +38,20 @@ watch(dataResp, (parsedStores) => {
 });
 
 watch(projects, (parsedProjects) => {
-  const projectData = parsedProjects!.data as unknown as Array<Project>;
-  availableProjects.value = projectData.map((proj: Project) => {
+  const projectData = parsedProjects!.data as unknown as Array<ProjectNode>;
+  availableProjects.value = projectData.map((proj: ProjectNode) => {
     return {
-      name: proj.name,
-      id: proj.id,
-      dropdown: `${proj.name} (${proj.id})`,
+      name: proj.project.name,
+      id: proj.project_id,
+      dropdown: `${proj.project.name} (${proj.project_id})`,
     };
   });
 });
 
 watch(analyses, (parsedAnalyses) => {
-  const analysisData = parsedAnalyses!
-    .data as unknown as Array<DetailedAnalysis>;
-  availableAnalyses.value = analysisData.map((analysis: DetailedAnalysis) => {
-    return { name: analysis.name, id: analysis.id };
+  const analysisData = parsedAnalyses!.data as unknown as Array<AnalysisNode>;
+  availableAnalyses.value = analysisData.map((analysisNode: AnalysisNode) => {
+    return { name: analysisNode.analysis.name, id: analysisNode.analysis_id };
   });
 });
 

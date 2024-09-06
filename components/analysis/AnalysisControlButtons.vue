@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import {
+  AnalysisBuildStatus,
   AnalysisNodeRunStatus,
   type BodyCreateAnalysisPoPost,
 } from "~/services/Api";
 
 const props = defineProps({
+  analysisBuildStatus: String,
   analysisRunStatus: String,
   analysisNodeId: String,
   analysisId: String,
@@ -144,7 +146,10 @@ async function onDeleteAnalysis() {
       v-if="buttonStatuses.playActive"
       v-tooltip.top="'Start the analysis'"
       severity="success"
-      :disabled="!buttonStatuses.playActive"
+      :disabled="
+        !buttonStatuses.playActive ||
+        !(props.analysisBuildStatus === AnalysisBuildStatus.Finished)
+      "
       :loading="loading"
       @click="onStartAnalysis()"
     />
@@ -154,7 +159,10 @@ async function onDeleteAnalysis() {
       v-else
       v-tooltip.top="'Rerun the analysis'"
       severity="success"
-      :disabled="!buttonStatuses.rerunActive"
+      :disabled="
+        !buttonStatuses.rerunActive ||
+        !(props.analysisBuildStatus === AnalysisBuildStatus.Finished)
+      "
       :loading="loading"
       @click="onStartAnalysis()"
     />
@@ -163,7 +171,10 @@ async function onDeleteAnalysis() {
       aria-label="Stop"
       v-tooltip.top="'Stop the analysis'"
       severity="warn"
-      :disabled="!buttonStatuses.stopActive"
+      :disabled="
+        !buttonStatuses.stopActive ||
+        !(props.analysisBuildStatus === AnalysisBuildStatus.Finished)
+      "
       :loading="loading"
       @click="onStopAnalysis()"
     />
@@ -172,7 +183,10 @@ async function onDeleteAnalysis() {
       aria-label="Delete"
       v-tooltip.top="'Delete the analysis container'"
       severity="danger"
-      :disabled="!buttonStatuses.deleteActive"
+      :disabled="
+        !buttonStatuses.deleteActive ||
+        !(props.analysisBuildStatus === AnalysisBuildStatus.Finished)
+      "
       :loading="loading"
       @click="onDeleteAnalysis()"
     />
