@@ -121,6 +121,7 @@ const updateFilters = (filterText: string) => {
                 :options="approvalStatuses"
                 optionLabel=""
                 placeholder="Any"
+                display="chip"
                 class="p-column-filter"
               >
                 <template #option="slotProps">

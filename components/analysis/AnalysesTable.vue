@@ -8,9 +8,14 @@ import { FilterMatchMode } from "primevue/api";
 import SearchBar from "~/components/table/SearchBar.vue";
 import {
   getApprovalStatusSeverity,
+  getBuildStatusSeverity,
   getRunStatusSeverity,
 } from "~/utils/status-tag-severity";
-import { AnalysisNodeRunStatus, ApprovalStatus } from "~/services/Api";
+import {
+  AnalysisNodeRunStatus,
+  ApprovalStatus,
+  AnalysisBuildStatus,
+} from "~/services/Api";
 
 const expandedRows = ref();
 const analyses = ref();
@@ -18,6 +23,7 @@ const analyses = ref();
 const expandRowEntries = [];
 const runStatuses = Object.values(AnalysisNodeRunStatus);
 const approvalStatuses = Object.values(ApprovalStatus);
+const buildStatuses = Object.values(AnalysisBuildStatus);
 
 const { data: response, status, error } = await getAnalysisNodes();
 
@@ -39,7 +45,7 @@ function onToggleRowExpansion(rowIds) {
 const defaultFilters = {
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   approval_status: { value: null, matchMode: FilterMatchMode.IN },
-  // "analysis.build_status": { value: null, matchMode: FilterMatchMode.IN },
+  "analysis.build_status": { value: null, matchMode: FilterMatchMode.IN },
   run_status: { value: null, matchMode: FilterMatchMode.IN },
   // Below are more examples
   // "analysis.name": { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -80,6 +86,13 @@ function updateRunStatus(analysisNodeId: string, newStatus: string) {
     <Card class="contentCard">
       <template #title>Analyses</template>
       <template #content>
+        <InlineMessage severity="warn">
+          Some controls may be disabled!
+        </InlineMessage>
+        <p>
+          If the image for the analysis is not yet <b>finished</b> (see Build
+          Status), a container for the analysis cannot be started.
+        </p>
         <DataTable
           :value="analyses"
           v-model:expandedRows="expandedRows"
@@ -137,6 +150,7 @@ function updateRunStatus(analysisNodeId: string, newStatus: string) {
                 :options="approvalStatuses"
                 optionLabel=""
                 placeholder="Any"
+                display="chip"
                 class="p-column-filter"
               >
                 <template #option="slotProps">
@@ -145,6 +159,40 @@ function updateRunStatus(analysisNodeId: string, newStatus: string) {
                       v-if="slotProps.option"
                       :value="slotProps.option"
                       :severity="getApprovalStatusSeverity(slotProps.option)"
+                    />
+                  </div>
+                </template>
+              </MultiSelect>
+            </template>
+          </Column>
+          <Column
+            field="analysis.build_status"
+            header="Build Status"
+            filterField="analysis.build_status"
+            :showFilterMatchModes="false"
+          >
+            <template #body="{ data }">
+              <Tag
+                v-if="data.analysis.build_status"
+                :value="data.analysis.build_status"
+                :severity="getBuildStatusSeverity(data.analysis.build_status)"
+              />
+            </template>
+            <template #filter="{ filterModel }">
+              <MultiSelect
+                v-model="filterModel.value"
+                :options="buildStatuses"
+                optionLabel=""
+                placeholder="Any"
+                display="chip"
+                class="p-column-filter"
+              >
+                <template #option="slotProps">
+                  <div class="flex align-items-center gap-2">
+                    <Tag
+                      v-if="slotProps.option"
+                      :value="slotProps.option"
+                      :severity="getBuildStatusSeverity(slotProps.option)"
                     />
                   </div>
                 </template>
@@ -228,6 +276,7 @@ function updateRunStatus(analysisNodeId: string, newStatus: string) {
                 v-if="slotProps.data.approval_status === 'approved'"
               >
                 <AnalysisControlButtons
+                  :analysisBuildStatus="slotProps.data.analysis.build_status"
                   :analysisRunStatus="slotProps.data.run_status"
                   :analysisNodeId="slotProps.data.id"
                   :analysisId="slotProps.data.analysis_id"
