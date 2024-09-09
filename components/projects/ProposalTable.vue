@@ -18,7 +18,8 @@ const expandRowEntries = [];
 
 const approvalStatuses = Object.values(ApprovalStatus);
 
-const { data: response, status, error } = await getProposals();
+const { data: response, status, error, refresh } = await getProposals();
+
 if (status.value === "success") {
   proposals.value = formatDataRow(
     response.value!.data as unknown as Map<string, string | number | null>[],
@@ -95,6 +96,15 @@ const updateFilters = (filterText: string) => {
                   :rows="proposals"
                   :uniqueId="'id'"
                   @expandedRowList="onToggleRowExpansion"
+                />
+              </div>
+              <div class="card flex justify-content-center refresh-switch">
+                <Button
+                  icon="pi pi-refresh"
+                  aria-label="Filter"
+                  v-tooltip.top="'Refresh table'"
+                  @click="refresh"
+                  severity="contrast"
                 />
               </div>
             </div>

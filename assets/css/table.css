@@ -13,3 +13,13 @@
 .search-text-bar {
     margin-right: 10px;
 }
+
+.refresh-switch {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+div.refresh-switch > p {
+    margin-right: 1em;
+}

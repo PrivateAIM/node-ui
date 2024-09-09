@@ -10,7 +10,7 @@ const projects = ref();
 const dataRowUnixCols = ["created_at", "updated_at"];
 const expandRowEntries = [];
 
-const { data: response, status, error } = await getProjects();
+const { data: response, status, error, refresh } = await getProjects();
 
 if (status.value === "success") {
   projects.value = formatDataRow(
@@ -73,6 +73,15 @@ const updateFilters = (filterText: string) => {
                 @clearFilters="resetFilters"
                 @updateSearch="updateFilters"
               />
+              <div class="card flex justify-content-center refresh-switch">
+                <Button
+                  icon="pi pi-refresh"
+                  aria-label="Filter"
+                  v-tooltip.top="'Refresh table'"
+                  @click="refresh"
+                  severity="contrast"
+                />
+              </div>
             </div>
           </template>
           <Column
