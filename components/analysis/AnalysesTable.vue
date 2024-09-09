@@ -27,18 +27,26 @@ const buildStatuses = Object.values(AnalysisBuildStatus);
 
 const { data: response, status, error, refresh } = await getAnalysisNodes();
 
-if (status.value === "success") {
-  analyses.value = formatDataRow(
-    response.value!.data,
-    ["created_at", "updated_at"],
-    expandRowEntries,
-  );
-} else if (error.value?.statusCode === 500) {
-  showHubAdapterConnectionErrorToast();
+function parseData() {
+  if (status.value === "success") {
+    analyses.value = formatDataRow(
+      response.value!.data,
+      ["created_at", "updated_at"],
+      expandRowEntries,
+    );
+  } else if (error.value?.statusCode === 500) {
+    showHubAdapterConnectionErrorToast();
+  }
 }
+parseData();
 
 function onToggleRowExpansion(rowIds) {
   expandedRows.value = rowIds;
+}
+
+async function onTableRefresh() {
+  await refresh();
+  parseData();
 }
 
 // Table filters
@@ -130,8 +138,9 @@ function updateRunStatus(analysisNodeId: string, newStatus: string) {
                 <Button
                   icon="pi pi-refresh"
                   aria-label="Filter"
+                  :loading="status === 'pending'"
                   v-tooltip.top="'Refresh table'"
-                  @click="() => refresh()"
+                  @click="onTableRefresh"
                   severity="contrast"
                 />
               </div>

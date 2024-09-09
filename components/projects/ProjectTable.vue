@@ -12,14 +12,22 @@ const expandRowEntries = [];
 
 const { data: response, status, error, refresh } = await getProjects();
 
-if (status.value === "success") {
-  projects.value = formatDataRow(
-    response.value!.data as unknown as Map<string, string | number | null>[],
-    dataRowUnixCols,
-    expandRowEntries,
-  );
-} else if (error.value?.statusCode === 500) {
-  showHubAdapterConnectionErrorToast();
+function parseData() {
+  if (status.value === "success") {
+    projects.value = formatDataRow(
+      response.value!.data as unknown as Map<string, string | number | null>[],
+      dataRowUnixCols,
+      expandRowEntries,
+    );
+  } else if (error.value?.statusCode === 500) {
+    showHubAdapterConnectionErrorToast();
+  }
+}
+parseData();
+
+async function onTableRefresh() {
+  await refresh();
+  parseData();
 }
 
 // Table filters
@@ -78,7 +86,8 @@ const updateFilters = (filterText: string) => {
                   icon="pi pi-refresh"
                   aria-label="Filter"
                   v-tooltip.top="'Refresh table'"
-                  @click="refresh"
+                  :loading="status === 'pending'"
+                  @click="onTableRefresh"
                   severity="contrast"
                 />
               </div>
