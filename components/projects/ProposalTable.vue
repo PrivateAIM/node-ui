@@ -18,16 +18,20 @@ const expandRowEntries = [];
 
 const approvalStatuses = Object.values(ApprovalStatus);
 
-const { data: response, status, error } = await getProposals();
-if (status.value === "success") {
-  proposals.value = formatDataRow(
-    response.value!.data as unknown as Map<string, string | number | null>[],
-    dataRowUnixCols,
-    expandRowEntries,
-  );
-} else if (error.value?.statusCode === 500) {
-  showHubAdapterConnectionErrorToast();
+const { data: response, status, error, refresh } = await getProposals();
+
+function parseData() {
+  if (status.value === "success") {
+    proposals.value = formatDataRow(
+      response.value!.data as unknown as Map<string, string | number | null>[],
+      dataRowUnixCols,
+      expandRowEntries,
+    );
+  } else if (error.value?.statusCode === 500) {
+    showHubAdapterConnectionErrorToast();
+  }
 }
+parseData();
 
 function onToggleRowExpansion(rowIds) {
   expandedRows.value = rowIds;
@@ -40,6 +44,11 @@ function updateTable(newData: ProjectNode) {
       return;
     }
   }
+}
+
+async function onTableRefresh() {
+  await refresh();
+  parseData();
 }
 
 // Table filters
@@ -95,6 +104,16 @@ const updateFilters = (filterText: string) => {
                   :rows="proposals"
                   :uniqueId="'id'"
                   @expandedRowList="onToggleRowExpansion"
+                />
+              </div>
+              <div class="card flex justify-content-center refresh-switch">
+                <Button
+                  icon="pi pi-refresh"
+                  aria-label="Filter"
+                  :loading="status === 'pending'"
+                  v-tooltip.top="'Refresh table'"
+                  @click="onTableRefresh"
+                  severity="contrast"
                 />
               </div>
             </div>

@@ -10,16 +10,24 @@ const projects = ref();
 const dataRowUnixCols = ["created_at", "updated_at"];
 const expandRowEntries = [];
 
-const { data: response, status, error } = await getProjects();
+const { data: response, status, error, refresh } = await getProjects();
 
-if (status.value === "success") {
-  projects.value = formatDataRow(
-    response.value!.data as unknown as Map<string, string | number | null>[],
-    dataRowUnixCols,
-    expandRowEntries,
-  );
-} else if (error.value?.statusCode === 500) {
-  showHubAdapterConnectionErrorToast();
+function parseData() {
+  if (status.value === "success") {
+    projects.value = formatDataRow(
+      response.value!.data as unknown as Map<string, string | number | null>[],
+      dataRowUnixCols,
+      expandRowEntries,
+    );
+  } else if (error.value?.statusCode === 500) {
+    showHubAdapterConnectionErrorToast();
+  }
+}
+parseData();
+
+async function onTableRefresh() {
+  await refresh();
+  parseData();
 }
 
 // Table filters
@@ -73,6 +81,16 @@ const updateFilters = (filterText: string) => {
                 @clearFilters="resetFilters"
                 @updateSearch="updateFilters"
               />
+              <div class="card flex justify-content-center refresh-switch">
+                <Button
+                  icon="pi pi-refresh"
+                  aria-label="Filter"
+                  v-tooltip.top="'Refresh table'"
+                  :loading="status === 'pending'"
+                  @click="onTableRefresh"
+                  severity="contrast"
+                />
+              </div>
             </div>
           </template>
           <Column

@@ -25,20 +25,28 @@ const runStatuses = Object.values(AnalysisNodeRunStatus);
 const approvalStatuses = Object.values(ApprovalStatus);
 const buildStatuses = Object.values(AnalysisBuildStatus);
 
-const { data: response, status, error } = await getAnalysisNodes();
+const { data: response, status, error, refresh } = await getAnalysisNodes();
 
-if (status.value === "success") {
-  analyses.value = formatDataRow(
-    response.value!.data,
-    ["created_at", "updated_at"],
-    expandRowEntries,
-  );
-} else if (error.value?.statusCode === 500) {
-  showHubAdapterConnectionErrorToast();
+function parseData() {
+  if (status.value === "success") {
+    analyses.value = formatDataRow(
+      response.value!.data,
+      ["created_at", "updated_at"],
+      expandRowEntries,
+    );
+  } else if (error.value?.statusCode === 500) {
+    showHubAdapterConnectionErrorToast();
+  }
 }
+parseData();
 
 function onToggleRowExpansion(rowIds) {
   expandedRows.value = rowIds;
+}
+
+async function onTableRefresh() {
+  await refresh();
+  parseData();
 }
 
 // Table filters
@@ -81,7 +89,6 @@ function updateRunStatus(analysisNodeId: string, newStatus: string) {
 </script>
 
 <template>
-  <!--  <ObjectDownloadButtons :objectId="oid" :local=false />-->
   <div class="card analysisTable">
     <Card class="contentCard">
       <template #title>Analyses</template>
@@ -125,6 +132,16 @@ function updateRunStatus(analysisNodeId: string, newStatus: string) {
                   :rows="analyses"
                   :uniqueId="'id'"
                   @expandedRowList="onToggleRowExpansion"
+                />
+              </div>
+              <div class="card flex justify-content-center refresh-switch">
+                <Button
+                  icon="pi pi-refresh"
+                  aria-label="Filter"
+                  :loading="status === 'pending'"
+                  v-tooltip.top="'Refresh table'"
+                  @click="onTableRefresh"
+                  severity="contrast"
                 />
               </div>
             </div>

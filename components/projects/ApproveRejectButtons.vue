@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { approveRejectProjectProposal } from "~/composables/useAPIFetch";
 import { useToastService } from "~/composables/connectionErrorToast";
 
 const props = defineProps({
@@ -13,14 +12,20 @@ const emit = defineEmits(["updatedRow"]);
 
 async function onSubmitProjectApproval(isApproved: boolean) {
   loading.value = true;
-  const { data: response, status } = await approveRejectProjectProposal(
-    isApproved,
-    props.projectId!,
-  );
-  if (status.value === "success") {
+
+  const formData = new FormData();
+  formData.append("approval_status", isApproved ? "approved" : "rejected");
+  const approvalResp = await useNuxtApp()
+    .$hubApi(`/project-nodes/${props.projectId}`, {
+      method: "POST",
+      body: formData,
+    })
+    .catch(() => null);
+
+  if (approvalResp) {
     showSuccessfulSubmission(isApproved);
     // Send data to parent component
-    emit("updatedRow", response.value);
+    emit("updatedRow", approvalResp);
   } else {
     showFailedSubmission();
   }
