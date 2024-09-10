@@ -14,7 +14,7 @@
     margin-right: 10px;
 }
 
-.analysisButtons {
+.analysis-buttons {
     display: flex;
     justify-content: flex-start;
     column-gap: 0.3em;
