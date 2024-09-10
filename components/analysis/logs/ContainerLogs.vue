@@ -49,28 +49,34 @@ async function refreshLogs() {
 
 function onRefreshToggle() {
   isActive.value ? pause() : resume();
-  console.log(isActive.value);
 }
 </script>
 
 <template>
   <Card class="contentCard">
     <template #title>Analysis</template>
-    <template #subtitle>{{ analysisId }}</template>
+    <template #subtitle>
+      <div class="table-header-row">
+        <span>{{ analysisId }}</span>
+        <RefreshSwitch @change="onRefreshToggle" />
+      </div>
+    </template>
     <template #content>
       <div class="card analysis-logs">
-        <Card class="analysis-data-card">
-          <template #title>Metadata</template>
-          <template #content>Hi</template>
-        </Card>
-        <Card class="analysis-log-card">
+        <Card class="log-card nginx-log-card">
           <template #title>
-            <div class="table-header-row">
-              Logs
-              <RefreshSwitch @change="onRefreshToggle" />
-            </div>
+            <div class="table-header-row log-header-row">Nginx</div>
           </template>
-
+          <template #content>
+            <ScrollPanel class="log-scroll-panel">
+              {{ nginxLogs }}
+            </ScrollPanel>
+          </template>
+        </Card>
+        <Card class="log-card analysis-log-card">
+          <template #title>
+            <div class="table-header-row log-header-row">Logs</div>
+          </template>
           <template #content>
             <ScrollPanel class="log-scroll-panel">
               {{ analysisLogs }}

@@ -12,7 +12,6 @@ import type {
   ListConsumers,
   ListProjectNodes,
   ListServices,
-  LogResponse,
   Service,
 } from "~/services/Api";
 import type { UseFetchOptions } from "#app";
@@ -179,7 +178,7 @@ export function deleteAnalysis(analysisId: string, opts?) {
 }
 
 export function getAnalysisLogs(analysisId: string, opts?) {
-  return useAPIFetch<{ data: LogResponse }>(`/po/${analysisId}/logs`, {
+  return useAPIFetch(`/po/${analysisId}/logs2`, {
     ...opts,
     method: "GET",
   });
