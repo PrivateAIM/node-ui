@@ -3,6 +3,7 @@ import { useIntervalFn } from "@vueuse/core";
 import { getAnalysisLogs } from "~/composables/useAPIFetch";
 import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
 import RefreshSwitch from "~/components/analysis/logs/RefreshSwitch.vue";
+import AnalysisLogCardContent from "~/components/analysis/logs/AnalysisLogCardContent.vue";
 
 interface logResponse {
   analysis: Map<string, string>;
@@ -62,28 +63,12 @@ function onRefreshToggle() {
       </div>
     </template>
     <template #content>
-      <div class="card analysis-logs">
-        <Card class="log-card nginx-log-card">
-          <template #title>
-            <div class="table-header-row log-header-row">Nginx</div>
-          </template>
-          <template #content>
-            <ScrollPanel class="log-scroll-panel">
-              {{ nginxLogs }}
-            </ScrollPanel>
-          </template>
-        </Card>
-        <Card class="log-card analysis-log-card">
-          <template #title>
-            <div class="table-header-row log-header-row">Logs</div>
-          </template>
-          <template #content>
-            <ScrollPanel class="log-scroll-panel">
-              {{ analysisLogs }}
-            </ScrollPanel>
-          </template>
-        </Card>
-      </div>
+      <Fieldset legend="Current Run" :toggleable="true">
+        <AnalysisLogCardContent
+          :analysisLogs="analysisLogs"
+          :nginxLogs="nginxLogs"
+        />
+      </Fieldset>
     </template>
   </Card>
 </template>

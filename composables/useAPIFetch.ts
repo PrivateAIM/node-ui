@@ -178,7 +178,7 @@ export function deleteAnalysis(analysisId: string, opts?) {
 }
 
 export function getAnalysisLogs(analysisId: string, opts?) {
-  return useAPIFetch(`/po/${analysisId}/logs2`, {
+  return useAPIFetch(`/po/${analysisId}/logs`, {
     ...opts,
     method: "GET",
   });
