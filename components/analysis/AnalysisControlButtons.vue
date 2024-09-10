@@ -139,7 +139,7 @@ async function onDeleteAnalysis() {
 </script>
 
 <template>
-  <div class="analysisButtons">
+  <div class="analysis-buttons">
     <Button
       icon="pi pi-play"
       aria-label="Start"
