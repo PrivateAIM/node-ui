@@ -14,6 +14,7 @@ const route = useRoute();
 const analysisId = route.params.id;
 const analysisLogs = ref("");
 const nginxLogs = ref("");
+const prevLogs = ref();
 
 const {
   data: response,
@@ -51,6 +52,29 @@ async function refreshLogs() {
 function onRefreshToggle() {
   isActive.value ? pause() : resume();
 }
+
+// Previous logs
+const prevLogResp = await useNuxtApp()
+  .$hubApi(`/po/${analysisId}/history`, {
+    method: "GET",
+    lazy: true,
+  })
+  .catch(() => null);
+
+if (prevLogResp) {
+  const prevAnalyses = prevLogResp.analysis as Map<string, string>;
+  if (prevAnalyses) {
+    const prevAnalysisIds = Object.keys(prevAnalyses);
+    let compiledPrevLogs = {};
+    prevAnalysisIds.forEach((prevAnalysisId: string) => {
+      compiledPrevLogs[prevAnalysisId] = {
+        analysis: prevLogResp.analysis[prevAnalysisId],
+        nginx: prevLogResp.nginx[prevAnalysisId],
+      };
+    });
+    prevLogs.value = compiledPrevLogs;
+  }
+}
 </script>
 
 <template>
@@ -68,6 +92,20 @@ function onRefreshToggle() {
           :analysisLogs="analysisLogs"
           :nginxLogs="nginxLogs"
         />
+      </Fieldset>
+      <Fieldset legend="Previous Runs" :toggleable="true">
+        <Fieldset
+          v-for="(item, key) in prevLogs"
+          :key="key"
+          :toggleable="true"
+          :legend="key"
+          :collapsed="true"
+        >
+          <AnalysisLogCardContent
+            :analysisLogs="item.analysis"
+            :nginxLogs="item.nginx"
+          />
+        </Fieldset>
       </Fieldset>
     </template>
   </Card>
