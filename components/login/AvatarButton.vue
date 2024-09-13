@@ -34,7 +34,6 @@ const loggedInUserMenuItems = ref([
 const toggle = (event) => {
   menu.value.toggle(event);
 };
-console.log(user);
 </script>
 
 <template>

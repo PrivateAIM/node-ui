@@ -57,7 +57,6 @@ function onRefreshToggle() {
 const prevLogResp = await useNuxtApp()
   .$hubApi(`/po/${analysisId}/history`, {
     method: "GET",
-    lazy: true,
   })
   .catch(() => null);
 
@@ -87,26 +86,38 @@ if (prevLogResp) {
       </div>
     </template>
     <template #content>
-      <Fieldset legend="Current Run" :toggleable="true">
-        <AnalysisLogCardContent
-          :analysisLogs="analysisLogs"
-          :nginxLogs="nginxLogs"
-        />
-      </Fieldset>
-      <Fieldset legend="Previous Runs" :toggleable="true">
-        <Fieldset
-          v-for="(item, key) in prevLogs"
-          :key="key"
-          :toggleable="true"
-          :legend="key"
-          :collapsed="true"
-        >
+      <div class="current-logs-card">
+        <Fieldset legend="Current Run" :toggleable="true">
           <AnalysisLogCardContent
-            :analysisLogs="item.analysis"
-            :nginxLogs="item.nginx"
+            :analysisLogs="analysisLogs"
+            :nginxLogs="nginxLogs"
           />
         </Fieldset>
-      </Fieldset>
+      </div>
+      <div class="previous-logs-collection-card">
+        <Fieldset legend="Previous Runs" :toggleable="true">
+          <div
+            class="previous-logs-card"
+            v-if="prevLogs && Object.keys(prevLogs).length > 0"
+          >
+            <Fieldset
+              v-for="(log, key) in prevLogs"
+              :key="key"
+              :toggleable="true"
+              :legend="key"
+              :collapsed="true"
+            >
+              <AnalysisLogCardContent
+                :analysisLogs="log.analysis"
+                :nginxLogs="log.nginx"
+              />
+            </Fieldset>
+          </div>
+          <div v-else class="previous-log-card-empty">
+            <span>No previous logs found</span>
+          </div>
+        </Fieldset>
+      </div>
     </template>
   </Card>
 </template>
