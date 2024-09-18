@@ -63,6 +63,7 @@ export default defineNuxtConfig({
     "primevue/resources/themes/lara-dark-amber/theme.css",
     "primeicons/primeicons.css",
     "@/assets/css/table.css",
+    "@/assets/css/card.css",
   ],
 
   compatibilityDate: "2024-07-29",

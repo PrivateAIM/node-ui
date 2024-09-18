@@ -109,8 +109,8 @@ async function onStopAnalysis() {
     const podStatuses = stopResp.status;
     for (const podName in podStatuses) {
       buttonStatuses.value = setButtonStatuses(podStatuses[podName]);
-      showSuccess("Stop success", "Successfully stopped the container");
     }
+    showSuccess("Stop success", "Successfully stopped the container");
   } else {
     setButtonStatuses(AnalysisNodeRunStatus.Running);
     showFailure("Stop failure", "Failed to stop the analysis container");
@@ -139,14 +139,13 @@ async function onDeleteAnalysis() {
 </script>
 
 <template>
-  <div class="analysisButtons">
+  <div class="analysis-buttons">
     <Button
       icon="pi pi-play"
       aria-label="Start"
       v-if="buttonStatuses.playActive"
       v-tooltip.top="'Start the analysis'"
       severity="success"
-      style="margin-right: 10px"
       :disabled="
         !buttonStatuses.playActive ||
         !(props.analysisBuildStatus === AnalysisBuildStatus.Finished)
@@ -160,7 +159,6 @@ async function onDeleteAnalysis() {
       v-else
       v-tooltip.top="'Rerun the analysis'"
       severity="success"
-      style="margin-right: 10px"
       :disabled="
         !buttonStatuses.rerunActive ||
         !(props.analysisBuildStatus === AnalysisBuildStatus.Finished)
@@ -173,7 +171,6 @@ async function onDeleteAnalysis() {
       aria-label="Stop"
       v-tooltip.top="'Stop the analysis'"
       severity="warn"
-      style="margin-right: 10px"
       :disabled="
         !buttonStatuses.stopActive ||
         !(props.analysisBuildStatus === AnalysisBuildStatus.Finished)
@@ -193,6 +190,19 @@ async function onDeleteAnalysis() {
       :loading="loading"
       @click="onDeleteAnalysis()"
     />
+    <NuxtLink
+      :to="{ name: 'analyses-id', params: { id: props.analysisId } }"
+      target="_blank"
+    >
+      <Button
+        icon="pi pi-bars"
+        aria-label="Logs"
+        v-tooltip.top="'View the logs'"
+        severity="contrast"
+        :loading="loading"
+        :disabled="!buttonStatuses.deleteActive"
+      />
+    </NuxtLink>
   </div>
 </template>
 
