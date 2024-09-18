@@ -22,7 +22,8 @@
     background: #000000;
     padding: 1em;
     font-family: Roboto Mono Regular, monospace;
-    font-size: 1em;
+    white-space: pre-wrap;
+    font-size: 0.8em;
 }
 
 .analysis-logs .p-card-content {
