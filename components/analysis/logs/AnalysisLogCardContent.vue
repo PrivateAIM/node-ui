@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const props = defineProps({
-  nginxLogs: String,
-  analysisLogs: String,
+  nginxLogs: String || null,
+  analysisLogs: String || null,
 });
 </script>
 
@@ -9,21 +9,27 @@ const props = defineProps({
   <div class="card analysis-logs">
     <Card class="log-card nginx-log-card">
       <template #title>
-        <div class="table-header-row log-header-row">Nginx</div>
+        <div class="table-header-row log-header-row">Nginx Logs</div>
       </template>
       <template #content>
         <ScrollPanel class="log-scroll-panel">
-          {{ props.nginxLogs }}
+          <span v-if="props.nginxLogs">
+            {{ props.nginxLogs }}
+          </span>
+          <span v-else>No logs found...</span>
         </ScrollPanel>
       </template>
     </Card>
     <Card class="log-card analysis-log-card">
       <template #title>
-        <div class="table-header-row log-header-row">Logs</div>
+        <div class="table-header-row log-header-row">Container Logs</div>
       </template>
       <template #content>
         <ScrollPanel class="log-scroll-panel">
-          {{ props.analysisLogs }}
+          <span v-if="props.analysisLogs">
+            {{ props.analysisLogs }}
+          </span>
+          <span v-else>No logs found...</span>
         </ScrollPanel>
       </template>
     </Card>

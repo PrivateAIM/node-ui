@@ -12,8 +12,8 @@ interface logResponse {
 
 const route = useRoute();
 const analysisId = route.params.id;
-const analysisLogs = ref("");
-const nginxLogs = ref("");
+const analysisLogs = ref();
+const nginxLogs = ref();
 const prevLogs = ref();
 
 const {
@@ -26,9 +26,15 @@ const {
 function parseData() {
   if (status.value === "success") {
     const logData = response.value as logResponse;
-    analysisLogs.value =
-      logData.analysis["e6c508dc-8351-40ff-8b06-1def683c992a"];
-    nginxLogs.value = logData.nginx["e6c508dc-8351-40ff-8b06-1def683c992a"];
+    const pods = Object.keys(logData.analysis);
+
+    if (pods.length > 0) {
+      const firstPod = pods[0];
+
+      // Logs for both are returned in an array and need to be extracted as the first element
+      analysisLogs.value = logData.analysis[firstPod][0];
+      nginxLogs.value = logData.nginx[`nginx-${firstPod}`][0];
+    }
   } else if (error.value?.statusCode === 500) {
     showHubAdapterConnectionErrorToast();
   }
@@ -68,7 +74,7 @@ if (prevLogResp) {
     prevAnalysisIds.forEach((prevAnalysisId: string) => {
       compiledPrevLogs[prevAnalysisId] = {
         analysis: prevLogResp.analysis[prevAnalysisId],
-        nginx: prevLogResp.nginx[prevAnalysisId],
+        nginx: prevLogResp.nginx[`nginx-${prevAnalysisId}`],
       };
     });
     prevLogs.value = compiledPrevLogs;

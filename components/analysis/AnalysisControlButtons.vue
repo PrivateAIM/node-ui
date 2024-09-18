@@ -200,6 +200,7 @@ async function onDeleteAnalysis() {
         v-tooltip.top="'View the logs'"
         severity="contrast"
         :loading="loading"
+        :disabled="!buttonStatuses.deleteActive"
       />
     </NuxtLink>
   </div>
