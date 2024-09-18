@@ -109,8 +109,8 @@ async function onStopAnalysis() {
     const podStatuses = stopResp.status;
     for (const podName in podStatuses) {
       buttonStatuses.value = setButtonStatuses(podStatuses[podName]);
-      showSuccess("Stop success", "Successfully stopped the container");
     }
+    showSuccess("Stop success", "Successfully stopped the container");
   } else {
     setButtonStatuses(AnalysisNodeRunStatus.Running);
     showFailure("Stop failure", "Failed to stop the analysis container");
