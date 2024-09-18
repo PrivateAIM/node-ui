@@ -1,10 +1,8 @@
 import type {
   AllAnalyses,
   AllProjects,
-  BodyCreateAnalysisPoPost,
   BodyCreateAndConnectAnalysisToProjectKongAnalysisPost,
   BodyCreateAndConnectProjectToDatastoreKongProjectPost,
-  CreatePodResponse,
   DeleteProject,
   LinkDataStoreProject,
   LinkProjectAnalysis,
@@ -80,13 +78,6 @@ export function getAnalysisNodes(opts?) {
 
 // Kong endpoints
 export function getDataStores(includeProject: boolean, opts?) {
-  // return nuxtApp.$hubApi("/kong/datastore", {
-  //   ...opts,
-  //   method: "GET",
-  //   query: {
-  //     detailed: includeProject,
-  //   },
-  // });
   return useAPIFetch<{ data: ListServices }>("/kong/datastore", {
     ...opts,
     method: "GET",
@@ -155,28 +146,6 @@ export function deleteAnalysisFromKong(analysisId: string, opts?) {
 }
 
 // PodOrc endpoints
-export function startAnalysis(analysisProps: BodyCreateAnalysisPoPost, opts?) {
-  return useAPIFetch<{ data: CreatePodResponse }>(`/po`, {
-    ...opts,
-    method: "POST",
-    body: analysisProps,
-  });
-}
-
-export function stopAnalysis(analysisId: string, opts?) {
-  return useAPIFetch<{ data: CreatePodResponse }>(`/po/${analysisId}/stop`, {
-    ...opts,
-    method: "PUT",
-  });
-}
-
-export function deleteAnalysis(analysisId: string, opts?) {
-  return useAPIFetch<{ data: CreatePodResponse }>(`/po/${analysisId}/delete`, {
-    ...opts,
-    method: "DELETE",
-  });
-}
-
 export function getAnalysisLogs(analysisId: string, opts?) {
   return useAPIFetch(`/po/${analysisId}/logs`, {
     ...opts,
