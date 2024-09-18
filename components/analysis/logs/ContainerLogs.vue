@@ -12,9 +12,8 @@ interface logResponse {
 
 const route = useRoute();
 const analysisId = route.params.id;
-const analysisLogs = ref();
-const nginxLogs = ref();
-const prevLogs = ref();
+const currentLogs = ref([]);
+const prevLogs = ref([]);
 
 const {
   data: response,
@@ -23,24 +22,32 @@ const {
   error,
 } = await getAnalysisLogs(analysisId);
 
-function parseData() {
+function parseLogs(logResp: logResponse) {
+  const analysisPods = logResp.analysis as Map<string, string>;
+  if (analysisPods) {
+    const analysisPodIds = Object.keys(analysisPods);
+    let compiledLogs = [];
+    analysisPodIds.forEach((analysisPodId: string) => {
+      const newLogEntry = {
+        podId: analysisPodId,
+        analysis: logResp.analysis[analysisPodId][0],
+        nginx: logResp.nginx[`nginx-${analysisPodId}`][0],
+      };
+      compiledLogs.push(newLogEntry);
+    });
+    return compiledLogs;
+  }
+}
+
+function gatherCurrentLogs() {
   if (status.value === "success") {
-    const logData = response.value as logResponse;
-    const pods = Object.keys(logData.analysis);
-
-    if (pods.length > 0) {
-      const firstPod = pods[0];
-
-      // Logs for both are returned in an array and need to be extracted as the first element
-      analysisLogs.value = logData.analysis[firstPod][0];
-      nginxLogs.value = logData.nginx[`nginx-${firstPod}`][0];
-    }
+    currentLogs.value = parseLogs(response.value);
   } else if (error.value?.statusCode === 500) {
     showHubAdapterConnectionErrorToast();
   }
 }
 
-parseData();
+gatherCurrentLogs();
 
 const { pause, resume, isActive } = useIntervalFn(
   () => {
@@ -52,7 +59,7 @@ const { pause, resume, isActive } = useIntervalFn(
 
 async function refreshLogs() {
   await refresh();
-  parseData();
+  gatherCurrentLogs();
 }
 
 function onRefreshToggle() {
@@ -67,18 +74,7 @@ const prevLogResp = await useNuxtApp()
   .catch(() => null);
 
 if (prevLogResp) {
-  const prevAnalyses = prevLogResp.analysis as Map<string, string>;
-  if (prevAnalyses) {
-    const prevAnalysisIds = Object.keys(prevAnalyses);
-    let compiledPrevLogs = {};
-    prevAnalysisIds.forEach((prevAnalysisId: string) => {
-      compiledPrevLogs[prevAnalysisId] = {
-        analysis: prevLogResp.analysis[prevAnalysisId],
-        nginx: prevLogResp.nginx[`nginx-${prevAnalysisId}`],
-      };
-    });
-    prevLogs.value = compiledPrevLogs;
-  }
+  prevLogs.value = parseLogs(prevLogResp);
 }
 </script>
 
@@ -94,23 +90,36 @@ if (prevLogResp) {
     <template #content>
       <div class="current-logs-card">
         <Fieldset legend="Current Run" :toggleable="true">
-          <AnalysisLogCardContent
-            :analysisLogs="analysisLogs"
-            :nginxLogs="nginxLogs"
-          />
+          <div v-if="currentLogs.length > 1">
+            <Fieldset
+              v-for="currentLog in currentLogs"
+              :key="currentLog.podId"
+              :toggleable="true"
+              :legend="currentLog.podId"
+              :collapsed="true"
+            >
+              <AnalysisLogCardContent
+                :analysisLogs="currentLog.analysis"
+                :nginxLogs="currentLog.nginx"
+              />
+            </Fieldset>
+          </div>
+          <div v-else class="log-card-single">
+            <AnalysisLogCardContent
+              :analysisLogs="currentLogs.length ? currentLogs[0].analysis : ''"
+              :nginxLogs="currentLogs.length ? currentLogs[0].nginx : ''"
+            />
+          </div>
         </Fieldset>
       </div>
       <div class="previous-logs-collection-card">
         <Fieldset legend="Previous Runs" :toggleable="true">
-          <div
-            class="previous-logs-card"
-            v-if="prevLogs && Object.keys(prevLogs).length > 0"
-          >
+          <div class="previous-logs-card" v-if="prevLogs.length">
             <Fieldset
-              v-for="(log, key) in prevLogs"
-              :key="key"
+              v-for="log in prevLogs"
+              :key="log.podId"
               :toggleable="true"
-              :legend="key"
+              :legend="log.podId"
               :collapsed="true"
             >
               <AnalysisLogCardContent
