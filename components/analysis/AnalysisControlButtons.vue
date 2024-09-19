@@ -29,6 +29,7 @@ const stopButtonActiveStates = [
   AnalysisNodeRunStatus.Running,
   AnalysisNodeRunStatus.Starting,
   AnalysisNodeRunStatus.Started,
+  AnalysisNodeRunStatus.Stopping,
 ];
 const deleteButtonActiveStates = [
   AnalysisNodeRunStatus.Failed,
@@ -40,7 +41,12 @@ const deleteButtonActiveStates = [
   AnalysisNodeRunStatus.Started,
 ];
 
-const buttonStatuses = ref(setButtonStatuses(props.analysisRunStatus!));
+const buttonStatuses = ref(setButtonStatuses(props.analysisRunStatus));
+
+// TODO: possibly remove when manual pod status checks are removed
+watch(props, () => {
+  buttonStatuses.value = setButtonStatuses(props.analysisRunStatus);
+});
 
 function setButtonStatuses(podStatus: string) {
   emit("newRunStatus", props.analysisNodeId, podStatus);
