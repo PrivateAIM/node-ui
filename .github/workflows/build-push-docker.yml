@@ -3,7 +3,7 @@ name: Create and publish Docker image
 on:
   push:
     branches:
-      - develop
+      - "*"
   pull_request:
     types: [ "closed" ]
     branches:
@@ -15,7 +15,7 @@ env:
 
 jobs:
   build-and-push-image:
-    if: contains(github.event.head_commit.message, 'build_image')
+    if: ${{ (github.event.pull_request.merged) || (contains(github.event.head_commit.message, 'build_image')) }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
