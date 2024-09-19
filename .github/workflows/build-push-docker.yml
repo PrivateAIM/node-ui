@@ -3,7 +3,7 @@ name: Create and publish Docker image
 on:
   push:
     branches:
-      - "*"
+      - develop
   pull_request:
     types: [ "closed" ]
     branches:
