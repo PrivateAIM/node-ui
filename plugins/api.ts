@@ -23,7 +23,7 @@ export default defineNuxtPlugin(() => {
     },
     async onResponseError({ request, response }) {
       // Handle the response errors
-      if (response.status === 401 || response.status === 403) {
+      if (response.status === 401) {
         console.warn("User not signed in, returning to login");
         return login();
       }

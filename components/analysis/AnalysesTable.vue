@@ -12,9 +12,10 @@ import {
   getRunStatusSeverity,
 } from "~/utils/status-tag-severity";
 import {
-  AnalysisNodeRunStatus,
-  ApprovalStatus,
   AnalysisBuildStatus,
+  AnalysisNodeRunStatus,
+  AnalysisRunStatus,
+  ApprovalStatus,
 } from "~/services/Api";
 
 const expandedRows = ref();
@@ -40,6 +41,35 @@ function parseData() {
 }
 parseData();
 
+// TODO: remove
+function checkRunStatuses() {
+  const analysesData = response.value!.data;
+  for (const analysisNode of analysesData) {
+    if (
+      analysisNode.analysis?.build_status === AnalysisBuildStatus.Finished &&
+      !analysisNode.run_status
+    ) {
+      const analysisId = analysisNode.analysis_id;
+
+      useLazyFetch(`/po/${analysisId}/pods`, {
+        $fetch: useNuxtApp().$hubApi,
+      })
+        .then(({ data: prevLogResp, status: podCheckStatus }) => {
+          watch(prevLogResp, () => {
+            if (
+              podCheckStatus.value === "success" &&
+              prevLogResp.value.pods.length > 0
+            ) {
+              updateRunStatus(analysisNode.id, AnalysisRunStatus.Running);
+            }
+          });
+        })
+        .catch((error) => console.error(error));
+    }
+  }
+}
+checkRunStatuses();
+
 function onToggleRowExpansion(rowIds) {
   expandedRows.value = rowIds;
 }
@@ -47,6 +77,7 @@ function onToggleRowExpansion(rowIds) {
 async function onTableRefresh() {
   await refresh();
   parseData();
+  checkRunStatuses(); // TODO: remove
 }
 
 // Table filters
@@ -82,7 +113,7 @@ function updateRunStatus(analysisNodeId: string, newStatus: string) {
   for (let row of analyses.value) {
     if (row.id === analysisNodeId) {
       row.run_status = newStatus;
-      return;
+      break;
     }
   }
 }
