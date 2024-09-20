@@ -12,11 +12,16 @@ import {
   getRunStatusSeverity,
 } from "~/utils/status-tag-severity";
 import {
+  type AllProjects,
   AnalysisBuildStatus,
   AnalysisNodeRunStatus,
   AnalysisRunStatus,
   ApprovalStatus,
 } from "~/services/Api";
+
+const props = defineProps({
+  projectData: AllProjects,
+});
 
 const expandedRows = ref();
 const analyses = ref();
