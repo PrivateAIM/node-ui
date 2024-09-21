@@ -12,16 +12,12 @@ import {
   getRunStatusSeverity,
 } from "~/utils/status-tag-severity";
 import {
-  type AllProjects,
   AnalysisBuildStatus,
   AnalysisNodeRunStatus,
   AnalysisRunStatus,
   ApprovalStatus,
+  type Project,
 } from "~/services/Api";
-
-const props = defineProps({
-  projectData: AllProjects,
-});
 
 const expandedRows = ref();
 const analyses = ref();
@@ -32,6 +28,27 @@ const approvalStatuses = Object.values(ApprovalStatus);
 const buildStatuses = Object.values(AnalysisBuildStatus);
 
 const { data: response, status, error, refresh } = await getAnalysisNodes();
+const { data: projData, status: projStatus } = useFetch("/projects", {
+  $fetch: useNuxtApp().$hubApi,
+  method: "GET",
+  query: {
+    sort: "-updated_at",
+    fields: "id,name",
+  },
+});
+
+console.log(projData);
+const projMap = new Map<string, string>();
+
+console.log(projStatus.value);
+
+if (projStatus.value === "success") {
+  projData.value.forEach((proj: Project) => {
+    projMap[proj.id] = proj.name;
+  });
+}
+
+console.log(projMap);
 
 function parseData() {
   if (status.value === "success") {
@@ -73,7 +90,7 @@ function checkRunStatuses() {
     }
   }
 }
-checkRunStatuses();
+// checkRunStatuses();
 
 function onToggleRowExpansion(rowIds) {
   expandedRows.value = rowIds;
