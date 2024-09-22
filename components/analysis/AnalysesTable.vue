@@ -13,9 +13,11 @@ import {
 } from "~/utils/status-tag-severity";
 import {
   AnalysisBuildStatus,
+  type AnalysisNode,
   AnalysisNodeRunStatus,
   AnalysisRunStatus,
   ApprovalStatus,
+  type Project,
 } from "~/services/Api";
 
 const expandedRows = ref();
@@ -27,14 +29,39 @@ const approvalStatuses = Object.values(ApprovalStatus);
 const buildStatuses = Object.values(AnalysisBuildStatus);
 
 const { data: response, status, error, refresh } = await getAnalysisNodes();
+const { data: projData, status: projStatus } = await useFetch("/projects", {
+  $fetch: useNuxtApp().$hubApi,
+  method: "GET",
+  query: {
+    sort: "-updated_at",
+    fields: "id,name",
+  },
+});
+
+// Iterate through projects and populate map with proj UUID: name
+const projMap = new Map<string, string>();
+if (projStatus.value === "success") {
+  projData.value.data.forEach((proj: Project) => {
+    projMap.set(proj.id, proj.name);
+  });
+}
 
 function parseData() {
   if (status.value === "success") {
-    analyses.value = formatDataRow(
+    const formattedAnalyses = formatDataRow(
       response.value!.data,
       ["created_at", "updated_at"],
       expandRowEntries,
     );
+    if (projMap.size > 0) {
+      formattedAnalyses.forEach((analysisEntry: AnalysisNode) => {
+        const projId = analysisEntry.analysis?.project_id;
+        if (projId && projMap.has(projId)) {
+          analysisEntry.project_name = projMap.get(projId);
+        }
+      });
+    }
+    analyses.value = formattedAnalyses;
   } else if (error.value?.statusCode === 500) {
     showHubAdapterConnectionErrorToast();
   }
@@ -68,7 +95,9 @@ function checkRunStatuses() {
     }
   }
 }
-checkRunStatuses();
+if (analyses.value.length < 10) {
+  checkRunStatuses();
+}
 
 function onToggleRowExpansion(rowIds) {
   expandedRows.value = rowIds;
@@ -144,11 +173,7 @@ function updateRunStatus(analysisNodeId: string, newStatus: string) {
           tableStyle="min-width: 50rem"
           v-model:filters="filters"
           filterDisplay="menu"
-          :globalFilterFields="[
-            'analysis.name',
-            'analysis.project_id',
-            'node.name',
-          ]"
+          :globalFilterFields="['analysis.name', 'project_name', 'node.name']"
         >
           <template #empty> No analyses found. </template>
           <template #header>
@@ -290,11 +315,7 @@ function updateRunStatus(analysisNodeId: string, newStatus: string) {
               </MultiSelect>
             </template>
           </Column>
-          <Column
-            field="analysis.project_id"
-            header="Project"
-            :sortable="true"
-          />
+          <Column field="project_name" header="Project" :sortable="true" />
           <Column
             header="Created On"
             field="created_at.long"

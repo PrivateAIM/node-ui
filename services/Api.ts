@@ -70,42 +70,27 @@ export interface AllProjects {
  * Model representing a single detailed analysis.
  */
 export interface AnalysisInput {
-  /**
-   * Id
-   * @format uuid
-   */
-  id: string;
-  /**
-   * Created At
-   * @format date-time
-   */
-  created_at: string;
-  /**
-   * Updated At
-   * @format date-time
-   */
-  updated_at: string;
+  /** Id */
+  id?: string | null;
+  /** Created At */
+  created_at?: string | null;
+  /** Updated At */
+  updated_at?: string | null;
   /** Name */
   name?: string | null;
   /** Nodes */
-  nodes: number;
+  nodes?: number | null;
   configuration_status?: ConfigurationStatus | null;
   build_status?: AnalysisBuildStatus | null;
   run_status?: AnalysisRunStatus | null;
   /** Registry Id */
   registry_id?: string | null;
-  /**
-   * Realm Id
-   * @format uuid
-   */
-  realm_id: string;
+  /** Realm Id */
+  realm_id?: string | null;
   /** User Id */
   user_id?: string | null;
-  /**
-   * Project Id
-   * @format uuid
-   */
-  project_id: string;
+  /** Project Id */
+  project_id?: string | null;
   project?: Project | null;
   /** Master Image Id */
   master_image_id?: string | null;
@@ -116,42 +101,27 @@ export interface AnalysisInput {
  * Model representing a single detailed analysis.
  */
 export interface AnalysisOutput {
-  /**
-   * Id
-   * @format uuid
-   */
-  id: string;
-  /**
-   * Created At
-   * @format date-time
-   */
-  created_at: string;
-  /**
-   * Updated At
-   * @format date-time
-   */
-  updated_at: string;
+  /** Id */
+  id?: string | null;
+  /** Created At */
+  created_at?: string | null;
+  /** Updated At */
+  updated_at?: string | null;
   /** Name */
   name?: string | null;
   /** Nodes */
-  nodes: number;
+  nodes?: number | null;
   configuration_status?: ConfigurationStatus | null;
   build_status?: AnalysisBuildStatus | null;
   run_status?: AnalysisRunStatus | null;
   /** Registry Id */
   registry_id?: string | null;
-  /**
-   * Realm Id
-   * @format uuid
-   */
-  realm_id: string;
+  /** Realm Id */
+  realm_id?: string | null;
   /** User Id */
   user_id?: string | null;
-  /**
-   * Project Id
-   * @format uuid
-   */
-  project_id: string;
+  /** Project Id */
+  project_id?: string | null;
   project?: Project | null;
   /** Master Image Id */
   master_image_id?: string | null;
@@ -175,52 +145,30 @@ export enum AnalysisBuildStatus {
  * Node analysis response model.
  */
 export interface AnalysisNode {
-  /**
-   * Id
-   * @format uuid
-   */
-  id: string;
-  /**
-   * Created At
-   * @format date-time
-   */
-  created_at: string;
-  /**
-   * Updated At
-   * @format date-time
-   */
-  updated_at: string;
-  /** Status of project possibilities. */
-  approval_status: ApprovalStatus;
+  /** Id */
+  id?: string | null;
+  /** Created At */
+  created_at?: string | null;
+  /** Updated At */
+  updated_at?: string | null;
+  approval_status?: ApprovalStatus | null;
   run_status?: AnalysisNodeRunStatus | null;
   /** Comment */
   comment?: string | null;
   /** Index */
-  index: number;
+  index?: number | null;
   /** Artifact Tag */
   artifact_tag?: string | null;
   /** Artifact Digest */
   artifact_digest?: string | null;
-  /**
-   * Analysis Id
-   * @format uuid
-   */
-  analysis_id: string;
-  /**
-   * Analysis Realm Id
-   * @format uuid
-   */
-  analysis_realm_id: string;
-  /**
-   * Node Id
-   * @format uuid
-   */
-  node_id: string;
-  /**
-   * Node Realm Id
-   * @format uuid
-   */
-  node_realm_id: string;
+  /** Analysis Id */
+  analysis_id?: string | null;
+  /** Analysis Realm Id */
+  analysis_realm_id?: string | null;
+  /** Node Id */
+  node_id?: string | null;
+  /** Node Realm Id */
+  node_realm_id?: string | null;
   analysis?: DetailedAnalysis | null;
   node?: Node | null;
 }
@@ -419,23 +367,13 @@ export interface BodySubmitIntermediateResultToLocalLocalPut {
  * Bucket data.
  */
 export interface Bucket {
-  /**
-   * Id
-   * @format uuid
-   */
-  id: string;
-  /**
-   * Created At
-   * @format date-time
-   */
-  created_at: string;
-  /**
-   * Updated At
-   * @format date-time
-   */
-  updated_at: string;
-  /** Bucket types. */
-  type: BucketType;
+  /** Id */
+  id?: string | null;
+  /** Created At */
+  created_at?: string | null;
+  /** Updated At */
+  updated_at?: string | null;
+  type?: BucketType | null;
   /** External Id */
   external_id?: string | null;
   /** Analysis Id */
@@ -535,42 +473,27 @@ export interface DeleteProject {
  * Model representing a single detailed analysis.
  */
 export interface DetailedAnalysis {
-  /**
-   * Id
-   * @format uuid
-   */
-  id: string;
-  /**
-   * Created At
-   * @format date-time
-   */
-  created_at: string;
-  /**
-   * Updated At
-   * @format date-time
-   */
-  updated_at: string;
+  /** Id */
+  id?: string | null;
+  /** Created At */
+  created_at?: string | null;
+  /** Updated At */
+  updated_at?: string | null;
   /** Name */
   name?: string | null;
   /** Nodes */
-  nodes: number;
+  nodes?: number | null;
   configuration_status?: ConfigurationStatus | null;
   build_status?: AnalysisBuildStatus | null;
   run_status?: AnalysisRunStatus | null;
   /** Registry Id */
   registry_id?: string | null;
-  /**
-   * Realm Id
-   * @format uuid
-   */
-  realm_id: string;
+  /** Realm Id */
+  realm_id?: string | null;
   /** User Id */
   user_id?: string | null;
-  /**
-   * Project Id
-   * @format uuid
-   */
-  project_id: string;
+  /** Project Id */
+  project_id?: string | null;
   project?: Project | null;
   /** Master Image Id */
   master_image_id?: string | null;
@@ -943,8 +866,10 @@ export interface ListServices {
 
 /** LogResponse */
 export interface LogResponse {
-  /** Logs */
-  logs?: object | null;
+  /** Analysis */
+  analysis?: object | null;
+  /** Nginx */
+  nginx?: object | null;
 }
 
 /**
@@ -952,29 +877,20 @@ export interface LogResponse {
  * Master image details.
  */
 export interface MasterImage {
-  /**
-   * Id
-   * @format uuid
-   */
-  id: string;
-  /**
-   * Created At
-   * @format date-time
-   */
-  created_at: string;
-  /**
-   * Updated At
-   * @format date-time
-   */
-  updated_at: string;
+  /** Id */
+  id?: string | null;
+  /** Created At */
+  created_at?: string | null;
+  /** Updated At */
+  updated_at?: string | null;
   /** Path */
-  path: string;
+  path?: string | null;
   /** Virtual Path */
-  virtual_path: string;
+  virtual_path?: string | null;
   /** Group Virtual Path */
-  group_virtual_path: string;
+  group_virtual_path?: string | null;
   /** Name */
-  name: string;
+  name?: string | null;
   /** Command */
   command?: string | null;
   /** Command Arguments */
@@ -986,68 +902,44 @@ export interface MasterImage {
  * Node details.
  */
 export interface Node {
-  /**
-   * Id
-   * @format uuid
-   */
-  id: string;
-  /**
-   * Created At
-   * @format date-time
-   */
-  created_at: string;
-  /**
-   * Updated At
-   * @format date-time
-   */
-  updated_at: string;
+  /** Id */
+  id?: string | null;
+  /** Created At */
+  created_at?: string | null;
+  /** Updated At */
+  updated_at?: string | null;
   /** External Name */
   external_name?: string | null;
   /** Name */
-  name: string;
+  name?: string | null;
   /** Hidden */
-  hidden: boolean;
+  hidden?: boolean | null;
   /** Type */
-  type: string;
+  type?: string | null;
   /** Online */
-  online: boolean;
+  online?: boolean | null;
   /** Registry Id */
   registry_id?: string | null;
   /** Registry Project Id */
   registry_project_id?: string | null;
-  /**
-   * Robot Id
-   * @format uuid
-   */
-  robot_id: string;
-  /**
-   * Realm Id
-   * @format uuid
-   */
-  realm_id: string;
+  /** Robot Id */
+  robot_id?: string | null;
+  /** Realm Id */
+  realm_id?: string | null;
 }
 
 /** PartialAnalysisBucketFile */
 export interface PartialAnalysisBucketFile {
-  /**
-   * Id
-   * @format uuid
-   */
-  id: string;
-  /**
-   * Created At
-   * @format date-time
-   */
-  created_at: string;
-  /**
-   * Updated At
-   * @format date-time
-   */
-  updated_at: string;
+  /** Id */
+  id?: string | null;
+  /** Created At */
+  created_at?: string | null;
+  /** Updated At */
+  updated_at?: string | null;
   /** Name */
   name?: string | null;
   /** Root */
-  root: boolean;
+  root?: boolean | null;
   /** External Id */
   external_id?: string | null;
   /** Bucket Id */
@@ -1083,30 +975,18 @@ export interface PodResponse {
  * Single project response model.
  */
 export interface Project {
-  /**
-   * Id
-   * @format uuid
-   */
-  id: string;
-  /**
-   * Created At
-   * @format date-time
-   */
-  created_at: string;
-  /**
-   * Updated At
-   * @format date-time
-   */
-  updated_at: string;
+  /** Id */
+  id?: string | null;
+  /** Created At */
+  created_at?: string | null;
+  /** Updated At */
+  updated_at?: string | null;
   /** Name */
-  name: string;
+  name?: string | null;
   /** Analyses */
-  analyses: number;
-  /**
-   * Realm Id
-   * @format uuid
-   */
-  realm_id: string;
+  analyses?: number | null;
+  /** Realm Id */
+  realm_id?: string | null;
   /** User Id */
   user_id?: string | null;
   /** Master Image Id */
@@ -1119,23 +999,13 @@ export interface Project {
  * Single project proposal.
  */
 export interface ProjectNode {
-  /**
-   * Id
-   * @format uuid
-   */
-  id: string;
-  /**
-   * Created At
-   * @format date-time
-   */
-  created_at: string;
-  /**
-   * Updated At
-   * @format date-time
-   */
-  updated_at: string;
-  /** Status of project possibilities. */
-  approval_status: ApprovalStatus;
+  /** Id */
+  id?: string | null;
+  /** Created At */
+  created_at?: string | null;
+  /** Updated At */
+  updated_at?: string | null;
+  approval_status?: ApprovalStatus | null;
   /** Comment */
   comment?: string | null;
   /** Project Id */
@@ -1155,21 +1025,12 @@ export interface ProjectNode {
  * Details the registry information.
  */
 export interface Registry {
-  /**
-   * Id
-   * @format uuid
-   */
-  id: string;
-  /**
-   * Created At
-   * @format date-time
-   */
-  created_at: string;
-  /**
-   * Updated At
-   * @format date-time
-   */
-  updated_at: string;
+  /** Id */
+  id?: string | null;
+  /** Created At */
+  created_at?: string | null;
+  /** Updated At */
+  updated_at?: string | null;
   /** Name */
   name?: string | null;
   /** Host */
@@ -1182,27 +1043,18 @@ export interface Registry {
 
 /** RegistryProject */
 export interface RegistryProject {
-  /**
-   * Id
-   * @format uuid
-   */
-  id: string;
-  /**
-   * Created At
-   * @format date-time
-   */
-  created_at: string;
-  /**
-   * Updated At
-   * @format date-time
-   */
-  updated_at: string;
+  /** Id */
+  id?: string | null;
+  /** Created At */
+  created_at?: string | null;
+  /** Updated At */
+  updated_at?: string | null;
   /** Name */
   name?: string | null;
   /** Type */
-  type: string;
+  type?: string | null;
   /** Public */
-  public: boolean;
+  public?: boolean | null;
   /** External Name */
   external_name?: string | null;
   /** External Id */
@@ -1832,6 +1684,24 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     getAnalysisLogsPoAnalysisIdLogsGet: (analysisId: string | null, params: RequestParams = {}) =>
       this.request<LogResponse, void | HTTPValidationError>({
         path: `/po/${analysisId}/logs`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Get the previous logs for a specific analysis.
+     *
+     * @tags PodOrc
+     * @name GetAnalysisLogHistoryPoAnalysisIdHistoryGet
+     * @summary Get Analysis Log History
+     * @request GET:/po/{analysis_id}/history
+     * @secure
+     */
+    getAnalysisLogHistoryPoAnalysisIdHistoryGet: (analysisId: string | null, params: RequestParams = {}) =>
+      this.request<LogResponse, void | HTTPValidationError>({
+        path: `/po/${analysisId}/history`,
         method: "GET",
         secure: true,
         format: "json",
