@@ -34,7 +34,6 @@ function parseUnixTimestamp(
       if (typeof timestamp === "string") {
         // If not a string then already parsed as object
         let date: Date;
-        console.log(timestamp);
         if (isUnixTimestamp(timestamp)) {
           // If a unix epoch is returned
           date = new Date(timestamp * 1000);
