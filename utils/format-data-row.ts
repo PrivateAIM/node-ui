@@ -31,19 +31,23 @@ function parseUnixTimestamp(
   keysToModify.forEach((key) => {
     if (key in dataRow) {
       const timestamp = dataRow[key];
-      let date: Date;
-      if (isUnixTimestamp(timestamp)) {
-        // If a unix epoch is returned
-        date = new Date(timestamp * 1000);
-      } else {
-        // If a UTC T/Z timestamp returned
-        date = new Date(timestamp);
+      if (typeof timestamp === "string") {
+        // If not a string then already parsed as object
+        let date: Date;
+        console.log(timestamp);
+        if (isUnixTimestamp(timestamp)) {
+          // If a unix epoch is returned
+          date = new Date(timestamp * 1000);
+        } else {
+          // If a UTC T/Z timestamp returned
+          date = new Date(timestamp);
+        }
+        dataRow[key] = {
+          short: formatDate(date),
+          long: date.toUTCString(),
+          date: date,
+        };
       }
-      dataRow[key] = {
-        short: formatDate(date),
-        long: date.toUTCString(),
-        date: date,
-      };
     }
   });
   return dataRow;
