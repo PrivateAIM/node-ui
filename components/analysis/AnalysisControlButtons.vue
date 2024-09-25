@@ -44,9 +44,12 @@ const deleteButtonActiveStates = [
 const buttonStatuses = ref(setButtonStatuses(props.analysisRunStatus));
 
 // TODO: possibly remove when manual pod status checks are removed
-watch(props, () => {
-  buttonStatuses.value = setButtonStatuses(props.analysisRunStatus);
-});
+watch(
+  () => props.analysisRunStatus,
+  () => {
+    buttonStatuses.value = setButtonStatuses(props.analysisRunStatus);
+  },
+);
 
 function setButtonStatuses(podStatus: string) {
   emit("newRunStatus", props.analysisNodeId, podStatus);
