@@ -40,7 +40,7 @@ const toggle = (event) => {
   <div v-if="loggedIn" class="authAvatarSection">
     <div class="usernameMenuBar">
       <p>
-        {{ user.providerInfo?.name || "Swell Person" }}
+        {{ user.userInfo?.name || "Swell Person" }}
       </p>
     </div>
     <Button

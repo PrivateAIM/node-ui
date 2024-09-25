@@ -9,7 +9,7 @@ async function customLogout() {
 <template>
   <div class="keycloakLoginButton">
     <div v-if="loggedIn">
-      <h3>Welcome {{ user.providerInfo?.preferred_username || "Friend" }}!</h3>
+      <h3>Welcome {{ user.userInfo?.preferred_username || "Friend" }}!</h3>
       <Button @click="customLogout()" severity="warning" outlined
         >Logout</Button
       >
