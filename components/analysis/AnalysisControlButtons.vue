@@ -2,6 +2,7 @@
 import {
   AnalysisBuildStatus,
   AnalysisNodeRunStatus,
+  AnalysisRunStatus,
   type BodyCreateAnalysisPoPost,
 } from "~/services/Api";
 
@@ -41,18 +42,33 @@ const deleteButtonActiveStates = [
   AnalysisNodeRunStatus.Started,
 ];
 
-const buttonStatuses = ref(setButtonStatuses(props.analysisRunStatus));
+const buttonStatuses = ref(setButtonStatuses(props.analysisRunStatus, false));
 
-// TODO: possibly remove when manual pod status checks are removed
-watch(
-  () => props.analysisRunStatus,
-  () => {
-    buttonStatuses.value = setButtonStatuses(props.analysisRunStatus);
-  },
-);
+// TODO: remove when manual pod status checks are implemented by the PodOrc
+const runStatus = ref(props.analysisRunStatus);
+if (
+  props.analysisBuildStatus === AnalysisBuildStatus.Finished &&
+  !runStatus.value
+) {
+  useNuxtApp()
+    .$hubApi(`/po/${props.analysisId}/pods`, {
+      lazy: true,
+      method: "GET",
+    })
+    .then((prevLogResp) => {
+      if (prevLogResp.pods.length > 0) {
+        runStatus.value = AnalysisRunStatus.Running;
+        buttonStatuses.value = setButtonStatuses(AnalysisRunStatus.Running);
+      }
+    })
+    .catch((error) => console.warn(error));
+}
 
-function setButtonStatuses(podStatus: string) {
-  emit("newRunStatus", props.analysisNodeId, podStatus);
+function setButtonStatuses(podStatus: string, updateTable: boolean = true) {
+  if (updateTable) {
+    emit("newRunStatus", props.analysisNodeId, podStatus);
+  }
+
   return {
     playActive: playButtonActiveStates.includes(podStatus),
     rerunActive: rerunButtonActiveStates.includes(podStatus),
