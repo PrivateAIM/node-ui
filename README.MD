@@ -14,7 +14,7 @@ NUXT_PUBLIC_BASE_URL="http://localhost:3000"  # URL of the website
 NUXT_PUBLIC_HUB_ADAPTER_URL="http://urlForHubAdapterApi.de"  # URL for hub adapter API
 
 NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_ID="node-ui"
-NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET="someSecret"
+NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET="someSecrets"
 
 # The following need to be explicitly set in order to apply them to the Nuxt config, they can't be built from the domain
 NUXT_OIDC_PROVIDERS_KEYCLOAK_REDIRECT_URI="http://localhost:3000/auth/keycloak/callback"  # Be sure this redirect URI is defined in your keycloak for this client
