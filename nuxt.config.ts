@@ -36,10 +36,12 @@ export default defineNuxtConfig({
           process.env.NUXT_PUBLIC_BASE_URL + "/auth/keycloak/callback",
         authorizationUrl:
           process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_AUTHORIZATION_URL ||
-          process.env.KEYCLOAK_LOGIN_URL + "/realms/flame/protocol/openid-connect/auth",
+          process.env.KEYCLOAK_LOGIN_URL +
+            "/realms/flame/protocol/openid-connect/auth",
         tokenUrl:
           process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_TOKEN_URL ||
-          process.env.KEYCLOAK_SERVICE_URL + "/realms/flame/protocol/openid-connect/auth",
+          process.env.KEYCLOAK_SERVICE_URL +
+            "/realms/flame/protocol/openid-connect/auth",
         userinfoUrl:
           process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_USERINFO_URL ||
           process.env.KEYCLOAK_SERVICE_URL +
@@ -66,5 +68,5 @@ export default defineNuxtConfig({
     "@/assets/css/card.css",
   ],
 
-  compatibilityDate: "2024-07-29",
+  compatibilityDate: "2024-09-30",
 });
