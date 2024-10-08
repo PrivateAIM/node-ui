@@ -77,21 +77,12 @@ function setButtonStatuses(podStatus: string, updateTable: boolean = true) {
   };
 }
 
-const showFailure = (summary: string, msg: string) => {
+const showToast = (severity: string, summary: string, msg: string) => {
   toast.add({
-    severity: "error",
+    severity: severity,
     summary: summary,
     detail: msg,
-    life: 3000,
-  });
-};
-
-const showSuccess = (summary: string, msg: string) => {
-  toast.add({
-    severity: "info",
-    summary: summary,
-    detail: msg,
-    life: 3000,
+    life: 5000,
   });
 };
 
@@ -102,22 +93,62 @@ async function onStartAnalysis() {
   analysisProps.analysis_id = props.analysisId!;
   analysisProps.project_id = props.projectId!;
   analysisProps.node_id = props.nodeId!;
-  const startResp = await useNuxtApp()
-    .$hubApi("/po", {
-      method: "POST",
-      body: analysisProps,
-    })
-    .catch(() => null); // Set the response to null if an error occurs
 
-  if (startResp) {
-    const currentRunStatus = startResp.status;
-    buttonStatuses.value = setButtonStatuses(currentRunStatus);
-    showSuccess("Start success", "Successfully started the container");
-  } else {
-    setButtonStatuses(AnalysisNodeRunStatus.Failed);
-    showFailure("Start failure", "Failed to start the analysis");
+  // Bind data to Analysis via Kong
+  let bindDataStoreResp = null;
+  try {
+    bindDataStoreResp = await useNuxtApp().$hubApi("/kong/analysis", {
+      method: "POST",
+      body: {
+        project_id: props.projectId!,
+        analysis_id: props.analysisId!,
+      },
+    });
+  } catch (error) {
+    // Catch 409 and let proceed
+    if (error.status === 409) {
+      showToast(
+        "warn",
+        "Duplicate entry error",
+        "A data store is already mapped to this analysis and will be reused",
+      );
+    } else {
+      // If not 409, show error and quit process
+      if (error.status === 404) {
+        showDataStoreNavToast();
+      } else {
+        showToast(
+          "error",
+          "Data mapping failed",
+          "Unable to map a data store to this analysis due to a technical error.",
+        );
+      }
+      loading.value = false;
+      setButtonStatuses(null);
+      return;
+    }
   }
-  loading.value = false;
+
+  // Start Pod
+  if (bindDataStoreResp) {
+    // Only start the pod if a data store is ready for the analysis
+    const startPodResp = await useNuxtApp()
+      .$hubApi("/po", {
+        method: "POST",
+        body: analysisProps,
+      })
+      .catch(() => null); // Set the response to null if an error occurs
+
+    if (startPodResp) {
+      const currentRunStatus = startPodResp.status;
+      buttonStatuses.value = setButtonStatuses(currentRunStatus);
+      showToast("info", "Start success", "Successfully started the container");
+    } else {
+      setButtonStatuses(AnalysisNodeRunStatus.Failed);
+      showToast("error", "Start failure", "Failed to start the analysis");
+    }
+    loading.value = false;
+  }
 }
 
 async function onStopAnalysis() {
@@ -135,10 +166,10 @@ async function onStopAnalysis() {
     for (const podName in podStatuses) {
       buttonStatuses.value = setButtonStatuses(podStatuses[podName]);
     }
-    showSuccess("Stop success", "Successfully stopped the container");
+    showToast("info", "Stop success", "Successfully stopped the container");
   } else {
     setButtonStatuses(AnalysisNodeRunStatus.Running);
-    showFailure("Stop failure", "Failed to stop the analysis container");
+    showToast("error", "Stop failure", "Failed to stop the analysis container");
   }
   loading.value = false;
 }
@@ -146,6 +177,18 @@ async function onStopAnalysis() {
 async function onDeleteAnalysis() {
   loading.value = true;
   setButtonStatuses(AnalysisNodeRunStatus.Stopping);
+
+  await useNuxtApp()
+    .$hubApi(`/kong/analysis/${props.analysisId}`, {
+      method: "DELETE",
+    })
+    .catch(() => {
+      showToast(
+        "warn",
+        "Disconnect failure",
+        "Unable to disconnect the data store from the analysis",
+      );
+    });
 
   const deleteResp = await useNuxtApp()
     .$hubApi(`/po/${props.analysisId}/delete`, {
@@ -155,15 +198,65 @@ async function onDeleteAnalysis() {
 
   if (deleteResp) {
     buttonStatuses.value = setButtonStatuses("");
-    showSuccess("Delete success", "Successfully removed the container");
+    showToast("info", "Delete success", "Successfully removed the container");
   } else {
-    showFailure("Delete failure", "Failed to delete the analysis container");
+    showToast(
+      "error",
+      "Delete failure",
+      "Failed to delete the analysis container",
+    );
   }
   loading.value = false;
 }
+
+// TODO move to analysis table so a toast element isn't made for every row
+const showDataStoreNavToast = () => {
+  toast.add({
+    severity: "error",
+    summary:
+      "Unable to find a data store to this analysis, click the button below " +
+      "to create a data store for the associated project",
+    group: "datastoreToastLink",
+  });
+};
+
+const onNavigate = () => {
+  toast.removeGroup("datastoreToastLink");
+  navigateTo("/data-stores/create");
+};
+
+const onCloseNavToast = () => {
+  toast.removeGroup("datastoreToastLink");
+};
 </script>
 
 <template>
+  <div class="card flex justify-content-center">
+    <Toast
+      position="top-center"
+      group="datastoreToastLink"
+      @close="onCloseNavToast()"
+    >
+      <template #message="slotProps">
+        <div class="flex flex-column align-items-start" style="flex: 1">
+          <div class="flex align-items-center gap-2">
+            <span class="font-bold text-900">Missing Data Store!</span>
+          </div>
+          <div class="font-medium text-lg my-3 text-900">
+            <span>{{ slotProps.message.summary }}</span>
+          </div>
+          <Button
+            class="p-button-sm nav-btn"
+            label="Create a Data Store"
+            @click="onNavigate"
+            severity="info"
+          >
+            Create Data Store
+          </Button>
+        </div>
+      </template>
+    </Toast>
+  </div>
   <div class="analysis-buttons">
     <Button
       icon="pi pi-play"
@@ -231,4 +324,8 @@ async function onDeleteAnalysis() {
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.nav-btn {
+  margin-top: 10px;
+}
+</style>

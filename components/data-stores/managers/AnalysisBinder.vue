@@ -69,18 +69,6 @@ async function onSubmitProjectAnalysisBinding() {
       <template #content>
         <InputGroup>
           <InputGroupAddon class="fieldName">
-            <i class="pi pi-cog"></i>
-            <p class="dsFieldName">Project</p>
-          </InputGroupAddon>
-          <Dropdown
-            v-model="selectedProject"
-            :options="props.projects"
-            optionLabel="name"
-            placeholder="Select a Project"
-          />
-        </InputGroup>
-        <InputGroup>
-          <InputGroupAddon class="fieldName">
             <i class="pi pi-lightbulb"></i>
             <p class="dsFieldName">Analysis</p>
           </InputGroupAddon>
@@ -89,6 +77,18 @@ async function onSubmitProjectAnalysisBinding() {
             :options="availableAnalyses"
             optionLabel="name"
             placeholder="Select an Analysis"
+          />
+        </InputGroup>
+        <InputGroup>
+          <InputGroupAddon class="fieldName">
+            <i class="pi pi-cog"></i>
+            <p class="dsFieldName">Project</p>
+          </InputGroupAddon>
+          <Dropdown
+            v-model="selectedProject"
+            :options="props.projects"
+            optionLabel="name"
+            placeholder="Select a Project"
           />
         </InputGroup>
         <Button

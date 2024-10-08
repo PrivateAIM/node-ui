@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import AnalysisBinder from "~/components/data-stores/managers/AnalysisBinder.vue";
 import { getProposals } from "~/composables/useAPIFetch";
 import type { ProjectNode } from "~/services/Api";
 
@@ -22,24 +21,11 @@ if (projStatus.value === "success") {
 </script>
 
 <template>
-  <div class="card tabCard">
-    <TabView>
-      <TabPanel
-        header="Link an Analysis to a Project"
-        :disabled="projStatus === 'pending'"
-      >
-        <AnalysisBinder :projects="availableProjects" />
-      </TabPanel>
-      <TabPanel
-        header="Create a Project and Data Store"
-        :disabled="projStatus === 'pending'"
-      >
-        <DataStoresManagersDataStoreProjectInitializer
-          v-if="availableProjects"
-          :projects="availableProjects"
-        />
-      </TabPanel>
-    </TabView>
+  <div class="card">
+    <DataStoresManagersDataStoreProjectInitializer
+      v-if="availableProjects"
+      :projects="availableProjects"
+    />
   </div>
 </template>
 

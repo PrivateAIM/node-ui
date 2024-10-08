@@ -39,7 +39,7 @@ export default defineNuxtPlugin(() => {
         if (response._data.detail.service) {
           downstreamService = response._data.detail.service;
         } else {
-          downstreamService = "service";
+          downstreamService = "for this process";
         }
         showDownstreamConnectionErrorToast(downstreamService);
       }
