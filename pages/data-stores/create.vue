@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ResourceManagerLayout from "~/components/data-stores/ResourceManagerTabs.vue";
+import ResourceManagerTabs from "~/components/data-stores/ResourceManagerTabs.vue";
 
 definePageMeta({
   middleware: ["auth"],
@@ -7,7 +7,7 @@ definePageMeta({
 </script>
 
 <template>
-  <ResourceManagerLayout />
+  <ResourceManagerTabs />
 </template>
 
 <style scoped lang="scss"></style>

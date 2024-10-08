@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DataStoreLayout from "~/components/data-stores/DataStoreListTabs.vue";
+import DataStoreListTabs from "~/components/data-stores/DataStoreListTabs.vue";
 
 definePageMeta({
   middleware: ["auth"],
@@ -7,7 +7,7 @@ definePageMeta({
 </script>
 
 <template>
-  <DataStoreLayout />
+  <DataStoreListTabs />
 </template>
 
 <style scoped lang="scss"></style>

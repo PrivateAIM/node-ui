@@ -12,14 +12,15 @@ const toast = useToast();
 
 // Project settings
 const availableMethods = ref(["GET", "POST", "PUT", "DELETE"]);
-const dataStoreTypes = ref(["fhir", "s3"]);
+const dataStoreTypes = ref(["FHIR", "S3"]);
 
 const selectedProject = ref();
+
 const selectedAllowedMethods = ref(["GET"]);
-const selectedDataStoreType = ref("fhir");
+const selectedDataStoreType = ref("FHIR");
 
 // Datastore settings
-const dataStoreName = ref();
+const dataStoreName = ref("");
 const host = ref("");
 const path = ref("");
 const port = ref(80);
@@ -38,6 +39,10 @@ const acceptedProtocols = ref([
   "wss",
 ]);
 
+watch(selectedProject, (newSelectedProject) => {
+  dataStoreName.value = newSelectedProject.id;
+});
+
 async function onSubmitCreateDataStoreAndProject() {
   const datastoreSettings = {
     name: dataStoreName.value,
@@ -48,18 +53,17 @@ async function onSubmitCreateDataStoreAndProject() {
   };
 
   for (const key in datastoreSettings) {
-    if (!dataStoreProps[key]) {
+    if (!datastoreSettings[key]) {
       alert(`${key} is not defined!`);
-      break;
+      return;
     }
   }
 
   const configSettings = {
     datastore: datastoreSettings,
     project_id: selectedProject.value.id,
-    data_store_id: selectedDataStore.value.id,
     methods: selectedAllowedMethods.value,
-    ds_type: selectedDataStoreType.value,
+    ds_type: selectedDataStoreType.value.toLowerCase() as string,
   };
 
   loading.value = true;
@@ -96,7 +100,7 @@ async function onSubmitCreateDataStoreAndProject() {
     <Card style="margin-top: 10px">
       <template #title>Create a Project and Data Store</template>
       <template #content>
-        <InputGroup>
+        <InputGroup style="margin-bottom: 20px">
           <InputGroupAddon class="fieldName">
             <i class="pi pi-cog"></i>
             <p class="dsFieldName">Project</p>
@@ -113,7 +117,7 @@ async function onSubmitCreateDataStoreAndProject() {
             <i class="pi pi-barcode"></i>
             <p class="dsFieldName">Data Store</p>
           </InputGroupAddon>
-          <InputText v-model="selectedProject.id" disabled />
+          <InputText v-model="dataStoreName" disabled />
         </InputGroup>
         <InputGroup>
           <InputGroupAddon class="fieldName">

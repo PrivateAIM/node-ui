@@ -1,17 +1,31 @@
 <script setup lang="ts">
 import Dropdown from "primevue/dropdown";
-import { connectAnalysisProject } from "~/composables/useAPIFetch";
+import {
+  connectAnalysisProject,
+  getAnalysisNodes,
+} from "~/composables/useAPIFetch";
+import type { AnalysisNode } from "~/services/Api";
 
 const props = defineProps({
   projects: Array,
-  analyses: Array,
 });
 
+const availableAnalyses = ref([]);
 const selectedProject = ref();
 const selectedAnalysis = ref();
 
 const loading = ref(false);
 const toast = useToast();
+
+const { data: analyses, status } = await getAnalysisNodes({
+  lazy: true,
+});
+if (status.value === "success") {
+  const analysisData = analyses!.data as unknown as Array<AnalysisNode>;
+  availableAnalyses.value = analysisData.map((analysisNode: AnalysisNode) => {
+    return { name: analysisNode.analysis.name, id: analysisNode.analysis_id };
+  });
+}
 
 async function onSubmitProjectAnalysisBinding() {
   const props = {
@@ -72,7 +86,7 @@ async function onSubmitProjectAnalysisBinding() {
           </InputGroupAddon>
           <Dropdown
             v-model="selectedAnalysis"
-            :options="props.analyses"
+            :options="availableAnalyses"
             optionLabel="name"
             placeholder="Select an Analysis"
           />
