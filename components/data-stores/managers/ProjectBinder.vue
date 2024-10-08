@@ -4,11 +4,9 @@ import { createProject } from "~/composables/useAPIFetch";
 
 const props = defineProps({
   projects: Array,
-  dataStores: Array,
 });
 
 const selectedProject = ref();
-const selectedDataStore = ref();
 const selectedAllowedMethods = ref([]);
 const selectedDataStoreType = ref("fhir");
 
