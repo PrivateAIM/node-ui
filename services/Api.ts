@@ -2344,12 +2344,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description List all projects (referred to as routes by kong) available, can be filtered by project_id. Set "detailed" to True to include detailed information on the linked data stores.
      *
      * @tags Kong
-     * @name ListProjectsKongProjectGet
-     * @summary List Projects
+     * @name GetProjectsKongProjectGet
+     * @summary Get Projects
      * @request GET:/kong/project
      * @secure
      */
-    listProjectsKongProjectGet: (
+    getProjectsKongProjectGet: (
       query?: {
         /**
          * Project Id
