@@ -15,7 +15,7 @@ const props = defineProps({
   nodeId: String,
 });
 
-const emit = defineEmits(["newRunStatus"]);
+const emit = defineEmits(["newRunStatus", "missingDataStore"]);
 const toast = useToast();
 const loading = ref(false);
 
@@ -112,10 +112,11 @@ async function onStartAnalysis() {
         "Duplicate entry error",
         "A data store is already mapped to this analysis and will be reused",
       );
+      bindDataStoreResp = "duplicate";
     } else {
       // If not 409, show error and quit process
       if (error.status === 404) {
-        showDataStoreNavToast();
+        emit("missingDataStore");
       } else {
         showToast(
           "error",
@@ -147,8 +148,8 @@ async function onStartAnalysis() {
       setButtonStatuses(AnalysisNodeRunStatus.Failed);
       showToast("error", "Start failure", "Failed to start the analysis");
     }
-    loading.value = false;
   }
+  loading.value = false;
 }
 
 async function onStopAnalysis() {
@@ -208,55 +209,9 @@ async function onDeleteAnalysis() {
   }
   loading.value = false;
 }
-
-// TODO move to analysis table so a toast element isn't made for every row
-const showDataStoreNavToast = () => {
-  toast.add({
-    severity: "error",
-    summary:
-      "Unable to find a data store to this analysis, click the button below " +
-      "to create a data store for the associated project",
-    group: "datastoreToastLink",
-  });
-};
-
-const onNavigate = () => {
-  toast.removeGroup("datastoreToastLink");
-  navigateTo("/data-stores/create");
-};
-
-const onCloseNavToast = () => {
-  toast.removeGroup("datastoreToastLink");
-};
 </script>
 
 <template>
-  <div class="card flex justify-content-center">
-    <Toast
-      position="top-center"
-      group="datastoreToastLink"
-      @close="onCloseNavToast()"
-    >
-      <template #message="slotProps">
-        <div class="flex flex-column align-items-start" style="flex: 1">
-          <div class="flex align-items-center gap-2">
-            <span class="font-bold text-900">Missing Data Store!</span>
-          </div>
-          <div class="font-medium text-lg my-3 text-900">
-            <span>{{ slotProps.message.summary }}</span>
-          </div>
-          <Button
-            class="p-button-sm nav-btn"
-            label="Create a Data Store"
-            @click="onNavigate"
-            severity="info"
-          >
-            Create Data Store
-          </Button>
-        </div>
-      </template>
-    </Toast>
-  </div>
   <div class="analysis-buttons">
     <Button
       icon="pi pi-play"
@@ -324,8 +279,4 @@ const onCloseNavToast = () => {
   </div>
 </template>
 
-<style scoped lang="scss">
-.nav-btn {
-  margin-top: 10px;
-}
-</style>
+<style scoped lang="scss"></style>
