@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import DetailedProjectTable from "~/components/data-stores/tables/DetailedProjectTable.vue";
 import {
   getAnalyses,
   getAnalysesFromKong,
@@ -104,16 +103,10 @@ function extractProjectIdFromPath(paths: string[]): string {
     <TabView>
       <TabPanel header="Detailed Data Store View">
         <DetailedDataStoreTable
-          v-if="dataStores"
+          v-if="dataStores && projectNameMap"
           :stores="dataStores"
-          :loading="loading"
-        />
-      </TabPanel>
-      <TabPanel header="Detailed Projects View" :disabled="!projectNameMap">
-        <DetailedProjectTable
-          v-if="projectNameMap"
-          :detailedStoreList="dataStores"
           :projectNameMap="projectNameMap"
+          :loading="loading"
         />
       </TabPanel>
       <TabPanel header="Detailed Analyses View" :disabled="!analysisNameMap">

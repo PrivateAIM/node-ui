@@ -1,19 +1,60 @@
 <script setup lang="ts">
 import { deleteDataStore } from "~/composables/useAPIFetch";
 import { useConfirm } from "primevue/useconfirm";
-import type { DetailedService } from "~/services/Api";
+import type { DetailedService, Route } from "~/services/Api";
 import { FilterMatchMode } from "primevue/api";
 import SearchBar from "~/components/table/SearchBar.vue";
+import { extractUuid } from "~/utils/extract-uuid-from-kong-username";
+import { parseUnixTimestamp } from "~/utils/format-data-row";
 
 const props = defineProps({
   stores: Array<DetailedService>,
+  projectNameMap: Map<string, string>,
   loading: Boolean,
 });
 
-const dataStores = ref(props.stores);
+const dataStores = ref([]);
 const confirm = useConfirm();
 const toast = useToast();
 const deleteLoading = ref(false);
+
+function compiledTableRows() {
+  let tableRows = [];
+
+  if (props.stores && props.stores.length > 0) {
+    props.stores.forEach((store: DetailedService) => {
+      const formattedRow = parseUnixTimestamp(store, [
+        "created_at",
+        "updated_at",
+      ]);
+      const routes = store.routes;
+      if (routes && routes.length > 0) {
+        routes.forEach((proj: Route) => {
+          const projectParts = extractUuid(proj.name!);
+          const dataStoreType = projectParts[0];
+          const projectUuid = projectParts[1];
+          const newRow = {
+            name: store.name,
+            type: dataStoreType,
+            project: props.projectNameMap.has(projectUuid)
+              ? props.projectNameMap.get(projectUuid)!
+              : "N/A",
+            path: store.path,
+            host: store.host,
+            port: store.port,
+            protocol: store.protocol,
+            created_at: formattedRow.created_at,
+            updated_at: formattedRow.updated_at,
+          };
+          tableRows.push(newRow);
+        });
+      }
+    });
+  }
+  dataStores.value = tableRows;
+}
+
+compiledTableRows();
 
 async function onConfirmDeleteDataStore(dsName: string) {
   deleteLoading.value = true;
@@ -92,7 +133,14 @@ const updateFilters = (filterText: string) => {
       tableStyle="min-width: 50rem"
       v-model:filters="filters"
       filterDisplay="menu"
-      :globalFilterFields="['name', 'path', 'host']"
+      :globalFilterFields="[
+        'name',
+        'path',
+        'host',
+        'project',
+        'type',
+        'protocol',
+      ]"
     >
       <template #empty> No data stores found. </template>
       <template #header>
@@ -110,8 +158,10 @@ const updateFilters = (filterText: string) => {
         :sortable="true"
         style="width: 30rem"
       ></Column>
+      <Column field="project" header="Project" :sortable="true"></Column>
+      <Column field="type" header="Type" :sortable="true"></Column>
       <Column field="path" header="Path"></Column>
-      <Column field="host" header="Host" :sortable="true"></Column>
+      <Column field="host" header="Server" :sortable="true"></Column>
       <Column field="port" header="Port"></Column>
       <Column field="protocol" header="Protocol" :sortable="true"></Column>
       <Column

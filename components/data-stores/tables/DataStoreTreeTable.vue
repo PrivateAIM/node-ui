@@ -71,7 +71,8 @@ function formatDataStoreNodes(projectNodeMap: Map<string, TreeNode[]>) {
     } as TreeNode;
     const projects = ds.routes!;
     projects.forEach((project: Route) => {
-      const projUuid = extractUuid(project.name!);
+      const projParts = extractUuid(project.name!);
+      const projUuid = projParts[1];
       const projChildren = projectNodeMap.get(projUuid);
       const projectNode = {
         key: project.id!,
