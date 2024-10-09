@@ -107,7 +107,7 @@ async function onSubmitCreateDataStoreAndProject() {
 <template>
   <div>
     <Card style="margin-top: 10px">
-      <template #title>Create a Project and Data Store</template>
+      <template #title>Create a Data Store for a Project</template>
       <template #content>
         <InputGroup style="margin-bottom: 20px">
           <InputGroupAddon class="fieldName">
