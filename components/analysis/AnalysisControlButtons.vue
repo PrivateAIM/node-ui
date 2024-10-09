@@ -15,7 +15,7 @@ const props = defineProps({
   nodeId: String,
 });
 
-const emit = defineEmits(["newRunStatus"]);
+const emit = defineEmits(["newRunStatus", "missingDataStore"]);
 const toast = useToast();
 const loading = ref(false);
 
@@ -77,21 +77,12 @@ function setButtonStatuses(podStatus: string, updateTable: boolean = true) {
   };
 }
 
-const showFailure = (summary: string, msg: string) => {
+const showToast = (severity: string, summary: string, msg: string) => {
   toast.add({
-    severity: "error",
+    severity: severity,
     summary: summary,
     detail: msg,
-    life: 3000,
-  });
-};
-
-const showSuccess = (summary: string, msg: string) => {
-  toast.add({
-    severity: "info",
-    summary: summary,
-    detail: msg,
-    life: 3000,
+    life: 5000,
   });
 };
 
@@ -102,20 +93,61 @@ async function onStartAnalysis() {
   analysisProps.analysis_id = props.analysisId!;
   analysisProps.project_id = props.projectId!;
   analysisProps.node_id = props.nodeId!;
-  const startResp = await useNuxtApp()
-    .$hubApi("/po", {
-      method: "POST",
-      body: analysisProps,
-    })
-    .catch(() => null); // Set the response to null if an error occurs
 
-  if (startResp) {
-    const currentRunStatus = startResp.status;
-    buttonStatuses.value = setButtonStatuses(currentRunStatus);
-    showSuccess("Start success", "Successfully started the container");
-  } else {
-    setButtonStatuses(AnalysisNodeRunStatus.Failed);
-    showFailure("Start failure", "Failed to start the analysis");
+  // Bind data to Analysis via Kong
+  let bindDataStoreResp = null;
+  try {
+    bindDataStoreResp = await useNuxtApp().$hubApi("/kong/analysis", {
+      method: "POST",
+      body: {
+        project_id: props.projectId!,
+        analysis_id: props.analysisId!,
+      },
+    });
+  } catch (error) {
+    // Catch 409 and let proceed
+    if (error.status === 409) {
+      showToast(
+        "warn",
+        "Duplicate entry error",
+        "A data store is already mapped to this analysis and will be reused",
+      );
+      bindDataStoreResp = "duplicate";
+    } else {
+      // If not 409, show error and quit process
+      if (error.status === 404) {
+        emit("missingDataStore");
+      } else {
+        showToast(
+          "error",
+          "Data mapping failed",
+          "Unable to map a data store to this analysis due to a technical error.",
+        );
+      }
+      loading.value = false;
+      setButtonStatuses(null);
+      return;
+    }
+  }
+
+  // Start Pod
+  if (bindDataStoreResp) {
+    // Only start the pod if a data store is ready for the analysis
+    const startPodResp = await useNuxtApp()
+      .$hubApi("/po", {
+        method: "POST",
+        body: analysisProps,
+      })
+      .catch(() => null); // Set the response to null if an error occurs
+
+    if (startPodResp) {
+      const currentRunStatus = startPodResp.status;
+      buttonStatuses.value = setButtonStatuses(currentRunStatus);
+      showToast("info", "Start success", "Successfully started the container");
+    } else {
+      setButtonStatuses(AnalysisNodeRunStatus.Failed);
+      showToast("error", "Start failure", "Failed to start the analysis");
+    }
   }
   loading.value = false;
 }
@@ -135,10 +167,10 @@ async function onStopAnalysis() {
     for (const podName in podStatuses) {
       buttonStatuses.value = setButtonStatuses(podStatuses[podName]);
     }
-    showSuccess("Stop success", "Successfully stopped the container");
+    showToast("info", "Stop success", "Successfully stopped the container");
   } else {
     setButtonStatuses(AnalysisNodeRunStatus.Running);
-    showFailure("Stop failure", "Failed to stop the analysis container");
+    showToast("error", "Stop failure", "Failed to stop the analysis container");
   }
   loading.value = false;
 }
@@ -146,6 +178,18 @@ async function onStopAnalysis() {
 async function onDeleteAnalysis() {
   loading.value = true;
   setButtonStatuses(AnalysisNodeRunStatus.Stopping);
+
+  await useNuxtApp()
+    .$hubApi(`/kong/analysis/${props.analysisId}`, {
+      method: "DELETE",
+    })
+    .catch(() => {
+      showToast(
+        "warn",
+        "Disconnect failure",
+        "Unable to disconnect the data store from the analysis",
+      );
+    });
 
   const deleteResp = await useNuxtApp()
     .$hubApi(`/po/${props.analysisId}/delete`, {
@@ -155,9 +199,13 @@ async function onDeleteAnalysis() {
 
   if (deleteResp) {
     buttonStatuses.value = setButtonStatuses("");
-    showSuccess("Delete success", "Successfully removed the container");
+    showToast("info", "Delete success", "Successfully removed the container");
   } else {
-    showFailure("Delete failure", "Failed to delete the analysis container");
+    showToast(
+      "error",
+      "Delete failure",
+      "Failed to delete the analysis container",
+    );
   }
   loading.value = false;
 }

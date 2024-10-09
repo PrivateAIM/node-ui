@@ -265,11 +265,44 @@ export interface BodyCreateAndConnectAnalysisToProjectKongAnalysisPost {
   analysis_id: string;
 }
 
-/** Body_create_and_connect_project_to_datastore_kong_project_post */
-export interface BodyCreateAndConnectProjectToDatastoreKongProjectPost {
+/** Body_create_datastore_and_project_with_link_kong_initialize_post */
+export interface BodyCreateDatastoreAndProjectWithLinkKongInitializePost {
+  /**
+   * Project Id
+   * UUID of the project
+   * @format uuid
+   */
+  project_id: string;
+  /**
+   * Methods
+   * List of acceptable HTTP methods
+   * @default ["GET"]
+   */
+  methods?: string[];
+  /**
+   * Protocols
+   * List of acceptable transfer protocols. A combo of 'http', 'grpc', 'grpcs', 'tls', 'tcp'
+   * @default ["http"]
+   */
+  protocols?: string[];
+  /**
+   * Ds Type
+   * Data store type. Either 's3' or 'fhir'
+   * @default "fhir"
+   */
+  ds_type?: string;
+  /**
+   * Data store metadata.
+   * Required information for creating a new data store.
+   */
+  datastore: ServiceRequest;
+}
+
+/** Body_create_project_and_connect_to_datastore_kong_project_post */
+export interface BodyCreateProjectAndConnectToDatastoreKongProjectPost {
   /**
    * Data Store Id
-   * UUID of the data store or 'gateway'
+   * UUID of the data store or 'service'
    * @format uuid
    */
   data_store_id: string;
@@ -282,7 +315,7 @@ export interface BodyCreateAndConnectProjectToDatastoreKongProjectPost {
   /**
    * Methods
    * List of acceptable HTTP methods
-   * @default ["GET","POST","PUT","DELETE"]
+   * @default ["GET"]
    */
   methods?: string[];
   /**
@@ -2342,20 +2375,43 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * @description Connect a project to a data store (referred to as a route by kong).
+     * @description Connect a project (referred to as a route by kong) to an existing data store.
      *
      * @tags Kong
-     * @name CreateAndConnectProjectToDatastoreKongProjectPost
-     * @summary Create And Connect Project To Datastore
+     * @name CreateProjectAndConnectToDatastoreKongProjectPost
+     * @summary Create Project And Connect To Datastore
      * @request POST:/kong/project
      * @secure
      */
-    createAndConnectProjectToDatastoreKongProjectPost: (
-      data: BodyCreateAndConnectProjectToDatastoreKongProjectPost,
+    createProjectAndConnectToDatastoreKongProjectPost: (
+      data: BodyCreateProjectAndConnectToDatastoreKongProjectPost,
       params: RequestParams = {},
     ) =>
       this.request<LinkDataStoreProject, void | HTTPValidationError>({
         path: `/kong/project`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Creates a new datastore (service) and a new project (route), then links them together.
+     *
+     * @tags Kong
+     * @name CreateDatastoreAndProjectWithLinkKongInitializePost
+     * @summary Create Datastore And Project With Link
+     * @request POST:/kong/initialize
+     * @secure
+     */
+    createDatastoreAndProjectWithLinkKongInitializePost: (
+      data: BodyCreateDatastoreAndProjectWithLinkKongInitializePost,
+      params: RequestParams = {},
+    ) =>
+      this.request<LinkDataStoreProject, void | HTTPValidationError>({
+        path: `/kong/initialize`,
         method: "POST",
         body: data,
         secure: true,

@@ -7,7 +7,7 @@ import {
   getProjects,
 } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
-import type { Analysis, DetailedService, Project, Route } from "~/services/Api";
+import type { DetailedService, Project, Route } from "~/services/Api";
 import DetailedDataStoreTable from "~/components/data-stores/tables/DetailedDataStoreTable.vue";
 import DetailedAnalysisTable from "~/components/data-stores/tables/DetailedAnalysisTable.vue";
 import DataStoreTreeTable from "~/components/data-stores/tables/DataStoreTreeTable.vue";

@@ -21,6 +21,7 @@ import {
 
 const expandedRows = ref();
 const analyses = ref();
+const toast = useToast();
 
 const expandRowEntries = [];
 const runStatuses = Object.values(AnalysisNodeRunStatus);
@@ -113,9 +114,55 @@ function updateRunStatus(analysisNodeId: string, newStatus: string) {
     }
   }
 }
+
+// Missing data store for row toast
+const showDataStoreNavToast = () => {
+  toast.add({
+    severity: "error",
+    summary:
+      "Unable to find a data store to this analysis, click the button below " +
+      "to create a data store for the associated project",
+    group: "datastoreToastLink",
+  });
+};
+
+const onNavigate = () => {
+  toast.removeGroup("datastoreToastLink");
+  navigateTo("/data-stores/create");
+};
+
+const onCloseNavToast = () => {
+  toast.removeGroup("datastoreToastLink");
+};
 </script>
 
 <template>
+  <div class="card flex justify-content-center">
+    <Toast
+      position="top-center"
+      group="datastoreToastLink"
+      @close="onCloseNavToast()"
+    >
+      <template #message="slotProps">
+        <div class="flex flex-column align-items-start" style="flex: 1">
+          <div class="flex align-items-center gap-2">
+            <span class="font-bold text-900">Missing Data Store!</span>
+          </div>
+          <div class="font-medium text-lg my-3 text-900">
+            <span>{{ slotProps.message.summary }}</span>
+          </div>
+          <Button
+            class="p-button-sm nav-btn"
+            label="Create a Data Store"
+            @click="onNavigate"
+            severity="info"
+          >
+            Create Data Store
+          </Button>
+        </div>
+      </template>
+    </Toast>
+  </div>
   <div class="card analysisTable">
     <Card class="contentCard">
       <template #title>Analyses</template>
@@ -329,6 +376,7 @@ function updateRunStatus(analysisNodeId: string, newStatus: string) {
                   :projectId="slotProps.data.analysis.project_id"
                   :nodeId="slotProps.data.node_id"
                   @newRunStatus="updateRunStatus"
+                  @missingDataStore="showDataStoreNavToast"
                 />
               </div>
             </template>
@@ -344,4 +392,8 @@ function updateRunStatus(analysisNodeId: string, newStatus: string) {
   </div>
 </template>
 
-<style></style>
+<style>
+.nav-btn {
+  margin-top: 10px;
+}
+</style>
