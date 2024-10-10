@@ -27,6 +27,7 @@ export default defineNuxtConfig({
     defaultProvider: "keycloak",
     providers: {
       keycloak: {
+        audience: "account",
         clientId:
           process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_ID || "node-ui",
         clientSecret: process.env
