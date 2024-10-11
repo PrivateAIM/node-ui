@@ -97,7 +97,8 @@ function compileAnalysisTable() {
 
   if (consumers && consumers.length > 0) {
     consumers.forEach((consumer: Consumer) => {
-      const analysisUuid = extractUuid(consumer.username!);
+      const analysisParts = extractUuid(consumer.username!);
+      const analysisUuid = analysisParts[1];
       const analysisName = analysisNameMap.has(analysisUuid)
         ? analysisNameMap.get(analysisUuid)
         : "N/A";
