@@ -83,7 +83,7 @@ async function onConfirmDeleteDataStore(dsName: string) {
 const confirmDelete = (event, dsName: string) => {
   confirm.require({
     target: event.currentTarget,
-    group: "templating",
+    group: "dataStoreDelete",
     message:
       "Are you sure you want to delete this data store? This will disconnect all projects and analyses from accessing this data.",
     icon: "pi pi-exclamation-circle",
@@ -193,7 +193,8 @@ const updateFilters = (filterText: string) => {
       </Column>
       <Column field="name" header="Delete?" :exportable="false">
         <template #body="slotProps">
-          <ConfirmPopup group="templating" style="width: 20em">
+          <Toast />
+          <ConfirmPopup group="dataStoreDelete" style="width: 20em">
             <template #message="slotProps">
               <div
                 class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700 p-4 mb-4 pb-0"
@@ -206,13 +207,15 @@ const updateFilters = (filterText: string) => {
               </div>
             </template>
           </ConfirmPopup>
-          <Button
-            icon="pi pi-trash"
-            aria-label="Delete"
-            severity="danger"
-            :loading="deleteLoading"
-            @click="confirmDelete($event, slotProps.data.name)"
-          />
+          <div>
+            <Button
+              icon="pi pi-trash"
+              aria-label="Delete"
+              severity="danger"
+              :loading="deleteLoading"
+              @click="confirmDelete($event, slotProps.data.name)"
+            />
+          </div>
         </template>
       </Column>
     </DataTable>
