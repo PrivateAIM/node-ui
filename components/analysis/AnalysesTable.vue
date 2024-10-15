@@ -332,8 +332,7 @@ const onCloseNavToast = () => {
           <Column field="project_name" header="Project" :sortable="true" />
           <Column
             header="Created On"
-            field="created_at.long"
-            filterField="created_at.date"
+            field="created_at.timestamp"
             dataType="date"
             :sortable="true"
           >
@@ -345,8 +344,7 @@ const onCloseNavToast = () => {
           </Column>
           <Column
             header="Last Updated"
-            field="updated_at.long"
-            filterField="updated_at.date"
+            field="updated_at.timestamp"
             dataType="date"
             :sortable="true"
           >
