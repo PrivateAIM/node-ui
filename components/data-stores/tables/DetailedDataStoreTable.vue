@@ -1,19 +1,60 @@
 <script setup lang="ts">
 import { deleteDataStore } from "~/composables/useAPIFetch";
 import { useConfirm } from "primevue/useconfirm";
-import type { DetailedService } from "~/services/Api";
+import type { DetailedService, Route } from "~/services/Api";
 import { FilterMatchMode } from "primevue/api";
 import SearchBar from "~/components/table/SearchBar.vue";
+import { extractUuid } from "~/utils/extract-uuid-from-kong-username";
+import { parseUnixTimestamp } from "~/utils/format-data-row";
 
 const props = defineProps({
   stores: Array<DetailedService>,
+  projectNameMap: Map<string, string>,
   loading: Boolean,
 });
 
-const dataStores = ref(props.stores);
+const dataStores = ref([]);
 const confirm = useConfirm();
 const toast = useToast();
 const deleteLoading = ref(false);
+
+function compiledTableRows() {
+  let tableRows = [];
+
+  if (props.stores && props.stores.length > 0) {
+    props.stores.forEach((store: DetailedService) => {
+      const formattedRow = parseUnixTimestamp(store, [
+        "created_at",
+        "updated_at",
+      ]);
+      const routes = store.routes;
+      if (routes && routes.length > 0) {
+        routes.forEach((proj: Route) => {
+          const projectParts = extractUuid(proj.name!);
+          const dataStoreType = projectParts[0];
+          const projectUuid = projectParts[1];
+          const newRow = {
+            name: store.name,
+            type: dataStoreType,
+            project: props.projectNameMap.has(projectUuid)
+              ? props.projectNameMap.get(projectUuid)!
+              : "N/A",
+            path: store.path,
+            host: store.host,
+            port: store.port,
+            protocol: store.protocol,
+            created_at: formattedRow.created_at,
+            updated_at: formattedRow.updated_at,
+          };
+          tableRows.push(newRow);
+        });
+      }
+    });
+  }
+  dataStores.value = tableRows;
+}
+
+compiledTableRows();
 
 async function onConfirmDeleteDataStore(dsName: string) {
   deleteLoading.value = true;
@@ -42,8 +83,9 @@ async function onConfirmDeleteDataStore(dsName: string) {
 const confirmDelete = (event, dsName: string) => {
   confirm.require({
     target: event.currentTarget,
-    group: "templating",
-    message: "Are you sure you want to delete this data store?",
+    group: "dataStoreDelete",
+    message:
+      "Are you sure you want to delete this data store? This will disconnect all projects and analyses from accessing this data.",
     icon: "pi pi-exclamation-circle",
     acceptIcon: "pi pi-check",
     acceptLabel: "Confirm",
@@ -92,7 +134,14 @@ const updateFilters = (filterText: string) => {
       tableStyle="min-width: 50rem"
       v-model:filters="filters"
       filterDisplay="menu"
-      :globalFilterFields="['name', 'path', 'host']"
+      :globalFilterFields="[
+        'name',
+        'path',
+        'host',
+        'project',
+        'type',
+        'protocol',
+      ]"
     >
       <template #empty> No data stores found. </template>
       <template #header>
@@ -110,8 +159,10 @@ const updateFilters = (filterText: string) => {
         :sortable="true"
         style="width: 30rem"
       ></Column>
+      <Column field="project" header="Project" :sortable="true"></Column>
+      <Column field="type" header="Type" :sortable="true"></Column>
       <Column field="path" header="Path"></Column>
-      <Column field="host" header="Host" :sortable="true"></Column>
+      <Column field="host" header="Server" :sortable="true"></Column>
       <Column field="port" header="Port"></Column>
       <Column field="protocol" header="Protocol" :sortable="true"></Column>
       <Column
@@ -140,7 +191,8 @@ const updateFilters = (filterText: string) => {
       </Column>
       <Column field="name" header="Delete?" :exportable="false">
         <template #body="slotProps">
-          <ConfirmPopup group="templating">
+          <Toast />
+          <ConfirmPopup group="dataStoreDelete" style="width: 20em">
             <template #message="slotProps">
               <div
                 class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700 p-4 mb-4 pb-0"
@@ -149,17 +201,19 @@ const updateFilters = (filterText: string) => {
                   :class="slotProps.message.icon"
                   class="text-6xl text-primary-500"
                 ></i>
-                <p>{{ slotProps.message.message }}</p>
+                <p style="padding: 10px">{{ slotProps.message.message }}</p>
               </div>
             </template>
           </ConfirmPopup>
-          <Button
-            icon="pi pi-trash"
-            aria-label="Delete"
-            severity="danger"
-            :loading="deleteLoading"
-            @click="confirmDelete($event, slotProps.data.name)"
-          />
+          <div>
+            <Button
+              icon="pi pi-trash"
+              aria-label="Delete"
+              severity="danger"
+              :loading="deleteLoading"
+              @click="confirmDelete($event, slotProps.data.name)"
+            />
+          </div>
         </template>
       </Column>
     </DataTable>

@@ -354,7 +354,7 @@ const onCloseNavToast = () => {
               </p>
             </template>
           </Column>
-          <Column field="node.name" header="Node" :sortable="true" />
+          <!--          <Column field="node.name" header="Node" :sortable="true" />-->
           <Column
             field="expand.id"
             header="Toggle Analysis"

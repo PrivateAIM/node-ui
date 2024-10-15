@@ -25,7 +25,7 @@
     "globals": "^15.3.0",
     "keycloak-js": "^25.0.0",
     "nuxt": "^3.13.0",
-    "nuxt-oidc-auth": "^0.17.0",
+    "nuxt-oidc-auth": "^0.18.0",
     "nuxt-primevue": "^3.0.0",
     "pinia": "^2.1.7",
     "prettier": "^3.3.0",

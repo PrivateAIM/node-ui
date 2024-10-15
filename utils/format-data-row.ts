@@ -24,14 +24,14 @@ export function formatDataRow(
   return rowEntries;
 }
 
-function parseUnixTimestamp(
+export function parseUnixTimestamp(
   dataRow: Map<string, string | number | null>,
   keysToModify: string[],
 ): Map<string, string | number | null> {
   keysToModify.forEach((key) => {
     if (key in dataRow) {
       const timestamp = dataRow[key];
-      if (typeof timestamp === "string") {
+      if (typeof timestamp === "string" || typeof timestamp === "number") {
         // If not a string then already parsed as object
         let date: Date;
         if (isUnixTimestamp(timestamp)) {

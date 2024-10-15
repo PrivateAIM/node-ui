@@ -21,6 +21,9 @@ NUXT_OIDC_PROVIDERS_KEYCLOAK_REDIRECT_URI="http://localhost:3000/auth/keycloak/c
 NUXT_OIDC_PROVIDERS_KEYCLOAK_AUTHORIZATION_URL="https://my.keycloak.domain.de/realms/flame/protocol/openid-connect/auth"
 NUXT_OIDC_PROVIDERS_KEYCLOAK_TOKEN_URL="https://my.keycloak.domain.de/realms/flame/protocol/openid-connect/token"
 NUXT_OIDC_PROVIDERS_KEYCLOAK_USERINFO_URL="https://my.keycloak.domain.de/realms/flame/protocol/openid-connect/userinfo"
+NUXT_OIDC_PROVIDERS_KEYCLOAK_OPEN_ID_CONFIGURATION="http://my.keycloak.domain.de/realms/flame/.well-known/openid-configuration"
+NUXT_OIDC_PROVIDERS_KEYCLOAK_LOGOUT_URL="http://my.keycloak.domain.de/realms/flame/protocol/openid-connect/logout"
+NUXT_OIDC_PROVIDERS_KEYCLOAK_LOGOUT_REDIRECT_URI="http://localhost:3000"
 
 # Nuxt OIDC Tokens
 # https://nuxt.com/modules/nuxt-oidc-auth#_3-set-secrets

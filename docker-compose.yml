@@ -34,11 +34,14 @@ services:
       NUXT_PUBLIC_BASE_URL: "http://localhost:3000"  # URL of the website
       NUXT_PUBLIC_HUB_ADAPTER_URL: "http://localhost:8081"
       NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_ID: "node-ui"
-      NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET: "xxx"
+      NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET: ""
       NUXT_OIDC_PROVIDERS_KEYCLOAK_REDIRECT_URI: "http://localhost:3000/auth/keycloak/callback"
       NUXT_OIDC_PROVIDERS_KEYCLOAK_AUTHORIZATION_URL: "http://localhost:8080/realms/flame/protocol/openid-connect/auth"
       NUXT_OIDC_PROVIDERS_KEYCLOAK_TOKEN_URL: "http://localhost:8080/realms/flame/protocol/openid-connect/token"
       NUXT_OIDC_PROVIDERS_KEYCLOAK_USERINFO_URL: "http://localhost:8080/realms/flame/protocol/openid-connect/userinfo"
+      NUXT_OIDC_PROVIDERS_KEYCLOAK_OPEN_ID_CONFIGURATION: "http://localhost:8080/realms/flame/.well-known/openid-configuration"
+      NUXT_OIDC_PROVIDERS_KEYCLOAK_LOGOUT_URL: "http://localhost:8080/realms/flame/protocol/openid-connect/logout"
+      NUXT_OIDC_PROVIDERS_KEYCLOAK_LOGOUT_REDIRECT_URI: "http://localhost:3000"
     ports:
       - '3000:3000'
     restart: always

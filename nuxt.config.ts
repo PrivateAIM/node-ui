@@ -27,6 +27,8 @@ export default defineNuxtConfig({
     defaultProvider: "keycloak",
     providers: {
       keycloak: {
+        audience: "account",
+        userNameClaim: "preferred_username",
         clientId:
           process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_ID || "node-ui",
         clientSecret: process.env
@@ -49,7 +51,12 @@ export default defineNuxtConfig({
         openIdConfiguration:
           process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_OPEN_ID_CONFIGURATION ||
           process.env.KEYCLOAK_SERVICE_URL +
-            "realms/flame/.well-known/openid-configuration",
+            "/realms/flame/.well-known/openid-configuration",
+        logoutUrl:
+          process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_LOGOUT_URL ||
+          process.env.KEYCLOAK_SERVICE_URL +
+            "/realms/flame/protocol/openid-connect/logout",
+        logoutRedirectUri: process.env.NUXT_PUBLIC_BASE_URL,
         exposeAccessToken: true,
         pkce: false,
       },

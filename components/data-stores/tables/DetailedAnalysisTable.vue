@@ -46,7 +46,7 @@ const confirmDeleteAnalysis = (
 ) => {
   confirm.require({
     target: event.currentTarget,
-    group: "templating",
+    group: "disconnectAnalysis",
     message: "Are you sure you want to delete this analysis?",
     icon: "pi pi-exclamation-circle",
     acceptIcon: "pi pi-check",
@@ -97,7 +97,8 @@ function compileAnalysisTable() {
 
   if (consumers && consumers.length > 0) {
     consumers.forEach((consumer: Consumer) => {
-      const analysisUuid = extractUuid(consumer.username!);
+      const analysisParts = extractUuid(consumer.username!);
+      const analysisUuid = analysisParts[1];
       const analysisName = analysisNameMap.has(analysisUuid)
         ? analysisNameMap.get(analysisUuid)
         : "N/A";
@@ -208,7 +209,7 @@ const updateFilters = (filterText: string) => {
       </Column>
       <Column field="hubAnalysisUuid" header="Delete?" :exportable="false">
         <template #body="slotProps">
-          <ConfirmPopup group="templating">
+          <ConfirmPopup group="disconnectAnalysis">
             <template #message="slotProps">
               <div
                 class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700 p-4 mb-4 pb-0"
