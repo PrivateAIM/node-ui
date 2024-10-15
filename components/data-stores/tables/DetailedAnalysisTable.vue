@@ -197,8 +197,7 @@ const updateFilters = (filterText: string) => {
       ></Column>
       <Column
         header="Created On"
-        field="kongProjCreatedAt.long"
-        filterField="kongAnalysisCreatedAt.long"
+        field="kongProjCreatedAt.timestamp"
         dataType="date"
         :sortable="true"
       >

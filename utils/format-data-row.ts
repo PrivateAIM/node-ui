@@ -45,6 +45,7 @@ export function parseUnixTimestamp(
           short: formatDate(date),
           long: date.toUTCString(),
           date: date,
+          timestamp: date.getTime() / 1000,
         };
       }
     }

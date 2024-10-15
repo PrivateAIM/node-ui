@@ -167,8 +167,7 @@ const updateFilters = (filterText: string) => {
       <Column field="protocol" header="Protocol" :sortable="true"></Column>
       <Column
         header="Created On"
-        field="created_at.long"
-        filterField="created_at.date"
+        field="created_at.timestamp"
         dataType="date"
         :sortable="true"
       >
@@ -180,8 +179,7 @@ const updateFilters = (filterText: string) => {
       </Column>
       <Column
         header="Last Updated"
-        field="updated_at.long"
-        filterField="updated_at.date"
+        field="updated_at.timestamp"
         dataType="date"
         :sortable="true"
       >
