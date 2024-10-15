@@ -30,8 +30,6 @@ async function onTableRefresh() {
   parseData();
 }
 
-console.log(projects.value);
-
 // Table filters
 const defaultFilters = {
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
