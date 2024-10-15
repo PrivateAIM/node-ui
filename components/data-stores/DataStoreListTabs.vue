@@ -101,7 +101,7 @@ function extractProjectIdFromPath(paths: string[]): string {
 <template>
   <div class="card tabCard">
     <TabView>
-      <TabPanel header="Detailed Data Store View">
+      <TabPanel header="Data Store Overview">
         <DetailedDataStoreTable
           v-if="dataStores && projectNameMap"
           :stores="dataStores"
@@ -109,7 +109,7 @@ function extractProjectIdFromPath(paths: string[]): string {
           :loading="loading"
         />
       </TabPanel>
-      <TabPanel header="Detailed Analyses View" :disabled="!analysisNameMap">
+      <TabPanel header="Connected Analyses" :disabled="!analysisNameMap">
         <DetailedAnalysisTable
           v-if="analysisNameMap && projectNameMap"
           :detailedAnalysisList="consumersAnalyses"
