@@ -46,6 +46,10 @@ export default defineNuxtConfig({
           process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_USERINFO_URL ||
           process.env.KEYCLOAK_SERVICE_URL +
             "/realms/flame/protocol/openid-connect/auth",
+        openIdConfiguration:
+          process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_OPEN_ID_CONFIGURATION ||
+          process.env.KEYCLOAK_SERVICE_URL +
+            "realms/flame/.well-known/openid-configuration",
         exposeAccessToken: true,
         pkce: false,
       },
