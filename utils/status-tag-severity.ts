@@ -60,3 +60,13 @@ export const getRunStatusSeverity = (status) => {
       return "success";
   }
 };
+
+export const getDataStoreTypeSeverity = (status) => {
+  switch (status) {
+    case "s3":
+      return "info";
+
+    case "fhir":
+      return "danger";
+  }
+};

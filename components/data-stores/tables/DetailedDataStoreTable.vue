@@ -6,6 +6,7 @@ import { FilterMatchMode } from "primevue/api";
 import SearchBar from "~/components/table/SearchBar.vue";
 import { extractUuid } from "~/utils/extract-uuid-from-kong-username";
 import { parseUnixTimestamp } from "~/utils/format-data-row";
+import { getDataStoreTypeSeverity } from "~/utils/status-tag-severity";
 
 const props = defineProps({
   stores: Array<DetailedService>,
@@ -17,6 +18,8 @@ const dataStores = ref([]);
 const confirm = useConfirm();
 const toast = useToast();
 const deleteLoading = ref(false);
+
+const dataStoreTypes = ["s3", "fhir"];
 
 function compiledTableRows() {
   let tableRows = [];
@@ -101,6 +104,7 @@ const confirmDelete = (event, dsName: string) => {
 // Table filters
 const defaultFilters = {
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  type: { value: null, matchMode: FilterMatchMode.EQUALS },
   "created_at.short": { value: null, matchMode: FilterMatchMode.DATE_IS },
   "updated_at.short": { value: null, matchMode: FilterMatchMode.DATE_IS },
 };
@@ -160,7 +164,40 @@ const updateFilters = (filterText: string) => {
         style="width: 30rem"
       ></Column>
       <Column field="project" header="Project" :sortable="true"></Column>
-      <Column field="type" header="Type" :sortable="true"></Column>
+      <Column
+        field="type"
+        header="Type"
+        :showFilterMatchModes="false"
+        :showClearButton="false"
+        :showApplyButton="false"
+        :showFilterOperator="false"
+        :showAddButton="false"
+      >
+        <template #body="{ data }">
+          <Tag
+            v-if="data.type"
+            :value="data.type"
+            :severity="getDataStoreTypeSeverity(data.type)"
+          />
+        </template>
+        <template #filter="{ filterModel, filterCallback }">
+          <Dropdown
+            v-model="filterModel.value"
+            @change="filterCallback()"
+            :options="dataStoreTypes"
+            placeholder="Select One"
+            class="p-column-filter"
+            :showClear="true"
+          >
+            <template #option="slotProps">
+              <Tag
+                :value="slotProps.option"
+                :severity="getDataStoreTypeSeverity(slotProps.option)"
+              />
+            </template>
+          </Dropdown>
+        </template>
+      </Column>
       <Column field="path" header="Path"></Column>
       <Column field="host" header="Server" :sortable="true"></Column>
       <Column field="port" header="Port"></Column>
