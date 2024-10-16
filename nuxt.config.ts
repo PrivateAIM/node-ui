@@ -57,6 +57,7 @@ export default defineNuxtConfig({
           process.env.KEYCLOAK_SERVICE_URL +
             "/realms/flame/protocol/openid-connect/logout",
         logoutRedirectUri: process.env.NUXT_PUBLIC_BASE_URL,
+        validateAccessToken: false,
         exposeAccessToken: true,
         pkce: false,
       },
