@@ -38,6 +38,7 @@ export default defineNuxtConfig({
         openIdConfiguration: "",
         logoutUrl: "",
         logoutRedirectUri: "",
+        validateAccessToken: false,
         exposeAccessToken: false,
         pkce: false,
       },
