@@ -1,4 +1,50 @@
 {{/*
+Set the hostname of the Node UI. Assumes if global ingress enabled then global hostname is supplied
+*/}}
+{{- define "ui.ingress.hostname" -}}
+{{- if .Values.global.node.ingress.enabled  -}}
+    {{- if .Values.global.node.ingress.hostname -}}
+        {{- if not (hasPrefix "http" .Values.global.node.ingress.hostname) -}}
+            {{- printf "https://%s" .Values.global.node.ingress.hostname -}}
+        {{- else -}}
+            {{- print .Values.global.node.ingress.hostname -}}
+        {{- end -}}
+    {{- else -}}
+        {{- print "http://localhost:3000" -}}
+    {{- end -}}
+{{- else if .Values.ingress.enabled  -}}
+    {{- if .Values.ingress.hostname -}}
+        {{- if not (hasPrefix "http" .Values.ingress.hostname) -}}
+            {{- printf "https://%s" .Values.ingress.hostname -}}
+        {{- else -}}
+            {{- print .Values.ingress.hostname -}}
+        {{- end -}}
+    {{- else -}}
+        {{- print "http://localhost:3000" -}}
+    {{- end -}}
+{{- else -}}
+    {{- print "http://localhost:3000" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the hub adapter endpoint
+*/}}
+{{- define "ui.adapter.endpoint" -}}
+{{- if .Values.node.adapter -}}
+    {{- .Values.node.adapter -}}
+{{- else if and .Values.global.node.ingress.enabled .Values.global.node.ingress.hostname -}}
+    {{- if hasPrefix "http" .Values.global.node.ingress.hostname -}}
+        {{- printf "%s/api" .Values.global.node.ingress.hostname -}}
+    {{- else -}}
+        {{- printf "http://%s/api" .Values.global.node.ingress.hostname -}}
+    {{- end -}}
+{{- else -}}
+    {{- print "http://localhost:5000" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return the secret containing the Keycloak client secret
 */}}
 {{- define "ui.keycloak.secretName" -}}
@@ -49,12 +95,25 @@ Generate a random clientSecret value for the node-ui client in keycloak if none 
 {{- end -}}
 
 {{/*
-Return the Keycloak endpoint
+Return the Keycloak service endpoint
 */}}
-{{- define "ui.keycloak.endpoint" -}}
-{{- if .Values.idp.host -}}
-    {{- .Values.idp.host -}}
+{{- define "ui.keycloak.service.endpoint" -}}
+{{- $realmSuffix := printf "/realms/%s" .Values.idp.realm -}}
+{{- if .Values.idp.service -}}
+    {{- printf "http://%s%s" .Values.idp.service $realmSuffix -}}
 {{- else -}}
-    {{- printf "http://%s-keycloak-headless:8080" .Release.Name -}}
+    {{- printf "http://%s-keycloak:80%s" .Release.Name $realmSuffix -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the Keycloak frontend endpoint
+*/}}
+{{- define "ui.keycloak.frontend.endpoint" -}}
+{{- $realmSuffix := printf "/realms/%s" .Values.idp.realm -}}
+{{- if .Values.idp.host -}}
+    {{- printf "http://%s%s" .Values.idp.host $realmSuffix -}}
+{{- else -}}
+    {{- printf "http://localhost:8080%s" $realmSuffix -}}
 {{- end -}}
 {{- end -}}

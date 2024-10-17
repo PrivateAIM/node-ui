@@ -1,9 +1,28 @@
+## Global variables
+global:
+  node:
+    ingress:
+      ## @param global.node.ingress.enabled Toggle whether ingress should be enabled
+      enabled: false
+      ## @param global.node.ingress.enabled Host name to be assigned to the Node UI (/) and Hub Adapter API (/api)
+      hostname: ""
+
+env: production
+
 ## For defining ingress specific metadata
 ingress:
-  domain: localhost
-
-env: development
-url: http://localhost:3000
+  ## @param ingress.enabled Enable ingress record generation for the Node UI
+  ##
+  enabled: false
+  ## @param ingress.hostname Default host for the ingress record (evaluated as template)
+  ##
+  hostname: ""
+  ## @param ingress.pathType Ingress path type
+  ##
+  pathType: ImplementationSpecific
+  ## @param ingress.path Default file path for the ingress hostname
+  ##
+  path: "/"
 
 ## Keycloak related information
 idp:
@@ -25,8 +44,12 @@ idp:
   ## @param idp.host URL to keycloak service
   ## Will be inferred using the Release.Name if not defined
   host: ""
+  ## @param idp.service Service name of keycloak
+  ## Will be inferred using the Release.Name if not defined
+  service: ""
 
 ## Downstream node services
 node:
-  ## @param node.adapter Hub adapter endpoint
+  ## @param node.adapter Hub adapter endpoint.
+  ## This will overwrite the global.node.ingress.host generated path if provided!
   adapter: ""
