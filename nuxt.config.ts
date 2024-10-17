@@ -39,7 +39,7 @@ export default defineNuxtConfig({
         logoutUrl: "",
         logoutRedirectUri: "",
         validateAccessToken: false,
-        exposeAccessToken: false,
+        exposeAccessToken: true,
         pkce: false,
       },
     },
