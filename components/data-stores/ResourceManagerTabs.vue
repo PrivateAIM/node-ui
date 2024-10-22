@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { getProposals } from "~/composables/useAPIFetch";
+import { getProjectNodes } from "~/composables/useAPIFetch";
 import type { ProjectNode } from "~/services/Api";
 
 const availableProjects = ref();
 
-const { data: projects, status: projStatus } = await getProposals();
+const { data: projects, status: projStatus } = await getProjectNodes();
 
 if (projStatus.value === "success") {
   const projectData = projects.value.data as unknown as Array<ProjectNode>;
