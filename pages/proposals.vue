@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ProposalTable from "~/components/projects/ProjectProposalTable.vue";
+import ProjectProposalTable from "~/components/projects/ProjectProposalTable.vue";
 
 definePageMeta({
   middleware: ["auth"],
@@ -7,7 +7,7 @@ definePageMeta({
 </script>
 
 <template>
-  <ProposalTable />
+  <ProjectProposalTable />
 </template>
 
 <style scoped lang="scss"></style>
