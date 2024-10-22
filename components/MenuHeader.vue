@@ -12,18 +12,7 @@ const items = ref([
   {
     label: "Projects",
     icon: "pi pi-objects-column",
-    items: [
-      {
-        label: "Project List",
-        icon: "pi pi-clipboard",
-        route: "/projects",
-      },
-      {
-        label: "Proposals",
-        icon: "pi pi-list-check",
-        route: "/proposals",
-      },
-    ],
+    route: "/projects",
   },
   {
     label: "Analyses",
