@@ -2,6 +2,7 @@ import {
   showKongConnectionErrorToast,
   showHubAdapterConnectionErrorToast,
   showDownstreamConnectionErrorToast,
+  showWrongRobotIdToast,
 } from "~/composables/connectionErrorToast";
 
 export default defineNuxtPlugin(() => {
@@ -42,6 +43,8 @@ export default defineNuxtPlugin(() => {
           downstreamService = "for this process";
         }
         showDownstreamConnectionErrorToast(downstreamService);
+      } else if (response.status === 400) {
+        showWrongRobotIdToast();
       }
     },
   });
