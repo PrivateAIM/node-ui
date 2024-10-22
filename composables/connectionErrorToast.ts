@@ -39,3 +39,28 @@ export const showDownstreamConnectionErrorToast = (service: string) => {
   });
   console.warn(`The ${service} service is unreachable`);
 };
+
+export const showInvalidRobotCredentialsToast = () => {
+  const toast = useToastService();
+  toast.add({
+    severity: "error",
+    summary: "Invalid Robot Credentials",
+    detail:
+      "The robot credentials provided during deployment are not valid. Please verify the correct robot ID and " +
+      "secret were used, then upgrade your installation",
+    life: 6000,
+  });
+  console.warn("Invalid robot credentials");
+};
+
+export const showWrongRobotIdToast = () => {
+  const toast = useToastService();
+  toast.add({
+    severity: "error",
+    summary: "Invalid Robot ID",
+    detail:
+      "The robot ID is not a valid UUID. Please verify the robot ID was used during deployment and not the name.",
+    life: 6000,
+  });
+  console.warn("Invalid robot ID");
+};
