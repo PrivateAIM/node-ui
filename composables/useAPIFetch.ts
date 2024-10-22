@@ -25,7 +25,7 @@ export function useAPIFetch<T>(
 }
 
 // Hub endpoints
-export function getProposals(opts?) {
+export function getProjectNodes(opts?) {
   return useAPIFetch<{ data: ListProjectNodes }>("/project-nodes", {
     ...opts,
     method: "GET",

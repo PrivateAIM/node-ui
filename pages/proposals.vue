@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ProposalTable from "~/components/projects/ProposalTable.vue";
+import ProposalTable from "~/components/projects/ProjectProposalTable.vue";
 
 definePageMeta({
   middleware: ["auth"],
