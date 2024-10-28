@@ -134,6 +134,15 @@ const onNavigate = () => {
 const onCloseNavToast = () => {
   toast.removeGroup("datastoreToastLink");
 };
+
+function updateTable(newData: AnalysisNode) {
+  for (let row of analyses.value) {
+    if (row.id === newData.id) {
+      row.approval_status = newData.approval_status;
+      return;
+    }
+  }
+}
 </script>
 
 <template>
@@ -252,6 +261,20 @@ const onCloseNavToast = () => {
               </Dropdown>
             </template>
           </Column>
+          <!--          <Column-->
+          <!--            field="id"-->
+          <!--            header="Set Approval"-->
+          <!--            style="min-width: 10em"-->
+          <!--            :exportable="false"-->
+          <!--          >-->
+          <!--            <template #body="slotProps">-->
+          <!--              <ApproveRejectButtons-->
+          <!--                :objectId="slotProps.data.id"-->
+          <!--                :objectClass="'analysis'"-->
+          <!--                @updatedRow="updateTable"-->
+          <!--              />-->
+          <!--            </template>-->
+          <!--          </Column>-->
           <Column
             field="analysis.build_status"
             header="Build Status"
