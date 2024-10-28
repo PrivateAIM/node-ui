@@ -46,23 +46,23 @@ const buttonStatuses = ref(setButtonStatuses(props.analysisRunStatus, false));
 
 // TODO: remove when manual pod status checks are implemented by the PodOrc
 const runStatus = ref(props.analysisRunStatus);
-// if (
-//   props.analysisBuildStatus === AnalysisBuildStatus.Finished &&
-//   !runStatus.value
-// ) {
-//   useNuxtApp()
-//     .$hubApi(`/po/${props.analysisId}/pods`, {
-//       lazy: true,
-//       method: "GET",
-//     })
-//     .then((prevLogResp) => {
-//       if (prevLogResp.pods.length > 0) {
-//         runStatus.value = AnalysisRunStatus.Running;
-//         buttonStatuses.value = setButtonStatuses(AnalysisRunStatus.Running);
-//       }
-//     })
-//     .catch((error) => console.warn(error));
-// }
+if (
+  props.analysisBuildStatus === AnalysisBuildStatus.Finished &&
+  !runStatus.value
+) {
+  useNuxtApp()
+    .$hubApi(`/po/${props.analysisId}/pods`, {
+      lazy: true,
+      method: "GET",
+    })
+    .then((prevLogResp) => {
+      if (prevLogResp.pods.length > 0) {
+        runStatus.value = AnalysisRunStatus.Running;
+        buttonStatuses.value = setButtonStatuses(AnalysisRunStatus.Running);
+      }
+    })
+    .catch((error) => console.warn(error));
+}
 
 function setButtonStatuses(podStatus: string, updateTable: boolean = true) {
   if (updateTable) {

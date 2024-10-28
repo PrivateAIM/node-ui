@@ -135,14 +135,14 @@ const onCloseNavToast = () => {
   toast.removeGroup("datastoreToastLink");
 };
 
-function updateTable(newData: AnalysisNode) {
-  for (let row of analyses.value) {
-    if (row.id === newData.id) {
-      row.approval_status = newData.approval_status;
-      return;
-    }
-  }
-}
+// function updateTable(newData: AnalysisNode) {
+//   for (let row of analyses.value) {
+//     if (row.id === newData.id) {
+//       row.approval_status = newData.approval_status;
+//       return;
+//     }
+//   }
+// }
 </script>
 
 <template>
