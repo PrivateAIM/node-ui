@@ -2,6 +2,8 @@ import {
   showKongConnectionErrorToast,
   showHubAdapterConnectionErrorToast,
   showDownstreamConnectionErrorToast,
+  showWrongRobotIdToast,
+  showInvalidRobotCredentialsToast,
 } from "~/composables/connectionErrorToast";
 
 export default defineNuxtPlugin(() => {
@@ -42,6 +44,13 @@ export default defineNuxtPlugin(() => {
           downstreamService = "for this process";
         }
         showDownstreamConnectionErrorToast(downstreamService);
+      } else if (response.status === 400) {
+        navigateTo("/");
+        if (response._data.detail.code === "invalid_credentials") {
+          showInvalidRobotCredentialsToast();
+        } else {
+          showWrongRobotIdToast();
+        }
       }
     },
   });

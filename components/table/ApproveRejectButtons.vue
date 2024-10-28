@@ -2,7 +2,8 @@
 import { useToastService } from "~/composables/connectionErrorToast";
 
 const props = defineProps({
-  projectId: String,
+  objectId: String,
+  objectClass: String,
 });
 
 const toast = useToastService();
@@ -10,18 +11,27 @@ const loading = ref(false);
 
 const emit = defineEmits(["updatedRow"]);
 
-async function onSubmitProjectApproval(isApproved: boolean) {
+async function onSubmitApproval(isApproved: boolean) {
   loading.value = true;
-
   const formData = new FormData();
   formData.append("approval_status", isApproved ? "approved" : "rejected");
-  const approvalResp = await useNuxtApp()
-    .$hubApi(`/project-nodes/${props.projectId}`, {
-      method: "POST",
-      body: formData,
-    })
-    .catch(() => null);
+  let approvalResp;
 
+  if (props.objectClass == "project") {
+    approvalResp = await useNuxtApp()
+      .$hubApi(`/project-nodes/${props.objectId}`, {
+        method: "POST",
+        body: formData,
+      })
+      .catch(() => null);
+  } else if (props.objectClass == "analysis") {
+    approvalResp = await useNuxtApp()
+      .$hubApi(`/analysis-nodes/${props.objectId}`, {
+        method: "POST",
+        body: formData,
+      })
+      .catch(() => null);
+  }
   if (approvalResp) {
     showSuccessfulSubmission(isApproved);
     // Send data to parent component
@@ -61,7 +71,7 @@ const showFailedSubmission = () => {
       severity="success"
       :loading="loading"
       style="margin-right: 10px"
-      @click="onSubmitProjectApproval(true)"
+      @click="onSubmitApproval(true)"
     />
     <Button
       icon="pi pi-times"
@@ -69,7 +79,7 @@ const showFailedSubmission = () => {
       v-tooltip.top="'Send rejection'"
       severity="danger"
       :loading="loading"
-      @click="onSubmitProjectApproval(false)"
+      @click="onSubmitApproval(false)"
     />
   </div>
 </template>

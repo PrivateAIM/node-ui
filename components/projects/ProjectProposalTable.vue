@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { getProposals } from "~/composables/useAPIFetch";
-import ApproveRejectButtons from "~/components/projects/ApproveRejectButtons.vue";
+import { getProjectNodes } from "~/composables/useAPIFetch";
+import ApproveRejectButtons from "~/components/table/ApproveRejectButtons.vue";
 import { formatDataRow } from "~/utils/format-data-row";
 import TableRowMetadata from "~/components/TableRowMetadata.vue";
 import { ApprovalStatus, type ProjectNode } from "~/services/Api";
@@ -18,7 +18,7 @@ const expandRowEntries = [];
 
 const approvalStatuses = Object.values(ApprovalStatus);
 
-const { data: response, status, error, refresh } = await getProposals();
+const { data: response, status, error, refresh } = await getProjectNodes();
 
 function parseData() {
   if (status.value === "success") {
@@ -187,7 +187,8 @@ const updateFilters = (filterText: string) => {
           >
             <template #body="slotProps">
               <ApproveRejectButtons
-                :projectId="slotProps.data.id"
+                :objectId="slotProps.data.id"
+                :objectClass="'project'"
                 @updatedRow="updateTable"
               />
             </template>

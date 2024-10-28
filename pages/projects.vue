@@ -1,5 +1,5 @@
 <script setup>
-import ProjectTable from "~/components/projects/ProjectTable.vue";
+import ProjectProposalTable from "~/components/projects/ProjectProposalTable.vue";
 
 definePageMeta({
   middleware: ["auth"],
@@ -7,9 +7,7 @@ definePageMeta({
 </script>
 
 <template>
-  <!--  <div v-if="loggedIn">-->
-  <ProjectTable />
-  <!--  </div>-->
+  <ProjectProposalTable />
 </template>
 
 <style scoped lang="scss"></style>
