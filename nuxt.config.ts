@@ -34,7 +34,7 @@ export default defineNuxtConfig({
         redirectUri: "",
         authorizationUrl: "",
         tokenUrl: "",
-        userinfoUrl: "",
+        // userinfoUrl: "",
         openIdConfiguration: "",
         logoutUrl: "",
         logoutRedirectUri: "",
