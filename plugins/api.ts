@@ -4,6 +4,7 @@ import {
   showDownstreamConnectionErrorToast,
   showWrongRobotIdToast,
   showInvalidRobotCredentialsToast,
+  showHubConnectionError,
 } from "~/composables/connectionErrorToast";
 
 export default defineNuxtPlugin(() => {
@@ -51,6 +52,9 @@ export default defineNuxtPlugin(() => {
         } else {
           showWrongRobotIdToast();
         }
+      } else if (response.status === 408) {
+        navigateTo("/");
+        showHubConnectionError();
       }
     },
   });

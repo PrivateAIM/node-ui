@@ -64,3 +64,14 @@ export const showWrongRobotIdToast = () => {
   });
   console.warn("Invalid robot ID");
 };
+
+export const showHubConnectionError = () => {
+  const toast = useToastService();
+  toast.add({
+    severity: "error",
+    summary: "Connection error",
+    detail: "Unable to contact the Hub.",
+    life: 3000,
+  });
+  console.warn("Hub is currently unreachable");
+};
