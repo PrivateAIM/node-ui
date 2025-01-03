@@ -1,30 +1,23 @@
 <script setup lang="ts">
+import { HelpTextField } from "~/components/data-stores/managers/index";
+
 const props = defineProps({
   helpField: String || null,
-});
-
-const selectedField = ref(props.helpField);
-
-const panelSize = computed(() => {
-  return selectedField ? {width: "60%"} : {width: "20%"};
 });
 </script>
 
 <template>
   <div class="data-store-help">
-    <Fieldset legend="selectedField" :toggleable="true">
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-        commodo consequat.
-      </p>
+    <Fieldset :legend="props.helpField" :toggleable="false">
+      <p v-if="props.helpField === HelpTextField.Methods">Methods</p>
+      <p v-else-if="props.helpField === HelpTextField.Path">Path</p>
+      <p v-else-if="props.helpField === HelpTextField.Port">Port</p>
+      <p v-else-if="props.helpField === HelpTextField.Protocol">Protocol</p>
+      <p v-else-if="props.helpField === HelpTextField.Server">Server</p>
+      <p v-else-if="props.helpField === HelpTextField.Type">Type</p>
+      <p v-else>Foobar</p>
     </Fieldset>
   </div>
 </template>
 
-<style scoped lang="scss">
-.data-store-help {
-  width: v-bind(panelSize);
-}
-</style>
+<style scoped lang="scss"></style>

@@ -3,13 +3,14 @@ import InputText from "primevue/inputtext";
 import Dropdown from "primevue/dropdown";
 import InputNumber from "primevue/inputnumber";
 import DataStoreHelpBox from "~/components/data-stores/managers/DataStoreHelpBox.vue";
+import { HelpTextField } from "~/components/data-stores/managers/index";
 
 const props = defineProps({
   projects: Array,
 });
 
 const loading = ref(false);
-const helpActive = ref(false);
+const helpActive = ref();
 const toast = useToast();
 
 // Project settings
@@ -45,8 +46,8 @@ watch(selectedProject, (newSelectedProject) => {
   dataStoreName.value = newSelectedProject.id;
 });
 
-function activateHelp(helpField: string) {
-  console.log(helpField);
+function activateHelp(helpField: HelpTextField) {
+  helpActive.value = helpActive.value === helpField ? null : helpField;
 }
 
 async function onSubmitCreateDataStoreAndProject() {
@@ -160,7 +161,10 @@ async function onSubmitCreateDataStoreAndProject() {
               <InputGroupAddon class="data-store-field-name">
                 <i class="pi pi-server"></i>
                 <div class="data-store-field-name-box">
-                  <button class="help-button" @click="activateHelp('server')">
+                  <button
+                    class="help-button"
+                    @click="activateHelp(HelpTextField.Server)"
+                  >
                     <p
                       class="help-text"
                       v-tooltip.top="
@@ -182,7 +186,10 @@ async function onSubmitCreateDataStoreAndProject() {
               <InputGroupAddon class="data-store-field-name">
                 <i class="pi pi-folder"></i>
                 <div class="data-store-field-name-box">
-                  <button class="help-button" @click="activateHelp('server')">
+                  <button
+                    class="help-button"
+                    @click="activateHelp(HelpTextField.Path)"
+                  >
                     <p
                       class="help-text"
                       v-tooltip.top="'Absolute directory path'"
@@ -202,7 +209,10 @@ async function onSubmitCreateDataStoreAndProject() {
               <InputGroupAddon class="data-store-field-name">
                 <i class="pi pi-warehouse"></i>
                 <div class="data-store-field-name-box">
-                  <button class="help-button" @click="activateHelp('server')">
+                  <button
+                    class="help-button"
+                    @click="activateHelp(HelpTextField.Type)"
+                  >
                     <p
                       class="help-text"
                       v-tooltip.top="'Type of server the data is stored on'"
@@ -221,7 +231,10 @@ async function onSubmitCreateDataStoreAndProject() {
               <InputGroupAddon class="data-store-field-name">
                 <i class="pi pi-key"></i>
                 <div class="data-store-field-name-box">
-                  <button class="help-button" @click="activateHelp('server')">
+                  <button
+                    class="help-button"
+                    @click="activateHelp(HelpTextField.Port)"
+                  >
                     <p
                       class="help-text"
                       v-tooltip.top="'Port number for accessing the data'"
@@ -241,7 +254,10 @@ async function onSubmitCreateDataStoreAndProject() {
               <InputGroupAddon class="data-store-field-name">
                 <i class="pi pi-cog"></i>
                 <div class="data-store-field-name-box">
-                  <button class="help-button" @click="activateHelp('server')">
+                  <button
+                    class="help-button"
+                    @click="activateHelp(HelpTextField.Protocol)"
+                  >
                     <p
                       class="help-text"
                       v-tooltip.top="
@@ -263,7 +279,10 @@ async function onSubmitCreateDataStoreAndProject() {
               <InputGroupAddon class="data-store-field-name">
                 <i class="pi pi-warehouse"></i>
                 <div class="data-store-field-name-box">
-                  <button class="help-button" @click="activateHelp('server')">
+                  <button
+                    class="help-button"
+                    @click="activateHelp(HelpTextField.Methods)"
+                  >
                     <p class="help-text" v-tooltip.top="'Allowed HTTP methods'">
                       Allowed Methods
                     </p>
@@ -287,8 +306,8 @@ async function onSubmitCreateDataStoreAndProject() {
               @click="onSubmitCreateDataStoreAndProject"
             />
           </div>
-          <div class="data-store-help-box">
-            <DataStoreHelpBox />
+          <div class="data-store-help-box" v-if="helpActive">
+            <DataStoreHelpBox :helpField="helpActive" />
           </div>
         </div>
       </template>
@@ -299,6 +318,10 @@ async function onSubmitCreateDataStoreAndProject() {
 <style scoped lang="scss">
 .intro-text {
   padding-bottom: 3em;
+}
+
+.data-store-help-box {
+  width: 40%;
 }
 
 .data-store-panel {
@@ -333,6 +356,6 @@ async function onSubmitCreateDataStoreAndProject() {
   text-decoration-line: underline;
   text-decoration-style: dotted;
   text-underline-offset: 3px;
-  cursor: pointer;
+  cursor: help;
 }
 </style>
