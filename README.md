@@ -15,26 +15,29 @@ NUXT_PUBLIC_HUB_ADAPTER_URL="http://urlForHubAdapterApi.de"  # URL for hub adapt
 
 # Keycloak
 NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_ID="node-ui"
-NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET="someSecrets"
+NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET="someSecret"
+NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL="http://urlForKeycloak/realms/flame"
 
-# The following need to be explicitly set in order to apply them to the Nuxt config, they can't be built from a 
-# base domain
-NUXT_OIDC_PROVIDERS_KEYCLOAK_REDIRECT_URI="http://localhost:3000/auth/keycloak/callback"  # Be sure this redirect URI is defined in your keycloak for this client
-NUXT_OIDC_PROVIDERS_KEYCLOAK_AUTHORIZATION_URL="https://my.keycloak.domain.de/realms/flame/protocol/openid-connect/auth"
-NUXT_OIDC_PROVIDERS_KEYCLOAK_TOKEN_URL="https://my.keycloak.domain.de/realms/flame/protocol/openid-connect/token"
-NUXT_OIDC_PROVIDERS_KEYCLOAK_USERINFO_URL="https://my.keycloak.domain.de/realms/flame/protocol/openid-connect/userinfo"
-NUXT_OIDC_PROVIDERS_KEYCLOAK_OPEN_ID_CONFIGURATION="https://my.keycloak.domain.de/realms/flame/.well-known/openid-configuration"
-NUXT_OIDC_PROVIDERS_KEYCLOAK_LOGOUT_URL="https://my.keycloak.domain.de/realms/flame/protocol/openid-connect/logout"
-NUXT_OIDC_PROVIDERS_KEYCLOAK_LOGOUT_REDIRECT_URI="http://localhost:3000"
+# Nuxt Configuration Options
+# The following just needs to be copied/pasted into the .env file
+NUXT_OIDC_PROVIDERS_KEYCLOAK_REDIRECT_URI="$NUXT_PUBLIC_BASE_URL/auth/keycloak/callback"  # Be sure this redirect URI is defined in your keycloak for this client
+NUXT_OIDC_PROVIDERS_KEYCLOAK_AUTHORIZATION_URL="$NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL/protocol/openid-connect/auth"
+NUXT_OIDC_PROVIDERS_KEYCLOAK_TOKEN_URL="$NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL/protocol/openid-connect/token"
+NUXT_OIDC_PROVIDERS_KEYCLOAK_USERINFO_URL="$NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL/protocol/openid-connect/userinfo"
+NUXT_OIDC_PROVIDERS_KEYCLOAK_OPEN_ID_CONFIGURATION="$NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL/.well-known/openid-configuration"
+NUXT_OIDC_PROVIDERS_KEYCLOAK_LOGOUT_URL="$NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL/protocol/openid-connect/logout"
+NUXT_OIDC_PROVIDERS_KEYCLOAK_LOGOUT_REDIRECT_URI=$NUXT_PUBLIC_BASE_URL
+NUXT_OIDC_PROVIDERS_KEYCLOAK_VALIDATE_ACCESS_TOKEN="true"
 
 # Nuxt OIDC Tokens
 # https://nuxt.com/modules/nuxt-oidc-auth#_3-set-secrets
-# NOTE: These will automatically be generated in helm/docker so they do not need to be explicitly set
+# NOTE: These will automatically be generated in helm/docker so they do not need to be explicitly set or added to .env
 
 # NUXT_OIDC_TOKEN_KEY is a cryptographic AES key in base64 used to encrypt the server side token store
-NUXT_OIDC_TOKEN_KEY=xxx
+NUXT_OIDC_TOKEN_KEY=""
 # NUXT_OIDC_SESSION_SECRET is a 48 character random string that encrypts the user session
-NUXT_OIDC_SESSION_SECRET=xxx
+NUXT_OIDC_SESSION_SECRET=""
 # NUXT_OIDC_AUTH_SESSION_SECRET is a 48 character random string that encrypts individual sessions during OAuth flows
-NUXT_OIDC_AUTH_SESSION_SECRET=xxx
+NUXT_OIDC_AUTH_SESSION_SECRET=""
 ```
+
