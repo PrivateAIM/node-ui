@@ -9,6 +9,7 @@ const props = defineProps({
 });
 
 const loading = ref(false);
+const helpActive = ref(false);
 const toast = useToast();
 
 // Project settings
@@ -43,6 +44,10 @@ const acceptedProtocols = [
 watch(selectedProject, (newSelectedProject) => {
   dataStoreName.value = newSelectedProject.id;
 });
+
+function activateHelp(helpField: string) {
+  console.log(helpField);
+}
 
 async function onSubmitCreateDataStoreAndProject() {
   const datastoreSettings = {
@@ -110,6 +115,28 @@ async function onSubmitCreateDataStoreAndProject() {
     <Card style="margin-top: 10px">
       <template #title>Create a Data Store for a Project</template>
       <template #content>
+        <div class="intro-text">
+          <span>
+            <p>
+              In order for users to be able to access the data in your
+              institution, a data store needs to be created for each approved
+              project. A data store is essentially a fileshare, or a specified
+              set of permissions granted to the users of a project allowing
+              access to a folder on your system.
+            </p>
+            <p>
+              To create a data store, fill out the fields below, starting with
+              the project which will be granted access to the data followed by
+              the technical information defining the data's location.
+            </p>
+            <p>
+              Helpful tooltips can be shown when hovering over each field, an
+              additional detailed information about what is required for each
+              field can be displayed by clicking on the field name in the left
+              column.
+            </p></span
+          >
+        </div>
         <div class="data-store-panel">
           <div class="data-store-input-fields">
             <InputGroup style="margin-bottom: 20px">
@@ -134,7 +161,18 @@ async function onSubmitCreateDataStoreAndProject() {
             <InputGroup>
               <InputGroupAddon class="data-store-field-name">
                 <i class="pi pi-server"></i>
-                <p class="data-store-field-name-box">Server</p>
+                <div class="data-store-field-name-box">
+                  <button class="help-button" @click="activateHelp('server')">
+                    <p
+                      class="help-text"
+                      v-tooltip.top="
+                        'Name of the server on which the data resides'
+                      "
+                    >
+                      Server
+                    </p>
+                  </button>
+                </div>
               </InputGroupAddon>
               <InputText
                 placeholder="Server or hostname"
@@ -145,7 +183,16 @@ async function onSubmitCreateDataStoreAndProject() {
             <InputGroup>
               <InputGroupAddon class="data-store-field-name">
                 <i class="pi pi-folder"></i>
-                <p class="data-store-field-name-box">Data Path</p>
+                <div class="data-store-field-name-box">
+                  <button class="help-button" @click="activateHelp('server')">
+                    <p
+                      class="help-text"
+                      v-tooltip.top="'Absolute directory path'"
+                    >
+                      Data Path
+                    </p>
+                  </button>
+                </div>
               </InputGroupAddon>
               <InputText
                 placeholder="Data path (must start with '/')"
@@ -156,7 +203,16 @@ async function onSubmitCreateDataStoreAndProject() {
             <InputGroup>
               <InputGroupAddon class="data-store-field-name">
                 <i class="pi pi-warehouse"></i>
-                <p class="data-store-field-name-box">Data Store Type</p>
+                <div class="data-store-field-name-box">
+                  <button class="help-button" @click="activateHelp('server')">
+                    <p
+                      class="help-text"
+                      v-tooltip.top="'Type of server the data is stored on'"
+                    >
+                      Data Server Type
+                    </p>
+                  </button>
+                </div>
               </InputGroupAddon>
               <Dropdown
                 v-model="selectedDataStoreType"
@@ -166,7 +222,16 @@ async function onSubmitCreateDataStoreAndProject() {
             <InputGroup>
               <InputGroupAddon class="data-store-field-name">
                 <i class="pi pi-key"></i>
-                <p class="data-store-field-name-box">Port</p>
+                <div class="data-store-field-name-box">
+                  <button class="help-button" @click="activateHelp('server')">
+                    <p
+                      class="help-text"
+                      v-tooltip.top="'Port number for accessing the data'"
+                    >
+                      Port
+                    </p>
+                  </button>
+                </div>
               </InputGroupAddon>
               <InputNumber
                 placeholder="Port e.g. 443"
@@ -177,7 +242,18 @@ async function onSubmitCreateDataStoreAndProject() {
             <InputGroup>
               <InputGroupAddon class="data-store-field-name">
                 <i class="pi pi-cog"></i>
-                <p class="data-store-field-name-box">Protocol</p>
+                <div class="data-store-field-name-box">
+                  <button class="help-button" @click="activateHelp('server')">
+                    <p
+                      class="help-text"
+                      v-tooltip.top="
+                        'Access protocol for the data storage server'
+                      "
+                    >
+                      Protocol
+                    </p>
+                  </button>
+                </div>
               </InputGroupAddon>
               <Dropdown
                 v-model="protocol"
@@ -188,7 +264,13 @@ async function onSubmitCreateDataStoreAndProject() {
             <InputGroup>
               <InputGroupAddon class="data-store-field-name">
                 <i class="pi pi-warehouse"></i>
-                <p class="data-store-field-name-box">Allowed Methods</p>
+                <div class="data-store-field-name-box">
+                  <button class="help-button" @click="activateHelp('server')">
+                    <p class="help-text" v-tooltip.top="'Allowed HTTP methods'">
+                      Allowed Methods
+                    </p>
+                  </button>
+                </div>
               </InputGroupAddon>
               <MultiSelect
                 v-model="selectedAllowedMethods"
@@ -217,6 +299,10 @@ async function onSubmitCreateDataStoreAndProject() {
 </template>
 
 <style scoped lang="scss">
+.intro-text {
+  padding-bottom: 3em;
+}
+
 .data-store-panel {
   display: flex;
   flex-direction: row;
@@ -236,5 +322,19 @@ async function onSubmitCreateDataStoreAndProject() {
 .data-store-field-name {
   width: 200px;
   height: 50px;
+}
+
+.help-button {
+  background: inherit;
+  border: inherit;
+  font: inherit;
+  color: inherit;
+}
+
+.help-text {
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+  cursor: pointer;
 }
 </style>
