@@ -18,7 +18,7 @@ const closeHelp = () => {
       class="methods-help-text"
       v-if="props.helpField === HelpTextField.Methods"
     >
-      <Panel header="Request Methods">
+      <Panel header="Allowed Methods">
         <p>
           How the data is accessed can be tightly controlled by defining which
           request methods are allowed for a given project. For a project to be
@@ -45,7 +45,7 @@ const closeHelp = () => {
       class="methods-help-text"
       v-else-if="props.helpField === HelpTextField.Path"
     >
-      <Panel header="Directory Path">
+      <Panel header="Data Path">
         <p>
           Here, the admin must provide the absolute file path of the directory
           (folder) which contains the relevant data to be shared with the
