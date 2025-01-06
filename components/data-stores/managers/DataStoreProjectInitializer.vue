@@ -37,7 +37,7 @@ const acceptedProtocols = [
   "tcp",
   "tls",
   "tls_passthrough",
-  "udp",
+  // "udp",
   "ws",
   "wss",
 ];
