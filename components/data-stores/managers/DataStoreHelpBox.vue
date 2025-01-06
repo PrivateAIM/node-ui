@@ -4,6 +4,12 @@ import { HelpTextField } from "~/components/data-stores/managers/index";
 const props = defineProps({
   helpField: String || null,
 });
+
+const emit = defineEmits(["closeHelp"]);
+
+const closeHelp = () => {
+  emit("closeHelp");
+};
 </script>
 
 <template>
@@ -28,6 +34,11 @@ const props = defineProps({
           should understand the risks of allowing users to directly modify the
           data on their institution's servers.
         </p>
+        <template #icons>
+          <button class="p-panel-header-icon p-link mr-2" @click="closeHelp">
+            <span class="pi pi-times" />
+          </button>
+        </template>
       </Panel>
     </div>
     <div
@@ -46,6 +57,11 @@ const props = defineProps({
           slash "/", while a Windows OS will use a drive letter with a colon and
           2 back slashes (e.g. H:\\).
         </p>
+        <template #icons>
+          <button class="p-panel-header-icon p-link mr-2" @click="closeHelp">
+            <span class="pi pi-times" />
+          </button>
+        </template>
       </Panel>
     </div>
     <div
@@ -67,6 +83,11 @@ const props = defineProps({
           should be used, please contact your IT department or relevant
           administrator.
         </p>
+        <template #icons>
+          <button class="p-panel-header-icon p-link mr-2" @click="closeHelp">
+            <span class="pi pi-times" />
+          </button>
+        </template>
       </Panel>
     </div>
     <div
@@ -111,6 +132,11 @@ const props = defineProps({
           listed below, please contact the Node Dev Team for help resolving
           this.
         </p>
+        <template #icons>
+          <button class="p-panel-header-icon p-link mr-2" @click="closeHelp">
+            <span class="pi pi-times" />
+          </button>
+        </template>
       </Panel>
     </div>
     <div
@@ -123,6 +149,11 @@ const props = defineProps({
           <b>IP address</b> of the data's server. Please take care that this is
           reachable from outside of the network.
         </p>
+        <template #icons>
+          <button class="p-panel-header-icon p-link mr-2" @click="closeHelp">
+            <span class="pi pi-times" />
+          </button>
+        </template>
       </Panel>
     </div>
     <div
@@ -140,6 +171,11 @@ const props = defineProps({
           those listed, please contact the Node Dev Team for help resolving
           this.
         </p>
+        <template #icons>
+          <button class="p-panel-header-icon p-link mr-2" @click="closeHelp">
+            <span class="pi pi-times" />
+          </button>
+        </template>
       </Panel>
     </div>
     <p v-else>Foobar</p>

@@ -50,6 +50,10 @@ function activateHelp(helpField: HelpTextField) {
   helpActive.value = helpActive.value === helpField ? null : helpField;
 }
 
+function deactivateHelp() {
+  helpActive.value = null;
+}
+
 async function onSubmitCreateDataStoreAndProject() {
   const datastoreSettings = {
     name: dataStoreName.value,
@@ -307,7 +311,10 @@ async function onSubmitCreateDataStoreAndProject() {
             />
           </div>
           <div class="data-store-help-box" v-if="helpActive">
-            <DataStoreHelpBox :helpField="helpActive" />
+            <DataStoreHelpBox
+              :helpField="helpActive"
+              @closeHelp="deactivateHelp"
+            />
           </div>
         </div>
       </template>
