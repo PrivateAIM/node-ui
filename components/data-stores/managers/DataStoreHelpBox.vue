@@ -8,12 +8,11 @@ const props = defineProps({
 
 <template>
   <div class="data-store-help">
-    <Fieldset :legend="props.helpField" :toggleable="false">
-      <div
-        class="methods-help-text"
-        v-if="props.helpField === HelpTextField.Methods"
-      >
-        <h3>Request Methods</h3>
+    <div
+      class="methods-help-text"
+      v-if="props.helpField === HelpTextField.Methods"
+    >
+      <Panel header="Request Methods">
         <p>
           How the data is accessed can be tightly controlled by defining which
           request methods are allowed for a given project. For a project to be
@@ -29,12 +28,13 @@ const props = defineProps({
           should understand the risks of allowing users to directly modify the
           data on their institution's servers.
         </p>
-      </div>
-      <div
-        class="methods-help-text"
-        v-else-if="props.helpField === HelpTextField.Path"
-      >
-        <h3>Directory Path</h3>
+      </Panel>
+    </div>
+    <div
+      class="methods-help-text"
+      v-else-if="props.helpField === HelpTextField.Path"
+    >
+      <Panel header="Directory Path">
         <p>
           Here, the admin must provide the absolute file path of the directory
           (folder) which contains the relevant data to be shared with the
@@ -46,12 +46,13 @@ const props = defineProps({
           slash "/", while a Windows OS will use a drive letter with a colon and
           2 back slashes (e.g. H:\\).
         </p>
-      </div>
-      <div
-        class="methods-help-text"
-        v-else-if="props.helpField === HelpTextField.Port"
-      >
-        <h3>Server Port</h3>
+      </Panel>
+    </div>
+    <div
+      class="methods-help-text"
+      v-else-if="props.helpField === HelpTextField.Port"
+    >
+      <Panel header="Server Port">
         <p>
           In order to maintain security, firewalls are used to prevent
           unauthorized access to professional and personal computers/servers. To
@@ -66,12 +67,13 @@ const props = defineProps({
           should be used, please contact your IT department or relevant
           administrator.
         </p>
-      </div>
-      <div
-        class="methods-help-text"
-        v-else-if="props.helpField === HelpTextField.Protocol"
-      >
-        <h3>Communication Protocol</h3>
+      </Panel>
+    </div>
+    <div
+      class="methods-help-text"
+      v-else-if="props.helpField === HelpTextField.Protocol"
+    >
+      <Panel header="Communication Protocol">
         <p>
           Multiple protocols exist for transferring files between computers and
           for communication, the most common being HTTP. To improve the security
@@ -83,15 +85,15 @@ const props = defineProps({
         </p>
         <ul>
           <li>
-            HTTP/HTTPS - Hypertext Transfer Protocol. Data is generally sent
-            using port 80 (HTTP) or port 443 (HTTPS)
+            <b>HTTP/HTTPS</b> - Hypertext Transfer Protocol. Data is generally
+            sent using port 80 (HTTP) or port 443 (HTTPS)
           </li>
-          <li>WS/WSS - Websocket on HTTP (WS) or on HTTPS (WSS)</li>
-          <li>gRPC/gRPCS - Google remote procedural calls</li>
-          <li>TCP/TLS - Transmission Control Protocol</li>
+          <li><b>WS/WSS</b> - Websocket on HTTP (WS) or on HTTPS (WSS)</li>
+          <li><b>gRPC/gRPCS</b> - Google remote procedural calls</li>
+          <li><b>TCP/TLS</b> - Transmission Control Protocol</li>
           <li>
-            TCP Passthrough - a TLS proxy request that doesn't terminate (a SNI
-            proxy)
+            <b>TCP Passthrough</b> - a TLS proxy request that doesn't terminate
+            (a SNI proxy)
           </li>
         </ul>
         <p>
@@ -109,23 +111,25 @@ const props = defineProps({
           listed below, please contact the Node Dev Team for help resolving
           this.
         </p>
-      </div>
-      <div
-        class="methods-help-text"
-        v-else-if="props.helpField === HelpTextField.Server"
-      >
-        <h3>Server Host</h3>
+      </Panel>
+    </div>
+    <div
+      class="methods-help-text"
+      v-else-if="props.helpField === HelpTextField.Server"
+    >
+      <Panel header="Server Host">
         <p>
           This field is for providing the <b>hostname</b> or
           <b>IP address</b> of the data's server. Please take care that this is
           reachable from outside of the network.
         </p>
-      </div>
-      <div
-        class="methods-help-text"
-        v-else-if="props.helpField === HelpTextField.Type"
-      >
-        <h3>Data Store Type</h3>
+      </Panel>
+    </div>
+    <div
+      class="methods-help-text"
+      v-else-if="props.helpField === HelpTextField.Type"
+    >
+      <Panel header="Data Store Type">
         <p>
           Depending on how the data is made available, the FLAME Node software
           will have to setup specific plugins and features. It is important to
@@ -136,9 +140,9 @@ const props = defineProps({
           those listed, please contact the Node Dev Team for help resolving
           this.
         </p>
-      </div>
-      <p v-else>Foobar</p>
-    </Fieldset>
+      </Panel>
+    </div>
+    <p v-else>Foobar</p>
   </div>
 </template>
 

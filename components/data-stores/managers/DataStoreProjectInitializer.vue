@@ -321,7 +321,7 @@ async function onSubmitCreateDataStoreAndProject() {
 }
 
 .data-store-help-box {
-  width: 40%;
+  width: 60%;
 }
 
 .data-store-panel {
