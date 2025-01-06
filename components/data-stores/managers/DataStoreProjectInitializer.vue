@@ -2,17 +2,20 @@
 import InputText from "primevue/inputtext";
 import Dropdown from "primevue/dropdown";
 import InputNumber from "primevue/inputnumber";
+import DataStoreHelpBox from "~/components/data-stores/managers/DataStoreHelpBox.vue";
+import { HelpTextField } from "~/components/data-stores/managers/index";
 
 const props = defineProps({
   projects: Array,
 });
 
 const loading = ref(false);
+const helpActive = ref();
 const toast = useToast();
 
 // Project settings
-const availableMethods = ref(["GET", "POST", "PUT", "DELETE"]);
-const dataStoreTypes = ref(["FHIR", "S3"]);
+const availableMethods = ["GET", "POST", "PUT", "DELETE"];
+const dataStoreTypes = ["FHIR", "S3"];
 
 const selectedProject = ref();
 
@@ -26,7 +29,7 @@ const path = ref("");
 const port = ref(80);
 const protocol = ref("http");
 
-const acceptedProtocols = ref([
+const acceptedProtocols = [
   "grpc",
   "grpcs",
   "http",
@@ -34,14 +37,22 @@ const acceptedProtocols = ref([
   "tcp",
   "tls",
   "tls_passthrough",
-  "udp",
+  // "udp",
   "ws",
   "wss",
-]);
+];
 
 watch(selectedProject, (newSelectedProject) => {
   dataStoreName.value = newSelectedProject.id;
 });
+
+function activateHelp(helpField: HelpTextField) {
+  helpActive.value = helpActive.value === helpField ? null : helpField;
+}
+
+function deactivateHelp() {
+  helpActive.value = null;
+}
 
 async function onSubmitCreateDataStoreAndProject() {
   const datastoreSettings = {
@@ -109,109 +120,249 @@ async function onSubmitCreateDataStoreAndProject() {
     <Card style="margin-top: 10px">
       <template #title>Create a Data Store for a Project</template>
       <template #content>
-        <InputGroup style="margin-bottom: 20px">
-          <InputGroupAddon class="fieldName">
-            <i class="pi pi-cog"></i>
-            <p class="dsFieldName">Project</p>
-          </InputGroupAddon>
-          <Dropdown
-            v-model="selectedProject"
-            :options="props.projects"
-            optionLabel="dropdown"
-            placeholder="Select a Project"
-          />
-        </InputGroup>
-        <InputGroup>
-          <InputGroupAddon class="fieldName">
-            <i class="pi pi-barcode"></i>
-            <p class="dsFieldName">Data Store</p>
-          </InputGroupAddon>
-          <InputText v-model="dataStoreName" disabled />
-        </InputGroup>
-        <InputGroup>
-          <InputGroupAddon class="fieldName">
-            <i class="pi pi-server"></i>
-            <p class="dsFieldName">Server</p>
-          </InputGroupAddon>
-          <InputText
-            placeholder="Server or hostname"
-            v-model="host"
-            :invalid="host === ''"
-          />
-        </InputGroup>
-        <InputGroup>
-          <InputGroupAddon class="fieldName">
-            <i class="pi pi-folder"></i>
-            <p class="dsFieldName">Data Path</p>
-          </InputGroupAddon>
-          <InputText
-            placeholder="Data path (must start with '/')"
-            v-model="path"
-            :invalid="path === '' || !path.startsWith('/')"
-          />
-        </InputGroup>
-        <InputGroup>
-          <InputGroupAddon class="fieldName">
-            <i class="pi pi-warehouse"></i>
-            <p class="dsFieldName">Data Store Type</p>
-          </InputGroupAddon>
-          <Dropdown v-model="selectedDataStoreType" :options="dataStoreTypes" />
-        </InputGroup>
-        <InputGroup>
-          <InputGroupAddon class="fieldName">
-            <i class="pi pi-key"></i>
-            <p class="dsFieldName">Port</p>
-          </InputGroupAddon>
-          <InputNumber
-            placeholder="Port e.g. 443"
-            v-model="port"
-            :invalid="port < 0 || port > 65535"
-          />
-        </InputGroup>
-        <InputGroup>
-          <InputGroupAddon class="fieldName">
-            <i class="pi pi-cog"></i>
-            <p class="dsFieldName">Protocol</p>
-          </InputGroupAddon>
-          <Dropdown
-            v-model="protocol"
-            :options="acceptedProtocols"
-            class="w-full md:w-56"
-          />
-        </InputGroup>
-        <InputGroup>
-          <InputGroupAddon class="fieldName">
-            <i class="pi pi-warehouse"></i>
-            <p class="dsFieldName">Allowed Methods</p>
-          </InputGroupAddon>
-          <MultiSelect
-            v-model="selectedAllowedMethods"
-            display="chip"
-            :options="availableMethods"
-            placeholder="Select methods"
-          />
-        </InputGroup>
-        <Button
-          label="Submit"
-          icon="pi pi-check"
-          iconPos="right"
-          severity="info"
-          style="margin-top: 20px"
-          :loading="loading"
-          @click="onSubmitCreateDataStoreAndProject"
-        />
+        <div class="intro-text">
+          <p>
+            In order for users to be able to access the data in your
+            institution, a data store needs to be created for each approved
+            project. A data store is essentially a fileshare, or a specified set
+            of permissions granted to the users of a project allowing access to
+            a folder on your system.
+          </p>
+          <p>
+            To create a data store, fill out the fields below, starting with the
+            project which will be granted access to the data followed by the
+            technical information defining the data's location.
+          </p>
+          <p>
+            Helpful tooltips can be shown when hovering over each field, an
+            additional detailed information about what is required for each
+            field can be displayed by clicking on the field name in the left
+            column.
+          </p>
+        </div>
+        <div class="data-store-panel">
+          <div class="data-store-input-fields">
+            <InputGroup style="margin-bottom: 20px">
+              <InputGroupAddon class="data-store-field-name">
+                <i class="pi pi-cog"></i>
+                <p class="data-store-field-name-box">Project</p>
+              </InputGroupAddon>
+              <Dropdown
+                v-model="selectedProject"
+                :options="props.projects"
+                optionLabel="dropdown"
+                placeholder="Select a Project"
+              />
+            </InputGroup>
+            <InputGroup>
+              <InputGroupAddon class="data-store-field-name">
+                <i class="pi pi-barcode"></i>
+                <p class="data-store-field-name-box">Data Store</p>
+              </InputGroupAddon>
+              <InputText v-model="dataStoreName" disabled />
+            </InputGroup>
+            <InputGroup>
+              <InputGroupAddon class="data-store-field-name">
+                <i class="pi pi-server"></i>
+                <div class="data-store-field-name-box">
+                  <button
+                    class="help-button"
+                    @click="activateHelp(HelpTextField.Server)"
+                  >
+                    <p
+                      class="help-text"
+                      v-tooltip.top="
+                        'Name of the server on which the data resides'
+                      "
+                    >
+                      Server
+                    </p>
+                  </button>
+                </div>
+              </InputGroupAddon>
+              <InputText
+                placeholder="Server or hostname"
+                v-model="host"
+                :invalid="host === ''"
+              />
+            </InputGroup>
+            <InputGroup>
+              <InputGroupAddon class="data-store-field-name">
+                <i class="pi pi-folder"></i>
+                <div class="data-store-field-name-box">
+                  <button
+                    class="help-button"
+                    @click="activateHelp(HelpTextField.Path)"
+                  >
+                    <p
+                      class="help-text"
+                      v-tooltip.top="'Absolute directory path'"
+                    >
+                      Data Path
+                    </p>
+                  </button>
+                </div>
+              </InputGroupAddon>
+              <InputText
+                placeholder="Data path (must start with '/')"
+                v-model="path"
+                :invalid="path === '' || !path.startsWith('/')"
+              />
+            </InputGroup>
+            <InputGroup>
+              <InputGroupAddon class="data-store-field-name">
+                <i class="pi pi-warehouse"></i>
+                <div class="data-store-field-name-box">
+                  <button
+                    class="help-button"
+                    @click="activateHelp(HelpTextField.Type)"
+                  >
+                    <p
+                      class="help-text"
+                      v-tooltip.top="'Type of server the data is stored on'"
+                    >
+                      Data Server Type
+                    </p>
+                  </button>
+                </div>
+              </InputGroupAddon>
+              <Dropdown
+                v-model="selectedDataStoreType"
+                :options="dataStoreTypes"
+              />
+            </InputGroup>
+            <InputGroup>
+              <InputGroupAddon class="data-store-field-name">
+                <i class="pi pi-key"></i>
+                <div class="data-store-field-name-box">
+                  <button
+                    class="help-button"
+                    @click="activateHelp(HelpTextField.Port)"
+                  >
+                    <p
+                      class="help-text"
+                      v-tooltip.top="'Port number for accessing the data'"
+                    >
+                      Port
+                    </p>
+                  </button>
+                </div>
+              </InputGroupAddon>
+              <InputNumber
+                placeholder="Port e.g. 443"
+                v-model="port"
+                :invalid="port < 0 || port > 65535"
+              />
+            </InputGroup>
+            <InputGroup>
+              <InputGroupAddon class="data-store-field-name">
+                <i class="pi pi-cog"></i>
+                <div class="data-store-field-name-box">
+                  <button
+                    class="help-button"
+                    @click="activateHelp(HelpTextField.Protocol)"
+                  >
+                    <p
+                      class="help-text"
+                      v-tooltip.top="
+                        'Access protocol for the data storage server'
+                      "
+                    >
+                      Protocol
+                    </p>
+                  </button>
+                </div>
+              </InputGroupAddon>
+              <Dropdown
+                v-model="protocol"
+                :options="acceptedProtocols"
+                class="w-full md:w-56"
+              />
+            </InputGroup>
+            <InputGroup>
+              <InputGroupAddon class="data-store-field-name">
+                <i class="pi pi-warehouse"></i>
+                <div class="data-store-field-name-box">
+                  <button
+                    class="help-button"
+                    @click="activateHelp(HelpTextField.Methods)"
+                  >
+                    <p class="help-text" v-tooltip.top="'Allowed HTTP methods'">
+                      Allowed Methods
+                    </p>
+                  </button>
+                </div>
+              </InputGroupAddon>
+              <MultiSelect
+                v-model="selectedAllowedMethods"
+                display="chip"
+                :options="availableMethods"
+                placeholder="Select methods"
+              />
+            </InputGroup>
+            <Button
+              label="Submit"
+              icon="pi pi-check"
+              iconPos="right"
+              severity="info"
+              style="margin-top: 20px"
+              :loading="loading"
+              @click="onSubmitCreateDataStoreAndProject"
+            />
+          </div>
+          <div class="data-store-help-box" v-if="helpActive">
+            <DataStoreHelpBox
+              :helpField="helpActive"
+              @closeHelp="deactivateHelp"
+            />
+          </div>
+        </div>
       </template>
     </Card>
   </div>
 </template>
 
 <style scoped lang="scss">
-.dsFieldName {
+.intro-text {
+  padding-bottom: 3em;
+}
+
+.data-store-help-box {
+  width: 60%;
+}
+
+.data-store-panel {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.data-store-input-fields {
+  width: 80%;
+  margin-right: 24px;
+}
+
+.data-store-field-name-box {
   margin-left: 10px;
 }
 
-.fieldName {
+.data-store-field-name {
   width: 200px;
   height: 50px;
+}
+
+.help-button {
+  background: inherit;
+  border: inherit;
+  font: inherit;
+  color: inherit;
+}
+
+.help-text {
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+  cursor: help;
 }
 </style>
