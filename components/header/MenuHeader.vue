@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import AvatarButton from "~/components/login/AvatarButton.vue";
+import AvatarButton from "~/components/header/AvatarButton.vue";
 const { loggedIn } = useOidcAuth();
 
 const items = ref([
