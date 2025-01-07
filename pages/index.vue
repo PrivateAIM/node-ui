@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import KeycloakAuth from "~/components/KeycloakAuth.vue";
+import KeycloakAuth from "~/components/landing/KeycloakAuth.vue";
 </script>
 
 <template>
