@@ -3,7 +3,7 @@ const { loggedIn, user, login, logout } = useOidcAuth();
 </script>
 
 <template>
-  <div class="keycloakLoginButton">
+  <div class="keycloak-login-btn landing-btn">
     <div v-if="loggedIn">
       <h3>Welcome {{ user.userName || "Friend" }}!</h3>
       <Button @click="logout()" severity="warning" outlined>Logout</Button>

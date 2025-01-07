@@ -12,7 +12,7 @@
             <i class="pi pi-github" style="padding-right: 5px"></i>Submit an
             Issue</a
           >
-          - © 2024
+          - © 2025
           <a href="https://privateaim.de/">PrivateAim</a>
         </div>
         <div class="copyright"></div>
