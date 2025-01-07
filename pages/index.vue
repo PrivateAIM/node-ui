@@ -1,35 +1,24 @@
 <script setup lang="ts">
-import KeycloakAuth from "~/components/landing/KeycloakAuth.vue";
+import LandingButtons from "~/components/landing/LandingButtons.vue";
 </script>
 
 <template>
   <div id="home" class="row">
     <div class="col-6 welcome">
-      <h1><span style="color: orangered">FLAME</span> Node UI</h1>
-      <h2 style="margin-block-start: 0">
-        A federated learning platform dedicated to preserving
-        <span style="color: blueviolet">privacy</span> and
-        <span style="color: blueviolet">security</span>
-      </h2>
-      <p>
-        Contribute to the Medical Informatics Initiative (MII) by becoming part
-        of a federated network focused on improving healthcare, while
-        maintaining full control of who has access to your data.
-      </p>
-      <div class="landing-btns">
-        <KeycloakAuth />
-        <div class="learn-more-btn landing-btn">
-          <NuxtLink
-            to="https://privateaim.de/de/index.html"
-            target="_blank"
-            rel="noopener"
-          >
-            <Button label="privateaim" severity="contrast" outlined
-              >Learn More</Button
-            >
-          </NuxtLink>
-        </div>
+      <div class="welcome-text">
+        <h1><span style="color: orangered">FLAME</span> Node UI</h1>
+        <h2 style="margin-block-start: 0">
+          A federated learning platform dedicated to preserving
+          <span style="color: blueviolet">privacy</span> and
+          <span style="color: blueviolet">security</span>
+        </h2>
+        <p>
+          Contribute to the Medical Informatics Initiative (MII) by becoming
+          part of a federated network focused on improving healthcare, while
+          maintaining full control of who has access to your data.
+        </p>
       </div>
+      <div class="landing-btns"><LandingButtons /></div>
     </div>
     <div class="col-6 landing-img">
       <img
@@ -63,16 +52,6 @@ import KeycloakAuth from "~/components/landing/KeycloakAuth.vue";
   align-items: end;
   display: flex;
   float: right;
-  margin: 1em;
-}
-
-.landing-btns {
-  display: flex;
-  flex-direction: row;
-  justify-content: safe center;
-}
-
-.landing-btn {
   margin: 1em;
 }
 
