@@ -4,7 +4,7 @@ import { defineNuxtConfig } from "nuxt/config";
 export default defineNuxtConfig({
   ssr: true,
   devtools: { enabled: false },
-  modules: ["nuxt-primevue", "@sidebase/nuxt-auth", "nuxt-oidc-auth"],
+  modules: ["nuxt-primevue", "@sidebase/nuxt-auth"],
 
   runtimeConfig: {
     public: {
@@ -41,37 +41,37 @@ export default defineNuxtConfig({
     },
   },
 
-  oidc: {
-    defaultProvider: "keycloak",
-    providers: {
-      keycloak: {
-        audience: "account",
-        userNameClaim: "preferred_username",
-        clientId: "",
-        clientSecret: "",
-        redirectUri: "",
-        authorizationUrl: "",
-        tokenUrl: "",
-        userinfoUrl: "",
-        openIdConfiguration: "",
-        logoutUrl: "",
-        logoutRedirectUri: "",
-        validateAccessToken: false,
-        exposeAccessToken: true,
-        exposeIdToken: false,
-        pkce: false,
-      },
-    },
-    session: {
-      expirationCheck: false,
-      automaticRefresh: false,
-      maxAge: 3600,
-    },
-    middleware: {
-      globalMiddlewareEnabled: false,
-      customLoginPage: false,
-    },
-  },
+  // oidc: {
+  //   defaultProvider: "keycloak",
+  //   providers: {
+  //     keycloak: {
+  //       audience: "account",
+  //       userNameClaim: "preferred_username",
+  //       clientId: "",
+  //       clientSecret: "",
+  //       redirectUri: "",
+  //       authorizationUrl: "",
+  //       tokenUrl: "",
+  //       userinfoUrl: "",
+  //       openIdConfiguration: "",
+  //       logoutUrl: "",
+  //       logoutRedirectUri: "",
+  //       validateAccessToken: false,
+  //       exposeAccessToken: true,
+  //       exposeIdToken: false,
+  //       pkce: false,
+  //     },
+  //   },
+  //   session: {
+  //     expirationCheck: false,
+  //     automaticRefresh: false,
+  //     maxAge: 3600,
+  //   },
+  //   middleware: {
+  //     globalMiddlewareEnabled: false,
+  //     customLoginPage: false,
+  //   },
+  // },
 
   css: [
     "primevue/resources/themes/lara-dark-amber/theme.css",
