@@ -1,5 +1,6 @@
 <script setup lang="ts">
-const { loggedIn, login } = useOidcAuth();
+// const { loggedIn, login } = useOidcAuth();
+const { signIn, signOut, status } = useAuth();
 </script>
 
 <template>
@@ -11,8 +12,11 @@ const { loggedIn, login } = useOidcAuth();
     <!--      >-->
     <!--      <Button @click="logout()" severity="warning" outlined>Logout</Button>-->
     <!--    </div>-->
-    <div v-if="!loggedIn">
-      <Button @click="login()" severity="success" outlined
+    <div v-if="status === 'authenticated'">
+      <Button @click="signOut()" severity="warn" outlined>Sign Out</Button>
+    </div>
+    <div v-else>
+      <Button @click="signIn('keycloak')" severity="success" outlined
         >Login with Keycloak</Button
       >
     </div>

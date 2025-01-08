@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
-const { loggedIn, logout, login, user } = useOidcAuth();
+// const { loggedIn, logout, login, user } = useOidcAuth();
+const { signIn, signOut, status, data } = useAuth();
 
 const menu = ref();
 const loggedOutUserMenuItems = ref([
@@ -11,7 +12,7 @@ const loggedOutUserMenuItems = ref([
         label: "Login",
         icon: "pi pi-sign-in",
         command: () => {
-          login();
+          signIn("keycloak");
         },
       },
     ],
@@ -25,7 +26,7 @@ const loggedInUserMenuItems = ref([
         label: "Logout",
         icon: "pi pi-sign-out",
         command: () => {
-          logout();
+          signOut();
         },
       },
     ],
@@ -37,10 +38,10 @@ const toggle = (event) => {
 </script>
 
 <template>
-  <div v-if="loggedIn" class="authAvatarSection">
+  <div v-if="status === 'authenticated'" class="authAvatarSection">
     <div class="usernameMenuBar">
       <p>
-        {{ user.userName || "Swell Person" }}
+        {{ data.user.name || "Swell Person" }}
       </p>
     </div>
     <Button

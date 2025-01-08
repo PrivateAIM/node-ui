@@ -2,7 +2,7 @@
 import ResourceManagerTabs from "~/components/data-stores/ResourceManagerTabs.vue";
 
 definePageMeta({
-  middleware: ["auth"],
+  middleware: ["sidebase-auth"],
 });
 </script>
 

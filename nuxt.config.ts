@@ -4,13 +4,31 @@ import { defineNuxtConfig } from "nuxt/config";
 export default defineNuxtConfig({
   ssr: true,
   devtools: { enabled: false },
-  modules: ["nuxt-primevue", "nuxt-oidc-auth"],
+  modules: ["nuxt-primevue", "@sidebase/nuxt-auth", "nuxt-oidc-auth"],
 
   runtimeConfig: {
     public: {
       baseUrl: process.env.NUXT_PUBLIC_BASE_URL || "http://localhost:3000",
       hubAdapterUrl:
         process.env.NUXT_PUBLIC_HUB_ADAPTER_URL || "http://localhost:5000",
+    },
+  },
+
+  auth: {
+    isEnabled: true,
+    // baseURL: "http://localhost:3000/api/auth",
+    // originEnvKey: "NUXT_PUBLIC_BASE_URL",
+    disableServerSideAuth: false,
+    globalAppMiddleware: false,
+    provider: {
+      type: "authjs",
+      trustHost: false,
+      defaultProvider: "keycloak",
+      addDefaultCallbackUrl: true,
+    },
+    sessionRefresh: {
+      enablePeriodically: true,
+      enableOnWindowFocus: true,
     },
   },
 

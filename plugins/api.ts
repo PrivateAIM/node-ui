@@ -8,7 +8,8 @@ import {
 } from "~/composables/connectionErrorToast";
 
 export default defineNuxtPlugin(() => {
-  const { user, login } = useOidcAuth();
+  // const { user } = useOidcAuth();
+  const { signIn, token } = useAuth();
   const config = useRuntimeConfig();
   const baseUrl = config.public.hubAdapterUrl as string;
   const hubApi = $fetch.create({
@@ -18,7 +19,7 @@ export default defineNuxtPlugin(() => {
       const headers = options.headers
         ? new Headers(options.headers)
         : new Headers();
-      headers.set("Authorization", `Bearer ${user?.value.accessToken}`);
+      headers.set("Authorization", `Bearer ${token.value}`);
       options.headers = headers;
     },
     onRequestError({ error }) {
@@ -28,7 +29,7 @@ export default defineNuxtPlugin(() => {
       // Handle the response errors
       if (response.status === 401) {
         console.warn("User not signed in, returning to login");
-        return login();
+        return signIn("keycloak");
       }
       console.error(response);
       if (response.status === 500) {

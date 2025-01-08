@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import KeycloakAuth from "~/components/landing/KeycloakAuth.vue";
 
-const { loggedIn } = useOidcAuth();
+// const { loggedIn } = useOidcAuth();
+const { data, signOut } = useAuth();
 </script>
 
 <template>
   <div class="landing-buttons">
-    <div class="login-or-learn-container" v-if="!loggedIn">
+    <div class="login-or-learn-container" v-if="!data">
       <KeycloakAuth />
       <div class="learn-more-btn landing-btn">
         <NuxtLink
@@ -41,6 +42,7 @@ const { loggedIn } = useOidcAuth();
         </a>
       </div>
     </div>
+    <Button @click="signOut()" severity="warn" outlined>Sign Out</Button>
   </div>
 </template>
 
