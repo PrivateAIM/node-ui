@@ -91,7 +91,7 @@ const updateFilters = (filterText: string) => {
           filterDisplay="menu"
           :globalFilterFields="['id', 'project.name', 'node.name']"
         >
-          <template #empty> No proposals found. </template>
+          <template #empty> No projects found. </template>
           <template #header>
             <div class="table-header-row">
               <SearchBar
