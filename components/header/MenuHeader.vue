@@ -43,35 +43,35 @@ const items = ref([
     <Menubar :model="items">
       <template #start> </template>
       <template #item="{ item, props, hasSubmenu }">
-        <router-link
-          v-if="item.route"
-          v-slot="{ href, navigate }"
-          :to="item.route"
-          custom
-        >
+        <div v-ripple class="p-ripple border-round menu-bar-item">
+          <router-link
+            v-if="item.route"
+            v-slot="{ href, navigate }"
+            :to="item.route"
+            custom
+          >
+            <a
+              :href="href"
+              v-bind="props.action"
+              @click="navigate"
+              :class="!loggedIn && item.label != 'Home' ? 'p-disabled' : ''"
+            >
+              <span :class="item.icon" />
+              <span class="ml-2">{{ item.label }}</span>
+            </a>
+          </router-link>
           <a
-            v-ripple
-            :href="href"
+            v-else
+            :href="item.url"
+            :target="item.target"
             v-bind="props.action"
-            @click="navigate"
             :class="!loggedIn && item.label != 'Home' ? 'p-disabled' : ''"
           >
             <span :class="item.icon" />
             <span class="ml-2">{{ item.label }}</span>
+            <span v-if="hasSubmenu" class="pi pi-fw pi-angle-down ml-2" />
           </a>
-        </router-link>
-        <a
-          v-else
-          v-ripple
-          :href="item.url"
-          :target="item.target"
-          v-bind="props.action"
-          :class="!loggedIn && item.label != 'Home' ? 'p-disabled' : ''"
-        >
-          <span :class="item.icon" />
-          <span class="ml-2">{{ item.label }}</span>
-          <span v-if="hasSubmenu" class="pi pi-fw pi-angle-down ml-2" />
-        </a>
+        </div>
       </template>
       <template #end>
         <div class="flex align-items-center gap-2">
@@ -85,5 +85,9 @@ const items = ref([
 <style scoped lang="scss">
 .ml-2 {
   margin-left: 5px;
+}
+
+.menu-bar-item {
+  border-radius: inherit;
 }
 </style>
