@@ -2,7 +2,7 @@
 import DataStoreListTabs from "~/components/data-stores/DataStoreListTabs.vue";
 
 definePageMeta({
-  middleware: ["sidebase-auth"],
+  middleware: "auth",
 });
 </script>
 

@@ -2,7 +2,7 @@
 import ContainerLogs from "~/components/analysis/logs/ContainerLogs.vue";
 
 definePageMeta({
-  middleware: ["sidebase-auth"],
+  middleware: "auth",
 });
 </script>
 

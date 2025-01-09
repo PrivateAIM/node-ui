@@ -2,7 +2,7 @@
 import AnalysesTable from "~/components/analysis/AnalysesTable.vue";
 
 definePageMeta({
-  middleware: ["sidebase-auth"],
+  middleware: "auth",
 });
 </script>
 

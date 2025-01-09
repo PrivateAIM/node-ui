@@ -2,7 +2,7 @@
 import ProjectProposalTable from "~/components/projects/ProjectProposalTable.vue";
 
 definePageMeta({
-  middleware: "sidebase-auth",
+  middleware: "auth",
 });
 </script>
 

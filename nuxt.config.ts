@@ -7,6 +7,7 @@ export default defineNuxtConfig({
   modules: ["nuxt-primevue", "@sidebase/nuxt-auth"],
 
   runtimeConfig: {
+    authSecret: process.env.AUTH_SECRET,
     public: {
       baseUrl: process.env.NUXT_PUBLIC_BASE_URL || "http://localhost:3000",
       hubAdapterUrl:
@@ -16,7 +17,7 @@ export default defineNuxtConfig({
 
   auth: {
     isEnabled: true,
-    // baseURL: "http://localhost:3000/api/auth",
+    baseURL: "http://localhost:3000/api/auth",
     // originEnvKey: "NUXT_PUBLIC_BASE_URL",
     disableServerSideAuth: false,
     globalAppMiddleware: false,
@@ -27,7 +28,7 @@ export default defineNuxtConfig({
       addDefaultCallbackUrl: true,
     },
     sessionRefresh: {
-      enablePeriodically: true,
+      enablePeriodically: 10000, // ms
       enableOnWindowFocus: true,
     },
   },
