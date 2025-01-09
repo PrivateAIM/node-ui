@@ -8,7 +8,7 @@ const { signIn, signOut, status } = useAuth();
       <Button @click="signOut()" severity="warn" outlined>Sign Out</Button>
     </div>
     <div v-else>
-      <Button @click="signIn(undefined)" severity="success" outlined
+      <Button @click="signIn('keycloak')" severity="success" outlined
         >Login with Keycloak</Button
       >
     </div>

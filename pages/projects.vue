@@ -1,9 +1,5 @@
 <script setup>
 import ProjectProposalTable from "~/components/projects/ProjectProposalTable.vue";
-
-definePageMeta({
-  middleware: "auth",
-});
 </script>
 
 <template>

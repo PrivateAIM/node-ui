@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import LandingButtons from "~/components/landing/LandingButtons.vue";
 
-const { status, getSession, data } = useAuth();
-const session = await getSession();
-
-console.log(status.value);
-console.log(session);
-console.log(data.value);
+definePageMeta({
+  auth: false,
+});
 </script>
 
 <template>

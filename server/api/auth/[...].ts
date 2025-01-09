@@ -11,6 +11,7 @@ export default NuxtAuthHandler({
       clientSecret: useRuntimeConfig().keycloakClientSecret,
       issuer:
         process.env.KEYCLOAK_BASE_URL ?? "http://localhost:8080/realms/flame",
+      checks: ["none"],
     }),
   ],
 });

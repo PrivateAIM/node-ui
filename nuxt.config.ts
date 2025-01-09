@@ -23,7 +23,7 @@ export default defineNuxtConfig({
     isEnabled: true,
     originEnvKey: "NUXT_PUBLIC_ORIGIN",
     disableServerSideAuth: false,
-    globalAppMiddleware: false,
+    globalAppMiddleware: true,
     provider: {
       type: "authjs",
       trustHost: false,
@@ -44,38 +44,6 @@ export default defineNuxtConfig({
       include: ["Ripple", "Tooltip", "Toast"],
     },
   },
-
-  // oidc: {
-  //   defaultProvider: "keycloak",
-  //   providers: {
-  //     keycloak: {
-  //       audience: "account",
-  //       userNameClaim: "preferred_username",
-  //       clientId: "",
-  //       clientSecret: "",
-  //       redirectUri: "",
-  //       authorizationUrl: "",
-  //       tokenUrl: "",
-  //       userinfoUrl: "",
-  //       openIdConfiguration: "",
-  //       logoutUrl: "",
-  //       logoutRedirectUri: "",
-  //       validateAccessToken: false,
-  //       exposeAccessToken: true,
-  //       exposeIdToken: false,
-  //       pkce: false,
-  //     },
-  //   },
-  //   session: {
-  //     expirationCheck: false,
-  //     automaticRefresh: false,
-  //     maxAge: 3600,
-  //   },
-  //   middleware: {
-  //     globalMiddlewareEnabled: false,
-  //     customLoginPage: false,
-  //   },
-  // },
 
   css: [
     "primevue/resources/themes/lara-dark-amber/theme.css",
