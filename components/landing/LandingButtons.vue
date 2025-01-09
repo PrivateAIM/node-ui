@@ -41,7 +41,6 @@ const { data, signOut } = useAuth();
         </a>
       </div>
     </div>
-    <Button @click="signOut()" severity="warn" outlined>Sign Out</Button>
   </div>
 </template>
 
