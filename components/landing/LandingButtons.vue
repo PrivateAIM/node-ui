@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import KeycloakAuth from "~/components/landing/KeycloakAuth.vue";
 
-// const { loggedIn } = useOidcAuth();
 const { data, signOut } = useAuth();
 </script>
 

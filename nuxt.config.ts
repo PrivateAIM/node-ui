@@ -8,8 +8,12 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     authSecret: process.env.AUTH_SECRET,
+    keycloakClientId: process.env.KEYCLOAK_CLIENT_ID,
+    keycloakClientSecret: process.env.KEYCLOAK_CLIENT_SECRET,
     public: {
       baseUrl: process.env.NUXT_PUBLIC_BASE_URL || "http://localhost:3000",
+      origin:
+        process.env.NUXT_PUBLIC_ORIGIN || "http://localhost:3000/api/auth",
       hubAdapterUrl:
         process.env.NUXT_PUBLIC_HUB_ADAPTER_URL || "http://localhost:5000",
     },
@@ -17,8 +21,7 @@ export default defineNuxtConfig({
 
   auth: {
     isEnabled: true,
-    baseURL: "http://localhost:3000/api/auth",
-    // originEnvKey: "NUXT_PUBLIC_BASE_URL",
+    originEnvKey: "NUXT_PUBLIC_ORIGIN",
     disableServerSideAuth: false,
     globalAppMiddleware: false,
     provider: {

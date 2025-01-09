@@ -7,8 +7,8 @@ export default NuxtAuthHandler({
   providers: [
     // @ts-expect-error Use .default here for it to work during SSR.
     KeycloakProvider.default({
-      clientId: process.env.KEYCLOAK_CLIENT_ID ?? "node-ui",
-      clientSecret: process.env.KEYCLOAK_CLIENT_SECRET,
+      clientId: useRuntimeConfig().keycloakClientId ?? "node-ui",
+      clientSecret: useRuntimeConfig().keycloakClientSecret,
       issuer:
         process.env.KEYCLOAK_BASE_URL ?? "http://localhost:8080/realms/flame",
     }),
