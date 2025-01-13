@@ -12,9 +12,12 @@ named and explicitly defined in order to overwrite the default configuration dur
 ```dotenv
 NUXT_PUBLIC_BASE_URL="http://localhost:3000"  # URL of the website
 NUXT_PUBLIC_HUB_ADAPTER_URL="http://urlForHubAdapterApi.de"  # URL for hub adapter API
+NUXT_PUBLIC_ORIGIN="$NUXT_PUBLIC_BASE_URL/api/auth"
 
-NUXT_PUBLIC_ORIGIN="http://localhost:3000/api/auth"
 KEYCLOAK_CLIENT_ID=node-ui
 KEYCLOAK_CLIENT_SECRET=xxx
+KEYCLOAK_BASE_URL="http://localhost:8080/realms/flame"
+
+NUXT_AUTH_SECRET=xxx
 ```
 

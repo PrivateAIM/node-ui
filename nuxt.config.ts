@@ -7,7 +7,7 @@ export default defineNuxtConfig({
   modules: ["nuxt-primevue", "@sidebase/nuxt-auth"],
 
   runtimeConfig: {
-    authSecret: process.env.AUTH_SECRET,
+    authSecret: process.env.NUXT_AUTH_SECRET,
     keycloakClientId: process.env.KEYCLOAK_CLIENT_ID,
     keycloakClientSecret: process.env.KEYCLOAK_CLIENT_SECRET,
     public: {
