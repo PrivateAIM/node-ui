@@ -76,7 +76,7 @@ const updateFilters = (filterText: string) => {
 
 <template>
   <div class="proposalTable">
-    <Card class="contentCard">
+    <Card class="content-card">
       <template #title>Project Proposals</template>
       <template #content>
         <DataTable

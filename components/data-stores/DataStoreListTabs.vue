@@ -99,7 +99,7 @@ function extractProjectIdFromPath(paths: string[]): string {
 </script>
 
 <template>
-  <div class="card tabCard">
+  <div class="card tab-card">
     <TabView>
       <TabPanel header="Detailed Data Store View">
         <DetailedDataStoreTable

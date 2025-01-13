@@ -28,7 +28,7 @@ const collapseAll = () => {
 </script>
 
 <template>
-  <div class="flex flex-wrap justify-end gap-2 expandButtons">
+  <div class="flex flex-wrap justify-end gap-2 expand-btns">
     <Button
       text
       icon="pi pi-plus"
@@ -45,7 +45,7 @@ const collapseAll = () => {
 </template>
 
 <style scoped lang="scss">
-.expandButtons {
+.expand-btns {
   display: flex;
   justify-content: flex-end;
   margin-left: auto;
