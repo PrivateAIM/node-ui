@@ -60,7 +60,7 @@ const updateFilters = (filterText: string) => {
 
 <template>
   <div class="projectTable">
-    <Card class="contentCard">
+    <Card class="content-card">
       <template #title>Currently Running Projects</template>
       <template #content>
         <DataTable
