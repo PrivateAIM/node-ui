@@ -79,7 +79,7 @@ if (prevLogResp) {
 </script>
 
 <template>
-  <Card class="contentCard">
+  <Card class="content-card">
     <template #title>Analysis</template>
     <template #subtitle>
       <div class="table-header-row">

@@ -173,7 +173,7 @@ const onCloseNavToast = () => {
     </Toast>
   </div>
   <div class="card analysisTable">
-    <Card class="contentCard">
+    <Card class="content-card">
       <template #title>Analyses</template>
       <template #content>
         <InlineMessage severity="warn">

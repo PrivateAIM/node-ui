@@ -63,11 +63,11 @@ definePageMeta({
   margin-right: 5px;
 }
 
-.contentCard {
+.content-card {
   margin-top: 1em;
 }
 
-.tabCard {
+.tab-card {
   margin-top: 1em;
 }
 </style>

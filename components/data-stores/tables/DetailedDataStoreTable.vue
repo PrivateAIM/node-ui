@@ -258,7 +258,7 @@ const updateFilters = (filterText: string) => {
 </template>
 
 <style scoped lang="scss">
-.expandButtons {
+.expand-btns {
   display: flex;
   justify-content: flex-end;
   margin-left: auto;
