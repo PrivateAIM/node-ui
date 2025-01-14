@@ -10,8 +10,9 @@ export default NuxtAuthHandler({
       clientId: useRuntimeConfig().keycloakClientId ?? "node-ui",
       clientSecret: useRuntimeConfig().keycloakClientSecret,
       issuer:
-        process.env.KEYCLOAK_BASE_URL ?? "http://localhost:8080/realms/flame",
-      checks: ["none"],
+        process.env.NUXT_KEYCLOAK_BASE_URL ??
+        "http://localhost:8080/realms/flame",
+      // checks: ["none"],
     }),
   ],
 });
