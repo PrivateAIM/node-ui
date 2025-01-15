@@ -1,0 +1,119 @@
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+on:
+  workflow_call:
+    inputs:
+      platforms:
+        default: linux/amd64
+        description: "The platform(s) to build (CSV)"
+        required: true
+        type: string
+      docker_file:
+        default: ./Dockerfile
+        description: "The Dockerfile to use"
+        required: false
+        type: string
+      image_labels:
+        description: "Image labels to apply to the image"
+        required: false
+        type: string
+      image_tags:
+        default: ""
+        description: "The tags to apply to the image"
+        required: false
+        type: string
+      push:
+        default: false
+        description: "Push the image to the registries"
+        required: false
+        type: boolean
+      tag_suffix:
+        default: ""
+        description: "Suffix to append to the image tags"
+        required: false
+        type: string
+
+    secrets:
+      docker_password:
+        description: "The password for the Docker hub account (required for push)"
+        required: false
+      docker_username:
+        description: "The username for the Docker hub account (required for push)"
+        required: false
+
+jobs:
+  build-image:
+    name: "Build image"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f  # tag=v2.10.2
+        with:
+          disable-sudo: true
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@49b3bc8e6bdd4a60e6116a5414239cba5943d3cf  # tag=v3.2.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+#      - name: Login to Docker Hub
+#        if: inputs.push == true
+#        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567  # tag=v3.3.0
+#        with:
+#          username: ${{ secrets.docker_username }}
+#          password: ${{ secrets.docker_password }}
+
+      - name: Login to GitHub Container Registry
+        if: inputs.push == true
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha
+
+      - name: Clean variables
+        id: clean
+        run: |
+          # Replace illegal characters in tag suffix
+          echo suffix=$(echo "${{ inputs.tag_suffix }}" | sed -e 's/[^a-zA-Z0-9._-]/_/g') >> $GITHUB_OUTPUT
+
+      - name: Add suffix to image tags
+        id: tag_suffix
+        run: |
+          delimiter="$(openssl rand -hex 8)"
+          echo "tags<<${delimiter}" >> $GITHUB_OUTPUT
+          # if tag_suffix is set, append it to each tag
+          if [[ -n "${{ inputs.tag_suffix }}" ]]; then
+            echo "${{ inputs.image_tags }}" | sed -e "s/$/-${{ steps.clean.outputs.suffix }}/" >> $GITHUB_OUTPUT
+          else
+            echo "${{ inputs.image_tags }}" >> $GITHUB_OUTPUT
+          fi
+          echo "${delimiter}" >> $GITHUB_OUTPUT
+
+
+      - name: Build image for push
+        if: inputs.push == true
+        uses: docker/build-push-action@48aba3b46d1b1fec4febb7c5d0c644b249a11355  # tag=v6.10.0
+        with:
+          context: .
+          file: ${{ inputs.docker_file}}
+          labels: ${{ inputs.image_labels }}
+          platforms: ${{ inputs.platforms }}
+          push: true
+          secrets: ${{ steps.prepare-build-secrets.outputs.build_secrets }}
+          tags: ${{ steps.tag_suffix.outputs.tags }}

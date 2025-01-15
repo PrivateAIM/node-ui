@@ -1,0 +1,38 @@
+name: Create and publish Docker image
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+
+jobs:
+  build-prod-image:
+    if: github.event.pull_request.merged
+    uses: ./.github/workflows/build-docker-image.yaml@v2
+    with:
+      platforms: linux/amd64
+      docker_file: prod.Dockerfile
+      image_tags: ${{ needs.metadata.outputs.image_tags }},ghcr.io/privateaim/node-ui:prod
+      image_labels: ${{ needs.metadata.outputs.image_labels }}
+      push: true
+
+  build-dev-image:
+    if: contains(github.event.head_commit.message, 'build_image')
+    uses: ./.github/workflows/build-docker-image.yaml@v2
+    with:
+      platforms: linux/amd64
+      docker_file: Dockerfile
+      image_tags: ${{ needs.metadata.outputs.image_tags }},ghcr.io/privateaim/node-ui:dev,ghcr.io/privateaim/node-ui:latest
+      image_labels: ${{ needs.metadata.outputs.image_labels }}
+      push: true
+
+  build-canary-image:
+    if: github.event.push
+    uses: ./.github/workflows/build-docker-image.yaml@v2
+    with:
+      platforms: linux/amd64
+      docker_file: Dockerfile
+      image_tags: ${{ needs.metadata.outputs.image_tags }},ghcr.io/privateaim/node-ui:canary
+      image_labels: ${{ needs.metadata.outputs.image_labels }}
+      push: true
