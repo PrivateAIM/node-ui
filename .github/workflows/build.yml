@@ -19,7 +19,7 @@ jobs:
 
   build-dev-image:
     if: contains(github.event.head_commit.message, 'build_image')
-    uses: ./.github/workflows/build-docker-image.yaml@v2
+    uses: ./.github/workflows/build-docker-image.yaml
     with:
       platforms: linux/amd64
       docker_file: Dockerfile
@@ -29,7 +29,7 @@ jobs:
 
   build-canary-image:
     if: github.event.push
-    uses: ./.github/workflows/build-docker-image.yaml@v2
+    uses: ./.github/workflows/build-docker-image.yaml
     with:
       platforms: linux/amd64
       docker_file: Dockerfile
