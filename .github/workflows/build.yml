@@ -9,7 +9,7 @@ on:
 jobs:
   build-prod-image:
     if: github.event.pull_request.merged
-    uses: ./.github/workflows/build-docker-image.yaml@v2
+    uses: ./.github/workflows/build-docker-image.yaml
     with:
       platforms: linux/amd64
       docker_file: prod.Dockerfile
