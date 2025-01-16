@@ -39,10 +39,6 @@ jobs:
             type=raw,value=latest,enable=${{ github.event.pull_request.merged == true }}
             type=semver,pattern={{version}},value=${{ steps.get-version.outputs.version }},enable=${{ github.event.pull_request.merged == true || contains(github.event.head_commit.message, 'build_image') }}
 
-#      - name: get-npm-version
-#        id: package-version
-#        uses: martinbeentjes/npm-get-version-action@v1.3.1
-
   build-prod-image:
     if: ${{ github.event.pull_request.merged == true }}
     uses: ./.github/workflows/build-docker-image.yaml
