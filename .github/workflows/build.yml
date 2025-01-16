@@ -33,10 +33,7 @@ jobs:
     with:
       platforms: linux/amd64
       docker_file: prod.Dockerfile
-      image_tags: |
-        ${{ needs.metadata.outputs.tags }}
-        ${{ env.PACKAGE }}:prod
-        ${{ env.PACKAGE }}:latest
+      image_tags: ${{ needs.metadata.outputs.tags }},${{ env.PACKAGE }}:prod,${{ env.PACKAGE }}:latest
       image_labels: ${{ needs.metadata.outputs.labels }}
       push: true
 
