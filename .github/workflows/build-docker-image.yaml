@@ -1,7 +1,3 @@
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-
 on:
   workflow_call:
     inputs:
@@ -84,6 +80,12 @@ jobs:
           # Replace illegal characters in tag suffix
           echo suffix=$(echo "${{ inputs.tag_suffix }}" | sed -e 's/[^a-zA-Z0-9._-]/_/g') >> $GITHUB_OUTPUT
 
+      - name: Show tags
+        id: show_tags
+        run: |
+          # Replace illegal characters in tag suffix
+          echo "${{ inputs.image_tags }}" >> $GITHUB_OUTPUT
+
       - name: Add suffix to image tags
         id: tag_suffix
         run: |
@@ -102,8 +104,9 @@ jobs:
         uses: docker/build-push-action@48aba3b46d1b1fec4febb7c5d0c644b249a11355  # tag=v6.10.0
         with:
           context: .
-          file: ${{ inputs.docker_file}}
+          file: ${{ inputs.docker_file }}
+          tags: ${{ inputs.image_tags }}
           labels: ${{ inputs.image_labels }}
           platforms: ${{ inputs.platforms }}
           push: true
-          tags: ${{ inputs.image_tags }}
+
