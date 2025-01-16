@@ -21,7 +21,10 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=sha
+            type=edge
             type=semver,pattern={{version}}
+            type=raw,value=latest,enable=${{ github.event.pull_request.merged }}
+            type=raw,value=canary,enable=${{ contains(github.event.head_commit.message, 'build_image') }}
 
 #      - name: get-npm-version
 #        id: package-version
@@ -36,7 +39,6 @@ jobs:
       docker_file: prod.Dockerfile
       image_tags: ${{ needs.metadata.outputs.tags }}
       image_labels: ${{ needs.metadata.outputs.labels }}
-      tag_suffix: prod
       push: true
 
   build-canary-image:
@@ -48,7 +50,6 @@ jobs:
       docker_file: Dockerfile
       image_tags: ${{ needs.metadata.outputs.tags }}
       image_labels: ${{ needs.metadata.outputs.labels }}
-      tag_suffix: canary
       push: true
 
   build-edge-image:
@@ -59,5 +60,4 @@ jobs:
       docker_file: Dockerfile
       image_tags: ${{ needs.metadata.outputs.tags }}
       image_labels: ${{ needs.metadata.outputs.labels }}
-      tag_suffix: edge
       push: true
