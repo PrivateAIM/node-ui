@@ -3,6 +3,7 @@ name: Create and publish Docker image
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  PACKAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
 on:
   push:
@@ -18,10 +19,14 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.PACKAGE }}
           tags: |
             type=sha
             type=semver,pattern={{version}}
+
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@v1.3.1
 
   build-prod-image:
     if: ${{ github.event.pull_request.merged }}
@@ -30,27 +35,35 @@ jobs:
     with:
       platforms: linux/amd64
       docker_file: prod.Dockerfile
-      image_tags: ${{ needs.metadata.outputs.image_tags }},ghcr.io/privateaim/node-ui:prod,ghcr.io/privateaim/node-ui:latest
-      image_labels: ${{ needs.metadata.outputs.image_labels }}
+      image_tags: |
+        ${{ needs.metadata.outputs.tags }}
+        ${{ env.PACKAGE }}:prod
+        ${{ env.PACKAGE }}:latest
+      image_labels: ${{ needs.metadata.outputs.labels }}
       push: true
 
-  build-dev-image:
+  build-canary-image:
     if: ${{ contains(github.event.head_commit.message, 'build_image') }}
     uses: ./.github/workflows/build-docker-image.yaml
     needs: [metadata]
     with:
       platforms: linux/amd64
       docker_file: Dockerfile
-      image_tags: ${{ needs.metadata.outputs.image_tags }},ghcr.io/privateaim/node-ui:canary
-      image_labels: ${{ needs.metadata.outputs.image_labels }}
+      image_tags: |
+        ${{ needs.metadata.outputs.tags }}
+        ${{ env.PACKAGE }}:canary
+      image_labels: ${{ needs.metadata.outputs.labels }}
       push: true
 
-  build-canary-image:
+  build-edge-image:
     uses: ./.github/workflows/build-docker-image.yaml
     needs: [metadata]
     with:
       platforms: linux/amd64
       docker_file: Dockerfile
-      image_tags: ${{ needs.metadata.outputs.image_tags }},ghcr.io/privateaim/node-ui:edge
-      image_labels: ${{ needs.metadata.outputs.image_labels }}
+      image_tags: |
+        ${{ needs.metadata.outputs.tags }}
+        ${{ env.PACKAGE }}:edge
+        ${{ env.PACKAGE }}:${{ needs.metadata.outputs.current-version }}
+      image_labels: ${{ needs.metadata.outputs.labels }}
       push: true
