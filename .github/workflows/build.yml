@@ -22,7 +22,6 @@ jobs:
           tags: |
             type=sha
             type=edge
-            type=raw,value=latest,enable=${{ github.event.pull_request.merged }}
             type=semver,pattern={{version}}
 
 #      - name: get-npm-version
