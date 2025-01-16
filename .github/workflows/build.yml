@@ -1,7 +1,8 @@
 name: Create and publish Docker image
 
 env:
-  PACKAGE: ghcr.io/${{ github.repository }}
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 on:
   push:
@@ -33,7 +34,10 @@ jobs:
     with:
       platforms: linux/amd64
       docker_file: prod.Dockerfile
-      image_tags: ${{ needs.metadata.outputs.tags }},${{ env.PACKAGE }}:prod,${{ env.PACKAGE }}:latest
+      image_tags: |
+        ${{ needs.metadata.outputs.tags }}
+        ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:prod
+        ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
       image_labels: ${{ needs.metadata.outputs.labels }}
       push: true
 
@@ -46,7 +50,7 @@ jobs:
       docker_file: Dockerfile
       image_tags: |
         ${{ needs.metadata.outputs.tags }}
-        ${{ env.PACKAGE }}:canary
+        ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:canary
       image_labels: ${{ needs.metadata.outputs.labels }}
       push: true
 
@@ -58,7 +62,7 @@ jobs:
       docker_file: Dockerfile
       image_tags: |
         ${{ needs.metadata.outputs.tags }}
-        ${{ env.PACKAGE }}:edge
-        ${{ env.PACKAGE }}:${{ needs.metadata.outputs.current-version }}
+        ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:edge
+        ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.metadata.outputs.current-version }}
       image_labels: ${{ needs.metadata.outputs.labels }}
       push: true
