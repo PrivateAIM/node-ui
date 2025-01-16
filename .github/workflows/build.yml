@@ -13,8 +13,12 @@ on:
 jobs:
   metadata:
     runs-on: ubuntu-latest
+    outputs:
+      image_tags: ${{ steps.meta.outputs.tags }}
+      image_labels: ${{ steps.meta.outputs.labels }}
     steps:
       - name: Extract metadata for Docker
+        id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
@@ -56,6 +60,6 @@ jobs:
     with:
       platforms: linux/amd64
       docker_file: Dockerfile
-      image_tags: ${{ needs.metadata.outputs.tags }}
-      image_labels: ${{ needs.metadata.outputs.labels }}
+      image_tags: ${{ needs.metadata.outputs.image_tags }}
+      image_labels: ${{ needs.metadata.outputs.image_labels }}
       push: true

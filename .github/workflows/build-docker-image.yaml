@@ -83,7 +83,7 @@ jobs:
       - name: Show tags
         id: show_tags
         run: |
-          # Replace illegal characters in tag suffix
+          # Show image tags
           echo "${{ inputs.image_tags }}" >> $GITHUB_OUTPUT
 
       - name: Add suffix to image tags
