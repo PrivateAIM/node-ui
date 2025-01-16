@@ -21,7 +21,6 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=sha
-            type=edge
             type=semver,pattern={{version}}
 
 #      - name: get-npm-version
