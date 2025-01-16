@@ -1,9 +1,7 @@
 name: Create and publish Docker image
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-  PACKAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+  PACKAGE: ghcr.io/${{ github.repository }}
 
 on:
   push:
