@@ -23,7 +23,6 @@ jobs:
             type=sha
             type=edge
             type=semver,pattern={{version}}
-            type=raw,value=latest,enable=${{ github.event.pull_request.merged }}
             type=raw,value=canary,enable=${{ contains(github.event.head_commit.message, 'build_image') }}
 
 #      - name: get-npm-version
