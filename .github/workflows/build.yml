@@ -26,28 +26,31 @@ jobs:
   build-prod-image:
     if: ${{ github.event.pull_request.merged }}
     uses: ./.github/workflows/build-docker-image.yaml
+    needs: [metadata]
     with:
       platforms: linux/amd64
       docker_file: prod.Dockerfile
-      image_tags: ${{ jobs.metadata.outputs.image_tags }},ghcr.io/privateaim/node-ui:prod,ghcr.io/privateaim/node-ui:latest
-      image_labels: ${{ jobs.metadata.outputs.image_labels }}
+      image_tags: ${{ needs.metadata.outputs.image_tags }},ghcr.io/privateaim/node-ui:prod,ghcr.io/privateaim/node-ui:latest
+      image_labels: ${{ needs.metadata.outputs.image_labels }}
       push: true
 
   build-dev-image:
     if: ${{ contains(github.event.head_commit.message, 'build_image') }}
     uses: ./.github/workflows/build-docker-image.yaml
+    needs: [metadata]
     with:
       platforms: linux/amd64
       docker_file: Dockerfile
-      image_tags: ${{ jobs.metadata.outputs.image_tags }},ghcr.io/privateaim/node-ui:canary
-      image_labels: ${{ jobs.metadata.outputs.image_labels }}
+      image_tags: ${{ needs.metadata.outputs.image_tags }},ghcr.io/privateaim/node-ui:canary
+      image_labels: ${{ needs.metadata.outputs.image_labels }}
       push: true
 
   build-canary-image:
     uses: ./.github/workflows/build-docker-image.yaml
+    needs: [metadata]
     with:
       platforms: linux/amd64
       docker_file: Dockerfile
-      image_tags: ${{ jobs.metadata.outputs.image_tags }},ghcr.io/privateaim/node-ui:edge
-      image_labels: ${{ jobs.metadata.outputs.image_labels }}
+      image_tags: ${{ needs.metadata.outputs.image_tags }},ghcr.io/privateaim/node-ui:edge
+      image_labels: ${{ needs.metadata.outputs.image_labels }}
       push: true
