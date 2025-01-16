@@ -11,6 +11,7 @@ export default defineNuxtConfig({
       baseUrl: process.env.NUXT_PUBLIC_BASE_URL || "http://localhost:3000",
       hubAdapterUrl:
         process.env.NUXT_PUBLIC_HUB_ADAPTER_URL || "http://localhost:5000",
+      version: process.env.npm_package_version,
     },
   },
 
