@@ -1,5 +1,9 @@
 name: Create and publish Docker image
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 on:
   push:
     branches:
@@ -7,14 +11,26 @@ on:
   pull_request:
 
 jobs:
+  metadata:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha
+            type=semver,pattern={{version}}
+
   build-prod-image:
     if: ${{ github.event.pull_request.merged }}
     uses: ./.github/workflows/build-docker-image.yaml
     with:
       platforms: linux/amd64
       docker_file: prod.Dockerfile
-      image_tags: ${{ needs.metadata.outputs.image_tags }},ghcr.io/privateaim/node-ui:prod
-      image_labels: ${{ needs.metadata.outputs.image_labels }}
+      image_tags: ${{ jobs.metadata.outputs.image_tags }},ghcr.io/privateaim/node-ui:prod,ghcr.io/privateaim/node-ui:latest
+      image_labels: ${{ jobs.metadata.outputs.image_labels }}
       push: true
 
   build-dev-image:
@@ -23,8 +39,8 @@ jobs:
     with:
       platforms: linux/amd64
       docker_file: Dockerfile
-      image_tags: ${{ needs.metadata.outputs.image_tags }},ghcr.io/privateaim/node-ui:dev,ghcr.io/privateaim/node-ui:latest
-      image_labels: ${{ needs.metadata.outputs.image_labels }}
+      image_tags: ${{ jobs.metadata.outputs.image_tags }},ghcr.io/privateaim/node-ui:canary
+      image_labels: ${{ jobs.metadata.outputs.image_labels }}
       push: true
 
   build-canary-image:
@@ -32,6 +48,6 @@ jobs:
     with:
       platforms: linux/amd64
       docker_file: Dockerfile
-      image_tags: ${{ needs.metadata.outputs.image_tags }},ghcr.io/privateaim/node-ui:canary
-      image_labels: ${{ needs.metadata.outputs.image_labels }}
+      image_tags: ${{ jobs.metadata.outputs.image_tags }},ghcr.io/privateaim/node-ui:edge
+      image_labels: ${{ jobs.metadata.outputs.image_labels }}
       push: true
