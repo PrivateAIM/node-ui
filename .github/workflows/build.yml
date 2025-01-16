@@ -18,7 +18,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.PACKAGE }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=sha
             type=semver,pattern={{version}}
@@ -36,8 +36,8 @@ jobs:
       docker_file: prod.Dockerfile
       image_tags: |
         ${{ needs.metadata.outputs.tags }}
-        ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:prod
-        ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+        ghcr.io/privateaim/node-ui:prod
+        ghcr.io/privateaim/node-ui:latest
       image_labels: ${{ needs.metadata.outputs.labels }}
       push: true
 
@@ -50,7 +50,7 @@ jobs:
       docker_file: Dockerfile
       image_tags: |
         ${{ needs.metadata.outputs.tags }}
-        ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:canary
+        ghcr.io/privateaim/node-ui:canary
       image_labels: ${{ needs.metadata.outputs.labels }}
       push: true
 
@@ -62,7 +62,7 @@ jobs:
       docker_file: Dockerfile
       image_tags: |
         ${{ needs.metadata.outputs.tags }}
-        ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:edge
-        ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.metadata.outputs.current-version }}
+        ghcr.io/privateaim/node-ui:edge
+        ghcr.io/privateaim/node-ui:${{ needs.metadata.outputs.current-version }}
       image_labels: ${{ needs.metadata.outputs.labels }}
       push: true
