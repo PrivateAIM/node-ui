@@ -99,7 +99,7 @@ jobs:
         with:
           context: .
           file: ${{ inputs.docker_file }}
-          tags: ${{ inputs.image_tags }}
+          tags: ${{ steps.tag_suffix.outputs.tags }}
           labels: ${{ inputs.image_labels }}
           platforms: ${{ inputs.platforms }}
           push: true

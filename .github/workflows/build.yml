@@ -9,6 +9,7 @@ on:
     branches:
       - '**'
   pull_request:
+    branches: [ develop ]
 
 jobs:
   metadata:
@@ -17,6 +18,15 @@ jobs:
       image_tags: ${{ steps.meta.outputs.tags }}
       image_labels: ${{ steps.meta.outputs.labels }}
     steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Get Version
+        id: get-version
+        uses: beaconbrigade/package-json-version@v0.3.2
+        with:
+          path: .
+
       - name: Extract metadata for Docker
         id: meta
         uses: docker/metadata-action@v5
@@ -25,15 +35,16 @@ jobs:
           tags: |
             type=sha
             type=edge
-            type=semver,pattern={{version}}
             type=raw,value=canary,enable=${{ contains(github.event.head_commit.message, 'build_image') }}
+            type=raw,value=latest,enable=${{ github.event.pull_request.merged == true }}
+            type=semver,pattern={{version}},value=${{ steps.get-version.outputs.version }},enable=${{ github.event.pull_request.merged == true || contains(github.event.head_commit.message, 'build_image') }}
 
 #      - name: get-npm-version
 #        id: package-version
 #        uses: martinbeentjes/npm-get-version-action@v1.3.1
 
   build-prod-image:
-    if: ${{ github.event.pull_request.merged }}
+    if: ${{ github.event.pull_request.merged == true }}
     uses: ./.github/workflows/build-docker-image.yaml
     needs: [metadata]
     with:
