@@ -80,12 +80,6 @@ jobs:
           # Replace illegal characters in tag suffix
           echo suffix=$(echo "${{ inputs.tag_suffix }}" | sed -e 's/[^a-zA-Z0-9._-]/_/g') >> $GITHUB_OUTPUT
 
-      - name: Show tags
-        id: show_tags
-        run: |
-          # Show image tags
-          echo "${{ inputs.image_tags }}" >> $GITHUB_OUTPUT
-
       - name: Add suffix to image tags
         id: tag_suffix
         run: |
