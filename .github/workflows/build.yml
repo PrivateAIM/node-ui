@@ -21,11 +21,13 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=sha
+            type=edge
+            type=raw,value=latest,enable=${{ github.event.pull_request.merged }}
             type=semver,pattern={{version}}
 
-      - name: get-npm-version
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@v1.3.1
+#      - name: get-npm-version
+#        id: package-version
+#        uses: martinbeentjes/npm-get-version-action@v1.3.1
 
   build-prod-image:
     if: ${{ github.event.pull_request.merged }}
@@ -34,11 +36,9 @@ jobs:
     with:
       platforms: linux/amd64
       docker_file: prod.Dockerfile
-      image_tags: |
-        ${{ needs.metadata.outputs.tags }}
-        ghcr.io/privateaim/node-ui:prod
-        ghcr.io/privateaim/node-ui:latest
+      image_tags: ${{ needs.metadata.outputs.tags }}
       image_labels: ${{ needs.metadata.outputs.labels }}
+      tag_suffix: prod
       push: true
 
   build-canary-image:
@@ -48,10 +48,9 @@ jobs:
     with:
       platforms: linux/amd64
       docker_file: Dockerfile
-      image_tags: |
-        ${{ needs.metadata.outputs.tags }}
-        ghcr.io/privateaim/node-ui:canary
+      image_tags: ${{ needs.metadata.outputs.tags }}
       image_labels: ${{ needs.metadata.outputs.labels }}
+      tag_suffix: canary
       push: true
 
   build-edge-image:
@@ -60,9 +59,7 @@ jobs:
     with:
       platforms: linux/amd64
       docker_file: Dockerfile
-      image_tags: |
-        ${{ needs.metadata.outputs.tags }}
-        ghcr.io/privateaim/node-ui:edge
-        ghcr.io/privateaim/node-ui:${{ needs.metadata.outputs.current-version }}
+      image_tags: ${{ needs.metadata.outputs.tags }}
       image_labels: ${{ needs.metadata.outputs.labels }}
+      tag_suffix: edge
       push: true
