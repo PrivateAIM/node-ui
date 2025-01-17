@@ -42,7 +42,8 @@ jobs:
             type=edge
             type=raw,value=canary,enable=${{ contains(github.event.head_commit.message, 'build_image') || github.event_name == 'workflow_dispatch' }}
             type=raw,value=latest,enable=${{ github.event.pull_request.merged == true }}
-            type=semver,pattern={{version}},value=${{ steps.get-version.outputs.version }},enable=${{ github.event.pull_request.merged == true || contains(github.event.head_commit.message, 'build_image') || github.event_name == 'workflow_dispatch'  }}
+            type=raw,event=workflow_dispatch,value=${{ github.event.inputs.dispatch-tag }}
+            type=semver,pattern={{version}},value=${{ steps.get-version.outputs.version }},branch=develop
 
   build-prod-image:
     if: ${{ github.event.pull_request.merged == true }}
@@ -51,8 +52,8 @@ jobs:
     with:
       platforms: linux/amd64
       docker_file: prod.Dockerfile
-      image_tags: ${{ needs.metadata.outputs.tags }}
-      image_labels: ${{ needs.metadata.outputs.labels }}
+      image_tags: ${{ needs.metadata.outputs.image_tags }}
+      image_labels: ${{ needs.metadata.outputs.image_labels }}
       push: true
 
   build-canary-image:
@@ -62,8 +63,8 @@ jobs:
     with:
       platforms: linux/amd64
       docker_file: Dockerfile
-      image_tags: ${{ needs.metadata.outputs.tags }}
-      image_labels: ${{ needs.metadata.outputs.labels }}
+      image_tags: ${{ needs.metadata.outputs.image_tags }}
+      image_labels: ${{ needs.metadata.outputs.image_labels }}
       push: true
 
   build-edge-image:
