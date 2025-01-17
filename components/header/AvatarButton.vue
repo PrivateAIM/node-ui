@@ -6,7 +6,6 @@ const menu = ref();
 
 const config = useRuntimeConfig();
 const keycloakUrl = new URL(config.public.keycloak).origin;
-console.log(keycloakUrl);
 
 const userActionLabel = loggedIn ? "Login" : "Logout";
 const userActionIcon = loggedIn ? "pi pi-sign-in" : "pi pi-sign-out";
