@@ -35,13 +35,14 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
+          context: git
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=sha
             type=edge
             type=raw,value=canary,enable=${{ contains(github.event.head_commit.message, 'build_image') || github.event_name == 'workflow_dispatch' }}
             type=raw,value=latest,enable=${{ github.event.pull_request.merged == true }}
-            type=semver,pattern={{version}},value=${{ steps.get-version.outputs.version }},enable=${{ github.event.pull_request.merged == true || contains(github.event.head_commit.message, 'build_image') }}
+            type=semver,pattern={{version}},value=${{ steps.get-version.outputs.version }},enable=${{ github.event.pull_request.merged == true || contains(github.event.head_commit.message, 'build_image') || github.event_name == 'workflow_dispatch'  }}
 
   build-prod-image:
     if: ${{ github.event.pull_request.merged == true }}
