@@ -3,30 +3,29 @@ import { ref } from "vue";
 const { loggedIn, logout, login, user } = useOidcAuth();
 
 const menu = ref();
-const loggedOutUserMenuItems = ref([
+
+const config = useRuntimeConfig();
+const keycloakUrl = new URL(config.public.keycloak).origin;
+console.log(keycloakUrl);
+
+const userActionLabel = loggedIn ? "Login" : "Logout";
+const userActionIcon = loggedIn ? "pi pi-sign-in" : "pi pi-sign-out";
+
+const menuItems = ref([
   {
     label: "Options",
     items: [
       {
-        label: "Login",
-        icon: "pi pi-sign-in",
+        label: userActionLabel,
+        icon: userActionIcon,
         command: () => {
-          login();
+          loggedIn ? logout() : login();
         },
       },
-    ],
-  },
-]);
-const loggedInUserMenuItems = ref([
-  {
-    label: "Options",
-    items: [
       {
-        label: "Logout",
-        icon: "pi pi-sign-out",
-        command: () => {
-          logout();
-        },
+        label: "Keycloak Admin",
+        icon: "pi pi-lock",
+        url: keycloakUrl,
       },
     ],
   },
@@ -37,50 +36,55 @@ const toggle = (event) => {
 </script>
 
 <template>
-  <div v-if="loggedIn" class="auth-avatar">
-    <div class="username-menu-bar">
+  <div class="auth-avatar">
+    <div v-if="loggedIn" class="username-menu-bar">
       <p>
         {{ user.userName || "Swell Person" }}
       </p>
+      <Button
+        type="button"
+        icon="pi pi-user"
+        @click="toggle"
+        aria-haspopup="true"
+        aria-controls="overlay_menu"
+        rounded
+        severity="contrast"
+      />
     </div>
-    <Button
-      type="button"
-      icon="pi pi-user"
-      @click="toggle"
-      aria-haspopup="true"
-      aria-controls="overlay_menu"
-      rounded
-      severity="contrast"
-    />
-    <Menu
-      ref="menu"
-      id="overlay_menu"
-      :model="loggedInUserMenuItems"
-      :popup="true"
-    />
-  </div>
-  <div v-else>
-    <Button
-      type="button"
-      icon="pi pi-question"
-      @click="toggle"
-      aria-haspopup="true"
-      aria-controls="overlay_menu"
-      rounded
-      severity="secondary"
-    />
-    <Menu
-      ref="menu"
-      id="overlay_menu"
-      :model="loggedOutUserMenuItems"
-      :popup="true"
-    />
+    <div v-else>
+      <Button
+        type="button"
+        icon="pi pi-question"
+        @click="toggle"
+        aria-haspopup="true"
+        aria-controls="overlay_menu"
+        rounded
+        severity="contrast"
+      />
+    </div>
+    <Menu ref="menu" id="overlay_menu" :model="menuItems" :popup="true">
+      <template #item="{ item, props }">
+        <a
+          v-ripple
+          :href="item.url"
+          :target="item.target"
+          v-bind="props.action"
+        >
+          <i :class="item.icon" />
+          <span class="ml-2 menu-item-label">{{ item.label }}</span>
+        </a>
+      </template>
+    </Menu>
   </div>
 </template>
 
 <style scoped lang="scss">
 .auth-avatar {
   display: flex;
+}
+
+.menu-item-label {
+  margin-left: 10px;
 }
 
 .username-menu-bar {
