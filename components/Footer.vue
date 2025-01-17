@@ -1,21 +1,30 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const config = useRuntimeConfig();
+const pkgVersion = config.public.version;
+</script>
 
 <template>
   <footer>
     <div class="page-footer">
-      <div class="footer-description">
-        <div class="github">
-          <a
-            href="https://github.com/PrivateAIM/node-ui/issues"
-            class="github-link"
-          >
+      <div class="footer-row">
+        <div class="github-link">
+          <a href="https://github.com/PrivateAIM/node-ui/issues">
             <i class="pi pi-github" style="padding-right: 5px"></i>Submit an
             Issue</a
           >
-          - © 2025
-          <a href="https://privateaim.de/">PrivateAim</a>
         </div>
-        <div class="copyright"></div>
+        <div class="copyright">
+          © 2025
+          <a style="padding-left: 5px" href="https://privateaim.de/"
+            >PrivateAim</a
+          >
+        </div>
+
+        <div class="build-version">
+          <span
+            ><b>v{{ pkgVersion }}</b></span
+          >
+        </div>
       </div>
     </div>
   </footer>
@@ -30,11 +39,19 @@
   color: #aeb2b7;
 }
 
-.footer-description {
-  text-align: center;
+.footer-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 2px 10px 2px 10px;
 }
 
-.github-link {
-  padding: 0 5px 0 0;
+.copyright {
+  display: flex;
+  justify-content: center;
+}
+
+.build-version {
+  display: flex;
+  justify-content: flex-end;
 }
 </style>

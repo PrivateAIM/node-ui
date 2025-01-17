@@ -1,37 +1,78 @@
 name: Create and publish Docker image
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 on:
+  workflow_dispatch:
   push:
     branches:
       - '**'
   pull_request:
+    types:
+      - closed
+    branches:
+      - develop
 
 jobs:
+  metadata:
+    runs-on: ubuntu-latest
+    outputs:
+      image_tags: ${{ steps.meta.outputs.tags }}
+      image_labels: ${{ steps.meta.outputs.labels }}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Get Version
+        id: get-version
+        uses: beaconbrigade/package-json-version@v0.3.2
+        with:
+          path: .
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          context: git
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha
+            type=edge
+            type=raw,value=canary,enable=${{ contains(github.event.head_commit.message, 'build_image') || github.event_name == 'workflow_dispatch' }}
+            type=raw,value=latest,enable=${{ github.event.pull_request.merged == true }}
+            type=raw,event=workflow_dispatch,value=${{ github.event.inputs.dispatch-tag }}
+            type=semver,pattern={{version}},value=${{ steps.get-version.outputs.version }},branch=develop
+
   build-prod-image:
-    if: ${{ github.event.pull_request.merged }}
+    if: ${{ github.event.pull_request.merged == true }}
     uses: ./.github/workflows/build-docker-image.yaml
+    needs: [metadata]
     with:
       platforms: linux/amd64
       docker_file: prod.Dockerfile
-      image_tags: ${{ needs.metadata.outputs.image_tags }},ghcr.io/privateaim/node-ui:prod
-      image_labels: ${{ needs.metadata.outputs.image_labels }}
-      push: true
-
-  build-dev-image:
-    if: ${{ contains(github.event.head_commit.message, 'build_image') }}
-    uses: ./.github/workflows/build-docker-image.yaml
-    with:
-      platforms: linux/amd64
-      docker_file: Dockerfile
-      image_tags: ${{ needs.metadata.outputs.image_tags }},ghcr.io/privateaim/node-ui:dev,ghcr.io/privateaim/node-ui:latest
+      image_tags: ${{ needs.metadata.outputs.image_tags }}
       image_labels: ${{ needs.metadata.outputs.image_labels }}
       push: true
 
   build-canary-image:
+    if: ${{ contains(github.event.head_commit.message, 'build_image') || github.event_name == 'workflow_dispatch' }}
     uses: ./.github/workflows/build-docker-image.yaml
+    needs: [metadata]
     with:
       platforms: linux/amd64
       docker_file: Dockerfile
-      image_tags: ${{ needs.metadata.outputs.image_tags }},ghcr.io/privateaim/node-ui:canary
+      image_tags: ${{ needs.metadata.outputs.image_tags }}
+      image_labels: ${{ needs.metadata.outputs.image_labels }}
+      push: true
+
+  build-edge-image:
+    uses: ./.github/workflows/build-docker-image.yaml
+    needs: [metadata]
+    with:
+      platforms: linux/amd64
+      docker_file: Dockerfile
+      image_tags: ${{ needs.metadata.outputs.image_tags }}
       image_labels: ${{ needs.metadata.outputs.image_labels }}
       push: true
