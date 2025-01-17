@@ -35,9 +35,9 @@ const toggle = (event) => {
 </script>
 
 <template>
-  <div class="auth-avatar">
-    <div v-if="loggedIn" class="username-menu-bar">
-      <p>
+  <div class="container">
+    <div v-if="loggedIn" class="avatar-container">
+      <p class="username-menu-bar">
         {{ user.userName || "Swell Person" }}
       </p>
       <Button
@@ -78,7 +78,7 @@ const toggle = (event) => {
 </template>
 
 <style scoped lang="scss">
-.auth-avatar {
+.avatar-container {
   display: flex;
 }
 
