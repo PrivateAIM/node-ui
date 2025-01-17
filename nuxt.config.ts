@@ -17,8 +17,7 @@ export default defineNuxtConfig({
       hubAdapterUrl:
         process.env.NUXT_PUBLIC_HUB_ADAPTER_URL || "http://localhost:5000",
       version: process.env.npm_package_version,
-      keycloak:
-        process.env.NUXT_OIDC_PROVIDERS_KEYCLOAK_AUTHORIZATION_URL || "",
+      keycloak: process.env.NUXT_KEYCLOAK_BASE_URL || "",
     },
   },
 

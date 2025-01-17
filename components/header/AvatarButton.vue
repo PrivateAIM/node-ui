@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from "vue";
-// const { loggedIn, logout, login, user } = useOidcAuth();
 const { signIn, signOut, status, data } = useAuth();
 
 const menu = ref();
@@ -8,8 +7,13 @@ const menu = ref();
 const config = useRuntimeConfig();
 const keycloakUrl = new URL(config.public.keycloak).origin;
 
-const userActionLabel = loggedIn ? "Login" : "Logout";
-const userActionIcon = loggedIn ? "pi pi-sign-in" : "pi pi-sign-out";
+const isAuthenticated = ref(status.value === "authenticated");
+console.log(isAuthenticated.value);
+
+const userActionLabel = isAuthenticated.value ? "Logout" : "Login";
+const userActionIcon = isAuthenticated.value
+  ? "pi pi-sign-in"
+  : "pi pi-sign-out";
 
 const menuItems = ref([
   {
@@ -19,7 +23,7 @@ const menuItems = ref([
         label: userActionLabel,
         icon: userActionIcon,
         command: () => {
-          signOut();
+          isAuthenticated.value ? signOut() : signIn("keycloak");
         },
       },
       {
@@ -36,10 +40,10 @@ const toggle = (event) => {
 </script>
 
 <template>
-  <div v-if="status === 'authenticated'" class="auth-avatar">
-    <div class="username-menu-bar">
-      <p>
-        {{ data.user.name || "Swell Person" }}
+  <div class="container">
+    <div v-if="isAuthenticated" class="avatar-container">
+      <p class="username-menu-bar">
+        {{ data?.user?.name || "Swell Person" }}
       </p>
       <Button
         type="button"
@@ -61,30 +65,30 @@ const toggle = (event) => {
         rounded
         severity="contrast"
       />
+      <Menu ref="menu" id="overlay_menu" :model="menuItems" :popup="true">
+        <template #item="{ item, props }">
+          <a
+            v-ripple
+            :href="item.url"
+            :target="item.target"
+            v-bind="props.action"
+          >
+            <i :class="item.icon" />
+            <span class="ml-2 menu-item-label">{{ item.label }}</span>
+          </a>
+        </template>
+      </Menu>
     </div>
-    <Menu ref="menu" id="overlay_menu" :model="menuItems" :popup="true">
-      <template #item="{ item, props }">
-        <a
-          v-ripple
-          :href="item.url"
-          :target="item.target"
-          v-bind="props.action"
-        >
-          <i :class="item.icon" />
-          <span class="ml-2 menu-item-label">{{ item.label }}</span>
-        </a>
-      </template>
-    </Menu>
   </div>
 </template>
 
 <style scoped lang="scss">
-.auth-avatar {
-  display: flex;
-}
-
 .menu-item-label {
   margin-left: 10px;
+}
+
+.avatar-container {
+  display: flex;
 }
 
 .username-menu-bar {
