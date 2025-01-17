@@ -8,7 +8,6 @@ const config = useRuntimeConfig();
 const keycloakUrl = new URL(config.public.keycloak).origin;
 
 const isAuthenticated = ref(status.value === "authenticated");
-console.log(isAuthenticated.value);
 
 const userActionLabel = isAuthenticated.value ? "Logout" : "Login";
 const userActionIcon = isAuthenticated.value

@@ -23,8 +23,9 @@ export default defineNuxtConfig({
 
   auth: {
     isEnabled: true,
-    originEnvKey: "NUXT_PUBLIC_ORIGIN",
-    baseURL: process.env.NUXT_PUBLIC_ORIGIN || "http://localhost:3000/api/auth",
+    // originEnvKey: "NUXT_PUBLIC_ORIGIN",
+    // baseURL: process.env.NUXT_PUBLIC_ORIGIN || "http://localhost:3000/api/auth",
+    baseURL: "http://localhost:3000/api/auth",
     disableServerSideAuth: false,
     globalAppMiddleware: true,
     provider: {
@@ -34,7 +35,7 @@ export default defineNuxtConfig({
       addDefaultCallbackUrl: true,
     },
     sessionRefresh: {
-      enablePeriodically: 1000 * 60, // 1 second
+      enablePeriodically: true,
     },
   },
 
