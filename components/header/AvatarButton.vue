@@ -11,8 +11,8 @@ const isAuthenticated = ref(status.value === "authenticated");
 
 const userActionLabel = isAuthenticated.value ? "Logout" : "Login";
 const userActionIcon = isAuthenticated.value
-  ? "pi pi-sign-out"
-  : "pi pi-sign-in";
+  ? "pi pi-sign-in"
+  : "pi pi-sign-out";
 
 const menuItems = ref([
   {
@@ -64,20 +64,20 @@ const toggle = (event) => {
         rounded
         severity="contrast"
       />
+      <Menu ref="menu" id="overlay_menu" :model="menuItems" :popup="true">
+        <template #item="{ item, props }">
+          <a
+            v-ripple
+            :href="item.url"
+            :target="item.target"
+            v-bind="props.action"
+          >
+            <i :class="item.icon" />
+            <span class="ml-2 menu-item-label">{{ item.label }}</span>
+          </a>
+        </template>
+      </Menu>
     </div>
-    <Menu ref="menu" id="overlay_menu" :model="menuItems" :popup="true">
-      <template #item="{ item, props }">
-        <a
-          v-ripple
-          :href="item.url"
-          :target="item.target"
-          v-bind="props.action"
-        >
-          <i :class="item.icon" />
-          <span class="ml-2 menu-item-label">{{ item.label }}</span>
-        </a>
-      </template>
-    </Menu>
   </div>
 </template>
 
