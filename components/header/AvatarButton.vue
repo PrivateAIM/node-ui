@@ -5,7 +5,7 @@ const { signIn, signOut, status, data } = useAuth();
 const menu = ref();
 
 const config = useRuntimeConfig();
-const keycloakUrl = new URL(config.public.keycloak).origin;
+const keycloakUrl = new URL(config.public.keycloakBaseUrl).origin;
 
 const isAuthenticated = ref(status.value === "authenticated");
 
@@ -27,8 +27,9 @@ const menuItems = ref([
       },
       {
         label: "Keycloak Admin",
-        icon: "pi pi-lock",
+        icon: "pi pi-external-link",
         url: keycloakUrl,
+        target: "_blank",
       },
     ],
   },
@@ -64,20 +65,20 @@ const toggle = (event) => {
         rounded
         severity="contrast"
       />
-      <Menu ref="menu" id="overlay_menu" :model="menuItems" :popup="true">
-        <template #item="{ item, props }">
-          <a
-            v-ripple
-            :href="item.url"
-            :target="item.target"
-            v-bind="props.action"
-          >
-            <i :class="item.icon" />
-            <span class="ml-2 menu-item-label">{{ item.label }}</span>
-          </a>
-        </template>
-      </Menu>
     </div>
+    <Menu ref="menu" id="overlay_menu" :model="menuItems" :popup="true">
+      <template #item="{ item, props }">
+        <a
+          v-ripple
+          :href="item.url"
+          :target="item.target"
+          v-bind="props.action"
+        >
+          <i :class="item.icon" />
+          <span class="ml-2 menu-item-label">{{ item.label }}</span>
+        </a>
+      </template>
+    </Menu>
   </div>
 </template>
 
