@@ -15,6 +15,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
+    "@primevue/nuxt-module": "^4.2.5",
+    "@primevue/themes": "^4.2.5",
     "@sidebase/nuxt-auth": "https://pkg.pr.new/@sidebase/nuxt-auth@992",
     "@types/eslint-config-prettier": "^6.11.3",
     "@types/uuid": "^9.0.8",
@@ -31,7 +33,7 @@
     "pinia": "^2.3.0",
     "prettier": "^3.4.2",
     "primeicons": "^7.0.0",
-    "primevue": "^3.52.0",
+    "primevue": "^4.2.5",
     "sass": "^1.83.4",
     "sass-loader": "^14.2.1",
     "swagger-typescript-api": "^13.0.23",
@@ -40,5 +42,6 @@
     "vue": "^3.5.13",
     "vue-router": "^4.5.0",
     "webpack": "^5.97.1"
-  }
+  },
+  "dependencies": {}
 }

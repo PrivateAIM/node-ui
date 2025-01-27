@@ -2,7 +2,7 @@
 import { deleteDataStore } from "~/composables/useAPIFetch";
 import { useConfirm } from "primevue/useconfirm";
 import type { DetailedService, Route } from "~/services/Api";
-import { FilterMatchMode } from "primevue/api";
+import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
 import { extractUuid } from "~/utils/extract-uuid-from-kong-username";
 import { parseUnixTimestamp } from "~/utils/format-data-row";
@@ -70,7 +70,7 @@ async function onConfirmDeleteDataStore(dsName: string) {
       life: 3000,
     });
     dataStores.value = dataStores.value?.filter(
-      (store: DetailedService) => store.name !== dsName,
+      (store: DetailedService) => store.name !== dsName
     );
   } else {
     toast.add({
@@ -181,7 +181,7 @@ const updateFilters = (filterText: string) => {
           />
         </template>
         <template #filter="{ filterModel, filterCallback }">
-          <Dropdown
+          <Select
             v-model="filterModel.value"
             @change="filterCallback()"
             :options="dataStoreTypes"
@@ -195,7 +195,7 @@ const updateFilters = (filterText: string) => {
                 :severity="getDataStoreTypeSeverity(slotProps.option)"
               />
             </template>
-          </Dropdown>
+          </Select>
         </template>
       </Column>
       <Column field="path" header="Path"></Column>

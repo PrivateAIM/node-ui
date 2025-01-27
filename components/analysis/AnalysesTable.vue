@@ -4,7 +4,7 @@ import { formatDataRow } from "~/utils/format-data-row";
 import TableRowMetadata from "~/components/TableRowMetadata.vue";
 import ExpandRowButtons from "~/components/table/ExpandRowButtons.vue";
 import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
-import { FilterMatchMode } from "primevue/api";
+import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
 import {
   getApprovalStatusSeverity,
@@ -51,7 +51,7 @@ function parseData() {
     const formattedAnalyses = formatDataRow(
       response.value!.data,
       ["created_at", "updated_at"],
-      expandRowEntries,
+      expandRowEntries
     );
     if (projMap.size > 0) {
       formattedAnalyses.forEach((analysisEntry: AnalysisNode) => {
@@ -176,9 +176,7 @@ const onCloseNavToast = () => {
     <Card class="content-card">
       <template #title>Analyses</template>
       <template #content>
-        <InlineMessage severity="warn">
-          Some controls may be disabled!
-        </InlineMessage>
+        <Message severity="warn"> Some controls may be disabled! </Message>
         <p>
           If the image for the analysis is not yet <b>finished</b> (see Build
           Status), a container for the analysis cannot be started.
@@ -244,7 +242,7 @@ const onCloseNavToast = () => {
               />
             </template>
             <template #filter="{ filterModel, filterCallback }">
-              <Dropdown
+              <Select
                 v-model="filterModel.value"
                 @change="filterCallback()"
                 :options="approvalStatuses"
@@ -258,7 +256,7 @@ const onCloseNavToast = () => {
                     :severity="getApprovalStatusSeverity(slotProps.option)"
                   />
                 </template>
-              </Dropdown>
+              </Select>
             </template>
           </Column>
           <!--          <Column-->

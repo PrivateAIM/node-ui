@@ -4,7 +4,7 @@ import { useConfirm } from "primevue/useconfirm";
 import type { Consumer } from "~/services/Api";
 import { formatDataRow } from "~/utils/format-data-row";
 import { extractUuid } from "~/utils/extract-uuid-from-kong-username";
-import { FilterMatchMode } from "primevue/api";
+import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
 
 const props = defineProps({
@@ -42,7 +42,7 @@ onMounted(() => {
 const confirmDeleteAnalysis = (
   event,
   analysisUuid: string,
-  analysisUsername: string,
+  analysisUsername: string
 ) => {
   confirm.require({
     target: event.currentTarget,
@@ -62,7 +62,7 @@ const confirmDeleteAnalysis = (
 
 async function onConfirmDeleteAnalysis(
   analysisUuid: string,
-  analysisUsername: string,
+  analysisUsername: string
 ) {
   loading.value = true;
   const { status } = await deleteAnalysisFromKong(analysisUuid);
@@ -75,7 +75,7 @@ async function onConfirmDeleteAnalysis(
     });
     analysisTable.value = analysisTable.value.filter(
       (analysis: analysisRow) =>
-        analysis.kongAnalysisUserName !== analysisUsername,
+        analysis.kongAnalysisUserName !== analysisUsername
     );
   } else {
     toast.add({
@@ -231,7 +231,7 @@ const updateFilters = (filterText: string) => {
               confirmDeleteAnalysis(
                 $event,
                 slotProps.data.hubAnalysisUuid,
-                slotProps.data.kongAnalysisUserName,
+                slotProps.data.kongAnalysisUserName
               )
             "
           />

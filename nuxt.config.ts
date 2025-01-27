@@ -1,10 +1,12 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from "nuxt/config";
+import { FlamePreset } from "./assets/themes/flame";
+import Lara from "@primevue/themes/aura";
 
 export default defineNuxtConfig({
   ssr: true,
   devtools: { enabled: false },
-  modules: ["nuxt-primevue", "@sidebase/nuxt-auth"],
+  modules: ["@primevue/nuxt-module", "@sidebase/nuxt-auth"],
 
   runtimeConfig: {
     authSecret: process.env.NUXT_AUTH_SECRET,
@@ -37,8 +39,12 @@ export default defineNuxtConfig({
   },
 
   primevue: {
+    autoImport: true,
     options: {
       ripple: true,
+      theme: {
+        preset: FlamePreset,
+      },
     },
     directives: {
       include: ["Ripple", "Tooltip", "Toast"],
@@ -46,7 +52,7 @@ export default defineNuxtConfig({
   },
 
   css: [
-    "primevue/resources/themes/lara-dark-amber/theme.css",
+    // "@/assets/themes/lara-dark/amber/theme.scss",
     "primeicons/primeicons.css",
     "@/assets/css/table.css",
     "@/assets/css/card.css",

@@ -2,7 +2,7 @@
 import { getProjects } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
 import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
-import { FilterMatchMode } from "primevue/api";
+import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
 
 const projects = ref();
@@ -17,7 +17,7 @@ function parseData() {
     projects.value = formatDataRow(
       response.value!.data as unknown as Map<string, string | number | null>[],
       dataRowUnixCols,
-      expandRowEntries,
+      expandRowEntries
     );
   } else if (error.value?.statusCode === 500) {
     showHubAdapterConnectionErrorToast();
@@ -111,7 +111,7 @@ const updateFilters = (filterText: string) => {
               </p>
             </template>
             <!--            <template #filter="{ filterModel }">-->
-            <!--              <Calendar-->
+            <!--              <DatePicker-->
             <!--                v-model="filterModel.value"-->
             <!--                dateFormat="dd.mm.yyyy"-->
             <!--                placeholder="dd.mm.yyyy"-->

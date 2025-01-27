@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import InputText from "primevue/inputtext";
-import Dropdown from "primevue/dropdown";
+import Select from "primevue/select";
 import InputNumber from "primevue/inputnumber";
 import DataStoreHelpBox from "~/components/data-stores/managers/DataStoreHelpBox.vue";
 import { HelpTextField } from "~/components/data-stores/managers/index";
@@ -147,7 +147,7 @@ async function onSubmitCreateDataStoreAndProject() {
                 <i class="pi pi-cog"></i>
                 <p class="data-store-field-name-box">Project</p>
               </InputGroupAddon>
-              <Dropdown
+              <Select
                 v-model="selectedProject"
                 :options="props.projects"
                 optionLabel="dropdown"
@@ -226,7 +226,7 @@ async function onSubmitCreateDataStoreAndProject() {
                   </button>
                 </div>
               </InputGroupAddon>
-              <Dropdown
+              <Select
                 v-model="selectedDataStoreType"
                 :options="dataStoreTypes"
               />
@@ -273,7 +273,7 @@ async function onSubmitCreateDataStoreAndProject() {
                   </button>
                 </div>
               </InputGroupAddon>
-              <Dropdown
+              <Select
                 v-model="protocol"
                 :options="acceptedProtocols"
                 class="w-full md:w-56"

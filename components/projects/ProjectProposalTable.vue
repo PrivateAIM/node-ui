@@ -6,7 +6,7 @@ import TableRowMetadata from "~/components/TableRowMetadata.vue";
 import { ApprovalStatus, type ProjectNode } from "~/services/Api";
 import ExpandRowButtons from "~/components/table/ExpandRowButtons.vue";
 import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
-import { FilterMatchMode } from "primevue/api";
+import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
 import { getApprovalStatusSeverity } from "~/utils/status-tag-severity";
 
@@ -25,7 +25,7 @@ function parseData() {
     proposals.value = formatDataRow(
       response.value!.data as unknown as Map<string, string | number | null>[],
       dataRowUnixCols,
-      expandRowEntries,
+      expandRowEntries
     );
   } else if (error.value?.statusCode === 500) {
     showHubAdapterConnectionErrorToast();
@@ -138,7 +138,7 @@ const updateFilters = (filterText: string) => {
               />
             </template>
             <template #filter="{ filterModel, filterCallback }">
-              <Dropdown
+              <Select
                 v-model="filterModel.value"
                 @change="filterCallback()"
                 :options="approvalStatuses"
@@ -152,7 +152,7 @@ const updateFilters = (filterText: string) => {
                     :severity="getApprovalStatusSeverity(slotProps.option)"
                   />
                 </template>
-              </Dropdown>
+              </Select>
             </template>
           </Column>
           <Column

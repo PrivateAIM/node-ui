@@ -57,11 +57,11 @@ async function loadDetailedDataStoreTable(responseData, status, error) {
     let formattedDataStores = formatDataRow(
       responseData,
       dataRowUnixCols,
-      expandRowEntries,
+      expandRowEntries
     ) as DetailedService[];
 
     formattedDataStores = formattedDataStores.filter(
-      (store: DetailedService) => store.name !== "kong-admin-service",
+      (store: DetailedService) => store.name !== "kong-admin-service"
     );
 
     formattedDataStores.forEach((store: DetailedService) => {
@@ -69,7 +69,7 @@ async function loadDetailedDataStoreTable(responseData, status, error) {
         store.routes = formatDataRow(
           store.routes,
           dataRowUnixCols,
-          expandRowEntries,
+          expandRowEntries
         );
         store.routes?.forEach((proj: Route) => {
           proj["projectId"] = extractProjectIdFromPath(proj.paths! as string[]);
@@ -100,36 +100,40 @@ function extractProjectIdFromPath(paths: string[]): string {
 
 <template>
   <div class="card tab-card">
-    <TabView>
-      <TabPanel header="Detailed Data Store View">
-        <DetailedDataStoreTable
-          v-if="dataStores && projectNameMap"
-          :stores="dataStores"
-          :projectNameMap="projectNameMap"
-          :loading="loading"
-        />
-      </TabPanel>
-      <TabPanel header="Detailed Analyses View" :disabled="!analysisNameMap">
-        <DetailedAnalysisTable
-          v-if="analysisNameMap && projectNameMap"
-          :detailedAnalysisList="consumersAnalyses"
-          :analysisNameMap="analysisNameMap"
-          :projectNameMap="projectNameMap"
-        />
-      </TabPanel>
-      <TabPanel
-        header="Data Store Tree Table"
-        :disabled="!analysisNameMap && !projectNameMap"
-      >
-        <DataStoreTreeTable
-          v-if="analysisNameMap && projectNameMap"
-          :dataStoreList="dataStores"
-          :analyses="consumersAnalyses"
-          :analysisNameMap="analysisNameMap"
-          :projectNameMap="projectNameMap"
-        />
-      </TabPanel>
-    </TabView>
+    <Tabs value="0">
+      <TabList>
+        <Tab value="0">Detailed Data Store View</Tab>
+        <Tab value="1">Detailed Analyses View</Tab>
+        <Tab value="2">Data Store Tree Table</Tab>
+      </TabList>
+      <TabPanels>
+        <TabPanel>
+          <DetailedDataStoreTable
+            v-if="dataStores && projectNameMap"
+            :stores="dataStores"
+            :projectNameMap="projectNameMap"
+            :loading="loading"
+          />
+        </TabPanel>
+        <TabPanel :disabled="!analysisNameMap">
+          <DetailedAnalysisTable
+            v-if="analysisNameMap && projectNameMap"
+            :detailedAnalysisList="consumersAnalyses"
+            :analysisNameMap="analysisNameMap"
+            :projectNameMap="projectNameMap"
+          />
+        </TabPanel>
+        <TabPanel :disabled="!analysisNameMap && !projectNameMap">
+          <DataStoreTreeTable
+            v-if="analysisNameMap && projectNameMap"
+            :dataStoreList="dataStores"
+            :analyses="consumersAnalyses"
+            :analysisNameMap="analysisNameMap"
+            :projectNameMap="projectNameMap"
+          />
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
   </div>
 </template>
 
