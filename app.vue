@@ -12,3 +12,5 @@ import Footer from "~/components/Footer.vue";
   </NuxtLayout>
   <Footer />
 </template>
+
+<style lang="scss"></style>

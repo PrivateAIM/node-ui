@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
+    "@nuxt/fonts": "0.10.3",
     "@primevue/nuxt-module": "^4.2.5",
     "@primevue/themes": "^4.2.5",
     "@sidebase/nuxt-auth": "https://pkg.pr.new/@sidebase/nuxt-auth@992",
@@ -43,5 +44,8 @@
     "vue-router": "^4.5.0",
     "webpack": "^5.97.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "tailwindcss": "^4.0.0"
+  }
 }
