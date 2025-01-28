@@ -12,7 +12,6 @@ export default NuxtAuthHandler({
       issuer:
         process.env.NUXT_PUBLIC_KEYCLOAK_BASE_URL ??
         "http://localhost:8080/realms/flame",
-      // checks: ["none"],
     }),
   ],
 });

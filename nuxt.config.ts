@@ -1,12 +1,16 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from "nuxt/config";
-import { FlamePreset } from "./assets/themes/flame";
-import tailwindcss from "@tailwindcss/vite";
+// import { FlamePreset } from "./assets/themes/flame";
+import Lara from "@primevue/themes/aura";
 
 export default defineNuxtConfig({
   ssr: true,
   devtools: { enabled: false },
-  modules: ["@primevue/nuxt-module", "@sidebase/nuxt-auth", "@nuxt/fonts"],
+  modules: [
+    "@primevue/nuxt-module",
+    "@sidebase/nuxt-auth",
+    "@nuxtjs/tailwindcss",
+  ],
 
   runtimeConfig: {
     authSecret: process.env.NUXT_AUTH_SECRET,
@@ -38,32 +42,31 @@ export default defineNuxtConfig({
     },
   },
 
+  postcss: {
+    plugins: {
+      "postcss-import": {},
+      tailwindcss: {},
+      autoprefixer: {},
+    },
+  },
+
   primevue: {
     autoImport: true,
     options: {
       ripple: true,
       theme: {
-        preset: FlamePreset,
+        preset: Lara,
       },
     },
+    // components: {
+    //   include: ["Button", "DataTable"],
+    // },
     directives: {
       include: ["Ripple", "Tooltip", "Toast"],
     },
   },
 
-  fonts: {
-    experimental: {
-      processCSSVariables: true,
-    },
-  },
-
-  vite: {
-    plugins: [tailwindcss()],
-  },
-
   css: [
-    // "@/assets/themes/lara-dark/amber/theme.scss",
-    "@/assets/css/main.css",
     "primeicons/primeicons.css",
     "@/assets/css/table.css",
     "@/assets/css/card.css",
