@@ -1,7 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from "nuxt/config";
-// import { FlamePreset } from "./assets/themes/flame";
-import Lara from "@primevue/themes/aura";
 
 export default defineNuxtConfig({
   ssr: true,
@@ -52,15 +50,10 @@ export default defineNuxtConfig({
 
   primevue: {
     autoImport: true,
+    importTheme: {from: '@/assets/themes/flame.ts'},
     options: {
       ripple: true,
-      theme: {
-        preset: Lara,
-      },
     },
-    // components: {
-    //   include: ["Button", "DataTable"],
-    // },
     directives: {
       include: ["Ripple", "Tooltip", "Toast"],
     },
@@ -68,8 +61,7 @@ export default defineNuxtConfig({
 
   css: [
     "primeicons/primeicons.css",
-    "@/assets/css/table.css",
-    "@/assets/css/card.css",
+    "@/assets/main.css",
   ],
 
   compatibilityDate: "2024-09-30",
