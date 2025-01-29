@@ -89,6 +89,7 @@ const toggle = (event) => {
 
 .avatar-container {
   display: flex;
+  align-items: center;
 }
 
 .username-menu-bar {
