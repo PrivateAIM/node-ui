@@ -8,10 +8,10 @@ import {
 } from "~/composables/connectionErrorToast";
 
 export default defineNuxtPlugin(() => {
-  // const { user } = useOidcAuth();
-  const { signIn, token } = useAuth();
+  const { signIn, data } = useAuth();
   const config = useRuntimeConfig();
   const baseUrl = config.public.hubAdapterUrl as string;
+
   const hubApi = $fetch.create({
     baseURL: baseUrl,
     onRequest({ options }) {
@@ -19,7 +19,7 @@ export default defineNuxtPlugin(() => {
       const headers = options.headers
         ? new Headers(options.headers)
         : new Headers();
-      headers.set("Authorization", `Bearer ${token.value}`);
+      headers.set("Authorization", `Bearer ${data.value!.accessToken}`);
       options.headers = headers;
     },
     onRequestError({ error }) {
