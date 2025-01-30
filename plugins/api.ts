@@ -6,12 +6,14 @@ import {
   showInvalidRobotCredentialsToast,
   showHubConnectionError,
 } from "~/composables/connectionErrorToast";
+import type { SessionData } from "h3";
 
 export default defineNuxtPlugin(() => {
-  // const { user } = useOidcAuth();
-  const { signIn, token } = useAuth();
+  const { signIn, data } = useAuth();
+
   const config = useRuntimeConfig();
   const baseUrl = config.public.hubAdapterUrl as string;
+
   const hubApi = $fetch.create({
     baseURL: baseUrl,
     onRequest({ options }) {
@@ -19,7 +21,10 @@ export default defineNuxtPlugin(() => {
       const headers = options.headers
         ? new Headers(options.headers)
         : new Headers();
-      headers.set("Authorization", `Bearer ${token.value}`);
+      headers.set(
+        "Authorization",
+        `Bearer ${(data as SessionData).value!.accessToken}`,
+      );
       options.headers = headers;
     },
     onRequestError({ error }) {
@@ -29,7 +34,7 @@ export default defineNuxtPlugin(() => {
       // Handle the response errors
       if (response.status === 401) {
         console.warn("User not signed in, returning to login");
-        return signIn("keycloak");
+        await signIn("keycloak");
       }
       console.error(response);
       if (response.status === 500) {
@@ -39,7 +44,7 @@ export default defineNuxtPlugin(() => {
           showHubAdapterConnectionErrorToast();
         }
       } else if (response.status === 503) {
-        let downstreamService;
+        let downstreamService: string;
         if (response._data.detail.service) {
           downstreamService = response._data.detail.service;
         } else {
