@@ -1,14 +1,12 @@
 module.exports = {
   darkMode: "media", // or 'media' or 'class'
+  content: [
+      "./components/**/*.{js,vue,ts}",
+    "./pages/**/*.{js,vue,ts}",
+  ],
   theme: {
     fontFamily: {
-      sans: [
-        '"Inter var", sans-serif',
-        {
-          fontFeatureSettings: '"cv02", "cv03", "cv04", "cv11"',
-          fontVariationSettings: 'normal'
-        },
-      ],
+      // sans: ["Inter var"]
     },
     extend: {},
   },

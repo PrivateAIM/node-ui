@@ -1,5 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from "nuxt/config";
+import Lara from "@primevue/themes/lara";
+// import FlamePreset from "./assets/themes/flame.ts"
 
 export default defineNuxtConfig({
   ssr: true,
@@ -51,9 +53,10 @@ export default defineNuxtConfig({
 
   primevue: {
     autoImport: true,
-    importTheme: {from: '@/assets/themes/flame.ts'},
+    // importTheme: {from: '@/assets/themes/flame.ts'},
     options: {
       ripple: true,
+      theme: Lara,
     },
     directives: {
       include: ["Ripple", "Tooltip", "Toast"],
