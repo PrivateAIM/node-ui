@@ -48,7 +48,7 @@ export default defineNuxtPlugin(() => {
         if (response._data.detail.service) {
           downstreamService = response._data.detail.service;
         } else {
-          downstreamService = "for this process";
+          downstreamService = "needed";
         }
         showDownstreamConnectionErrorToast(downstreamService);
       } else if (response.status === 400) {
