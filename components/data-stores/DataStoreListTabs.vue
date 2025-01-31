@@ -6,13 +6,13 @@ import {
   getProjects,
 } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
-import type { DetailedService, Project, Route } from "~/services/Api";
+import type {DetailedService, Project, Route, DetailedAnalysis} from "~/services/Api";
 import DetailedDataStoreTable from "~/components/data-stores/tables/DetailedDataStoreTable.vue";
 import DetailedAnalysisTable from "~/components/data-stores/tables/DetailedAnalysisTable.vue";
 import DataStoreTreeTable from "~/components/data-stores/tables/DataStoreTreeTable.vue";
 
-const dataStores = ref();
-const consumersAnalyses = ref();
+const dataStores = ref([]);
+const consumersAnalyses = ref([]);
 const projectNameMap = ref();
 const analysisNameMap = ref();
 
@@ -34,17 +34,17 @@ const { data: consumerResp } = await getAnalysesFromKong({
 });
 
 watch(dsResp, (parsedStores) => {
-  const dataStoreData = parsedStores!.data as unknown as Array<Route>;
+  const dataStoreData = parsedStores!.data as unknown as Array<Route> || [];
   loadDetailedDataStoreTable(dataStoreData, dsStatus, dsError);
 });
 
 watch(projectResp, (projectArray) => {
-  const projects = projectArray!.data as unknown as Project[];
+  const projects = projectArray!.data as unknown as Project[] || [];
   projectNameMap.value = mapDataFromHub(projects);
 });
 
 watch(analysisResp, (analysisArray) => {
-  const analyses = analysisArray!.data as unknown as Analysis[];
+  const analyses = analysisArray!.data as unknown as DetailedAnalysis[] || [];
   analysisNameMap.value = mapDataFromHub(analyses);
 });
 
@@ -83,10 +83,10 @@ async function loadDetailedDataStoreTable(responseData, status, error) {
   loading.value = false;
 }
 
-function mapDataFromHub(hubData: Project[] | Analysis[]) {
+function mapDataFromHub(hubData: Project[] | DetailedAnalysis[]) {
   let mappedNames = new Map<string, string | null>();
   if (hubData && hubData.length > 0) {
-    hubData.forEach((entry: Project | Analysis) => {
+    hubData.forEach((entry: Project | DetailedAnalysis) => {
       mappedNames.set(entry.id, entry.name ? entry.name : "N/A");
     });
   }
