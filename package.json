@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
-    "@sidebase/nuxt-auth": "https://pkg.pr.new/@sidebase/nuxt-auth@992",
+    "@sidebase/nuxt-auth": "https://pkg.pr.new/@sidebase/nuxt-auth@326781e",
     "@types/eslint-config-prettier": "^6.11.3",
     "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
