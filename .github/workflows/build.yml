@@ -3,6 +3,8 @@ name: Create and publish Docker image
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  # Remove once corepack bug fixed https://github.com/nodejs/corepack/issues/612#issuecomment-2629613697
+  COREPACK_INTEGRITY_KEYS: 0
 
 on:
   workflow_dispatch:
