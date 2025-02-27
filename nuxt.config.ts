@@ -2,7 +2,7 @@
 import { defineNuxtConfig } from "nuxt/config";
 
 export default defineNuxtConfig({
-  ssr: false,
+  ssr: true,
   devtools: { enabled: false },
   modules: ["nuxt-primevue", "@sidebase/nuxt-auth"],
 
