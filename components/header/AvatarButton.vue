@@ -83,6 +83,10 @@ const toggle = (event) => {
 </template>
 
 <style scoped lang="scss">
+.avatar-container {
+  display: flex;
+}
+
 .menu-item-label {
   margin-left: 10px;
 }
