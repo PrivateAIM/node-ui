@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import { ref } from "vue";
-const { loggedIn, logout, login, user } = useOidcAuth();
+const { signIn, signOut, status, data } = useAuth();
 
 const menu = ref();
 
 const config = useRuntimeConfig();
-const keycloakUrl = new URL(config.public.keycloak).origin;
+const keycloakUrl = new URL(config.public.keycloakBaseUrl).origin;
 
-const userActionLabel = loggedIn ? "Login" : "Logout";
-const userActionIcon = loggedIn ? "pi pi-sign-in" : "pi pi-sign-out";
+const isAuthenticated = ref(status.value === "authenticated");
+
+const userActionLabel = isAuthenticated.value ? "Logout" : "Login";
+const userActionIcon = isAuthenticated.value
+  ? "pi pi-sign-in"
+  : "pi pi-sign-out";
 
 const menuItems = ref([
   {
@@ -18,13 +22,14 @@ const menuItems = ref([
         label: userActionLabel,
         icon: userActionIcon,
         command: () => {
-          loggedIn ? logout() : login();
+          isAuthenticated.value ? signOut() : signIn("keycloak");
         },
       },
       {
         label: "Keycloak Admin",
-        icon: "pi pi-lock",
+        icon: "pi pi-external-link",
         url: keycloakUrl,
+        target: "_blank",
       },
     ],
   },
@@ -36,9 +41,9 @@ const toggle = (event) => {
 
 <template>
   <div class="container">
-    <div v-if="loggedIn" class="avatar-container">
+    <div v-if="isAuthenticated" class="avatar-container">
       <p class="username-menu-bar">
-        {{ user.userName || "Swell Person" }}
+        {{ data?.user?.name || "Swell Person" }}
       </p>
       <Button
         type="button"
@@ -84,6 +89,10 @@ const toggle = (event) => {
 
 .menu-item-label {
   margin-left: 10px;
+}
+
+.avatar-container {
+  display: flex;
 }
 
 .username-menu-bar {

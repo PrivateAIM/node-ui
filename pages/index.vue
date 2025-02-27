@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import LandingButtons from "~/components/landing/LandingButtons.vue";
+
+definePageMeta({
+  auth: false,
+});
 </script>
 
 <template>

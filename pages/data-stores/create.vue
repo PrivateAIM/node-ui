@@ -1,9 +1,5 @@
 <script setup lang="ts">
 import ResourceManagerTabs from "~/components/data-stores/ResourceManagerTabs.vue";
-
-definePageMeta({
-  middleware: ["auth"],
-});
 </script>
 
 <template>

@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM node:23-alpine AS builder
 LABEL maintainer="bruce.schultz@uk-koeln.de"
 
 ENV PNPM_HOME="/pnpm"
@@ -15,7 +15,7 @@ COPY . .
 
 RUN pnpm build
 
-FROM node:20-alpine AS production
+FROM node:23-alpine AS production
 
 WORKDIR /app
 
