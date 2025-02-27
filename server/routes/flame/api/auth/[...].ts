@@ -2,6 +2,20 @@
 import KeycloakProvider from "next-auth/providers/keycloak";
 import { NuxtAuthHandler } from "#auth";
 
+function compileEndpoints() {
+  if (process.env.NUXT_K8S_KEYCLOAK_ENDPOINT) {
+    return {
+      jwks_endpoint: `${process.env.NUXT_K8S_KEYCLOAK_ENDPOINT}/protocol/openid-connect/certs`,
+      wellKnown: undefined,
+      authorization: `${process.env.NUXT_PUBLIC_KEYCLOAK_BASE_URL}/protocol/openid-connect/auth`,
+      token: `${process.env.NUXT_K8S_KEYCLOAK_ENDPOINT}/protocol/openid-connect/token`,
+      userinfo: `${process.env.NUXT_K8S_KEYCLOAK_ENDPOINT}/protocol/openid-connect/userinfo`,
+    };
+  }
+}
+
+const endPoints = compileEndpoints();
+
 export default NuxtAuthHandler({
   // A secret string you define, to ensure correct encryption
   secret: useRuntimeConfig().authSecret,
@@ -30,6 +44,7 @@ export default NuxtAuthHandler({
         process.env.NUXT_PUBLIC_KEYCLOAK_BASE_URL ??
         "http://localhost:8080/realms/flame",
       // checks: ["none"],
+      ...endPoints,
     }),
   ],
 });
