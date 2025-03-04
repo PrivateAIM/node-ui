@@ -1,4 +1,4 @@
- /*Primary and Surface Palettes*/
+/*Primary and Surface Palettes*/
 :root {
     font-family: Inter var, sans-serif;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
@@ -25,7 +25,8 @@
     --surface-600: #e5e7eb;
     --surface-700: #f3f4f6;
     --surface-800: #f9fafb;
-    --surface-900: #fff;
+    --surface-900: #ffffff;
+    --surface-950: #ffffff;
     --gray-50: #f9fafb;
     --gray-100: #f3f4f6;
     --gray-200: #e5e7eb;
@@ -82,23 +83,24 @@
 }
 
 /* Light Mode */
-:root {
-    --p-primary-color: var(--p-primary-500);
-    --p-primary-contrast-color: var(--p-surface-0);
-    --p-primary-hover-color: var(--p-primary-600);
-    --p-primary-active-color: var(--p-primary-700);
-    --p-content-border-color: var(--p-surface-200);
-    --p-content-hover-background: var(--p-surface-100);
-    --p-content-hover-color: var(--p-surface-800);
-    --p-highlight-background: var(--p-primary-50);
-    --p-highlight-color: var(--p-primary-700);
-    --p-highlight-focus-background: var(--p-primary-100);
-    --p-highlight-focus-color: var(--p-primary-800);
-    --p-text-color: var(--p-surface-700);
-    --p-text-hover-color: var(--p-surface-800);
-    --p-text-muted-color: var(--p-surface-500);
-    --p-text-hover-muted-color: var(--p-surface-600);
-}
+/*TODO*/
+/*:root {*/
+/*    --p-primary-color: var(--p-primary-500);*/
+/*    --p-primary-contrast-color: var(--p-surface-0);*/
+/*    --p-primary-hover-color: var(--p-primary-600);*/
+/*    --p-primary-active-color: var(--p-primary-700);*/
+/*    --p-content-border-color: var(--p-surface-200);*/
+/*    --p-content-hover-background: var(--p-surface-100);*/
+/*    --p-content-hover-color: var(--p-surface-800);*/
+/*    --p-highlight-background: var(--p-primary-50);*/
+/*    --p-highlight-color: var(--p-primary-700);*/
+/*    --p-highlight-focus-background: var(--p-primary-100);*/
+/*    --p-highlight-focus-color: var(--p-primary-800);*/
+/*    --p-text-color: var(--p-surface-700);*/
+/*    --p-text-hover-color: var(--p-surface-800);*/
+/*    --p-text-muted-color: var(--p-surface-500);*/
+/*    --p-text-hover-muted-color: var(--p-surface-600);*/
+/*}*/
 
 /* Dark Mode */
 @media (prefers-color-scheme: dark) {
@@ -121,6 +123,24 @@
     }
 }
 
-.p-dark {
-    color-scheme: dark;
-}
+/*h1 {*/
+/*    display: block;*/
+/*    font-size: 2em;*/
+/*    margin-block-start: 0.67em;*/
+/*    margin-block-end: 0.67em;*/
+/*    margin-inline-start: 0px;*/
+/*    margin-inline-end: 0px;*/
+/*    font-weight: bold;*/
+/*    unicode-bidi: isolate;*/
+/*}*/
+
+/*h2 {*/
+/*    display: block;*/
+/*    font-size: 1.5em;*/
+/*    margin-block-start: 0.83em;*/
+/*    margin-block-end: 0.83em;*/
+/*    margin-inline-start: 0px;*/
+/*    margin-inline-end: 0px;*/
+/*    font-weight: bold;*/
+/*    unicode-bidi: isolate;*/
+/*}*/

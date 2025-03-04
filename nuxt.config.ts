@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from "nuxt/config";
-import Lara from "@primevue/themes/lara";
+import Lara from "@primeuix/themes/lara";
 
 export default defineNuxtConfig({
   ssr: process.env.NODE_ENV !== "development",
@@ -44,14 +44,6 @@ export default defineNuxtConfig({
     },
   },
 
-  postcss: {
-    plugins: {
-      "postcss-import": {},
-      tailwindcss: {},
-      autoprefixer: {},
-    },
-  },
-
   primevue: {
     autoImport: true,
     options: {
@@ -59,7 +51,7 @@ export default defineNuxtConfig({
       theme: {
         preset: Lara,
         options: {
-          darkModeSelector: ".p-dark",
+          darkModeSelector: "system",
         },
       },
     },
@@ -68,7 +60,10 @@ export default defineNuxtConfig({
     },
   },
 
-  css: ["primeicons/primeicons.css", "@/assets/main.css"],
+  css: [
+    "primeicons/primeicons.css",
+    // "@/assets/css/base.css"
+  ],
 
   compatibilityDate: "2024-09-30",
 });
