@@ -1,7 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from "nuxt/config";
 import Lara from "@primevue/themes/lara";
-// import FlamePreset from "./assets/themes/flame.ts"
 
 export default defineNuxtConfig({
   ssr: process.env.NODE_ENV !== "development",
@@ -55,20 +54,21 @@ export default defineNuxtConfig({
 
   primevue: {
     autoImport: true,
-    // importTheme: {from: '@/assets/themes/flame.ts'},
     options: {
       ripple: true,
-      theme: Lara,
+      theme: {
+        preset: Lara,
+        options: {
+          darkModeSelector: ".p-dark",
+        },
+      },
     },
     directives: {
       include: ["Ripple", "Tooltip", "Toast"],
     },
   },
 
-  css: [
-    "primeicons/primeicons.css",
-    "@/assets/main.css",
-  ],
+  css: ["primeicons/primeicons.css", "@/assets/main.css"],
 
   compatibilityDate: "2024-09-30",
 });

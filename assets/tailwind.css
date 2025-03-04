@@ -1,5 +1,5 @@
-/* Use @import */
 @import "tailwindcss/base";
 @import "tailwindcss/components";
-@import "../primevue/tailwind.css";
+@import "./primevue/tailwind.css";
 @import "tailwindcss/utilities";
+@custom-variant dark (&:where(.dark, .dark *));

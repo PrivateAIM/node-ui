@@ -1,17 +1,22 @@
+/** @type {import('tailwindcss').Config} */
+import PrimeUI from "tailwindcss-primeui";
+
 module.exports = {
   darkMode: "media", // or 'media' or 'class'
   content: [
-      "./components/**/*.{js,vue,ts}",
-    "./pages/**/*.{js,vue,ts}",
+    "./components/**/*.{js,vue,ts}",
+    "./layouts/**/*.vue",
+    "./pages/**/*.vue",
+    "./plugins/**/*.{js,ts}",
+    "./nuxt.config.{js,ts}",
+    "./app.vue",
+    "./error.vue",
   ],
   theme: {
-    fontFamily: {
-      // sans: ["Inter var"]
-    },
     extend: {},
   },
   variants: {
     extend: {},
   },
-  plugins: [require("tailwindcss-primeui")],
+  plugins: [require("tailwindcss-primeui"), PrimeUI],
 };
