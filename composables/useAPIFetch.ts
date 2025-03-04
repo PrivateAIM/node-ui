@@ -1,11 +1,9 @@
 import type {
   AllAnalyses,
   AllProjects,
-  BodyCreateAndConnectAnalysisToProjectKongAnalysisPost,
-  BodyCreateAndConnectProjectToDatastoreKongProjectPost,
+  BodyCreateProjectAndConnectToDatastoreKongProjectPost,
   DeleteProject,
   LinkDataStoreProject,
-  LinkProjectAnalysis,
   ListAnalysisNodes,
   ListConsumers,
   ListProjectNodes,
@@ -56,13 +54,6 @@ export function getAnalyses(opts?) {
   });
 }
 
-export function getSpecificAnalysis(analysis_id: string, opts?) {
-  return useAPIFetch<{ data: Analysis }>(`/analyses/${analysis_id}`, {
-    ...opts,
-    method: "GET",
-  });
-}
-
 export function getAnalysisNodes(opts?) {
   return useAPIFetch<{ data: ListAnalysisNodes }>(
     "/analysis-nodes?include=analysis,node",
@@ -103,7 +94,7 @@ export function deleteDataStore(dataStoreName: string, opts?) {
 }
 
 export function createProject(
-  routeProps: BodyCreateAndConnectProjectToDatastoreKongProjectPost,
+  routeProps: BodyCreateProjectAndConnectToDatastoreKongProjectPost,
   opts?,
 ) {
   return useAPIFetch<{ data: LinkDataStoreProject }>(`/kong/project`, {
@@ -124,17 +115,6 @@ export function getAnalysesFromKong(opts?) {
   return useAPIFetch<{ data: ListConsumers }>(`/kong/analysis`, {
     ...opts,
     method: "GET",
-  });
-}
-
-export function connectAnalysisProject(
-  consumerProps: BodyCreateAndConnectAnalysisToProjectKongAnalysisPost,
-  opts?,
-) {
-  return useAPIFetch<{ data: LinkProjectAnalysis }>(`/kong/analysis`, {
-    ...opts,
-    method: "POST",
-    body: consumerProps,
   });
 }
 

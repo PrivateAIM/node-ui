@@ -19,5 +19,6 @@ KEYCLOAK_CLIENT_SECRET=xxx
 KEYCLOAK_BASE_URL="http://localhost:8080/realms/flame"
 
 NUXT_AUTH_SECRET=xxx
+#NUXT_K8S_KEYCLOAK_ENDPOINT=http://flame-node-keycloak:80  # Only needed if running in k8s AND ingress is disabled
 ```
 
