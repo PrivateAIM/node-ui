@@ -32,8 +32,7 @@ const pkgVersion = config.public.version;
 
 <style lang="scss" scoped>
 .page-footer {
-  box-shadow: 0 6px 0 0 rgba(0, 0, 0, 0.3) inset;
-  padding: 10px 0 4px 0;
+  padding: 5px 0 5px 0;
   margin: 20px auto;
   color: #aeb2b7;
   background: var(--p-menubar-background);
