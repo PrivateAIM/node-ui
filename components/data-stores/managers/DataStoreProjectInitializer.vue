@@ -347,6 +347,10 @@ async function onSubmitCreateDataStoreAndProject() {
   margin-left: 10px;
 }
 
+.p-inputgroupaddon {
+  color: var(--p-card-color);
+}
+
 .data-store-field-name {
   width: 200px;
   height: 50px;

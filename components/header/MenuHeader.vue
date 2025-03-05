@@ -62,7 +62,7 @@ const items = ref([
               @click="navigate"
             >
               <span :class="item.icon" />
-              <span class="ml-2">{{ item.label }}</span>
+              <span class="ml-2 menu-item-label">{{ item.label }}</span>
             </a>
           </router-link>
           <a
@@ -77,7 +77,7 @@ const items = ref([
             v-bind="props.action"
           >
             <span :class="item.icon" />
-            <span class="ml-2">{{ item.label }}</span>
+            <span class="ml-2 menu-item-label">{{ item.label }}</span>
             <span v-if="hasSubmenu" class="pi pi-fw pi-angle-down ml-2" />
           </a>
         </div>
@@ -92,8 +92,8 @@ const items = ref([
 </template>
 
 <style lang="scss" scoped>
-.ml-2 {
-  margin-left: 5px;
+.menu-item-label {
+  margin-left: 0.1rem;
 }
 
 .menu-bar-item {

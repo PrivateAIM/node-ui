@@ -36,6 +36,7 @@ const clearFilters = () => {
     <div class="search-clear-btn">
       <Button
         type="button"
+        class="filter-clear-btn"
         icon="pi pi-filter-slash"
         label="Clear"
         v-tooltip.top="'Clear all filters'"
@@ -46,4 +47,8 @@ const clearFilters = () => {
   </div>
 </template>
 
-<style></style>
+<style>
+.search-text-bar {
+  margin-right: 10px;
+}
+</style>

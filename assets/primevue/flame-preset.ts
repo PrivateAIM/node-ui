@@ -1,20 +1,21 @@
 import { definePreset } from "@primeuix/themes";
 import Lara from "@primeuix/themes/lara";
 
-const Flame = definePreset(Lara, {
+// https://primevue.org/theming/styled/#definepreset
+export const Flame = definePreset(Lara, {
   semantic: {
     primary: {
-      50: "{indigo.50}",
-      100: "{indigo.100}",
-      200: "{indigo.200}",
-      300: "{indigo.300}",
-      400: "{indigo.400}",
-      500: "{indigo.500}",
-      600: "{indigo.600}",
-      700: "{indigo.700}",
-      800: "{indigo.800}",
-      900: "{indigo.900}",
-      950: "{indigo.950}",
+      50: "{amber.50}",
+      100: "{amber.100}",
+      200: "{amber.200}",
+      300: "{amber.300}",
+      400: "{amber.400}",
+      500: "{amber.500}",
+      600: "{amber.600}",
+      700: "{amber.700}",
+      800: "{amber.800}",
+      900: "{amber.900}",
+      950: "{amber.950}",
     },
   },
 });
