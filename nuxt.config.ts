@@ -51,7 +51,7 @@ export default defineNuxtConfig({
       theme: {
         preset: Lara,
         options: {
-          darkModeSelector: "system",
+          darkModeSelector: true,
         },
       },
     },

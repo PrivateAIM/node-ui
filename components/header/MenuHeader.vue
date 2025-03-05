@@ -1,6 +1,7 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { ref } from "vue";
 import AvatarButton from "~/components/header/AvatarButton.vue";
+
 const { status } = useAuth();
 
 const items = ref([
@@ -41,7 +42,7 @@ const items = ref([
 <template>
   <div class="menuBar">
     <Menubar :model="items">
-      <template #start> </template>
+      <template #start></template>
       <template #item="{ item, props, hasSubmenu }">
         <div v-ripple class="p-ripple border-round menu-bar-item">
           <router-link
@@ -51,14 +52,14 @@ const items = ref([
             custom
           >
             <a
-              :href="href"
-              v-bind="props.action"
-              @click="navigate"
               :class="
                 status === 'unauthenticated' && item.label != 'Home'
                   ? 'p-disabled'
                   : ''
               "
+              :href="href"
+              v-bind="props.action"
+              @click="navigate"
             >
               <span :class="item.icon" />
               <span class="ml-2">{{ item.label }}</span>
@@ -66,14 +67,14 @@ const items = ref([
           </router-link>
           <a
             v-else
-            :href="item.url"
-            :target="item.target"
-            v-bind="props.action"
             :class="
               status === 'unauthenticated' && item.label != 'Home'
                 ? 'p-disabled'
                 : ''
             "
+            :href="item.url"
+            :target="item.target"
+            v-bind="props.action"
           >
             <span :class="item.icon" />
             <span class="ml-2">{{ item.label }}</span>
@@ -90,7 +91,7 @@ const items = ref([
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .ml-2 {
   margin-left: 5px;
 }
