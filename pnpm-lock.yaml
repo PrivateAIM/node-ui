@@ -12,8 +12,8 @@ importers:
         specifier: ^9.18.0
         version: 9.19.0
       '@sidebase/nuxt-auth':
-        specifier: https://pkg.pr.new/@sidebase/nuxt-auth@992
-        version: https://pkg.pr.new/@sidebase/nuxt-auth@992(magicast@0.3.5)(next-auth@4.21.1(next@13.5.8(@babel/core@7.26.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.83.4))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(rollup@4.34.1)(typescript@5.7.3)
+        specifier: 0.10.1-alpha.2
+        version: 0.10.1-alpha.2(magicast@0.3.5)(next-auth@4.21.1(next@13.5.8(@babel/core@7.26.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.83.4))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(rollup@4.34.1)(typescript@5.7.3)
       '@types/eslint-config-prettier':
         specifier: ^6.11.3
         version: 6.11.3
@@ -896,9 +896,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@sidebase/nuxt-auth@https://pkg.pr.new/@sidebase/nuxt-auth@992':
-    resolution: {tarball: https://pkg.pr.new/@sidebase/nuxt-auth@992}
-    version: 0.10.1-alpha.1
+  '@sidebase/nuxt-auth@0.10.1-alpha.2':
+    resolution: {integrity: sha512-7et2qTBX+FlufUoCgqoViydh0baifyB2PTldw1rCs4Pi2+w/bMAQ1U0+I1nrfmiKDwUA1hqwCPQ1hf854jmP4w==}
     engines: {node: '>=20', pnpm: '>=9.4.0'}
     peerDependencies:
       next-auth: ~4.21.1
@@ -4838,7 +4837,7 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.34.1':
     optional: true
 
-  '@sidebase/nuxt-auth@https://pkg.pr.new/@sidebase/nuxt-auth@992(magicast@0.3.5)(next-auth@4.21.1(next@13.5.8(@babel/core@7.26.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.83.4))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(rollup@4.34.1)(typescript@5.7.3)':
+  '@sidebase/nuxt-auth@0.10.1-alpha.2(magicast@0.3.5)(next-auth@4.21.1(next@13.5.8(@babel/core@7.26.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.83.4))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(rollup@4.34.1)(typescript@5.7.3)':
     dependencies:
       '@nuxt/kit': 3.15.4(magicast@0.3.5)(rollup@4.34.1)
       defu: 6.1.4
