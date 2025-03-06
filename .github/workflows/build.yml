@@ -41,12 +41,12 @@ jobs:
             type=sha
             type=edge
             type=raw,value=canary,enable=${{ contains(github.event.head_commit.message, 'build_image') || github.event_name == 'workflow_dispatch' }}
-            type=raw,value=latest,enable=${{ github.event.pull_request.merged == true }}
+            type=raw,value=prod,enable=${{ github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch' }}
             type=raw,event=workflow_dispatch,value=${{ github.event.inputs.dispatch-tag }}
             type=semver,pattern={{version}},value=${{ steps.get-version.outputs.version }},branch=develop
 
   build-prod-image:
-    if: ${{ github.event.pull_request.merged == true }}
+    if: ${{ github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch' }}
     uses: ./.github/workflows/build-docker-image.yaml
     needs: [metadata]
     with:
