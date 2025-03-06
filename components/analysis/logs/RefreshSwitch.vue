@@ -5,7 +5,7 @@ const periodicRefresh = ref(false);
 </script>
 
 <template>
-  <div class="justify-content-center log-toggle-switch">
+  <div class="log-toggle-switch">
     <span style="font-size: 12px; padding-right: 0.5em">
       Refresh periodically
     </span>
@@ -16,4 +16,9 @@ const periodicRefresh = ref(false);
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.log-toggle-switch {
+  display: flex;
+  align-items: center;
+}
+</style>

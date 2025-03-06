@@ -11,7 +11,7 @@ interface logResponse {
 }
 
 const route = useRoute();
-const analysisId = route.params.id;
+const analysisId = route.params.id as string;
 const currentLogs = ref([]);
 const prevLogs = ref([]);
 
@@ -24,9 +24,9 @@ const {
 
 function parseLogs(logResp: logResponse) {
   const analysisPods = logResp.analysis as Map<string, string>;
+  let compiledLogs = [];
   if (analysisPods) {
     const analysisPodIds = Object.keys(analysisPods);
-    let compiledLogs = [];
     analysisPodIds.forEach((analysisPodId: string) => {
       const newLogEntry = {
         podId: analysisPodId,
@@ -35,8 +35,8 @@ function parseLogs(logResp: logResponse) {
       };
       compiledLogs.push(newLogEntry);
     });
-    return compiledLogs;
   }
+  return compiledLogs;
 }
 
 function gatherCurrentLogs() {
@@ -137,4 +137,8 @@ if (prevLogResp) {
   </Card>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.previous-logs-collection-card {
+  margin-top: 2rem;
+}
+</style>

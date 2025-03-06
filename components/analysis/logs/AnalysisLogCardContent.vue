@@ -12,12 +12,14 @@ const props = defineProps({
         <div class="table-header-row log-header-row">Nginx Logs</div>
       </template>
       <template #content>
-        <ScrollPanel class="log-scroll-panel">
-          <span v-if="props.nginxLogs">
-            {{ props.nginxLogs }}
-          </span>
-          <span v-else>No logs found...</span>
-        </ScrollPanel>
+        <div class="card foo-card">
+          <ScrollPanel class="log-scroll-panel">
+            <span v-if="props.nginxLogs">
+              {{ props.nginxLogs }}
+            </span>
+            <span v-else>No logs found...</span>
+          </ScrollPanel>
+        </div>
       </template>
     </Card>
     <Card class="log-card analysis-log-card">
@@ -36,4 +38,39 @@ const props = defineProps({
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.analysis-logs {
+  display: flex;
+  justify-content: space-between;
+}
+
+.log-card {
+  border: 1px solid grey;
+  height: 50%;
+  background: var(--p-slate-800);
+}
+
+.log-card .p-card-body {
+  padding: 100em !important;
+}
+
+.nginx-log-card {
+  margin-right: 1em;
+  width: 50%;
+}
+
+.analysis-log-card {
+  width: 50%;
+}
+
+.log-scroll-panel {
+  background: #000;
+  font-family:
+    Roboto Mono Regular,
+    monospace;
+  font-size: 0.8em;
+  height: 30em;
+  padding: 1em;
+  white-space: pre-wrap;
+}
+</style>

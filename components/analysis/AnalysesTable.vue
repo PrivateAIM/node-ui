@@ -211,8 +211,6 @@ const onCloseNavToast = () => {
           :value="analyses"
           v-model:expandedRows="expandedRows"
           dataKey="id"
-          scrollable
-          scrollHeight="400px"
           :pt="{
             table: 'table table-striped',
           }"
