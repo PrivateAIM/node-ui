@@ -9,7 +9,7 @@ const props = defineProps({
   <div class="card analysis-logs">
     <Card class="log-card nginx-log-card">
       <template #title>
-        <div class="table-header-row log-header-row">Nginx Logs</div>
+        <div class="log-header-row">Nginx Logs</div>
       </template>
       <template #content>
         <div class="card foo-card">
@@ -24,7 +24,7 @@ const props = defineProps({
     </Card>
     <Card class="log-card analysis-log-card">
       <template #title>
-        <div class="table-header-row log-header-row">Container Logs</div>
+        <div class="log-header-row">Container Logs</div>
       </template>
       <template #content>
         <ScrollPanel class="log-scroll-panel">
@@ -71,7 +71,8 @@ const props = defineProps({
 }
 
 .log-header-row {
-  background: #2a3749;
+  //background: #2a3749;
+  background: var(--p-highlight-background);
   padding: 0.5em;
   border-radius: 6px;
 }
