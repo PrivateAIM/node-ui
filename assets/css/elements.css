@@ -33,6 +33,12 @@ p {
     margin-bottom: .5rem;
 }
 
+a {
+    color: -webkit-link;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
 button {
     appearance: auto;
     text-rendering: auto;

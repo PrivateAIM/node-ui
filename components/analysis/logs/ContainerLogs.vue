@@ -139,6 +139,6 @@ if (prevLogResp) {
 
 <style scoped lang="scss">
 .previous-logs-collection-card {
-  margin-top: 2rem;
+  margin-top: 2em;
 }
 </style>

@@ -38,7 +38,7 @@ const props = defineProps({
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
 .analysis-logs {
   display: flex;
   justify-content: space-between;
@@ -48,10 +48,6 @@ const props = defineProps({
   border: 1px solid grey;
   height: 50%;
   background: var(--p-slate-800);
-}
-
-.log-card .p-card-body {
-  padding: 100em !important;
 }
 
 .nginx-log-card {
@@ -72,5 +68,15 @@ const props = defineProps({
   height: 30em;
   padding: 1em;
   white-space: pre-wrap;
+}
+
+.log-header-row {
+  background: #2a3749;
+  padding: 0.5em;
+  border-radius: 6px;
+}
+
+.analysis-logs .p-card-body {
+  padding: 0;
 }
 </style>
