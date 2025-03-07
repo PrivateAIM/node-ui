@@ -63,7 +63,7 @@ export default defineNuxtConfig({
   css: [
     "primeicons/primeicons.css",
     "@/assets/css/elements.css",
-    "@/assets/css/tables/header-row.css",
+    "@/assets/css/table.css",
   ],
 
   compatibilityDate: "2024-09-30",
