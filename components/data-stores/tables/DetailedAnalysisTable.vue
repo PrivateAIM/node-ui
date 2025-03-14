@@ -4,7 +4,7 @@ import { useConfirm } from "primevue/useconfirm";
 import type { Consumer } from "~/services/Api";
 import { formatDataRow } from "~/utils/format-data-row";
 import { extractUuid } from "~/utils/extract-uuid-from-kong-username";
-import { FilterMatchMode } from "primevue/api";
+import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
 
 const props = defineProps({
@@ -149,6 +149,13 @@ const updateFilters = (filterText: string) => {
 </script>
 
 <template>
+  <div class="table-header-row">
+    <SearchBar
+      :searchTerm="defaultFilters.global.value"
+      @clearFilters="resetFilters"
+      @updateSearch="updateFilters"
+    />
+  </div>
   <div class="associatedProjectsTable">
     <DataTable
       :value="analysisTable"
@@ -166,15 +173,6 @@ const updateFilters = (filterText: string) => {
       ]"
     >
       <template #empty> No associated linked analyses found.</template>
-      <template #header>
-        <div class="table-header-row">
-          <SearchBar
-            :searchTerm="defaultFilters.global.value"
-            @clearFilters="resetFilters"
-            @updateSearch="updateFilters"
-          />
-        </div>
-      </template>
       <Column
         field="hubAnalysisName"
         header="Analysis"

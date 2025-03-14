@@ -279,4 +279,10 @@ async function onDeleteAnalysis() {
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.analysis-buttons {
+  column-gap: 0.3em;
+  display: flex;
+  justify-content: flex-start;
+}
+</style>

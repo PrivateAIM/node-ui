@@ -108,37 +108,45 @@ function extractProjectIdFromPath(paths: string[]): string {
 
 <template>
   <div class="card tab-card">
-    <TabView>
-      <TabPanel header="Detailed Data Store View">
-        <DetailedDataStoreTable
-          v-if="dataStores && projectNameMap"
-          :stores="dataStores"
-          :projectNameMap="projectNameMap"
-          :loading="loading"
-        />
-      </TabPanel>
-      <TabPanel header="Detailed Analyses View" :disabled="!analysisNameMap">
-        <DetailedAnalysisTable
-          v-if="analysisNameMap && projectNameMap"
-          :detailedAnalysisList="consumersAnalyses"
-          :analysisNameMap="analysisNameMap"
-          :projectNameMap="projectNameMap"
-        />
-      </TabPanel>
-      <TabPanel
-        header="Data Store Tree Table"
-        :disabled="!analysisNameMap && !projectNameMap"
-      >
-        <DataStoreTreeTable
-          v-if="analysisNameMap && projectNameMap"
-          :dataStoreList="dataStores"
-          :analyses="consumersAnalyses"
-          :analysisNameMap="analysisNameMap"
-          :projectNameMap="projectNameMap"
-        />
-      </TabPanel>
-    </TabView>
+    <Tabs value="0">
+      <TabList>
+        <Tab value="0">Detailed Data Store View</Tab>
+        <Tab value="1">Detailed Analyses View</Tab>
+        <Tab value="2">Data Store Tree Table</Tab>
+      </TabList>
+      <TabPanels>
+        <TabPanel value="0">
+          <DetailedDataStoreTable
+            v-if="dataStores && projectNameMap"
+            :stores="dataStores"
+            :projectNameMap="projectNameMap"
+            :loading="loading"
+          />
+        </TabPanel>
+        <TabPanel :disabled="!analysisNameMap" value="1">
+          <DetailedAnalysisTable
+            v-if="analysisNameMap && projectNameMap"
+            :detailedAnalysisList="consumersAnalyses"
+            :analysisNameMap="analysisNameMap"
+            :projectNameMap="projectNameMap"
+          />
+        </TabPanel>
+        <TabPanel :disabled="!analysisNameMap && !projectNameMap" value="2">
+          <DataStoreTreeTable
+            v-if="analysisNameMap && projectNameMap"
+            :dataStoreList="dataStores"
+            :analyses="consumersAnalyses"
+            :analysisNameMap="analysisNameMap"
+            :projectNameMap="projectNameMap"
+          />
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.tab-card {
+  margin-top: 1rem;
+}
+</style>

@@ -1,10 +1,15 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from "nuxt/config";
+import { Flame } from "./assets/primevue/flame-preset";
 
 export default defineNuxtConfig({
   ssr: process.env.NODE_ENV !== "development",
   devtools: { enabled: false },
-  modules: ["nuxt-primevue", "@sidebase/nuxt-auth"],
+  modules: [
+    "@primevue/nuxt-module",
+    "@sidebase/nuxt-auth",
+    "@nuxtjs/tailwindcss",
+  ],
 
   runtimeConfig: {
     authSecret: process.env.NUXT_AUTH_SECRET,
@@ -40,8 +45,15 @@ export default defineNuxtConfig({
   },
 
   primevue: {
+    autoImport: true,
     options: {
       ripple: true,
+      theme: {
+        preset: Flame,
+        options: {
+          darkModeSelector: true,
+        },
+      },
     },
     directives: {
       include: ["Ripple", "Tooltip", "Toast"],
@@ -49,10 +61,9 @@ export default defineNuxtConfig({
   },
 
   css: [
-    "primevue/resources/themes/lara-dark-amber/theme.css",
     "primeicons/primeicons.css",
+    "@/assets/css/elements.css",
     "@/assets/css/table.css",
-    "@/assets/css/card.css",
   ],
 
   compatibilityDate: "2024-09-30",

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 const config = useRuntimeConfig();
 const pkgVersion = config.public.version;
 </script>
@@ -15,7 +15,7 @@ const pkgVersion = config.public.version;
         </div>
         <div class="copyright">
           © 2025
-          <a style="padding-left: 5px" href="https://privateaim.de/"
+          <a href="https://privateaim.de/" style="padding-left: 5px"
             >PrivateAim</a
           >
         </div>
@@ -30,13 +30,13 @@ const pkgVersion = config.public.version;
   </footer>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .page-footer {
-  box-shadow: 0 6px 0 0 rgba(0, 0, 0, 0.3) inset;
-  background-color: #374151;
-  padding: 10px 0 4px 0;
+  padding: 5px 0 5px 0;
   margin: 20px auto;
   color: #aeb2b7;
+  background: var(--p-menubar-background);
+  border: 1px solid var(--p-menubar-border-color);
 }
 
 .footer-row {

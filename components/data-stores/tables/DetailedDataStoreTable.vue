@@ -2,7 +2,7 @@
 import { deleteDataStore } from "~/composables/useAPIFetch";
 import { useConfirm } from "primevue/useconfirm";
 import type { DetailedService, Route } from "~/services/Api";
-import { FilterMatchMode } from "primevue/api";
+import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
 import { extractUuid } from "~/utils/extract-uuid-from-kong-username";
 import { parseUnixTimestamp } from "~/utils/format-data-row";
@@ -128,6 +128,13 @@ const updateFilters = (filterText: string) => {
 </script>
 
 <template>
+  <div class="table-header-row">
+    <SearchBar
+      :searchTerm="defaultFilters.global.value"
+      @clearFilters="resetFilters"
+      @updateSearch="updateFilters"
+    />
+  </div>
   <div class="dataStoreTable">
     <DataTable
       :value="dataStores"
@@ -148,15 +155,6 @@ const updateFilters = (filterText: string) => {
       ]"
     >
       <template #empty> No data stores found. </template>
-      <template #header>
-        <div class="table-header-row">
-          <SearchBar
-            :searchTerm="defaultFilters.global.value"
-            @clearFilters="resetFilters"
-            @updateSearch="updateFilters"
-          />
-        </div>
-      </template>
       <Column
         field="name"
         header="Name"
@@ -181,7 +179,7 @@ const updateFilters = (filterText: string) => {
           />
         </template>
         <template #filter="{ filterModel, filterCallback }">
-          <Dropdown
+          <Select
             v-model="filterModel.value"
             @change="filterCallback()"
             :options="dataStoreTypes"
@@ -195,7 +193,7 @@ const updateFilters = (filterText: string) => {
                 :severity="getDataStoreTypeSeverity(slotProps.option)"
               />
             </template>
-          </Dropdown>
+          </Select>
         </template>
       </Column>
       <Column field="path" header="Path"></Column>
@@ -238,7 +236,9 @@ const updateFilters = (filterText: string) => {
                   :class="slotProps.message.icon"
                   class="text-6xl text-primary-500"
                 ></i>
-                <p style="padding: 10px">{{ slotProps.message.message }}</p>
+                <p style="padding: 10px">
+                  {{ slotProps.message.message }}
+                </p>
               </div>
             </template>
           </ConfirmPopup>

@@ -2,9 +2,8 @@
 import { getAnalysisNodes } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
 import TableRowMetadata from "~/components/TableRowMetadata.vue";
-import ExpandRowButtons from "~/components/table/ExpandRowButtons.vue";
 import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
-import { FilterMatchMode } from "primevue/api";
+import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
 import {
   getApprovalStatusSeverity,
@@ -22,6 +21,7 @@ import {
 const expandedRows = ref();
 const analyses = ref();
 const toast = useToast();
+const filters = ref();
 
 const expandRowEntries = [];
 const runStatuses = Object.values(AnalysisNodeRunStatus);
@@ -66,11 +66,12 @@ function parseData() {
     showHubAdapterConnectionErrorToast();
   }
 }
+
 parseData();
 
-function onToggleRowExpansion(rowIds) {
-  expandedRows.value = rowIds;
-}
+// function onToggleRowExpansion(rowIds) {
+//   expandedRows.value = rowIds;
+// }
 
 async function onTableRefresh() {
   await refresh();
@@ -89,7 +90,7 @@ const defaultFilters = {
   // verified: { value: null, matchMode: FilterMatchMode.EQUALS },
   // name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
 };
-const filters = ref(defaultFilters);
+filters.value = defaultFilters;
 
 function resetFilters() {
   const clearedFilters = {};
@@ -176,13 +177,36 @@ const onCloseNavToast = () => {
     <Card class="content-card">
       <template #title>Analyses</template>
       <template #content>
-        <InlineMessage severity="warn">
-          Some controls may be disabled!
-        </InlineMessage>
-        <p>
-          If the image for the analysis is not yet <b>finished</b> (see Build
-          Status), a container for the analysis cannot be started.
-        </p>
+        <div class="analysis-description">
+          <Message
+            severity="warn"
+            class="control-warning-message"
+            icon="pi pi-exclamation-triangle"
+          >
+            Some controls may be disabled!
+          </Message>
+          <p>
+            If the image for the analysis is not yet <b>finished</b> (see Build
+            Status), a container for the analysis cannot be started.
+          </p>
+        </div>
+        <div class="table-header-row">
+          <SearchBar
+            :searchTerm="defaultFilters.global.value"
+            @clearFilters="resetFilters"
+            @updateSearch="updateFilters"
+          />
+          <div class="card flex justify-content-center refresh-switch">
+            <Button
+              icon="pi pi-refresh"
+              aria-label="Filter"
+              :loading="status === 'pending'"
+              v-tooltip.top="'Refresh table'"
+              @click="onTableRefresh"
+              severity="contrast"
+            />
+          </div>
+        </div>
         <DataTable
           :value="analyses"
           v-model:expandedRows="expandedRows"
@@ -198,33 +222,7 @@ const onCloseNavToast = () => {
           filterDisplay="menu"
           :globalFilterFields="['analysis.name', 'project_name', 'node.name']"
         >
-          <template #empty> No analyses found. </template>
-          <template #header>
-            <div class="table-header-row">
-              <SearchBar
-                :searchTerm="defaultFilters.global.value"
-                @clearFilters="resetFilters"
-                @updateSearch="updateFilters"
-              />
-              <div class="expand-buttons" v-if="expandRowEntries.length">
-                <ExpandRowButtons
-                  :rows="analyses"
-                  :uniqueId="'id'"
-                  @expandedRowList="onToggleRowExpansion"
-                />
-              </div>
-              <div class="card flex justify-content-center refresh-switch">
-                <Button
-                  icon="pi pi-refresh"
-                  aria-label="Filter"
-                  :loading="status === 'pending'"
-                  v-tooltip.top="'Refresh table'"
-                  @click="onTableRefresh"
-                  severity="contrast"
-                />
-              </div>
-            </div>
-          </template>
+          <template #empty> No analyses found.</template>
           <Column expander style="width: 5rem" v-if="expandRowEntries.length" />
           <Column field="analysis.name" header="Name" :sortable="true" />
           <Column
@@ -244,7 +242,7 @@ const onCloseNavToast = () => {
               />
             </template>
             <template #filter="{ filterModel, filterCallback }">
-              <Dropdown
+              <Select
                 v-model="filterModel.value"
                 @change="filterCallback()"
                 :options="approvalStatuses"
@@ -258,7 +256,7 @@ const onCloseNavToast = () => {
                     :severity="getApprovalStatusSeverity(slotProps.option)"
                   />
                 </template>
-              </Dropdown>
+              </Select>
             </template>
           </Column>
           <!--          <Column-->
@@ -414,6 +412,13 @@ const onCloseNavToast = () => {
 </template>
 
 <style>
+.control-warning-message {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+  border: 1px solid #eab308;
+}
+
 .nav-btn {
   margin-top: 10px;
 }
