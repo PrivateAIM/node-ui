@@ -33,6 +33,10 @@ p {
     margin-bottom: .5rem;
 }
 
+.p-menubar {
+    margin-bottom: 1rem;
+}
+
 a {
     color: -webkit-link;
     cursor: pointer;

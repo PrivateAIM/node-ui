@@ -63,11 +63,11 @@ async function loadDetailedDataStoreTable(responseData, status, error) {
     let formattedDataStores = formatDataRow(
       responseData,
       dataRowUnixCols,
-      expandRowEntries
+      expandRowEntries,
     ) as DetailedService[];
 
     formattedDataStores = formattedDataStores.filter(
-      (store: DetailedService) => store.name !== "kong-admin-service"
+      (store: DetailedService) => store.name !== "kong-admin-service",
     );
 
     formattedDataStores.forEach((store: DetailedService) => {
@@ -75,7 +75,7 @@ async function loadDetailedDataStoreTable(responseData, status, error) {
         store.routes = formatDataRow(
           store.routes,
           dataRowUnixCols,
-          expandRowEntries
+          expandRowEntries,
         );
         store.routes?.forEach((proj: Route) => {
           proj["projectId"] = extractProjectIdFromPath(proj.paths! as string[]);
@@ -115,7 +115,7 @@ function extractProjectIdFromPath(paths: string[]): string {
         <Tab value="2">Data Store Tree Table</Tab>
       </TabList>
       <TabPanels>
-        <TabPanel>
+        <TabPanel value="0">
           <DetailedDataStoreTable
             v-if="dataStores && projectNameMap"
             :stores="dataStores"
@@ -123,7 +123,7 @@ function extractProjectIdFromPath(paths: string[]): string {
             :loading="loading"
           />
         </TabPanel>
-        <TabPanel :disabled="!analysisNameMap">
+        <TabPanel :disabled="!analysisNameMap" value="1">
           <DetailedAnalysisTable
             v-if="analysisNameMap && projectNameMap"
             :detailedAnalysisList="consumersAnalyses"
@@ -131,7 +131,7 @@ function extractProjectIdFromPath(paths: string[]): string {
             :projectNameMap="projectNameMap"
           />
         </TabPanel>
-        <TabPanel :disabled="!analysisNameMap && !projectNameMap">
+        <TabPanel :disabled="!analysisNameMap && !projectNameMap" value="2">
           <DataStoreTreeTable
             v-if="analysisNameMap && projectNameMap"
             :dataStoreList="dataStores"
@@ -145,4 +145,8 @@ function extractProjectIdFromPath(paths: string[]): string {
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.tab-card {
+  margin-top: 1rem;
+}
+</style>

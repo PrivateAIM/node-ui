@@ -42,7 +42,7 @@ onMounted(() => {
 const confirmDeleteAnalysis = (
   event,
   analysisUuid: string,
-  analysisUsername: string
+  analysisUsername: string,
 ) => {
   confirm.require({
     target: event.currentTarget,
@@ -62,7 +62,7 @@ const confirmDeleteAnalysis = (
 
 async function onConfirmDeleteAnalysis(
   analysisUuid: string,
-  analysisUsername: string
+  analysisUsername: string,
 ) {
   loading.value = true;
   const { status } = await deleteAnalysisFromKong(analysisUuid);
@@ -75,7 +75,7 @@ async function onConfirmDeleteAnalysis(
     });
     analysisTable.value = analysisTable.value.filter(
       (analysis: analysisRow) =>
-        analysis.kongAnalysisUserName !== analysisUsername
+        analysis.kongAnalysisUserName !== analysisUsername,
     );
   } else {
     toast.add({
@@ -149,6 +149,13 @@ const updateFilters = (filterText: string) => {
 </script>
 
 <template>
+  <div class="table-header-row">
+    <SearchBar
+      :searchTerm="defaultFilters.global.value"
+      @clearFilters="resetFilters"
+      @updateSearch="updateFilters"
+    />
+  </div>
   <div class="associatedProjectsTable">
     <DataTable
       :value="analysisTable"
@@ -166,15 +173,6 @@ const updateFilters = (filterText: string) => {
       ]"
     >
       <template #empty> No associated linked analyses found.</template>
-      <template #header>
-        <div class="table-header-row">
-          <SearchBar
-            :searchTerm="defaultFilters.global.value"
-            @clearFilters="resetFilters"
-            @updateSearch="updateFilters"
-          />
-        </div>
-      </template>
       <Column
         field="hubAnalysisName"
         header="Analysis"
@@ -231,7 +229,7 @@ const updateFilters = (filterText: string) => {
               confirmDeleteAnalysis(
                 $event,
                 slotProps.data.hubAnalysisUuid,
-                slotProps.data.kongAnalysisUserName
+                slotProps.data.kongAnalysisUserName,
               )
             "
           />

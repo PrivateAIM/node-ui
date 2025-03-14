@@ -70,7 +70,7 @@ async function onConfirmDeleteDataStore(dsName: string) {
       life: 3000,
     });
     dataStores.value = dataStores.value?.filter(
-      (store: DetailedService) => store.name !== dsName
+      (store: DetailedService) => store.name !== dsName,
     );
   } else {
     toast.add({
@@ -128,6 +128,13 @@ const updateFilters = (filterText: string) => {
 </script>
 
 <template>
+  <div class="table-header-row">
+    <SearchBar
+      :searchTerm="defaultFilters.global.value"
+      @clearFilters="resetFilters"
+      @updateSearch="updateFilters"
+    />
+  </div>
   <div class="dataStoreTable">
     <DataTable
       :value="dataStores"
@@ -148,15 +155,6 @@ const updateFilters = (filterText: string) => {
       ]"
     >
       <template #empty> No data stores found. </template>
-      <template #header>
-        <div class="table-header-row">
-          <SearchBar
-            :searchTerm="defaultFilters.global.value"
-            @clearFilters="resetFilters"
-            @updateSearch="updateFilters"
-          />
-        </div>
-      </template>
       <Column
         field="name"
         header="Name"
@@ -238,7 +236,9 @@ const updateFilters = (filterText: string) => {
                   :class="slotProps.message.icon"
                   class="text-6xl text-primary-500"
                 ></i>
-                <p style="padding: 10px">{{ slotProps.message.message }}</p>
+                <p style="padding: 10px">
+                  {{ slotProps.message.message }}
+                </p>
               </div>
             </template>
           </ConfirmPopup>
