@@ -24,7 +24,15 @@ jobs:
       image_labels: ${{ steps.meta.outputs.labels }}
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: ⏫ Bumping version
+        uses: jpb06/bump-package@latest
+        with:
+          major-keywords: BREAKING CHANGE
+          minor-keywords: minor
+          patch-keywords: fix,chore,feat
+          should-default-to-patch: true
 
       - name: Get Version
         id: get-version
