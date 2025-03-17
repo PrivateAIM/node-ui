@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import AvatarButton from "~/components/header/AvatarButton.vue";
+import DarkModeToggle from "~/components/header/DarkModeToggle.vue";
 
 const { status } = useAuth();
 
@@ -83,8 +84,11 @@ const items = ref([
         </div>
       </template>
       <template #end>
-        <div class="flex align-items-center gap-2">
-          <AvatarButton />
+        <div class="header-end">
+          <DarkModeToggle />
+          <div class="flex align-items-center gap-2 avatar-button">
+            <AvatarButton />
+          </div>
         </div>
       </template>
     </Menubar>
@@ -98,5 +102,14 @@ const items = ref([
 
 .menu-bar-item {
   border-radius: inherit;
+}
+
+.header-end {
+  display: flex;
+  align-items: center;
+}
+
+.avatar-button {
+  margin-left: 1.5em;
 }
 </style>
