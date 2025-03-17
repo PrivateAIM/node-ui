@@ -11,9 +11,7 @@ function setTheme(themeName: string) {
 if (theme) {
   if (theme === darkTheme) {
     setTheme(darkTheme);
-  }
-
-  if (theme === lightTheme) {
+  } else {
     setTheme(lightTheme);
   }
 }
@@ -28,22 +26,29 @@ function toggleDarkMode() {
   }
 }
 
-const prefersDarkTheme = window.matchMedia("(prefers-color-scheme: dark)");
-if (prefersDarkTheme.matches) {
-  setTheme(darkTheme);
-}
+document.documentElement.classList.toggle(
+  darkTheme,
+  theme === darkTheme ||
+    (!("theme" in localStorage) &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches),
+);
 
-const prefersLightTheme = window.matchMedia("(prefers-color-scheme: light)");
-if (prefersLightTheme.matches) {
-  setTheme(lightTheme);
-}
+const checked = ref(theme === lightTheme);
 </script>
 
 <template>
   <div class="dark-mode-toggle">
-    <i class="pi pi-moon" />
-    <ToggleSwitch label="Toggle Dark Mode" @click="toggleDarkMode()" />
-    <i class="pi pi-sun" />
+    <div class="dark-mode-toggle-icon">
+      <i class="pi pi-moon" />
+    </div>
+    <ToggleSwitch
+      v-model="checked"
+      label="Toggle Dark Mode"
+      @click="toggleDarkMode()"
+    />
+    <div class="dark-mode-toggle-icon">
+      <i class="pi pi-sun" />
+    </div>
   </div>
 </template>
 
@@ -51,5 +56,9 @@ if (prefersLightTheme.matches) {
 .dark-mode-toggle {
   display: flex;
   align-items: center;
+}
+
+.dark-mode-toggle-icon {
+  padding: 0.3em;
 }
 </style>
