@@ -6,12 +6,14 @@
   "scripts": {
     "start": "nuxt start",
     "build": "nuxt build",
+    "coverage": "vitest run --coverage",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "build-api": "npx swagger-typescript-api -p ./services/hub_adapter_swagger.json -o ./services/",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "prod": "node .output/server/index.mjs"
+    "prod": "node .output/server/index.mjs",
+    "test": "vitest"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
@@ -40,6 +42,8 @@
     "tailwindcss-primeui": "^0.4.0",
     "typescript": "^5.7.3",
     "typescript-eslint": "^7.18.0",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.0.8",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0",
     "webpack": "^5.97.1"

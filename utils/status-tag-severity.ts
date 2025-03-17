@@ -4,7 +4,7 @@ import {
   ApprovalStatus,
 } from "~/services/Api";
 
-export const getApprovalStatusSeverity = (status) => {
+export const getApprovalStatusSeverity = (status: string) => {
   switch (status) {
     case ApprovalStatus.Approved:
       return "success";
@@ -14,7 +14,7 @@ export const getApprovalStatusSeverity = (status) => {
   }
 };
 
-export const getBuildStatusSeverity = (status) => {
+export const getBuildStatusSeverity = (status: string) => {
   switch (status) {
     case AnalysisBuildStatus.Starting:
       return "info";
@@ -36,7 +36,7 @@ export const getBuildStatusSeverity = (status) => {
   }
 };
 
-export const getRunStatusSeverity = (status) => {
+export const getRunStatusSeverity = (status: string) => {
   switch (status) {
     case AnalysisRunStatus.Starting:
       return "info";
@@ -61,7 +61,7 @@ export const getRunStatusSeverity = (status) => {
   }
 };
 
-export const getDataStoreTypeSeverity = (status) => {
+export const getDataStoreTypeSeverity = (status: string) => {
   switch (status) {
     case "s3":
       return "info";
