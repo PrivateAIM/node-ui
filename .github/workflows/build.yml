@@ -40,7 +40,6 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=sha
-            type=edge
             type=raw,value=canary,enable=${{ contains(github.event.head_commit.message, 'build_image') || github.event_name == 'workflow_dispatch' }}
             type=raw,value=prod,enable=${{ github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch' }}
             type=raw,event=workflow_dispatch,value=${{ github.event.inputs.dispatch-tag }}
