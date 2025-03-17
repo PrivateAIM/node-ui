@@ -9,7 +9,6 @@ const isDark = useDark({
 });
 const toggleDark = useToggle(isDark);
 const checked = ref(!isDark.value);
-console.log(isDark);
 </script>
 
 <template>
