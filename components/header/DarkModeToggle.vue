@@ -1,39 +1,15 @@
 <script lang="ts" setup>
-let theme = localStorage.getItem("theme");
-const darkTheme = "flame-dark";
-const lightTheme = "flame-light";
+import { useDark, useToggle } from "@vueuse/core";
 
-function setTheme(themeName: string) {
-  document.documentElement.className = themeName;
-  localStorage.setItem("theme", themeName);
-}
-
-if (theme) {
-  if (theme === darkTheme) {
-    setTheme(darkTheme);
-  } else {
-    setTheme(lightTheme);
-  }
-}
-
-function toggleDarkMode() {
-  if (theme === darkTheme) {
-    setTheme(lightTheme);
-    theme = lightTheme;
-  } else {
-    setTheme(darkTheme);
-    theme = darkTheme;
-  }
-}
-
-document.documentElement.classList.toggle(
-  darkTheme,
-  theme === darkTheme ||
-    (!("theme" in localStorage) &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches),
-);
-
-const checked = ref(theme === lightTheme);
+const isDark = useDark({
+  selector: "html",
+  attribute: "class",
+  valueDark: "flame-dark",
+  valueLight: "flame-light",
+});
+const toggleDark = useToggle(isDark);
+const checked = ref(!isDark.value);
+console.log(isDark);
 </script>
 
 <template>
@@ -44,7 +20,7 @@ const checked = ref(theme === lightTheme);
     <ToggleSwitch
       v-model="checked"
       label="Toggle Dark Mode"
-      @click="toggleDarkMode()"
+      @click="toggleDark()"
     />
     <div class="dark-mode-toggle-icon">
       <i class="pi pi-sun" />
