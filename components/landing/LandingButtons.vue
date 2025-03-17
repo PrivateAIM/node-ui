@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import KeycloakAuth from "~/components/landing/KeycloakAuth.vue";
 
 const { data } = useAuth();
@@ -6,21 +6,23 @@ const { data } = useAuth();
 
 <template>
   <div class="landing-buttons">
-    <div class="login-or-learn-container" v-if="!data">
-      <KeycloakAuth />
+    <div v-if="!data" class="login-or-learn-container">
+      <div class="keycloak-btn landing-btn">
+        <KeycloakAuth />
+      </div>
       <div class="learn-more-btn landing-btn">
         <NuxtLink
-          to="https://privateaim.de/de/index.html"
-          target="_blank"
           rel="noopener"
+          target="_blank"
+          to="https://privateaim.de/de/index.html"
         >
-          <Button label="privateaim" severity="contrast" outlined
+          <Button label="privateaim" outlined severity="contrast"
             >Learn More</Button
           >
         </NuxtLink>
       </div>
     </div>
-    <div class="get-started-container" v-else>
+    <div v-else class="get-started-container">
       <h2 style="text-align: center">What would you like to do today?</h2>
       <div class="get-started-btns">
         <a class="get-started-btn" href="/projects">
@@ -44,15 +46,11 @@ const { data } = useAuth();
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .login-or-learn-container {
   display: flex;
   flex-direction: row;
   justify-content: center;
-}
-
-.landing-btn {
-  margin: 1em;
 }
 
 .get-started-container {
@@ -93,5 +91,9 @@ const { data } = useAuth();
 .get-started-btn-icon {
   margin: 0.3em;
   font-size: 3em;
+}
+
+.landing-btn {
+  padding: 0.5em;
 }
 </style>

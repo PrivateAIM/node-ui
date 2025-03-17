@@ -1,21 +1,27 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 const { signIn, signOut, status } = useAuth();
 </script>
 
 <template>
-  <div class="keycloak-login-btn landing-btn">
+  <div class="keycloak-login-btn">
     <div v-if="status === 'authenticated'">
-      <Button @click="signOut()" severity="warn" outlined>Sign Out</Button>
+      <Button class="kc-success" outlined severity="warn" @click="signOut()"
+        >Sign Out</Button
+      >
     </div>
     <div v-else>
-      <Button @click="signIn('keycloak')" severity="success" outlined
+      <Button
+        class="kc-success"
+        outlined
+        severity="success"
+        @click="signIn('keycloak')"
         >Login with Keycloak</Button
       >
     </div>
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .login-welcome {
   display: flex;
   flex-direction: row;
@@ -28,4 +34,18 @@ const { signIn, signOut, status } = useAuth();
 .login-welcome-msg {
   margin-right: 2em;
 }
+
+.flame-light .kc-success {
+  border-color: var(--p-green-700);
+  color: var(--p-green-600);
+}
+
+//.landing-btn {
+//  margin: 0.5em;
+//  border-width: 0.2em;
+//}
+//
+//.landing-btn:hover {
+//  border-width: 0.2em;
+//}
 </style>

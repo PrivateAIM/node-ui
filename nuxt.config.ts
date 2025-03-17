@@ -51,7 +51,7 @@ export default defineNuxtConfig({
       theme: {
         preset: Flame,
         options: {
-          darkModeSelector: true,
+          darkModeSelector: ".flame-dark",
         },
       },
     },
