@@ -6,6 +6,7 @@ const isDark = useDark({
   attribute: "class",
   valueDark: "flame-dark",
   valueLight: "flame-light",
+  initOnMounted: true,
 });
 const toggleDark = useToggle(isDark);
 const checked = ref(!isDark.value);
