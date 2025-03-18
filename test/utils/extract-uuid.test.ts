@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { extractUuid } from "../extract-uuid-from-kong-username";
+import { extractUuid } from "~/utils/extract-uuid-from-kong-username";
 
 test("Extract UUID from Kong name", () => {
   expect(

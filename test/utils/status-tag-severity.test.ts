@@ -4,7 +4,7 @@ import {
   getBuildStatusSeverity,
   getRunStatusSeverity,
   getDataStoreTypeSeverity,
-} from "../status-tag-severity";
+} from "~/utils/status-tag-severity";
 import {
   AnalysisBuildStatus,
   AnalysisRunStatus,

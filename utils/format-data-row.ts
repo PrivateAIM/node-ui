@@ -32,17 +32,20 @@ export function parseUnixTimestamp(
     if (key in dataRow) {
       const timestamp = dataRow[key];
       let date: Date;
-      if (typeof timestamp === "number" && isUnixTimestamp(timestamp)) {
-        date = new Date(timestamp * 1000);
-      } else {
-        date = new Date(timestamp);
+      if (typeof timestamp !== "object") {
+        // If it is an object, then no need to parse
+        if (typeof timestamp === "number" && isUnixTimestamp(timestamp)) {
+          date = new Date(timestamp * 1000);
+        } else {
+          date = new Date(timestamp);
+        }
+        dataRow[key] = {
+          short: formatDate(date),
+          long: date.toUTCString(),
+          date: date,
+          timestamp: date.getTime() / 1000,
+        };
       }
-      dataRow[key] = {
-        short: formatDate(date),
-        long: date.toUTCString(),
-        date: date,
-        timestamp: date.getTime() / 1000,
-      };
     }
   });
   return dataRow;

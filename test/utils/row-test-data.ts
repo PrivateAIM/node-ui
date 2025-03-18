@@ -1,4 +1,4 @@
-export const fakeAnalysisData = new Array([
+export const fakeAnalysisData = [
   {
     id: "984c984d-f4c1-4a5f-9df0-58eaa5b22f2c",
     created_at: {
@@ -589,7 +589,7 @@ export const fakeAnalysisData = new Array([
     expand: {},
     project_name: "denbi-test",
   },
-]);
+];
 
 export const expectedFormattedAnalysisData = [
   {
