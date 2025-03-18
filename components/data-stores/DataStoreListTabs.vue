@@ -145,8 +145,12 @@ function extractProjectIdFromPath(paths: string[]): string {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
 .tab-card {
   margin-top: 1rem;
+}
+
+.p-tablist-tab-list {
+  background: var(--p-tabs-tab-background);
 }
 </style>
