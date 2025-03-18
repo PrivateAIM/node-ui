@@ -96,11 +96,16 @@ function formatDataStoreNodes(projectNodeMap: Map<string, TreeNode[]>) {
 
 <template>
   <div class="card">
-    <TreeTable :value="nodes">
-      <Column field="name" header="Name" expander></Column>
-      <Column field="uuid" header="UUID"></Column>
-      <Column field="resourceType" header="Type"></Column>
-    </TreeTable>
+    <div class="ds-tree-table" v-if="nodes && nodes.length">
+      <TreeTable :value="nodes">
+        <Column field="name" header="Name" expander></Column>
+        <Column field="uuid" header="UUID"></Column>
+        <Column field="resourceType" header="Type"></Column>
+      </TreeTable>
+    </div>
+    <div class="ds-tree-table-empty" v-else>
+      <p>No local nodes found.</p>
+    </div>
   </div>
 </template>
 

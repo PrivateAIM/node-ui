@@ -75,9 +75,9 @@ const { data } = useAuth();
 }
 
 .get-started-btn:hover {
-  border-bottom: solid 2px yellow;
+  border-bottom: solid 2px var(--p-button-contrast-border-color);
   margin-bottom: -2px;
-  background-color: black;
+  background-color: var(--p-button-secondary-hover-background);
 }
 
 .get-started-btn:not(:last-child) {
