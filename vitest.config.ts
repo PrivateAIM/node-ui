@@ -14,7 +14,7 @@ export default defineConfig({
       "**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*",
     ],
     environment: "happy-dom",
-    setupFiles: "./test/mockapi/server.ts", // Load the server
+    setupFiles: "./test/mockapi/server.ts", // Load the config for testing
   },
   resolve: {
     alias: {

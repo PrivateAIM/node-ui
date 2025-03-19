@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ToggleSwitch from "primevue/toggleswitch";
+import { ref } from "vue";
 
 const periodicRefresh = ref(false);
 </script>
@@ -9,10 +10,8 @@ const periodicRefresh = ref(false);
     <span style="font-size: 12px; padding-right: 0.5em">
       Refresh periodically
     </span>
-    <ToggleSwitch
-      v-model="periodicRefresh"
-      v-tooltip.top="'Refresh logs every 5 seconds'"
-    />
+    <div v-tooltip.top="'Refresh logs every 5 seconds'"></div>
+    <ToggleSwitch v-model="periodicRefresh" />
   </div>
 </template>
 

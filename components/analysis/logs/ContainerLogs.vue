@@ -7,10 +7,17 @@ import { getAnalysisLogs } from "~/composables/useAPIFetch";
 import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
 import RefreshSwitch from "~/components/analysis/logs/RefreshSwitch.vue";
 import AnalysisLogCardContent from "~/components/analysis/logs/AnalysisLogCardContent.vue";
+import { useNuxtApp } from "#app";
 
 interface logResponse {
   analysis: Map<string, string>;
   nginx: Map<string, string>;
+}
+
+interface logEntry {
+  podId: string;
+  analysis: string | null;
+  nginx: string | null;
 }
 
 const route = useRoute();
@@ -25,16 +32,16 @@ const {
   error,
 } = await getAnalysisLogs(analysisId);
 
-function parseLogs(logResp: logResponse) {
-  const analysisPods = logResp.analysis as Map<string, string>;
-  let compiledLogs = [];
+function parseLogs(logResp: logResponse | null): logEntry[] {
+  const analysisPods = logResp?.analysis as Map<string, string>;
+  let compiledLogs: logEntry[] = [];
   if (analysisPods) {
     const analysisPodIds = Object.keys(analysisPods);
     analysisPodIds.forEach((analysisPodId: string) => {
-      const newLogEntry = {
+      const newLogEntry: logEntry = {
         podId: analysisPodId,
-        analysis: logResp.analysis[analysisPodId][0],
-        nginx: logResp.nginx[`nginx-${analysisPodId}`][0],
+        analysis: logResp?.analysis[analysisPodId][0],
+        nginx: logResp?.nginx[`nginx-${analysisPodId}`][0],
       };
       compiledLogs.push(newLogEntry);
     });

@@ -1,36 +1,54 @@
 import { defineComponent } from "vue";
-import { createRouter, createMemoryHistory } from "vue-router";
 import { flushPromises, mount } from "@vue/test-utils";
-import { describe, test, expect, beforeEach } from "vitest";
+import { vi, describe, test, expect, beforeEach } from "vitest";
 import ContainerLogs from "~/components/analysis/logs/ContainerLogs.vue";
+import { fakeLogs } from "~/test/components/analysis/logs/constants";
 
-const router = createRouter({
-  history: createMemoryHistory(),
-  routes: [{ path: "/analyses/:id", component: ContainerLogs }],
-});
+// Mock useFetch
+vi.mock("~/composables/useAPIFetch", () => ({
+  getAnalysisLogs: vi.fn(() => ({
+    data: {
+      value: {
+        analysis: {
+          "analysis-85629f5b-da04-4f7c-84fc-097b2db93de50000": [fakeLogs],
+        },
+        nginx: {
+          "nginx-analysis-85629f5b-da04-4f7c-84fc-097b2db93de50000": [fakeLogs],
+        },
+      },
+    }, // Mocked API response
+    pending: { value: false },
+    error: { value: null },
+    status: { value: "success" },
+  })),
+}));
 
 describe("ContainerLogs.vue", () => {
   let wrapper;
+
+  // Render the component with the fake params
   beforeEach(async () => {
+    vi.mock("vue-router", () => ({
+      useRoute: () => ({
+        params: { id: "85629f5b-da04-4f7c-84fc-097b2db93de5" },
+      }),
+    }));
     const TestComponent = defineComponent({
       components: { ContainerLogs },
       template: "<Suspense><ContainerLogs/></Suspense>",
     });
-    router.push("/analyses/85629f5b-da04-4f7c-84fc-097b2db93de5"); // Set route param
-    await router.isReady(); // Wait for router to be ready
-
     wrapper = mount(TestComponent, {
       global: {
-        plugins: [router],
+        directives: {
+          tooltip: {}, // Stub the tooltip directive
+        },
       },
     });
-    await flushPromises();
+    await flushPromises(); // Wait for async operations to resolve
   });
 
-  test("Get the logs from the API", async () => {
-    expect(wrapper.vm.$route.params.id).toBe(
-      "85629f5b-da04-4f7c-84fc-097b2db93de5",
-    );
+  test("Test router params", async () => {
+    expect(wrapper.text()).toContain("85629f5b-da04-4f7c-84fc-097b2db93de5");
     expect(wrapper.text()).toContain("Starting FlameCoreSDK");
   });
 });

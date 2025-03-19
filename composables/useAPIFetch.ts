@@ -10,8 +10,7 @@ import type {
   ListServices,
   Service,
 } from "~/services/Api";
-import { useFetch } from "@vueuse/core";
-import { useNuxtApp } from "#app";
+import { useNuxtApp, useFetch } from "#app";
 import type { UseFetchOptions } from "#app";
 
 export function useAPIFetch<T>(
