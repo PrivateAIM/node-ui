@@ -11,7 +11,11 @@ const periodicRefresh = ref(false);
       Refresh periodically
     </span>
     <div v-tooltip.top="'Refresh logs every 5 seconds'"></div>
-    <ToggleSwitch v-model="periodicRefresh" />
+    <ToggleSwitch
+      v-model="periodicRefresh"
+      id="refreshBtn"
+      class="refresh-toggle"
+    />
   </div>
 </template>
 
