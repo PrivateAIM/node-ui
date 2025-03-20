@@ -1,5 +1,5 @@
 import { vi, afterAll, afterEach, beforeAll } from "vitest";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { config } from "@vue/test-utils";
 import { setupServer } from "msw/node";
 import { handlers } from "~/test/mockapi/handlers";
@@ -19,8 +19,10 @@ import InputIcon from "primevue/inputicon";
 import InputText from "primevue/inputtext";
 import IconField from "primevue/iconfield";
 
-// 1️⃣ Register `ref` globally
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+const globalThis = global as any;
 globalThis.ref = ref; // Ensures `ref()` can be used in tests
+globalThis.computed = computed;
 
 // Register PrimeVue components globally for testing
 config.global.plugins = [PrimeVue];

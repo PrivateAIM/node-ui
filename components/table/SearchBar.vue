@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import IconField from "primevue/iconfield";
+import InputIcon from "primevue/inputicon";
 const props = defineProps({
   searchTerm: [String, null],
 });
