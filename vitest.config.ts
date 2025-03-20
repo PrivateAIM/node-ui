@@ -6,6 +6,7 @@ import path from "path";
 export default defineConfig({
   plugins: [tsconfigPaths(), vue()],
   test: {
+    globals: true,
     exclude: [
       "**/node_modules/**",
       "**/dist/**",
@@ -14,7 +15,7 @@ export default defineConfig({
       "**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*",
     ],
     environment: "happy-dom",
-    setupFiles: "./test/mockapi/server.ts", // Load the config for testing
+    setupFiles: "./test/mockapi/setup.ts", // Load the config for testing
   },
   resolve: {
     alias: {

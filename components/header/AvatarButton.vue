@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from "vue";
 const { signIn, signOut, status, data } = useAuth();
 
 const menu = ref();

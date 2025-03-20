@@ -1,9 +1,8 @@
-import { ref } from "vue";
 import { defineComponent } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import { vi, describe, test, expect, beforeAll, beforeEach } from "vitest";
 import ContainerLogs from "~/components/analysis/logs/ContainerLogs.vue";
-import { fakeLogs } from "~/test/components/analysis/logs/constants";
+import { fakeLogs } from "~/test/components/analysis/constants";
 import { getAnalysisLogs } from "~/composables/useAPIFetch";
 
 vi.mock("vue-router", () => ({
@@ -51,14 +50,9 @@ describe("ContainerLogs.vue", () => {
       clear: vi.fn(),
     });
 
-    wrapper = mount(LogTestComponent, {
-      global: {
-        directives: {
-          tooltip: {}, // Stub the tooltip directive
-        },
-      },
-    });
+    wrapper = mount(LogTestComponent);
     await flushPromises();
+
     expect(LogTestComponent).toBeTruthy();
     expect(wrapper.text()).toContain("Starting FlameCoreSDK");
   });
@@ -75,14 +69,10 @@ describe("ContainerLogs.vue", () => {
       execute: vi.fn(),
       clear: vi.fn(),
     });
-    wrapper = mount(LogTestComponent, {
-      global: {
-        directives: {
-          tooltip: {}, // Stub the tooltip directive
-        },
-      },
-    });
+
+    wrapper = mount(LogTestComponent);
     await flushPromises();
+
     expect(LogTestComponent).toBeTruthy();
     expect(wrapper.text()).toContain("85629f5b-da04-4f7c-84fc-097b2db93de5");
     expect(wrapper.text()).toContain("No logs found...");

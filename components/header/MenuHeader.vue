@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { ref } from "vue";
 import AvatarButton from "~/components/header/AvatarButton.vue";
 import DarkModeToggle from "~/components/header/DarkModeToggle.vue";
 

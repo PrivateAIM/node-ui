@@ -3,13 +3,7 @@ import { describe, test, expect } from "vitest";
 import RefreshSwitch from "~/components/analysis/logs/RefreshSwitch.vue";
 
 describe("RefreshSwitch.vue", async () => {
-  const wrapper = mount(RefreshSwitch, {
-    global: {
-      directives: {
-        tooltip: {}, // Stub the tooltip directive
-      },
-    },
-  });
+  const wrapper = mount(RefreshSwitch);
 
   test("Mounts initially as disabled", () => {
     expect(wrapper.get("input").attributes("aria-checked")).toBe("false");

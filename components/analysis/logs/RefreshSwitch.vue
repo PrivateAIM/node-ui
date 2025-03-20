@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import ToggleSwitch from "primevue/toggleswitch";
-import { ref } from "vue";
 
 const periodicRefresh = ref(false);
 </script>

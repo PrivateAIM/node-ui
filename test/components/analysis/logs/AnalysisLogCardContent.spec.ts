@@ -1,6 +1,6 @@
 import { mount } from "@vue/test-utils";
 import { describe, test, expect } from "vitest";
-import { fakeLogs } from "./constants";
+import { fakeLogs } from "../constants";
 import AnalysisLogCardContent from "~/components/analysis/logs/AnalysisLogCardContent.vue";
 
 describe("AnalysisLogCardContent.vue", () => {
