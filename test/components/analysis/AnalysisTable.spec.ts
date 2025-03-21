@@ -9,6 +9,7 @@ import {
   fakeProjects,
 } from "~/test/components/analysis/constants";
 import { getAnalysisNodes } from "~/composables/useAPIFetch";
+import type { ListAnalysisNodes } from "~/services/Api";
 
 vi.mock("~/composables/useAPIFetch", () => ({
   getAnalysisNodes: vi.fn(),
@@ -78,8 +79,9 @@ describe("AnalysesTable.vue", () => {
   });
 
   test("No analyses returned", async () => {
+    const emptyResp: ListAnalysisNodes = { data: [], meta: {} };
     vi.mocked(getAnalysisNodes).mockResolvedValue({
-      data: ref({ data: [] }),
+      data: ref(emptyResp),
       pending: ref(false),
       error: ref(null),
       status: ref("success"),

@@ -1,3 +1,10 @@
+import {
+  AnalysisBuildStatus,
+  AnalysisNodeRunStatus,
+  ApprovalStatus,
+  type ListAnalysisNodes,
+} from "~/services/Api";
+
 export const fakeLogs =
   'Starting FlameCoreSDK\n\tExtracting node config\n\tConnecting to nginx...success\n\tConnecting to MessageBroker...success\n\tConnecting to ResultService...success\n\tConnecting to DataApi...success\n\tStarting FlameApi thread...success\nFlameCoreSDK ready\nINFO:     Started server process [1]\nINFO:     Waiting for application startup.\nINFO:     Application startup complete.\nINFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)\nfinished: False, False\nINFO:     10.1.30.117:44596 - "GET /healthz HTTP/1.0" 200 OK\n';
 
@@ -187,14 +194,14 @@ export const fakeProjects = {
   },
 };
 
-export const fakeAnalysisNodes = {
+export const fakeAnalysisNodes: ListAnalysisNodes = {
   data: [
     {
       id: "4c4b9b2e-85de-4319-8d68-bcc8247464eb",
       created_at: "2025-01-28T14:58:12.415000Z",
       updated_at: "2025-03-18T09:11:14Z",
-      approval_status: "approved",
-      run_status: "running",
+      approval_status: ApprovalStatus.Approved,
+      run_status: AnalysisNodeRunStatus.Running,
       comment: null,
       index: 1,
       artifact_tag: null,
@@ -210,7 +217,7 @@ export const fakeAnalysisNodes = {
         name: "001",
         nodes: 2,
         configuration_status: null,
-        build_status: "finished",
+        build_status: AnalysisBuildStatus.Failed,
         run_status: null,
         registry_id: "bab3aa4f-9144-444c-8ec7-6ebbbe8e300f",
         realm_id: "ab1fbc92-3dc8-4bdd-9d51-3b571c2d7aaa",
@@ -240,8 +247,8 @@ export const fakeAnalysisNodes = {
       id: "984c984d-f4c1-4a5f-9df0-58eaa5b22f2c",
       created_at: "2025-02-05T10:15:29.800000Z",
       updated_at: "2025-03-14T09:43:55Z",
-      approval_status: "approved",
-      run_status: "running",
+      approval_status: ApprovalStatus.Rejected,
+      run_status: AnalysisNodeRunStatus.Stopped,
       comment: null,
       index: 1,
       artifact_tag: null,
@@ -257,7 +264,7 @@ export const fakeAnalysisNodes = {
         name: "T004",
         nodes: 2,
         configuration_status: null,
-        build_status: "finished",
+        build_status: AnalysisBuildStatus.Finished,
         run_status: null,
         registry_id: "bab3aa4f-9144-444c-8ec7-6ebbbe8e300f",
         realm_id: "ab1fbc92-3dc8-4bdd-9d51-3b571c2d7aaa",
@@ -287,8 +294,8 @@ export const fakeAnalysisNodes = {
       id: "843e0315-4c09-4de0-9a97-6f72fdf24743",
       created_at: "2025-02-05T12:08:46.761000Z",
       updated_at: "2025-02-26T07:48:46Z",
-      approval_status: "approved",
-      run_status: "running",
+      approval_status: ApprovalStatus.Approved,
+      run_status: AnalysisNodeRunStatus.Running,
       comment: null,
       index: 3,
       artifact_tag: null,
@@ -304,7 +311,7 @@ export const fakeAnalysisNodes = {
         name: "T006",
         nodes: 4,
         configuration_status: null,
-        build_status: "finished",
+        build_status: AnalysisBuildStatus.Starting,
         run_status: null,
         registry_id: "bab3aa4f-9144-444c-8ec7-6ebbbe8e300f",
         realm_id: "ab1fbc92-3dc8-4bdd-9d51-3b571c2d7aaa",
