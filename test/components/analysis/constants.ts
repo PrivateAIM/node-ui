@@ -247,7 +247,7 @@ export const fakeAnalysisNodes: ListAnalysisNodes = {
       id: "984c984d-f4c1-4a5f-9df0-58eaa5b22f2c",
       created_at: "2025-02-05T10:15:29.800000Z",
       updated_at: "2025-03-14T09:43:55Z",
-      approval_status: ApprovalStatus.Rejected,
+      approval_status: ApprovalStatus.Approved,
       run_status: AnalysisNodeRunStatus.Stopped,
       comment: null,
       index: 1,
