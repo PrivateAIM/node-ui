@@ -8,7 +8,14 @@ import { useToast } from "primevue/usetoast";
 import { useNuxtApp } from "#app";
 
 type ToastSeverity = "success" | "info" | "warn" | "error" | undefined;
-type POResp = { status: string | string[] } | null;
+type POResp = { status?: string | string[] | object; detail?: string } | null;
+
+interface ButtonStates {
+  playActive: boolean;
+  rerunActive: boolean;
+  stopActive: boolean;
+  deleteActive: boolean;
+}
 
 const props = defineProps({
   analysisBuildStatus: String,
@@ -49,7 +56,9 @@ const deleteButtonActiveStates: Array<string | null> = [
   AnalysisNodeRunStatus.Started,
 ];
 
-const buttonStatuses = ref(setButtonStatuses(props.analysisRunStatus, false));
+const buttonStatuses = ref<ButtonStates>(
+  setButtonStatuses(props.analysisRunStatus, false),
+);
 
 function setButtonStatuses(
   podStatus: string | null,
@@ -85,7 +94,7 @@ async function onStartAnalysis() {
   analysisProps.node_id = props.nodeId!;
 
   // Bind data to Analysis via Kong
-  let bindDataStoreResp: string | null = null;
+  let bindDataStoreResp: unknown;
   try {
     bindDataStoreResp = await useNuxtApp().$hubApi("/kong/analysis", {
       method: "POST",
@@ -130,12 +139,11 @@ async function onStartAnalysis() {
       })
       .catch(() => null)) as POResp; // Set the response to null if an error occurs
 
-    if (startPodResp) {
-      const currentRunStatus = startPodResp.status;
+    if (startPodResp && "status" in startPodResp) {
+      const currentRunStatus = startPodResp.status as string;
       buttonStatuses.value = setButtonStatuses(currentRunStatus);
       showToast("info", "Start success", "Successfully started the container");
     } else {
-      setButtonStatuses(AnalysisNodeRunStatus.Failed);
       showToast("error", "Start failure", "Failed to start the analysis");
     }
   }
@@ -144,6 +152,7 @@ async function onStartAnalysis() {
 
 async function onStopAnalysis() {
   loading.value = true;
+  const originalRunStatus = props.analysisRunStatus;
   setButtonStatuses(AnalysisNodeRunStatus.Stopping);
 
   const stopResp: POResp = (await useNuxtApp()
@@ -151,14 +160,23 @@ async function onStopAnalysis() {
       method: "PUT",
     })
     .catch(() => null)) as POResp;
-  if (stopResp) {
-    const podStatuses = stopResp.status;
-    for (const podName in podStatuses) {
-      buttonStatuses.value = setButtonStatuses(podStatuses[podName]);
+  if (stopResp && "status" in stopResp) {
+    // If req successful, then "status" returned
+    const podStatuses = stopResp.status as object;
+    if (Object.keys(podStatuses).length) {
+      showToast("info", "Stop success", "Successfully stopped the container");
+    } else {
+      // No pod statuses returned from PO
+      showToast(
+        "error",
+        "Stop failure",
+        "Failed to stop the analysis container, pod not found",
+      );
     }
-    showToast("info", "Stop success", "Successfully stopped the container");
+    buttonStatuses.value = setButtonStatuses(AnalysisNodeRunStatus.Stopped);
   } else {
-    setButtonStatuses(AnalysisNodeRunStatus.Running);
+    // Communication error with PO
+    setButtonStatuses(originalRunStatus);
     showToast("error", "Stop failure", "Failed to stop the analysis container");
   }
   loading.value = false;
@@ -166,6 +184,7 @@ async function onStopAnalysis() {
 
 async function onDeleteAnalysis() {
   loading.value = true;
+  const originalRunStatus = props.analysisRunStatus;
   setButtonStatuses(AnalysisNodeRunStatus.Stopping);
 
   await useNuxtApp()
@@ -180,16 +199,26 @@ async function onDeleteAnalysis() {
       );
     });
 
-  const deleteResp = await useNuxtApp()
+  const deleteResp: POResp = (await useNuxtApp()
     .$hubApi(`/po/${props.analysisId}/delete`, {
       method: "DELETE",
     })
-    .catch(() => null);
+    .catch(() => null)) as POResp;
 
-  if (deleteResp) {
+  if (deleteResp && "status" in deleteResp) {
+    const deletedPods = deleteResp.status as object;
     buttonStatuses.value = setButtonStatuses("");
-    showToast("info", "Delete success", "Successfully removed the container");
+    if (Object.keys(deletedPods).length) {
+      showToast("info", "Delete success", "Successfully removed the container");
+    } else {
+      showToast(
+        "warn",
+        "Status unknown",
+        "Pod was not found, but the delete command was still issued",
+      );
+    }
   } else {
+    setButtonStatuses(originalRunStatus);
     showToast(
       "error",
       "Delete failure",

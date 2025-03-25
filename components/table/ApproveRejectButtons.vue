@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { useToastService } from "~/composables/connectionErrorToast";
+import { useToast } from "primevue/usetoast";
 
 const props = defineProps({
   objectId: String,
   objectClass: String,
 });
 
-const toast = useToastService();
+const toast = useToast();
 const loading = ref(false);
 
 const emit = defineEmits(["updatedRow"]);
