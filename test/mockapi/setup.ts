@@ -62,7 +62,9 @@ vi.mock("#app", () => ({
 
 // Mock PrimeVue's `useToast`
 vi.mock("primevue/usetoast", () => ({
-  useToast: vi.fn(() => ({})),
+  useToast: vi.fn(() => ({
+    add: vi.fn(), // Mock the `add` method
+  })),
 }));
 
 // Mock MSW server for HTTP requests

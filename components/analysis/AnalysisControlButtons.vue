@@ -2,14 +2,20 @@
 import {
   AnalysisBuildStatus,
   AnalysisNodeRunStatus,
-  AnalysisRunStatus,
   type BodyCreateAnalysisPoPost,
 } from "~/services/Api";
 import { useToast } from "primevue/usetoast";
+import { useNuxtApp } from "#app";
+
+type ToastSeverity = "success" | "info" | "warn" | "error" | undefined;
+type POResp = { status: string | string[] } | null;
 
 const props = defineProps({
   analysisBuildStatus: String,
-  analysisRunStatus: String,
+  analysisRunStatus: {
+    type: String,
+    required: true,
+  },
   analysisNodeId: String,
   analysisId: String,
   projectId: String,
@@ -21,19 +27,19 @@ const toast = useToast();
 const loading = ref(false);
 
 const playButtonActiveStates = [null, ""];
-const rerunButtonActiveStates = [
+const rerunButtonActiveStates: Array<string | null> = [
   AnalysisNodeRunStatus.Failed,
   AnalysisNodeRunStatus.Finished,
   AnalysisNodeRunStatus.Stopped,
   AnalysisNodeRunStatus.Stopping,
 ];
-const stopButtonActiveStates = [
+const stopButtonActiveStates: Array<string | null> = [
   AnalysisNodeRunStatus.Running,
   AnalysisNodeRunStatus.Starting,
   AnalysisNodeRunStatus.Started,
   AnalysisNodeRunStatus.Stopping,
 ];
-const deleteButtonActiveStates = [
+const deleteButtonActiveStates: Array<string | null> = [
   AnalysisNodeRunStatus.Failed,
   AnalysisNodeRunStatus.Finished,
   AnalysisNodeRunStatus.Stopped,
@@ -45,27 +51,10 @@ const deleteButtonActiveStates = [
 
 const buttonStatuses = ref(setButtonStatuses(props.analysisRunStatus, false));
 
-// TODO: remove when manual pod status checks are implemented by the PodOrc
-const runStatus = ref(props.analysisRunStatus);
-if (
-  props.analysisBuildStatus === AnalysisBuildStatus.Finished &&
-  !runStatus.value
+function setButtonStatuses(
+  podStatus: string | null,
+  updateTable: boolean = true,
 ) {
-  useNuxtApp()
-    .$hubApi(`/po/${props.analysisId}/pods`, {
-      lazy: true,
-      method: "GET",
-    })
-    .then((prevLogResp) => {
-      if (prevLogResp.pods.length > 0) {
-        runStatus.value = AnalysisRunStatus.Running;
-        buttonStatuses.value = setButtonStatuses(AnalysisRunStatus.Running);
-      }
-    })
-    .catch((error) => console.warn(error));
-}
-
-function setButtonStatuses(podStatus: string, updateTable: boolean = true) {
   if (updateTable) {
     emit("newRunStatus", props.analysisNodeId, podStatus);
   }
@@ -78,7 +67,7 @@ function setButtonStatuses(podStatus: string, updateTable: boolean = true) {
   };
 }
 
-const showToast = (severity: string, summary: string, msg: string) => {
+const showToast = (severity: ToastSeverity, summary: string, msg: string) => {
   toast.add({
     severity: severity,
     summary: summary,
@@ -96,7 +85,7 @@ async function onStartAnalysis() {
   analysisProps.node_id = props.nodeId!;
 
   // Bind data to Analysis via Kong
-  let bindDataStoreResp = null;
+  let bindDataStoreResp: string | null = null;
   try {
     bindDataStoreResp = await useNuxtApp().$hubApi("/kong/analysis", {
       method: "POST",
@@ -134,12 +123,12 @@ async function onStartAnalysis() {
   // Start Pod
   if (bindDataStoreResp) {
     // Only start the pod if a data store is ready for the analysis
-    const startPodResp = await useNuxtApp()
+    const startPodResp: POResp = (await useNuxtApp()
       .$hubApi("/po", {
         method: "POST",
         body: analysisProps,
       })
-      .catch(() => null); // Set the response to null if an error occurs
+      .catch(() => null)) as POResp; // Set the response to null if an error occurs
 
     if (startPodResp) {
       const currentRunStatus = startPodResp.status;
@@ -157,12 +146,11 @@ async function onStopAnalysis() {
   loading.value = true;
   setButtonStatuses(AnalysisNodeRunStatus.Stopping);
 
-  const stopResp = await useNuxtApp()
+  const stopResp: POResp = (await useNuxtApp()
     .$hubApi(`/po/${props.analysisId}/stop`, {
       method: "PUT",
     })
-    .catch(() => null);
-
+    .catch(() => null)) as POResp;
   if (stopResp) {
     const podStatuses = stopResp.status;
     for (const podName in podStatuses) {
@@ -217,6 +205,7 @@ async function onDeleteAnalysis() {
     <Button
       icon="pi pi-play"
       aria-label="Start"
+      class="start-analysis-btn"
       v-if="buttonStatuses.playActive"
       v-tooltip.top="'Start the analysis'"
       severity="success"
@@ -230,6 +219,7 @@ async function onDeleteAnalysis() {
     <Button
       icon="pi pi-replay"
       aria-label="Rerun"
+      class="rerun-analysis-btn"
       v-else
       v-tooltip.top="'Rerun the analysis'"
       severity="success"
@@ -243,6 +233,7 @@ async function onDeleteAnalysis() {
     <Button
       icon="pi pi-stop"
       aria-label="Stop"
+      class="stop-analysis-btn"
       v-tooltip.top="'Stop the analysis'"
       severity="warn"
       :disabled="
@@ -255,6 +246,7 @@ async function onDeleteAnalysis() {
     <Button
       icon="pi pi-trash"
       aria-label="Delete"
+      class="delete-analysis-btn"
       v-tooltip.top="'Delete the analysis container'"
       severity="danger"
       :disabled="
@@ -271,6 +263,7 @@ async function onDeleteAnalysis() {
       <Button
         icon="pi pi-bars"
         aria-label="Logs"
+        class="logs-analysis-btn"
         v-tooltip.top="'View the logs'"
         severity="contrast"
         :loading="loading"
