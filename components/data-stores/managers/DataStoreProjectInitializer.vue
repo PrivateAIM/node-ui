@@ -1,9 +1,13 @@
 <script setup lang="ts">
+import { ref, watch } from "vue";
 import InputText from "primevue/inputtext";
 import Select from "primevue/select";
 import InputNumber from "primevue/inputnumber";
+import InputGroupAddon from "primevue/inputgroupaddon";
+import InputGroup from "primevue/inputgroup";
 import DataStoreHelpBox from "~/components/data-stores/managers/DataStoreHelpBox.vue";
 import { HelpTextField } from "~/components/data-stores/managers/index";
+import { useToast } from "primevue/usetoast";
 
 const props = defineProps({
   projects: Array,
@@ -152,6 +156,7 @@ async function onSubmitCreateDataStoreAndProject() {
                 :options="props.projects"
                 optionLabel="dropdown"
                 placeholder="Select a Project"
+                class="project-picker"
               />
             </InputGroup>
             <InputGroup>
@@ -229,6 +234,7 @@ async function onSubmitCreateDataStoreAndProject() {
               <Select
                 v-model="selectedDataStoreType"
                 :options="dataStoreTypes"
+                class="data-store-type-picker"
               />
             </InputGroup>
             <InputGroup>
@@ -276,7 +282,7 @@ async function onSubmitCreateDataStoreAndProject() {
               <Select
                 v-model="protocol"
                 :options="acceptedProtocols"
-                class="w-full md:w-56"
+                class="w-full md:w-56 communication-protocol-picker"
               />
             </InputGroup>
             <InputGroup>
@@ -298,6 +304,7 @@ async function onSubmitCreateDataStoreAndProject() {
                 display="chip"
                 :options="availableMethods"
                 placeholder="Select methods"
+                class="methods-picker"
               />
             </InputGroup>
             <Button
