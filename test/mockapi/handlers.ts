@@ -1,6 +1,11 @@
 // For spoofing requests not made using the useFetch
 import { http, HttpResponse } from "msw";
 import { type BodyCreateAnalysisPoPost } from "~/services/Api";
+import {
+  fakeDataStoreInitSuccess,
+  fakeParsedProjects,
+} from "~/test/components/data-stores/constants";
+import type { kongBody } from "~/components/data-stores/managers/DataStoreProjectInitializer.vue";
 
 export const fakeAnalysisId = "15518efa-5146-4290-a7cb-95d27f41d991";
 export const fakeMissingAnalysisId = "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483";
@@ -95,5 +100,24 @@ export const handlers = [
   }),
   http.post(`/kong/analysis`, () => {
     return HttpResponse.text("200");
+  }),
+  http.post(`/kong/initialize`, async ({ request }) => {
+    const body = (await request.json()) as kongBody;
+    const projectId = body.project_id;
+    const dsType = body.ds_type;
+
+    const validProjectId = fakeParsedProjects[0].id;
+    const duplicateProjectId = fakeParsedProjects[1].id;
+
+    if (dsType === "s3") {
+      // s3 is my trigger for an error
+      return new HttpResponse(null, { status: 500 });
+    } else if (projectId === validProjectId) {
+      return HttpResponse.json(fakeDataStoreInitSuccess);
+    } else if (projectId === duplicateProjectId) {
+      return new HttpResponse(null, { status: 409 });
+    } else {
+      return new HttpResponse(null, { status: 500 });
+    }
   }),
 ];

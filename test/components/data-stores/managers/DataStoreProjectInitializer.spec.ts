@@ -1,7 +1,14 @@
-import { nextTick } from "vue";
 import { useToast } from "primevue/usetoast";
-import { mount } from "@vue/test-utils";
-import { vi, describe, it, expect, afterEach, beforeAll } from "vitest";
+import { mount, flushPromises } from "@vue/test-utils";
+import {
+  vi,
+  describe,
+  it,
+  expect,
+  afterEach,
+  beforeAll,
+  beforeEach,
+} from "vitest";
 import DataStoreProjectInitializer from "~/components/data-stores/managers/DataStoreProjectInitializer.vue";
 import { fakeParsedProjects } from "~/test/components/data-stores/constants";
 
@@ -9,25 +16,38 @@ describe("DataStoreProjectInitializer.vue", () => {
   let spy;
   let mockToast;
 
+  let wrapper;
+
   beforeAll(() => {
     mockToast = { add: vi.fn() };
     vi.mocked(useToast).mockReturnValue(mockToast);
     spy = vi.spyOn(mockToast, "add");
   });
 
-  afterEach(() => {
-    spy.mockReset();
-  });
-
-  async function checkDropdown(className: string, listItems: string[]) {
-    const wrapper = mount(DataStoreProjectInitializer, {
+  beforeEach(async () => {
+    wrapper = mount(DataStoreProjectInitializer, {
       props: {
         projects: fakeParsedProjects,
       },
+      global: {
+        stubs: {
+          teleport: true, // Now dropdowns are included/teleported in root element
+        },
+      },
     });
-
     expect(wrapper).toBeTruthy();
+  });
 
+  afterEach(() => {
+    spy.mockReset();
+    wrapper.unmount();
+  });
+
+  async function checkDropdown(
+    className: string,
+    listItems: string[],
+    placeholder?: string,
+  ) {
     const dropdown = wrapper.find(className);
     expect(dropdown.find(".p-select-label").attributes("aria-expanded")).toBe(
       "false",
@@ -36,21 +56,20 @@ describe("DataStoreProjectInitializer.vue", () => {
     expect(dropdown.find(".p-select-label").attributes("aria-expanded")).toBe(
       "true",
     );
-
-    await nextTick();
+    expect(wrapper.find(".p-select-option").exists()).toBe(true);
+    if (placeholder) {
+      expect(wrapper.find(".p-select-label").text()).toBe(placeholder);
+    }
 
     // Rendered outside root components so need document body
-    const items = document.querySelectorAll(".p-select-option");
+    const items = wrapper.findAll(".p-select-option");
     expect(items).toHaveLength(listItems.length);
     items.forEach((item) => {
-      expect(item.textContent).toBeOneOf(listItems);
+      expect(item.text()).toBeOneOf(listItems);
     });
-
-    wrapper.unmount();
   }
 
   it("Create Data Store - Header", () => {
-    const wrapper = mount(DataStoreProjectInitializer);
     expect(wrapper).toBeTruthy();
     expect(wrapper.text()).toContain("Create a Data Store for a Project");
     expect(wrapper.text()).toContain("Helpful tooltips");
@@ -58,7 +77,7 @@ describe("DataStoreProjectInitializer.vue", () => {
 
   it("Check data store project dropdown options", () => {
     const dropDownOptions = fakeParsedProjects.map((item) => item.dropdown);
-    checkDropdown(".project-picker", dropDownOptions);
+    checkDropdown(".project-picker", dropDownOptions, "Select a Project");
   });
 
   it("Check data store type dropdown options", () => {
@@ -85,4 +104,108 @@ describe("DataStoreProjectInitializer.vue", () => {
   //   const availableMethods = ["GET", "POST", "PUT", "DELETE"];
   //   checkDropdown(".methods-picker", availableMethods);
   // });
+
+  it("Header content", () => {
+    expect(wrapper.text()).toContain("Create a Data Store for a Project");
+    expect(wrapper.text()).toContain("Helpful tooltips");
+  });
+
+  async function checkDataStoreInit(
+    projectDropdown: string,
+    toastSeverity: string,
+    toastMsg: string,
+    toastDetail: string,
+    server: string = "whonnock",
+    path: string = "/fake/path",
+    storeType: string = "FHIR",
+    port?: string,
+    protocol: string = "http",
+    // methods?: string[],
+  ) {
+    await wrapper.find(".project-picker").trigger("click"); // open dropdown menu
+    await wrapper.find(`li[aria-label="${projectDropdown}"]`).trigger("click"); // select first option
+    expect(wrapper.find(".data-store-project-input span").text()).toBe(
+      projectDropdown,
+    );
+
+    // Set server name
+    const serverWrapper = wrapper.find(".data-store-server-input");
+    await serverWrapper.find('input[type="text"]').setValue(server);
+    expect(serverWrapper.find(".p-inputtext").attributes("value")).toBe(server);
+
+    // Set data path
+    const pathWrapper = wrapper.find(".data-store-path-input");
+    await pathWrapper.find('input[type="text"]').setValue(path);
+    expect(pathWrapper.find(".p-inputtext").attributes("value")).toBe(path);
+
+    // Set data store type
+    await wrapper.find(".data-store-type-picker").trigger("click"); // open dropdown menu
+    await wrapper.find(`li[aria-label="${storeType}"]`).trigger("click"); // select first option
+    expect(wrapper.find(".data-store-type-input span").text()).toBe(storeType);
+
+    // TODO: make port
+
+    // Set protocol
+    await wrapper.find(".communication-protocol-picker").trigger("click"); // open dropdown menu
+    await wrapper.find(`li[aria-label="${protocol}"]`).trigger("click"); // select first option
+    expect(wrapper.find(".communication-protocol-picker span").text()).toBe(
+      protocol,
+    );
+
+    // TODO: Make methods
+
+    const submit = wrapper.find(".create-data-store-btn");
+    await submit.trigger("click");
+
+    await flushPromises();
+
+    const numberToasts = storeType === "S3" ? 2 : 1;
+    expect(spy).toHaveBeenCalledTimes(numberToasts);
+    expect(spy).toHaveBeenCalledWith({
+      severity: toastSeverity,
+      summary: toastMsg,
+      detail: toastDetail,
+      life: 5000,
+    });
+
+    if (numberToasts > 1) {
+      // Should also trigger the kong connection error toast with 500 response
+      expect(spy).toHaveBeenCalledWith({
+        severity: "error",
+        summary: "Connection error",
+        detail: "Unable to contact the Kong gateway service.",
+        life: 5000,
+      });
+    }
+  }
+
+  it("Create a valid data store", async () => {
+    await checkDataStoreInit(
+      fakeParsedProjects[0].dropdown,
+      "info",
+      "Creation success",
+      "The data store and project were successfully registered",
+    );
+  });
+
+  it("Try to create a duplicate data store", async () => {
+    await checkDataStoreInit(
+      fakeParsedProjects[1].dropdown, // pseudo-duplicate
+      "error",
+      "Duplicate entry error",
+      "A data store for this project already exists!",
+    );
+  });
+
+  it("Invoke an error", async () => {
+    await checkDataStoreInit(
+      fakeParsedProjects[0].dropdown, // pseudo-duplicate
+      "error",
+      "Creation failure",
+      "An error occurred while trying to register the data store or project",
+      "whonnock",
+      "fake/path",
+      "S3", // Triggers an error (only during testing)
+    );
+  });
 });

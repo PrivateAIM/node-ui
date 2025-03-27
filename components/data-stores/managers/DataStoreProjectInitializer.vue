@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
+import { useNuxtApp } from "#app";
 import InputText from "primevue/inputtext";
 import Select from "primevue/select";
 import InputNumber from "primevue/inputnumber";
@@ -12,6 +13,13 @@ import { useToast } from "primevue/usetoast";
 const props = defineProps({
   projects: Array,
 });
+
+export interface kongBody {
+  datastore: object;
+  project_id: string;
+  methods: string[];
+  ds_type: string;
+}
 
 const loading = ref(false);
 const helpActive = ref();
@@ -74,7 +82,7 @@ async function onSubmitCreateDataStoreAndProject() {
     }
   }
 
-  const configSettings = {
+  const configSettings: kongBody = {
     datastore: datastoreSettings,
     project_id: selectedProject.value.id,
     methods: selectedAllowedMethods.value,
@@ -104,7 +112,7 @@ async function onSubmitCreateDataStoreAndProject() {
       severity: "info",
       summary: "Creation success",
       detail: "The data store and project were successfully registered",
-      life: 3000,
+      life: 5000,
     });
   } else {
     toast.add({
@@ -146,7 +154,10 @@ async function onSubmitCreateDataStoreAndProject() {
         </div>
         <div class="data-store-panel">
           <div class="data-store-input-fields">
-            <InputGroup style="margin-bottom: 20px">
+            <InputGroup
+              style="margin-bottom: 20px"
+              class="data-store-project-input"
+            >
               <InputGroupAddon class="data-store-field-name">
                 <i class="pi pi-cog"></i>
                 <p class="data-store-field-name-box">Project</p>
@@ -166,7 +177,7 @@ async function onSubmitCreateDataStoreAndProject() {
               </InputGroupAddon>
               <InputText v-model="dataStoreName" disabled />
             </InputGroup>
-            <InputGroup>
+            <InputGroup class="data-store-server-input">
               <InputGroupAddon class="data-store-field-name">
                 <i class="pi pi-server"></i>
                 <div class="data-store-field-name-box">
@@ -191,7 +202,7 @@ async function onSubmitCreateDataStoreAndProject() {
                 :invalid="host === ''"
               />
             </InputGroup>
-            <InputGroup>
+            <InputGroup class="data-store-path-input">
               <InputGroupAddon class="data-store-field-name">
                 <i class="pi pi-folder"></i>
                 <div class="data-store-field-name-box">
@@ -214,7 +225,7 @@ async function onSubmitCreateDataStoreAndProject() {
                 :invalid="path === '' || !path.startsWith('/')"
               />
             </InputGroup>
-            <InputGroup>
+            <InputGroup class="data-store-type-input">
               <InputGroupAddon class="data-store-field-name">
                 <i class="pi pi-warehouse"></i>
                 <div class="data-store-field-name-box">
@@ -237,7 +248,7 @@ async function onSubmitCreateDataStoreAndProject() {
                 class="data-store-type-picker"
               />
             </InputGroup>
-            <InputGroup>
+            <InputGroup class="data-store-port-input">
               <InputGroupAddon class="data-store-field-name">
                 <i class="pi pi-key"></i>
                 <div class="data-store-field-name-box">
@@ -260,7 +271,7 @@ async function onSubmitCreateDataStoreAndProject() {
                 :invalid="port < 0 || port > 65535"
               />
             </InputGroup>
-            <InputGroup>
+            <InputGroup class="data-store-protocol-input">
               <InputGroupAddon class="data-store-field-name">
                 <i class="pi pi-cog"></i>
                 <div class="data-store-field-name-box">
@@ -314,6 +325,7 @@ async function onSubmitCreateDataStoreAndProject() {
               severity="info"
               style="margin-top: 20px"
               :loading="loading"
+              class="create-data-store-btn"
               @click="onSubmitCreateDataStoreAndProject"
             />
           </div>
