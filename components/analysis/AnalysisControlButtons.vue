@@ -2,6 +2,7 @@
 import {
   AnalysisBuildStatus,
   AnalysisNodeRunStatus,
+  AnalysisRunStatus,
   type BodyCreateAnalysisPoPost,
 } from "~/services/Api";
 import { useToast } from "primevue/usetoast";
@@ -18,9 +19,9 @@ interface ButtonStates {
 }
 
 const props = defineProps({
-  analysisBuildStatus: String,
+  analysisBuildStatus: [String, null],
   analysisRunStatus: {
-    type: String,
+    type: [String, null],
     required: true,
   },
   analysisNodeId: String,
