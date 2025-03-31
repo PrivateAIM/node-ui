@@ -53,6 +53,13 @@ config.global.directives.tooltip = {
   },
 };
 
+// 2️⃣ Example: Mock a `v-ripple` directive
+config.global.directives.ripple = {
+  mounted: (el, binding) => {
+    el.setAttribute("data-pd-ripple", binding.value || "Ripple");
+  },
+};
+
 vi.mock("#app", () => ({
   useNuxtApp: () => ({
     $hubApi: fakeHubApi,
