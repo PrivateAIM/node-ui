@@ -1,50 +1,12 @@
 import { mount } from "@vue/test-utils";
 import { useRuntimeConfig } from "#app";
-import { vi, describe, it, expect, afterEach } from "vitest";
+import { vi, describe, it, expect } from "vitest";
 import AvatarButton from "~/components/header/AvatarButton.vue";
-
-vi.mock("#app", () => ({
-  useRuntimeConfig: vi.fn(),
-}));
 
 describe("AvatarButton.vue", () => {
   const testUser = "Johnny Storm";
 
-  vi.mocked(useRuntimeConfig).mockReturnValue({
-    public: {
-      baseUrl: "https://fakenode.com",
-      // @ts-expect-error Primevue props not needed
-      primevue: vi.fn(),
-      hubAdapterUrl: "https://fakenode.com/api",
-      keycloakBaseUrl: "https://fakenode.com/keycloak/realms/flame",
-      auth: {
-        baseURL: "https://fakenode.com/flame/api/auth",
-        disableInternalRouting: false,
-        disableServerSideAuth: false,
-        globalAppMiddleware: true,
-        isEnabled: true,
-        originEnvKey: "NUXT_PUBLIC_ORIGIN",
-        provider: {
-          addDefaultCallbackUrl: true,
-          defaultProvider: "keycloak",
-          trustHost: false,
-          type: "authjs",
-        },
-        sessionRefresh: {
-          enableOnWindowFocus: true,
-          enablePeriodically: 15000,
-          handler: "",
-        },
-      },
-      origin: "https://fakenode.com/flame/api/auth",
-      version: "0.2.2",
-    },
-  });
-
-  afterEach(() => {
-    // vi.resetAllMocks();
-    vi.unstubAllGlobals();
-  });
+  vi.mocked(useRuntimeConfig);
 
   async function avatarMenuChecks(authenticated: boolean) {
     const status = authenticated ? "authenticated" : "unauthenticated";

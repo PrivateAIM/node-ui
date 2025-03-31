@@ -60,11 +60,47 @@ config.global.directives.ripple = {
   },
 };
 
+// Mock router-link
+vi.mock("vue-router", async () => ({
+  RouterLink: {
+    template: "<a><slot /></a>",
+  },
+}));
+
 vi.mock("#app", () => ({
   useNuxtApp: () => ({
     $hubApi: fakeHubApi,
   }),
   useFetch: vi.fn(),
+  useRuntimeConfig: () => ({
+    public: {
+      baseUrl: "https://fakenode.com",
+      primevue: vi.fn(),
+      hubAdapterUrl: "https://fakenode.com/api",
+      keycloakBaseUrl: "https://fakenode.com/keycloak/realms/flame",
+      auth: {
+        baseURL: "https://fakenode.com/flame/api/auth",
+        disableInternalRouting: false,
+        disableServerSideAuth: false,
+        globalAppMiddleware: true,
+        isEnabled: true,
+        originEnvKey: "NUXT_PUBLIC_ORIGIN",
+        provider: {
+          addDefaultCallbackUrl: true,
+          defaultProvider: "keycloak",
+          trustHost: false,
+          type: "authjs",
+        },
+        sessionRefresh: {
+          enableOnWindowFocus: true,
+          enablePeriodically: 15000,
+          handler: "",
+        },
+      },
+      origin: "https://fakenode.com/flame/api/auth",
+      version: "0.2.2",
+    },
+  }),
 }));
 
 // Mock PrimeVue's `useToast`
