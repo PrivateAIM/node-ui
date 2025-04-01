@@ -1,10 +1,20 @@
-<script setup lang="ts">
+<script lang="ts" setup>
+import Menu from "primevue/menu";
+import Button from "primevue/button";
+import { useRuntimeConfig } from "#app";
+
 const { signIn, signOut, status, data } = useAuth();
 
 const menu = ref();
 
 const config = useRuntimeConfig();
-const keycloakUrl = new URL(config.public.keycloakBaseUrl).origin;
+let keycloakUrl = new URL(config.public.keycloakBaseUrl).origin;
+const baseUrl = new URL(config.public.baseUrl).origin;
+
+if (keycloakUrl === baseUrl) {
+  // If same as base, then add /keycloak subpath
+  keycloakUrl = `${keycloakUrl}/keycloak`;
+}
 
 const isAuthenticated = ref(status.value === "authenticated");
 
@@ -45,27 +55,35 @@ const toggle = (event) => {
         {{ data?.user?.name || "Swell Person" }}
       </p>
       <Button
-        type="button"
-        icon="pi pi-user"
-        @click="toggle"
-        aria-haspopup="true"
         aria-controls="overlay_menu"
+        aria-haspopup="true"
+        class="avatar-btn"
+        icon="pi pi-user"
         rounded
         severity="contrast"
+        type="button"
+        @click="toggle"
       />
     </div>
     <div v-else>
       <Button
-        type="button"
-        icon="pi pi-question"
-        @click="toggle"
-        aria-haspopup="true"
         aria-controls="overlay_menu"
+        aria-haspopup="true"
+        class="avatar-btn"
+        icon="pi pi-question"
         rounded
         severity="contrast"
+        type="button"
+        @click="toggle"
       />
     </div>
-    <Menu ref="menu" id="overlay_menu" :model="menuItems" :popup="true">
+    <Menu
+      id="overlay_menu"
+      ref="menu"
+      :model="menuItems"
+      :popup="true"
+      class="avatar-menu"
+    >
       <template #item="{ item, props }">
         <a
           v-ripple
@@ -81,7 +99,7 @@ const toggle = (event) => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .avatar-container {
   display: flex;
 }

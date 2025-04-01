@@ -1,6 +1,8 @@
 <script lang="ts" setup>
+import Menubar from "primevue/menubar";
 import AvatarButton from "~/components/header/AvatarButton.vue";
 import DarkModeToggle from "~/components/header/DarkModeToggle.vue";
+import { RouterLink } from "#vue-router";
 
 const { status } = useAuth();
 
@@ -41,7 +43,7 @@ const items = ref([
 
 <template>
   <div class="menuBar">
-    <Menubar :model="items">
+    <Menubar :model="items" class="menu-bar-header">
       <template #start></template>
       <template #item="{ item, props, hasSubmenu }">
         <div v-ripple class="p-ripple border-round menu-bar-item">
@@ -53,9 +55,9 @@ const items = ref([
           >
             <a
               :class="
-                status === 'unauthenticated' && item.label != 'Home'
+                status === 'unauthenticated' && item.label !== 'Home'
                   ? 'p-disabled'
-                  : ''
+                  : 'enabled'
               "
               :href="href"
               v-bind="props.action"
@@ -68,9 +70,9 @@ const items = ref([
           <a
             v-else
             :class="
-              status === 'unauthenticated' && item.label != 'Home'
+              status === 'unauthenticated' && item.label !== 'Home'
                 ? 'p-disabled'
-                : ''
+                : 'enabled'
             "
             :href="item.url"
             :target="item.target"
