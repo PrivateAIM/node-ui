@@ -1,5 +1,5 @@
 import { vi, afterAll, afterEach, beforeAll } from "vitest";
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { config } from "@vue/test-utils";
 import { setupServer } from "msw/node";
 import { handlers } from "~/test/mockapi/handlers";
@@ -14,6 +14,7 @@ import Message from "primevue/message";
 import Tag from "primevue/tag";
 import Select from "primevue/select";
 import Card from "primevue/card";
+import ConfirmPopup from "primevue/confirmpopup";
 import MultiSelect from "primevue/multiselect";
 import InputIcon from "primevue/inputicon";
 import InputText from "primevue/inputtext";
@@ -23,6 +24,7 @@ import IconField from "primevue/iconfield";
 const globalThis = global as any;
 globalThis.ref = ref; // Ensures `ref()` can be used in tests
 globalThis.computed = computed;
+globalThis.onMounted = onMounted;
 
 // Register PrimeVue components globally for testing
 config.global.plugins = [PrimeVue];
@@ -37,6 +39,7 @@ config.global.components = {
   Tag,
   Select,
   Card,
+  ConfirmPopup,
   MultiSelect,
   InputIcon,
   InputText,

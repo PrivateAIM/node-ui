@@ -160,3 +160,26 @@ export const fakeDatastoreTreeTableProps = {
     ["7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483", "ds-project-test"],
   ]),
 };
+export const fakeDetailedAnalysisTableProps = {
+  detailedAnalysisList: [
+    {
+      created_at: {
+        short: "28.03.2025",
+        long: "Fri, 28 Mar 2025 07:53:25 GMT",
+        date: "2025-03-28T07:53:25.000Z",
+        timestamp: 1743148405,
+      },
+      custom_id: "8003eefe-e39b-4bd4-aec4-78046c63b39b-flame",
+      id: "189b117b-1563-42a1-a044-ef18bf4000b9",
+      tags: ["7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483"],
+      username: "8003eefe-e39b-4bd4-aec4-78046c63b39b-flame",
+      expand: {},
+    },
+  ],
+  analysisNameMap: new Map<string, string>([
+    ["8003eefe-e39b-4bd4-aec4-78046c63b39b", "ds-analysis-test"],
+  ]),
+  projectNameMap: new Map<string, string>([
+    ["7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483", "ds-project-test"],
+  ]),
+};

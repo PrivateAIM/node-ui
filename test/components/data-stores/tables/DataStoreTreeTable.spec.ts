@@ -4,7 +4,7 @@ import DataStoreTreeTable from "~/components/data-stores/tables/DataStoreTreeTab
 import { fakeDatastoreTreeTableProps } from "~/test/components/data-stores/constants";
 
 describe("DataStoreTreeTable.vue", () => {
-  it("Return analysis node data", async () => {
+  it("Return filled data store tree table", async () => {
     const wrapper = mount(DataStoreTreeTable, {
       // @ts-expect-error Complaining about types that are properly defined
       props: fakeDatastoreTreeTableProps,
