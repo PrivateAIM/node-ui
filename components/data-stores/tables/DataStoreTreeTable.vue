@@ -1,15 +1,21 @@
 <script setup lang="ts">
-import type { Consumer, DetailedService, Route } from "~/services/Api";
+import { onMounted } from "vue";
+import TreeTable from "primevue/treetable";
+import type { Route } from "~/services/Api";
 import type { TreeNode } from "primevue/treenode";
 import { extractUuid } from "~/utils/extract-uuid-from-kong-username";
+import type {
+  ModifiedConsumer,
+  ModifiedDetailedService,
+} from "~/services/modifiedApiInterfaces";
 
 const props = defineProps({
   dataStoreList: {
-    type: Array<DetailedService>,
+    type: Array<ModifiedDetailedService>,
     required: true,
   },
   analyses: {
-    type: Array<Consumer>,
+    type: Array<ModifiedConsumer>,
     required: true,
   },
   analysisNameMap: {
@@ -32,31 +38,35 @@ onMounted(() => {
 function formatAnalysisNodes() {
   let projectNodes = new Map<string, TreeNode[]>();
 
-  props.analyses.forEach((analysis: Consumer) => {
-    const analysisUuid = extractUuid(analysis.username!);
-    const analysisNode = {
-      key: analysis.id!,
-      label: analysisUuid,
-      type: "Analysis",
-      data: {
-        uuid: analysisUuid,
-        name: props.analysisNameMap.get(analysisUuid),
-        resourceType: "Analysis",
-      },
-    };
-    analysis.tags?.forEach((tag: string) => {
-      if (!projectNodes.has(tag)) {
-        projectNodes.set(tag, []);
-      }
-      projectNodes.get(tag)!.push(analysisNode);
-    });
+  props.analyses.forEach((analysis: ModifiedConsumer) => {
+    const consumerName = analysis.username!;
+    if (!consumerName?.startsWith("analysis")) {
+      const analysisNameParts = extractUuid(consumerName);
+      const analysisUuid = analysisNameParts[1];
+      const analysisNode = {
+        key: analysis.id!,
+        label: analysisUuid,
+        type: "Analysis",
+        data: {
+          uuid: analysisUuid,
+          name: props.analysisNameMap.get(analysisUuid),
+          resourceType: "Analysis",
+        },
+      };
+      analysis.tags?.forEach((tag: string) => {
+        if (!projectNodes.has(tag)) {
+          projectNodes.set(tag, []);
+        }
+        projectNodes.get(tag)!.push(analysisNode);
+      });
+    }
   });
   return projectNodes;
 }
 
 function formatDataStoreNodes(projectNodeMap: Map<string, TreeNode[]>) {
   let compiledNodes = new Array<TreeNode>();
-  props.dataStoreList?.forEach((ds: DetailedService) => {
+  props.dataStoreList?.forEach((ds: ModifiedDetailedService) => {
     const dataStoreNode = {
       key: ds.id!,
       label: ds.name,

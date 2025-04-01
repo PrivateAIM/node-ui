@@ -6,8 +6,8 @@ import {
   getProjects,
 } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
+import type { ModifiedDetailedService } from "~/services/modifiedApiInterfaces";
 import type {
-  DetailedService,
   Project,
   Route,
   DetailedAnalysis,
@@ -17,7 +17,7 @@ import DetailedDataStoreTable from "~/components/data-stores/tables/DetailedData
 import DetailedAnalysisTable from "~/components/data-stores/tables/DetailedAnalysisTable.vue";
 import DataStoreTreeTable from "~/components/data-stores/tables/DataStoreTreeTable.vue";
 
-const dataStores = ref<DetailedService[]>([]);
+const dataStores = ref<ModifiedDetailedService[]>([]);
 const consumersAnalyses = ref<Consumer[]>([]);
 const projectNameMap = ref();
 const analysisNameMap = ref();
@@ -64,13 +64,13 @@ async function loadDetailedDataStoreTable(responseData, status, error) {
       responseData,
       dataRowUnixCols,
       expandRowEntries,
-    ) as DetailedService[];
+    ) as ModifiedDetailedService[];
 
     formattedDataStores = formattedDataStores.filter(
-      (store: DetailedService) => store.name !== "kong-admin-service",
+      (store: ModifiedDetailedService) => store.name !== "kong-admin-service",
     );
 
-    formattedDataStores.forEach((store: DetailedService) => {
+    formattedDataStores.forEach((store: ModifiedDetailedService) => {
       if (store.routes!.length) {
         store.routes = formatDataRow(
           store.routes,
