@@ -135,7 +135,7 @@ const updateFilters = (filterText: string) => {
       @updateSearch="updateFilters"
     />
   </div>
-  <div class="dataStoreTable">
+  <div class="detailed-data-store-table">
     <DataTable
       :value="dataStores"
       paginator

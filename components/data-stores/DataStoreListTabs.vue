@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import Tabs from "primevue/tabs";
+import TabList from "primevue/tablist";
+import Tab from "primevue/tab";
+import TabPanels from "primevue/tabpanels";
+import TabPanel from "primevue/tabpanel";
 import {
   getAnalyses,
   getAnalysesFromKong,
@@ -6,19 +11,22 @@ import {
   getProjects,
 } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
-import type { ModifiedDetailedService } from "~/services/modifiedApiInterfaces";
+import type {
+  ModifiedDetailedService,
+  ModifiedConsumer,
+} from "~/services/modifiedApiInterfaces";
 import type {
   Project,
   Route,
   DetailedAnalysis,
-  Consumer,
+  ListServices,
 } from "~/services/Api";
 import DetailedDataStoreTable from "~/components/data-stores/tables/DetailedDataStoreTable.vue";
 import DetailedAnalysisTable from "~/components/data-stores/tables/DetailedAnalysisTable.vue";
 import DataStoreTreeTable from "~/components/data-stores/tables/DataStoreTreeTable.vue";
 
 const dataStores = ref<ModifiedDetailedService[]>([]);
-const consumersAnalyses = ref<Consumer[]>([]);
+const consumersAnalyses = ref<ModifiedConsumer[]>([]);
 const projectNameMap = ref();
 const analysisNameMap = ref();
 
@@ -40,8 +48,8 @@ const { data: consumerResp } = await getAnalysesFromKong({
 });
 
 watch(dsResp, (parsedStores) => {
-  const dataStoreData = (parsedStores!.data as unknown as Array<Route>) || [];
-  loadDetailedDataStoreTable(dataStoreData, dsStatus, dsError);
+  const dataStoreData = parsedStores!.data as ListServices;
+  loadDetailedDataStoreTable(dataStoreData, dsStatus.value, dsError);
 });
 
 watch(projectResp, (projectArray) => {
@@ -55,11 +63,15 @@ watch(analysisResp, (analysisArray) => {
 });
 
 watch(consumerResp, (consumerData) => {
-  consumersAnalyses.value = consumerData!.data as Consumer[];
+  consumersAnalyses.value = consumerData!.data as unknown as ModifiedConsumer[];
 });
 
-async function loadDetailedDataStoreTable(responseData, status, error) {
-  if (status.value === "success") {
+async function loadDetailedDataStoreTable(
+  responseData: ListServices,
+  status: string,
+  error,
+) {
+  if (status === "success") {
     let formattedDataStores = formatDataRow(
       responseData,
       dataRowUnixCols,
@@ -110,9 +122,21 @@ function extractProjectIdFromPath(paths: string[]): string {
   <div class="card tab-card">
     <Tabs value="0">
       <TabList>
-        <Tab value="0">Detailed Data Store View</Tab>
-        <Tab value="1">Detailed Analyses View</Tab>
-        <Tab value="2">Data Store Tree Table</Tab>
+        <Tab value="0" class="detailed-data-store-tab"
+          >Detailed Data Store View</Tab
+        >
+        <Tab
+          value="1"
+          class="detailed-analysis-tab"
+          :disabled="dataStores.length === 0"
+          >Detailed Analyses View</Tab
+        >
+        <Tab
+          value="2"
+          class="data-store-tree-table-tab"
+          :disabled="dataStores.length === 0"
+          >Data Store Tree Table</Tab
+        >
       </TabList>
       <TabPanels>
         <TabPanel value="0">
@@ -123,7 +147,7 @@ function extractProjectIdFromPath(paths: string[]): string {
             :loading="loading"
           />
         </TabPanel>
-        <TabPanel :disabled="!analysisNameMap" value="1">
+        <TabPanel value="1">
           <DetailedAnalysisTable
             v-if="analysisNameMap && projectNameMap"
             :detailedAnalysisList="consumersAnalyses"
@@ -131,7 +155,7 @@ function extractProjectIdFromPath(paths: string[]): string {
             :projectNameMap="projectNameMap"
           />
         </TabPanel>
-        <TabPanel :disabled="!analysisNameMap && !projectNameMap" value="2">
+        <TabPanel value="2">
           <DataStoreTreeTable
             v-if="analysisNameMap && projectNameMap"
             :dataStoreList="dataStores"

@@ -1,5 +1,5 @@
 import { vi, afterAll, afterEach, beforeAll } from "vitest";
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { config } from "@vue/test-utils";
 import { setupServer } from "msw/node";
 import { handlers } from "~/test/mockapi/handlers";
@@ -25,6 +25,7 @@ const globalThis = global as any;
 globalThis.ref = ref; // Ensures `ref()` can be used in tests
 globalThis.computed = computed;
 globalThis.onMounted = onMounted;
+globalThis.watch = watch;
 
 // Register PrimeVue components globally for testing
 config.global.plugins = [PrimeVue];

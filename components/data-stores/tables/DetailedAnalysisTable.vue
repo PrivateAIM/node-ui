@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { deleteAnalysisFromKong } from "~/composables/useAPIFetch";
+import type { ModifiedConsumer } from "~/services/modifiedApiInterfaces";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import type { Consumer } from "~/services/Api";
@@ -10,7 +11,7 @@ import SearchBar from "~/components/table/SearchBar.vue";
 
 const props = defineProps({
   detailedAnalysisList: {
-    type: Array<Consumer>,
+    type: Array<ModifiedConsumer>,
     required: true,
   },
   analysisNameMap: {
