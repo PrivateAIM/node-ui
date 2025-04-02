@@ -86,7 +86,6 @@ describe("DetailedAnalysisTable.vue", () => {
     expect(confirmSpy).toHaveBeenCalledTimes(1);
     // TODO: figure out how to check confirm popup and button functionalities
     const cancelBtn = wrapper.find('button[aria-label="Cancel"]');
-    console.log(wrapper.find(".delete-confirm-box"));
     // console.log(cancelBtn.attributes());
     // await cancelBtn.trigger("click");
     // expect(wrapper.find(".delete-confirm-box")).toBeFalsy();

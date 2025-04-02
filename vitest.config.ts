@@ -16,6 +16,9 @@ export default defineConfig({
     ],
     environment: "happy-dom",
     setupFiles: "./test/mockapi/setup.ts", // Load the config for testing
+    coverage: {
+      include: ["**/components/**"],
+    },
   },
   resolve: {
     alias: {

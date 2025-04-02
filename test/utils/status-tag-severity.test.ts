@@ -32,7 +32,6 @@ test("Build status severity tag", () => {
     finished: "success",
     failed: "danger",
   };
-  console.log(expectations["starting"]);
   for (const buildStatus of Object.values(AnalysisBuildStatus)) {
     expect(getBuildStatusSeverity(buildStatus)).toStrictEqual(
       expectations[buildStatus],
