@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useNuxtApp } from "#app";
 import { useToast } from "primevue/usetoast";
 
 const props = defineProps({
@@ -32,7 +33,7 @@ async function onSubmitApproval(isApproved: boolean) {
       })
       .catch(() => null);
   }
-  if (approvalResp) {
+  if (approvalResp.status === 200) {
     showSuccessfulSubmission(isApproved);
     // Send data to parent component
     emit("updatedRow", approvalResp);
@@ -66,6 +67,7 @@ const showFailedSubmission = () => {
   <div class="approvalButtons">
     <Button
       icon="pi pi-check"
+      class="project-approve-btn"
       aria-label="Approve"
       v-tooltip.top="'Send approval'"
       severity="success"
@@ -75,6 +77,7 @@ const showFailedSubmission = () => {
     />
     <Button
       icon="pi pi-times"
+      class="project-reject-btn"
       aria-label="Reject"
       v-tooltip.top="'Send rejection'"
       severity="danger"

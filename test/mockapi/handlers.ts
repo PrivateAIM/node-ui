@@ -6,12 +6,32 @@ import {
   fakeParsedProjects,
 } from "~/test/components/data-stores/constants";
 import type { kongBody } from "~/components/data-stores/managers/DataStoreProjectInitializer.vue";
+import { fakeProposalsResp } from "~/test/components/projects/constants";
+
+export const fakeValidProposalId = "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483";
+export const fakeInvalidProposalId = "15518efa-5146-4290-a7cb-95d27f41d991";
 
 export const fakeAnalysisId = "15518efa-5146-4290-a7cb-95d27f41d991";
 export const fakeMissingAnalysisId = "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483";
 export const fakeBrokenAnalysisId = "ab1fbc92-3dc8-4bdd-9d51-3b571c2d7aaa";
 
 export const handlers = [
+  // Project approval/rejection
+  http.post("/project-nodes/*", ({ request }) => {
+    const url = new URL(request.url);
+    const pid = url.pathname.split("/")[2];
+    if (pid === fakeValidProposalId) {
+      return HttpResponse.json({
+        status: 200,
+        data: fakeProposalsResp[0],
+      });
+    } else if (pid === fakeInvalidProposalId) {
+      return HttpResponse.json({
+        status: 500,
+        data: fakeProposalsResp[0],
+      });
+    }
+  }),
   // Analysis logs
   http.get("/po/85629f5b-da04-4f7c-84fc-097b2db93de5/history", () => {
     return HttpResponse.json({
