@@ -23,7 +23,6 @@ describe("DetailedAnalysisTable.vue", () => {
 
   it("Return detailed consumer data", async () => {
     const wrapper = mount(DetailedAnalysisTable, {
-      // @ts-expect-error Complaining about types that are properly defined
       props: fakeDetailedAnalysisTableProps,
     });
 
@@ -69,7 +68,6 @@ describe("DetailedAnalysisTable.vue", () => {
 
   it("Popup and toast function", async () => {
     const wrapper = mount(DetailedAnalysisTable, {
-      // @ts-expect-error Complaining about types that are properly defined
       props: fakeDetailedAnalysisTableProps,
       attachTo: document.body,
       global: {

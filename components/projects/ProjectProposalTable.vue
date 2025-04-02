@@ -34,10 +34,6 @@ function parseData() {
 
 parseData();
 
-// function onToggleRowExpansion(rowIds) {
-//   expandedRows.value = rowIds;
-// }
-
 function updateTable(newData: ProjectNode) {
   for (let row of proposals.value) {
     if (row.id === newData.id) {
@@ -111,13 +107,6 @@ const updateFilters = (filterText: string) => {
           tableStyle="min-width: 50rem"
         >
           <template #empty> No projects found.</template>
-          <!--          <div v-if="expandRowEntries.length" class="expand-buttons">-->
-          <!--            <ExpandRowButtons-->
-          <!--              :rows="proposals"-->
-          <!--              :uniqueId="'id'"-->
-          <!--              @expandedRowList="onToggleRowExpansion"-->
-          <!--            />-->
-          <!--          </div>-->
           <Column v-if="expandRowEntries.length" expander style="width: 5rem" />
           <Column :sortable="true" field="project.name" header="Name"></Column>
           <Column :sortable="true" field="node.name" header="Node"></Column>
