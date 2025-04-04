@@ -25,20 +25,18 @@ export function formatDataRow(
 }
 
 export function parseUnixTimestamp(
-  dataRow: Map<string, string | number | null>,
+  dataRow: object,
   keysToModify: string[],
-): Map<string, string | number | null> {
+): object {
   keysToModify.forEach((key) => {
     if (key in dataRow) {
       const timestamp = dataRow[key];
-      if (typeof timestamp === "string" || typeof timestamp === "number") {
-        // If not a string then already parsed as object
-        let date: Date;
-        if (isUnixTimestamp(timestamp)) {
-          // If a unix epoch is returned
+      let date: Date;
+      if (typeof timestamp !== "object") {
+        // If it is an object, then no need to parse
+        if (typeof timestamp === "number" && isUnixTimestamp(timestamp)) {
           date = new Date(timestamp * 1000);
         } else {
-          // If a UTC T/Z timestamp returned
           date = new Date(timestamp);
         }
         dataRow[key] = {
@@ -53,7 +51,7 @@ export function parseUnixTimestamp(
   return dataRow;
 }
 
-const formatDate = (value) => {
+const formatDate = (value: Date) => {
   return value.toLocaleDateString("de-DE", {
     day: "2-digit",
     month: "2-digit",

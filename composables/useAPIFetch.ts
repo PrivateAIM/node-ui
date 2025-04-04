@@ -10,6 +10,7 @@ import type {
   ListServices,
   Service,
 } from "~/services/Api";
+import { useNuxtApp, useFetch } from "#app";
 import type { UseFetchOptions } from "#app";
 
 export function useAPIFetch<T>(
@@ -24,7 +25,7 @@ export function useAPIFetch<T>(
 
 // Hub endpoints
 export function getProjectNodes(opts?) {
-  return useAPIFetch<{ data: ListProjectNodes }>("/project-nodes", {
+  return useAPIFetch<ListProjectNodes>("/project-nodes", {
     ...opts,
     method: "GET",
     query: {
@@ -35,7 +36,7 @@ export function getProjectNodes(opts?) {
 }
 
 export function getProjects(opts?) {
-  return useAPIFetch<{ data: AllProjects }>("/projects", {
+  return useAPIFetch<AllProjects>("/projects", {
     ...opts,
     method: "GET",
     query: {
@@ -45,7 +46,7 @@ export function getProjects(opts?) {
 }
 
 export function getAnalyses(opts?) {
-  return useAPIFetch<{ data: AllAnalyses }>("/analyses", {
+  return useAPIFetch<AllAnalyses>("/analyses", {
     ...opts,
     method: "GET",
     query: {
@@ -55,7 +56,7 @@ export function getAnalyses(opts?) {
 }
 
 export function getAnalysisNodes(opts?) {
-  return useAPIFetch<{ data: ListAnalysisNodes }>(
+  return useAPIFetch<ListAnalysisNodes>(
     "/analysis-nodes?include=analysis,node",
     {
       ...opts,
@@ -69,7 +70,7 @@ export function getAnalysisNodes(opts?) {
 
 // Kong endpoints
 export function getDataStores(includeProject: boolean, opts?) {
-  return useAPIFetch<{ data: ListServices }>("/kong/datastore", {
+  return useAPIFetch<ListServices>("/kong/datastore", {
     ...opts,
     method: "GET",
     query: {
@@ -112,7 +113,7 @@ export function deleteProjectFromKong(projectId: string, opts?) {
 }
 
 export function getAnalysesFromKong(opts?) {
-  return useAPIFetch<{ data: ListConsumers }>(`/kong/analysis`, {
+  return useAPIFetch<ListConsumers>(`/kong/analysis`, {
     ...opts,
     method: "GET",
   });

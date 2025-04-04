@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { formatDataRow, parseUnixTimestamp } from "../format-data-row";
+import { formatDataRow, parseUnixTimestamp } from "~/utils/format-data-row";
 import {
   fakeAnalysisData,
   expectedFormattedAnalysisData,

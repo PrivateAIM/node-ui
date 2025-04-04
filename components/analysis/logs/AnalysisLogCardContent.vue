@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Card, ScrollPanel } from "primevue";
 const props = defineProps({
   nginxLogs: String || null,
   analysisLogs: String || null,

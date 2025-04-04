@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { HelpTextField } from "~/components/data-stores/managers/index";
+import Panel from "primevue/panel";
 
 const props = defineProps({
   helpField: String || null,
@@ -35,9 +36,13 @@ const closeHelp = () => {
           data on their institution's servers.
         </p>
         <template #icons>
-          <button class="p-panel-header-icon p-link mr-2" @click="closeHelp">
-            <span class="pi pi-times" />
-          </button>
+          <Button
+            class="p-panel-header-icon p-link mr-2 help-box-close-btn"
+            icon="pi pi-times"
+            @click="closeHelp"
+            severity="contrast"
+            v-tooltip.top="'Close help box'"
+          />
         </template>
       </Panel>
     </div>
@@ -58,9 +63,13 @@ const closeHelp = () => {
           2 back slashes (e.g. H:\\).
         </p>
         <template #icons>
-          <button class="p-panel-header-icon p-link mr-2" @click="closeHelp">
-            <span class="pi pi-times" />
-          </button>
+          <Button
+            class="p-panel-header-icon p-link mr-2 help-box-close-btn"
+            icon="pi pi-times"
+            @click="closeHelp"
+            severity="contrast"
+            v-tooltip.top="'Close help box'"
+          />
         </template>
       </Panel>
     </div>
@@ -84,9 +93,13 @@ const closeHelp = () => {
           administrator.
         </p>
         <template #icons>
-          <button class="p-panel-header-icon p-link mr-2" @click="closeHelp">
-            <span class="pi pi-times" />
-          </button>
+          <Button
+            class="p-panel-header-icon p-link mr-2 help-box-close-btn"
+            icon="pi pi-times"
+            @click="closeHelp"
+            severity="contrast"
+            v-tooltip.top="'Close help box'"
+          />
         </template>
       </Panel>
     </div>
@@ -133,9 +146,13 @@ const closeHelp = () => {
           this.
         </p>
         <template #icons>
-          <button class="p-panel-header-icon p-link mr-2" @click="closeHelp">
-            <span class="pi pi-times" />
-          </button>
+          <Button
+            class="p-panel-header-icon p-link mr-2 help-box-close-btn"
+            icon="pi pi-times"
+            @click="closeHelp"
+            severity="contrast"
+            v-tooltip.top="'Close help box'"
+          />
         </template>
       </Panel>
     </div>
@@ -150,9 +167,13 @@ const closeHelp = () => {
           reachable from outside of the network.
         </p>
         <template #icons>
-          <button class="p-panel-header-icon p-link mr-2" @click="closeHelp">
-            <span class="pi pi-times" />
-          </button>
+          <Button
+            class="p-panel-header-icon p-link mr-2 help-box-close-btn"
+            icon="pi pi-times"
+            @click="closeHelp"
+            severity="contrast"
+            v-tooltip.top="'Close help box'"
+          />
         </template>
       </Panel>
     </div>
@@ -172,9 +193,13 @@ const closeHelp = () => {
           this.
         </p>
         <template #icons>
-          <button class="p-panel-header-icon p-link mr-2" @click="closeHelp">
-            <span class="pi pi-times" />
-          </button>
+          <Button
+            class="p-panel-header-icon p-link mr-2 help-box-close-btn"
+            icon="pi pi-times"
+            @click="closeHelp"
+            severity="contrast"
+            v-tooltip.top="'Close help box'"
+          />
         </template>
       </Panel>
     </div>

@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { useFetch, useNuxtApp } from "#app";
+import { useToast } from "primevue/usetoast";
 import { getAnalysisNodes } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
 import TableRowMetadata from "~/components/TableRowMetadata.vue";
 import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
 import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
+import AnalysisControlButtons from "./AnalysisControlButtons.vue";
 import {
   getApprovalStatusSeverity,
   getBuildStatusSeverity,

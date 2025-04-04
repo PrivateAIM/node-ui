@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { useToastService } from "~/composables/connectionErrorToast";
+import { useNuxtApp } from "#app";
+import { useToast } from "primevue/usetoast";
 
 const props = defineProps({
   objectId: String,
   objectClass: String,
 });
 
-const toast = useToastService();
+const toast = useToast();
 const loading = ref(false);
 
 const emit = defineEmits(["updatedRow"]);
@@ -23,16 +24,17 @@ async function onSubmitApproval(isApproved: boolean) {
         method: "POST",
         body: formData,
       })
-      .catch(() => null);
+      .catch((e) => console.error(e));
   } else if (props.objectClass == "analysis") {
     approvalResp = await useNuxtApp()
       .$hubApi(`/analysis-nodes/${props.objectId}`, {
         method: "POST",
         body: formData,
       })
-      .catch(() => null);
+      .catch((e) => console.error(e));
   }
-  if (approvalResp) {
+  console.log(JSON.stringify(approvalResp));
+  if ("approval_status" in approvalResp) {
     showSuccessfulSubmission(isApproved);
     // Send data to parent component
     emit("updatedRow", approvalResp);
@@ -66,6 +68,7 @@ const showFailedSubmission = () => {
   <div class="approvalButtons">
     <Button
       icon="pi pi-check"
+      class="project-approve-btn"
       aria-label="Approve"
       v-tooltip.top="'Send approval'"
       severity="success"
@@ -75,6 +78,7 @@ const showFailedSubmission = () => {
     />
     <Button
       icon="pi pi-times"
+      class="project-reject-btn"
       aria-label="Reject"
       v-tooltip.top="'Send rejection'"
       severity="danger"

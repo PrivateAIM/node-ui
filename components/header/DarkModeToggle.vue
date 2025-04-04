@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { useDark, useToggle } from "@vueuse/core";
+import ToggleSwitch from "primevue/toggleswitch";
 
 const isDark = useDark({
   selector: "html",
@@ -19,6 +20,7 @@ const checked = ref(!isDark.value);
     </div>
     <ToggleSwitch
       v-model="checked"
+      class="dark-mode-toggle-switch"
       label="Toggle Dark Mode"
       @click="toggleDark()"
     />

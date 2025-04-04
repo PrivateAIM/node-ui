@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { deleteAnalysisFromKong } from "~/composables/useAPIFetch";
+import type { ModifiedConsumer } from "~/services/modifiedApiInterfaces";
 import { useConfirm } from "primevue/useconfirm";
+import { useToast } from "primevue/usetoast";
 import type { Consumer } from "~/services/Api";
 import { formatDataRow } from "~/utils/format-data-row";
 import { extractUuid } from "~/utils/extract-uuid-from-kong-username";
@@ -9,7 +11,7 @@ import SearchBar from "~/components/table/SearchBar.vue";
 
 const props = defineProps({
   detailedAnalysisList: {
-    type: Array<Consumer>,
+    type: Array<ModifiedConsumer>,
     required: true,
   },
   analysisNameMap: {
@@ -156,7 +158,7 @@ const updateFilters = (filterText: string) => {
       @updateSearch="updateFilters"
     />
   </div>
-  <div class="associatedProjectsTable">
+  <div class="detailed-consumers-table">
     <DataTable
       :value="analysisTable"
       tableStyle="min-width: 50rem"
@@ -207,7 +209,7 @@ const updateFilters = (filterText: string) => {
       </Column>
       <Column field="hubAnalysisUuid" header="Delete?" :exportable="false">
         <template #body="slotProps">
-          <ConfirmPopup group="disconnectAnalysis">
+          <ConfirmPopup group="disconnectAnalysis" class="delete-confirm-box">
             <template #message="slotProps">
               <div
                 class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700 p-4 mb-4 pb-0"
@@ -224,6 +226,7 @@ const updateFilters = (filterText: string) => {
             icon="pi pi-trash"
             aria-label="Delete"
             severity="warning"
+            class="disconnect-consumer-btn"
             :loading="loading"
             @click="
               confirmDeleteAnalysis(

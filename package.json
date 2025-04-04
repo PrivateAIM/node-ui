@@ -2,6 +2,7 @@
   "name": "node-ui",
   "private": true,
   "version": "0.2.2",
+  "packageManager": "pnpm@10.7.1",
   "type": "module",
   "scripts": {
     "start": "nuxt start",
@@ -13,22 +14,17 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "prod": "node .output/server/index.mjs",
-    "test": "vitest"
+    "test": "vitest",
+    "test:ci": "CI=true pnpm -r --reporter-hide-prefix --stream --sequential run test"
   },
-  "devDependencies": {
-    "@eslint/js": "^9.18.0",
+  "dependencies": {
     "@nuxtjs/tailwindcss": "^6.13.1",
     "@primeuix/themes": "^1.0.0",
+    "@primevue/core": "^4.3.2",
     "@primevue/nuxt-module": "^4.3.1",
     "@sidebase/nuxt-auth": "0.10.1",
-    "@types/eslint-config-prettier": "^6.11.3",
     "@types/uuid": "^9.0.8",
-    "@typescript-eslint/eslint-plugin": "^7.18.0",
-    "@typescript-eslint/parser": "^7.18.0",
     "@vueuse/core": "^11.3.0",
-    "eslint": "~9.18.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-vue": "^9.32.0",
     "globals": "^15.14.0",
     "nuxt": "^3.16.0",
     "pinia": "^2.3.0",
@@ -41,11 +37,25 @@
     "tailwindcss": "^3.4.17",
     "tailwindcss-primeui": "^0.4.0",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^7.18.0",
-    "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.0.8",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0",
     "webpack": "^5.97.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.18.0",
+    "@types/eslint-config-prettier": "^6.11.3",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "@vitejs/plugin-vue": "^5.2.3",
+    "@vitest/coverage-v8": "^3.1.1",
+    "@vue/test-utils": "^2.4.6",
+    "eslint": "~9.18.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-vue": "^9.32.0",
+    "happy-dom": "^17.4.4",
+    "msw": "^2.7.3",
+    "typescript-eslint": "^7.18.0",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.0.8"
   }
 }

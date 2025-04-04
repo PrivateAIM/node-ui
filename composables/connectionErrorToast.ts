@@ -1,14 +1,7 @@
 import { useToast } from "primevue/usetoast";
 
-export const useToastService = () => {
-  const nuxtApp = useNuxtApp();
-  const getToast: typeof useToast = () =>
-    nuxtApp.vueApp.config.globalProperties.$toast;
-  return getToast();
-};
-
 export const showHubAdapterConnectionErrorToast = () => {
-  const toast = useToastService();
+  const toast = useToast();
   toast.add({
     severity: "error",
     summary: "Connection error",
@@ -19,7 +12,7 @@ export const showHubAdapterConnectionErrorToast = () => {
 };
 
 export const showKongConnectionErrorToast = () => {
-  const toast = useToastService();
+  const toast = useToast();
   toast.add({
     severity: "error",
     summary: "Connection error",
@@ -30,7 +23,7 @@ export const showKongConnectionErrorToast = () => {
 };
 
 export const showDownstreamConnectionErrorToast = (service: string) => {
-  const toast = useToastService();
+  const toast = useToast();
   toast.add({
     severity: "error",
     summary: "Service unavailable error",
@@ -41,7 +34,7 @@ export const showDownstreamConnectionErrorToast = (service: string) => {
 };
 
 export const showInvalidRobotCredentialsToast = () => {
-  const toast = useToastService();
+  const toast = useToast();
   toast.add({
     severity: "error",
     summary: "Invalid Robot Credentials",
@@ -54,7 +47,7 @@ export const showInvalidRobotCredentialsToast = () => {
 };
 
 export const showWrongRobotIdToast = () => {
-  const toast = useToastService();
+  const toast = useToast();
   toast.add({
     severity: "error",
     summary: "Invalid Robot ID",
@@ -66,7 +59,7 @@ export const showWrongRobotIdToast = () => {
 };
 
 export const showHubConnectionError = () => {
-  const toast = useToastService();
+  const toast = useToast();
   toast.add({
     severity: "error",
     summary: "Connection error",

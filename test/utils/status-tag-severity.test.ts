@@ -4,7 +4,7 @@ import {
   getBuildStatusSeverity,
   getRunStatusSeverity,
   getDataStoreTypeSeverity,
-} from "../status-tag-severity";
+} from "~/utils/status-tag-severity";
 import {
   AnalysisBuildStatus,
   AnalysisRunStatus,
@@ -16,8 +16,8 @@ test("Approval status severity tag", () => {
     approved: "success",
     rejected: "danger",
   };
-  for (const approvalStatus in ApprovalStatus) {
-    expect(getApprovalStatusSeverity(approvalStatus)).toBe(
+  for (const approvalStatus of Object.values(ApprovalStatus)) {
+    expect(getApprovalStatusSeverity(approvalStatus)).toStrictEqual(
       expectations[approvalStatus],
     );
   }
@@ -32,8 +32,10 @@ test("Build status severity tag", () => {
     finished: "success",
     failed: "danger",
   };
-  for (const buildStatus in AnalysisBuildStatus) {
-    expect(getBuildStatusSeverity(buildStatus)).toBe(expectations[buildStatus]);
+  for (const buildStatus of Object.values(AnalysisBuildStatus)) {
+    expect(getBuildStatusSeverity(buildStatus)).toStrictEqual(
+      expectations[buildStatus],
+    );
   }
 });
 
@@ -41,15 +43,28 @@ test("Analysis run status severity tag", () => {
   const expectations = {
     starting: "info",
     started: "info",
-    running: "info",
+    running: null,
     stopping: "warning",
     stopped: "warning",
     finished: "success",
     failed: "danger",
   };
-  for (const runStatus in AnalysisRunStatus) {
+
+  for (const runStatus of Object.values(AnalysisRunStatus)) {
     expect(getRunStatusSeverity(runStatus)).toStrictEqual(
       expectations[runStatus],
+    );
+  }
+});
+
+test("Data store type status severity tag", () => {
+  const expectations = {
+    s3: "info",
+    fhir: "danger",
+  };
+  for (const dsType in ["s3", "fhir"]) {
+    expect(getDataStoreTypeSeverity(dsType)).toStrictEqual(
+      expectations[dsType],
     );
   }
 });
