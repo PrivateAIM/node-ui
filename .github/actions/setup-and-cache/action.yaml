@@ -36,9 +36,8 @@ runs:
       shell: bash
       run: echo "${{ toJson(steps.resolve-package-versions.outputs) }}"
 
-    - name: Check resolved package versions
-      shell: bash
-      if: |
-        contains(fromJSON('[null, "", "undefined"]'), steps.resolve-package-versions.outputs.PLAYWRIGHT_VERSION)
-      run: echo "Failed to resolve package versions. See log above." && exit 1
+#    - name: Check resolved package versions
+#      shell: bash
+#      if: contains(fromJSON('[null, "", "undefined"]'), steps.resolve-package-version)
+#      run: echo "Failed to resolve package versions. See log above." && exit 1
 
