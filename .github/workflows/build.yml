@@ -17,6 +17,7 @@ on:
 
 jobs:
   run-tests:
+    name: "Run tests"
     uses: ./.github/workflows/ci.yaml
 
   metadata:
@@ -29,6 +30,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: ⏫ Bumping version
         if: ${{ github.event_name != 'workflow_dispatch' }}
@@ -38,6 +41,7 @@ jobs:
           minor-keywords: minor
           patch-keywords: fix,chore,feat
           should-default-to-patch: true
+          debug: true
 
       - name: Get Version
         id: get-version
