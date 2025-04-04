@@ -39,4 +39,5 @@ runs:
     - name: Check resolved package versions
       shell: bash
       if: contains(fromJSON('[null, "", "undefined"]'), steps.resolve-package-version)
+      run: echo "Failed to resolve package versions. See log above." && exit 1
 
