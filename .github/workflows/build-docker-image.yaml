@@ -40,6 +40,10 @@ on:
         description: "The username for the Docker hub account (required for push)"
         required: false
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-image:
     name: "Build image"
