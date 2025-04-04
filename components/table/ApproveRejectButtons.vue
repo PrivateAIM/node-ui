@@ -24,16 +24,17 @@ async function onSubmitApproval(isApproved: boolean) {
         method: "POST",
         body: formData,
       })
-      .catch(() => null);
+      .catch((e) => console.error(e));
   } else if (props.objectClass == "analysis") {
     approvalResp = await useNuxtApp()
       .$hubApi(`/analysis-nodes/${props.objectId}`, {
         method: "POST",
         body: formData,
       })
-      .catch(() => null);
+      .catch((e) => console.error(e));
   }
-  if (approvalResp.status === 200) {
+  console.log(JSON.stringify(approvalResp));
+  if ("approval_status" in approvalResp) {
     showSuccessfulSubmission(isApproved);
     // Send data to parent component
     emit("updatedRow", approvalResp);

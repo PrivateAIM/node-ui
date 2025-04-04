@@ -21,10 +21,7 @@ export const handlers = [
     const url = new URL(request.url);
     const pid = url.pathname.split("/")[2];
     if (pid === fakeValidProposalId) {
-      return HttpResponse.json({
-        status: 200,
-        data: fakeProposalsResp[0],
-      });
+      return HttpResponse.json(fakeProposalsResp.data[0]);
     } else if (pid === fakeInvalidProposalId) {
       return HttpResponse.json({
         status: 500,
