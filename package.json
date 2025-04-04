@@ -2,6 +2,7 @@
   "name": "node-ui",
   "private": true,
   "version": "0.2.2",
+  "packageManager": "pnpm@10.7.1",
   "type": "module",
   "scripts": {
     "start": "nuxt start",
