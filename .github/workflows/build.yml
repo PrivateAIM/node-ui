@@ -40,7 +40,6 @@ jobs:
   metadata:
     name: "Extract metadata"
     runs-on: ubuntu-latest
-    needs: [bumpversion]
     outputs:
       image_tags: ${{ steps.meta.outputs.tags }}
       image_labels: ${{ steps.meta.outputs.labels }}
