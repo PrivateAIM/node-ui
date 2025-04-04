@@ -10,7 +10,7 @@ concurrency:
 jobs:
   changed:
     runs-on: ubuntu-latest
-    name: 'Diff: node-latest, ubuntu-latest'
+    name: 'Check differences'
     outputs:
       should_skip: ${{ steps.changed-files.outputs.only_changed == 'true' }}
 
