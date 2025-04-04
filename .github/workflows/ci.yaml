@@ -30,7 +30,7 @@ jobs:
   test:
     needs: changed
     name: 'Build & Test: node-${{ matrix.node_version }}, ${{ matrix.os }}'
-    if: needs.changed.outputs.should_skip != 'true'
+    # if: needs.changed.outputs.should_skip != 'true'
     runs-on: ${{ matrix.os }}
 
     timeout-minutes: 30
