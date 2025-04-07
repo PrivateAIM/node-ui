@@ -1,4 +1,4 @@
-name: Generic Docker Template
+name: Build Docker Image
 
 env:
   REGISTRY: ghcr.io
