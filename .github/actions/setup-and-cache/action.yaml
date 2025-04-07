@@ -1,5 +1,6 @@
 name: Setup and cache
 description: Setup for node, pnpm and cache for browser testing binaries
+
 inputs:
   node-version:
     required: false

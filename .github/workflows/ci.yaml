@@ -1,9 +1,5 @@
 name: CI
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-
 on:
   workflow_dispatch:
   pull_request:
@@ -46,7 +42,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        node_version: [18, 20, 22]
+        node_version: [20, 22]
       fail-fast: false
 
     steps:
@@ -67,77 +63,12 @@ jobs:
       - name: Test
         run: pnpm run test:ci
 
-  metadata:
-    name: "Extract metadata"
-    runs-on: ubuntu-latest
-    outputs:
-      image_tags: ${{ steps.meta.outputs.tags }}
-      image_labels: ${{ steps.meta.outputs.labels }}
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: ⏫ Bumping version
-        if: ${{ github.event.pull_request.merged == true }}
-        uses: jpb06/bump-package@latest
-        with:
-          major-keywords: BREAKING CHANGE
-          minor-keywords: minor
-          patch-keywords: fix,chore,feat
-          should-default-to-patch: true
-          debug: false
-
-      - name: Get Version
-        id: get-version
-        uses: beaconbrigade/package-json-version@v0.3.2
-        with:
-          path: .
-
-      - name: Extract metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          context: git
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=sha
-            type=raw,value=canary,enable=${{ github.event_name == 'workflow_dispatch' }}
-            type=raw,event=workflow_dispatch,value=${{ github.event.inputs.dispatch-tag }}
-            type=semver,pattern={{version}},value=${{ steps.get-version.outputs.version }},branch=develop,enable=${{ github.event.pull_request.merged == true}}
-
-  build-prod-image:
-    name: "Build production image"
-    if: ${{ github.event.pull_request.merged == true }}
-    uses: ./.github/workflows/build-docker-image.yaml
-    needs: [metadata]
-    with:
-      platforms: linux/amd64
-      docker_file: prod.Dockerfile
-      image_tags: ${{ needs.metadata.outputs.image_tags }}
-      image_labels: ${{ needs.metadata.outputs.image_labels }}
-      push: true
-
-  build-canary-image:
-    name: "Build canary image"
-    if: ${{ github.event_name == 'workflow_dispatch' }}
-    uses: ./.github/workflows/build-docker-image.yaml
-    needs: [metadata]
-    with:
-      platforms: linux/amd64
-      docker_file: Dockerfile
-      image_tags: ${{ needs.metadata.outputs.image_tags }}
-      image_labels: ${{ needs.metadata.outputs.image_labels }}
-      push: true
-
   test-images:
     name: "Test production image compilation"
-    uses: ./.github/workflows/build-docker-image.yaml
-    needs: [metadata]
-    with:
-      platforms: linux/amd64
-      docker_file: prod.Dockerfile
-      image_tags: ${{ needs.metadata.outputs.image_tags }}
-      image_labels: ${{ needs.metadata.outputs.image_labels }}
-      push: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/actions/build-docker-image
+        with:
+          platforms: linux/amd64
+          docker_file: prod.Dockerfile
+          push: 'false'
