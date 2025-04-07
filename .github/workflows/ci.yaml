@@ -73,8 +73,7 @@ jobs:
 
   check-test-image-result:
     needs: run-test-image-compilation
-    if: always()
+    if: always()  # Seems re-usable
     runs-on: ubuntu-latest
     steps:
-      - run: exit 1
-        if: ${{ contains(fromJSON('["failure", "cancelled"]'), needs.run-test-image-compilation.result) }}
+      - run: exit ${{ needs.run-reusable-workflow.result != 'success' && '1' || '0' }}
