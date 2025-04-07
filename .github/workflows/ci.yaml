@@ -81,5 +81,5 @@ jobs:
         with:
           platforms: linux/amd64
           docker_file: prod.Dockerfile
-          push: 'true'
+          push: 'false'
           token: ${{ secrets.GITHUB_TOKEN }}
