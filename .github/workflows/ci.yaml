@@ -64,7 +64,7 @@ jobs:
         run: pnpm run test:ci
 
   test-image-compilation:
-    name: "Test production image compilation"
+    name: "Test production image compilations"
     uses: ./.github/workflows/build-docker-image.yaml
     with:
       platforms: linux/amd64
