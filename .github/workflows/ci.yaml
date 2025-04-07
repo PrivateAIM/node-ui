@@ -31,7 +31,7 @@ jobs:
           minor-keywords: minor
           patch-keywords: fix,chore,feat
           should-default-to-patch: true
-          debug: false
+          debug: true
 
   changed:
     runs-on: ubuntu-latest
@@ -88,8 +88,10 @@ jobs:
     name: "Test production image compilation"
     runs-on: ubuntu-latest
     steps:
-    - uses: ./.github/workflows/build-docker-image.yaml
-      with:
-        platforms: linux/amd64
-        docker_file: prod.Dockerfile
-        push: false
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/workflows/build-docker-image.yaml
+        with:
+          platforms: linux/amd64
+          docker_file: prod.Dockerfile
+          push: false
