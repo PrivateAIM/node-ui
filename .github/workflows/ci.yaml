@@ -63,12 +63,10 @@ jobs:
       - name: Test
         run: pnpm run test:ci
 
-  test-images:
+  test-image-compilation:
     name: "Test production image compilation"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: ./.github/actions/build-docker-image
-        with:
-          platforms: linux/amd64
-          docker_file: prod.Dockerfile
-          push: 'false'
+    uses: ./.github/workflows/build-docker-image.yaml
+    with:
+      platforms: linux/amd64
+      docker_file: prod.Dockerfile
+      push: false
