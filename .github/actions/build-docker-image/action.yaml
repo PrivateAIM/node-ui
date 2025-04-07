@@ -14,6 +14,9 @@ inputs:
     default: "false"
     description: "Push the image to the registries"
     required: false
+  token:
+    description: "Github token"
+    required: true
   tag_suffix:
     default: ""
     description: "Suffix to append to the image tags"
@@ -51,7 +54,7 @@ runs:
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ inputs.token }}
 
     - name: Get Version
       id: get-version
