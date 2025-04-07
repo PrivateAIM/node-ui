@@ -73,6 +73,9 @@ jobs:
   test-image-compilation:
     name: "Test production image compilation"
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout  # required for finding action
         uses: actions/checkout@v4
