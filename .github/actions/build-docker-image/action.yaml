@@ -10,6 +10,10 @@ inputs:
     default: ./Dockerfile
     description: "The Dockerfile to use"
     required: false
+  image_tags:
+    default: ""
+    description: "The tags to apply to the image"
+    required: false
   push:
     default: "false"
     description: "Push the image to the registries"
@@ -50,12 +54,6 @@ runs:
         username: ${{ github.actor }}
         password: ${{ inputs.token }}
 
-    - name: Get Version
-      id: get-version
-      uses: beaconbrigade/package-json-version@v0.3.2
-      with:
-        path: .
-
     - name: Extract metadata for Docker
       id: meta
       uses: docker/metadata-action@v5
@@ -66,7 +64,7 @@ runs:
           type=sha
           type=raw,value=canary,enable=${{ github.event_name == 'workflow_dispatch' }}
           type=raw,event=workflow_dispatch,value=${{ github.event.inputs.dispatch-tag }}
-          type=semver,pattern={{version}},value=${{ steps.get-version.outputs.version }},branch=develop,enable=${{ github.event.pull_request.merged == true}}
+          type=semver,pattern={{version}},value=${{ inputs.image_tags }},branch=develop,enable=${{ github.event.pull_request.merged == true}}
 
     - name: Clean variables
       id: clean
