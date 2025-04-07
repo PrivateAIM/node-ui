@@ -2,11 +2,11 @@ name: Release and Bump Docker
 
 on:
   workflow_dispatch:
-#  pull_request:
-#    types:
-#      - closed
-#    branches:
-#      - develop
+  pull_request:
+    types:
+      - closed
+    branches:
+      - develop
 
 permissions:
   contents: read # for checkout
