@@ -63,10 +63,18 @@ jobs:
       - name: Test
         run: pnpm run test:ci
 
-  test-image-compilation:
+  run-test-image-compilation:
     name: "Test production image compilations"
     uses: ./.github/workflows/build-docker-image.yaml
     with:
       platforms: linux/amd64
       docker_file: prod.Dockerfile
       push: false
+
+  check-test-image-result:
+    needs: run-test-image-compilation
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: exit 1
+        if: ${{ contains(fromJSON('["failure", "cancelled"]'), needs.run-test-image-compilation.result) }}
