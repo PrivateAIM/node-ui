@@ -9,7 +9,7 @@ on:
       - develop
 
 permissions:
-  contents: write # for checkout
+  contents: read # for checkout
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -19,6 +19,8 @@ jobs:
   bump:
     name: "Bump version"
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # for checkout
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -36,6 +38,7 @@ jobs:
         with:
           major-wording: 'BREAKING CHANGE'
           minor-wording: 'minor'
+          target-branch: 'develop'
 
 #      - name: Install deps
 #        run: pnpm i
@@ -50,8 +53,11 @@ jobs:
     name: Build and push production Docker image
     needs: bump  # Wait until pkg bumped
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
-      - name: Checkout
+      - name: Checkout  # required for finding action
         uses: actions/checkout@v4
 
       - name: Build production image
@@ -66,8 +72,11 @@ jobs:
     name: Build and push canary image
     if: ${{ github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
-      - name: Checkout
+      - name: Checkout  # required for finding action
         uses: actions/checkout@v4
 
       - name: Build canary image
