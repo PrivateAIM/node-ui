@@ -1,4 +1,4 @@
-name: Release and Bump Docker
+name: Build and push Docker images
 
 on:
   workflow_dispatch:
@@ -23,6 +23,12 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
+      - name: Harden Runner
+        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf  # tag=v2.11.2
+        with:
+          disable-sudo: true
+          egress-policy: audit
+
       - name:  Automated Version Bump
         uses:  phips28/gh-action-bump-version@master
         env:
@@ -31,19 +37,43 @@ jobs:
           major-wording: 'BREAKING CHANGE'
           minor-wording: 'minor'
 
+#      - name: Install deps
+#        run: pnpm i
+#
+#      - name: Build pkg
+#        run: pnpm run build
+#
+#      - name: Release
+#        uses: softprops/action-gh-release@v2
+
   build-prod-image:
-    name: "Build production image"
-    uses: ./.github/workflows/build-docker-image.yaml
-    with:
-      platforms: linux/amd64
-      docker_file: prod.Dockerfile
-      push: true
+    name: Build and push production Docker image
+    needs: bump  # Wait until pkg bumped
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build production image
+        uses: ./.github/actions/build-docker-image
+        with:
+          platforms: linux/amd64
+          docker_file: prod.Dockerfile
+          push: 'true'
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   build-canary-image:
-    name: "Build canary image"
+    name: Build and push canary image
     if: ${{ github.event_name == 'workflow_dispatch' }}
-    uses: ./.github/workflows/build-docker-image.yaml
-    with:
-      platforms: linux/amd64
-      docker_file: Dockerfile
-      push: true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build canary image
+        uses: ./.github/actions/build-docker-image
+        with:
+          platforms: linux/amd64
+          docker_file: Dockerfile
+          push: 'true'
+          token: ${{ secrets.GITHUB_TOKEN }}
