@@ -74,12 +74,9 @@ jobs:
     name: "Test production image compilation"
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - uses: ./.github/actions/build-docker-image
         with:
           platforms: linux/amd64
           docker_file: prod.Dockerfile
-          push: 'false'
+          push: 'true'
           token: ${{ secrets.GITHUB_TOKEN }}
