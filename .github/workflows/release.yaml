@@ -31,7 +31,7 @@ jobs:
           minor-keywords: minor
           patch-keywords: fix,chore,feat
           should-default-to-patch: true
-          debug: false
+          debug: true
 
   build-prod-image:
     name: "Build production image"

@@ -21,7 +21,7 @@ jobs:
 
       - name: Get current branch name
         id: get_branch
-        run: echo "##[set-output name=branch;]$(git rev-parse --abbrev-ref HEAD)"
+        run: echo "branch=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
 
       - name: ⏫ Bumping version
         id: bump-version
@@ -86,8 +86,10 @@ jobs:
 
   test-image-build:
     name: "Test production image compilation"
-    uses: ./.github/workflows/build-docker-image.yaml
-    with:
-      platforms: linux/amd64
-      docker_file: prod.Dockerfile
-      push: false
+    runs-on: ubuntu-latest
+    steps:
+    - uses: ./.github/workflows/build-docker-image.yaml
+      with:
+        platforms: linux/amd64
+        docker_file: prod.Dockerfile
+        push: false
