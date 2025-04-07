@@ -1,0 +1,51 @@
+name: Release and Bump Docker
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - develop
+
+permissions:
+  contents: read # for checkout
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bump:
+    name: "Bump version"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: ⏫ Bumping version
+        id: bump-version
+        uses: jpb06/bump-package@latest
+        with:
+          major-keywords: BREAKING CHANGE
+          minor-keywords: minor
+          patch-keywords: fix,chore,feat
+          should-default-to-patch: true
+          debug: false
+
+  build-prod-image:
+    name: "Build production image"
+    uses: ./.github/workflows/build-docker-image.yaml
+    with:
+      platforms: linux/amd64
+      docker_file: prod.Dockerfile
+      push: true
+
+  build-canary-image:
+    name: "Build canary image"
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    uses: ./.github/workflows/build-docker-image.yaml
+    with:
+      platforms: linux/amd64
+      docker_file: Dockerfile
+      push: true

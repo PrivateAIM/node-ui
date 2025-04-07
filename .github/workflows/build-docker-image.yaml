@@ -1,4 +1,13 @@
 name: Generic Docker Template
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   workflow_call:
     inputs:
@@ -10,15 +19,6 @@ on:
       docker_file:
         default: ./Dockerfile
         description: "The Dockerfile to use"
-        required: false
-        type: string
-      image_labels:
-        description: "Image labels to apply to the image"
-        required: false
-        type: string
-      image_tags:
-        default: ""
-        description: "The tags to apply to the image"
         required: false
         type: string
       push:
@@ -39,10 +39,6 @@ on:
       docker_username:
         description: "The username for the Docker hub account (required for push)"
         required: false
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   build-image:
@@ -79,6 +75,24 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get Version
+        id: get-version
+        uses: beaconbrigade/package-json-version@v0.3.2
+        with:
+          path: .
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          context: git
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha
+            type=raw,value=canary,enable=${{ github.event_name == 'workflow_dispatch' }}
+            type=raw,event=workflow_dispatch,value=${{ github.event.inputs.dispatch-tag }}
+            type=semver,pattern={{version}},value=${{ steps.bump-version.outputs.new-version }},branch=develop,enable=${{ github.event.pull_request.merged == true}}
+
       - name: Clean variables
         id: clean
         run: |
@@ -92,9 +106,9 @@ jobs:
           echo "tags<<${delimiter}" >> $GITHUB_OUTPUT
           # if tag_suffix is set, append it to each tag
           if [[ -n "${{ inputs.tag_suffix }}" ]]; then
-            echo "${{ inputs.image_tags }}" | sed -e "s/$/-${{ steps.clean.outputs.suffix }}/" >> $GITHUB_OUTPUT
+            echo "${{ steps.meta.outputs.tags }}" | sed -e "s/$/-${{ steps.clean.outputs.suffix }}/" >> $GITHUB_OUTPUT
           else
-            echo "${{ inputs.image_tags }}" >> $GITHUB_OUTPUT
+            echo "${{ steps.meta.outputs.tags }}" >> $GITHUB_OUTPUT
           fi
           echo "${delimiter}" >> $GITHUB_OUTPUT
 
@@ -105,7 +119,7 @@ jobs:
           context: .
           file: ${{ inputs.docker_file }}
           tags: ${{ steps.tag_suffix.outputs.tags }}
-          labels: ${{ inputs.image_labels }}
+          labels: ${{ steps.meta.outputs.labels }}
           platforms: ${{ inputs.platforms }}
           push: true
 
