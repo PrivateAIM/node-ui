@@ -65,7 +65,7 @@ jobs:
 
   run-test-image-compilation:
     name: "Test production image compilations"
-    uses: ./.github/workflows/build-docker-image.yaml
+    uses: https://github.com/PrivateAIM/node-ui/.github/workflows/build-docker-image.yaml@develop
     with:
       platforms: linux/amd64
       docker_file: prod.Dockerfile
@@ -73,7 +73,7 @@ jobs:
 
   check-test-image-result:
     needs: run-test-image-compilation
-    if: always()  # Seems re-usable
+    if: always()  # Seems re-usable workflows can't be used a status checks so need to be called explicitly
     runs-on: ubuntu-latest
     steps:
       - run: exit ${{ needs.run-reusable-workflow.result != 'success' && '1' || '0' }}
