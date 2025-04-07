@@ -54,6 +54,9 @@ jobs:
     needs: bump  # Wait until pkg bumped
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout  # required for finding action
+        uses: actions/checkout@v4
+
       - name: Build production image
         uses: ./.github/actions/build-docker-image
         with:
@@ -67,6 +70,9 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout  # required for finding action
+        uses: actions/checkout@v4
+
       - name: Build canary image
         uses: ./.github/actions/build-docker-image
         with:

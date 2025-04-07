@@ -66,7 +66,7 @@ runs:
           type=sha
           type=raw,value=canary,enable=${{ github.event_name == 'workflow_dispatch' }}
           type=raw,event=workflow_dispatch,value=${{ github.event.inputs.dispatch-tag }}
-          type=semver,pattern={{version}},value=${{ steps.bump-version.outputs.new-version }},branch=develop,enable=${{ github.event.pull_request.merged == true}}
+          type=semver,pattern={{version}},value=${{ steps.get-version.outputs.version }},branch=develop,enable=${{ github.event.pull_request.merged == true}}
 
     - name: Clean variables
       id: clean

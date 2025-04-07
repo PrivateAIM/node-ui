@@ -74,6 +74,9 @@ jobs:
     name: "Test production image compilation"
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout  # required for finding action
+        uses: actions/checkout@v4
+
       - uses: ./.github/actions/build-docker-image
         with:
           platforms: linux/amd64
