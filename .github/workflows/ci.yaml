@@ -67,6 +67,8 @@ jobs:
     name: "Test production image compilation"
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
       - uses: ./.github/actions/build-docker-image
         with:
           platforms: linux/amd64
