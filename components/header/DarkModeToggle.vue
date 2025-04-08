@@ -9,7 +9,11 @@ const isDark = useDark({
   valueLight: "flame-light",
   initOnMounted: true,
 });
-const checked = ref(!isDark.value);
+const checked = ref(false);
+onMounted(() => {
+  checked.value = !isDark.value;
+});
+
 const toggleDark = useToggle(isDark);
 </script>
 
