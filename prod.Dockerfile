@@ -17,6 +17,8 @@ RUN pnpm build
 
 FROM node:23-alpine AS production
 
+RUN adduser -u 10000 -D nodeui
+
 WORKDIR /app
 
 COPY --from=builder /app/.output ./.output
@@ -25,5 +27,10 @@ ENV NODE_ENV=production
 ENV NUXT_HOST=0.0.0.0
 ENV NUXT_PORT=3000
 
+RUN chown -R nodeui:nodeui /app
+
 EXPOSE $NUXT_PORT
+
+USER 10000:10000
+
 CMD [ "node", ".output/server/index.mjs" ]
