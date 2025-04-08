@@ -43,7 +43,7 @@ test("Analysis run status severity tag", () => {
   const expectations = {
     starting: "info",
     started: "info",
-    running: null,
+    running: "contrast",
     stopping: "warning",
     stopped: "warning",
     finished: "success",

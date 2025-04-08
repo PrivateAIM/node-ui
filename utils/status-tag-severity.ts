@@ -45,7 +45,7 @@ export const getRunStatusSeverity = (status: string) => {
       return "info";
 
     case AnalysisRunStatus.Running:
-      return null;
+      return "contrast";
 
     case AnalysisRunStatus.Stopping:
       return "warning";
