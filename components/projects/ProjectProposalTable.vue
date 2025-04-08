@@ -108,8 +108,25 @@ const updateFilters = (filterText: string) => {
         >
           <template #empty> No projects found.</template>
           <Column v-if="expandRowEntries.length" expander style="width: 5rem" />
-          <Column :sortable="true" field="project.name" header="Name"></Column>
-          <Column :sortable="true" field="node.name" header="Node"></Column>
+          <Column :sortable="true" field="project.name">
+            <template #header>
+              <span class="help-text" v-tooltip.top="'Name of the project'">
+                <b>Name</b>
+              </span>
+            </template>
+          </Column>
+          <Column :sortable="true" field="node.name">
+            <template #header>
+              <span
+                class="help-text"
+                v-tooltip.top="
+                  'Which node the analyses for this project will run on (should be current node)'
+                "
+              >
+                <b>Node</b>
+              </span>
+            </template>
+          </Column>
           <Column
             :showAddButton="false"
             :showApplyButton="false"
@@ -117,8 +134,15 @@ const updateFilters = (filterText: string) => {
             :showFilterMatchModes="false"
             :showFilterOperator="false"
             field="approval_status"
-            header="Approval Status"
           >
+            <template #header>
+              <span
+                class="help-text"
+                v-tooltip.top="'Whether the project was approved or rejected'"
+              >
+                <b>Approval Status</b>
+              </span>
+            </template>
             <template #body="{ data }">
               <Tag
                 v-if="data.approval_status"
@@ -144,36 +168,47 @@ const updateFilters = (filterText: string) => {
               </Select>
             </template>
           </Column>
-          <Column
-            :sortable="true"
-            dataType="date"
-            field="created_at.timestamp"
-            header="Created On"
-          >
+          <Column :sortable="true" dataType="date" field="created_at.timestamp">
+            <template #header>
+              <span
+                class="help-text"
+                v-tooltip.top="'Date the project was registered with the Hub'"
+              >
+                <b>Created On</b>
+              </span>
+            </template>
             <template #body="{ data }">
               <p v-tooltip.top="data.created_at.long">
                 {{ data.created_at.short }}
               </p>
             </template>
           </Column>
-          <Column
-            :sortable="true"
-            dataType="date"
-            field="updated_at.timestamp"
-            header="Last Updated"
-          >
+          <Column :sortable="true" dataType="date" field="updated_at.timestamp">
+            <template #header>
+              <span
+                class="help-text"
+                v-tooltip.top="'Date the project was last modified'"
+              >
+                <b>Last Updated</b>
+              </span>
+            </template>
             <template #body="{ data }">
               <p v-tooltip.top="data.updated_at.long">
                 {{ data.updated_at.short }}
               </p>
             </template>
           </Column>
-          <Column
-            :exportable="false"
-            field="id"
-            header="Set Approval"
-            style="min-width: 10em"
-          >
+          <Column :exportable="false" field="id" style="min-width: 10em">
+            <template #header>
+              <span
+                class="help-text"
+                v-tooltip.top="
+                  'Set it so that the project is either approved for running on this node or rejected'
+                "
+              >
+                <b>Set Approval</b>
+              </span>
+            </template>
             <template #body="slotProps">
               <ApproveRejectButtons
                 :objectClass="'project'"

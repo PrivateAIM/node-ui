@@ -9,8 +9,8 @@ const isDark = useDark({
   valueLight: "flame-light",
   initOnMounted: true,
 });
-const toggleDark = useToggle(isDark);
 const checked = ref(!isDark.value);
+const toggleDark = useToggle(isDark);
 </script>
 
 <template>
