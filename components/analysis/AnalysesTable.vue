@@ -189,8 +189,13 @@ const onCloseNavToast = () => {
             Some controls may be disabled!
           </Message>
           <p>
-            If the image for the analysis is not yet <b>finished</b> (see Build
-            Status), a container for the analysis cannot be started.
+            If the image for the analysis is not yet
+            <Tag
+              style="margin-left: 0.5em; margin-right: 0.5em"
+              :value="'finished'"
+              :severity="'success'"
+            />
+            (see Build Status), a container for the analysis cannot be started.
           </p>
         </div>
         <div class="table-header-row">
