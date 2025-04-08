@@ -227,16 +227,29 @@ const onCloseNavToast = () => {
         >
           <template #empty> No analyses found.</template>
           <Column expander style="width: 5rem" v-if="expandRowEntries.length" />
-          <Column field="analysis.name" header="Name" :sortable="true" />
+          <Column field="analysis.name" :sortable="true">
+            <template #header>
+              <span class="help-text" v-tooltip.top="'Name of the analysis'">
+                <b>Name</b>
+              </span>
+            </template>
+          </Column>
           <Column
             field="approval_status"
-            header="Approval Status"
             :showFilterMatchModes="false"
             :showClearButton="false"
             :showApplyButton="false"
             :showFilterOperator="false"
             :showAddButton="false"
           >
+            <template #header>
+              <span
+                class="help-text"
+                v-tooltip.top="'Whether the project was approved or rejected'"
+              >
+                <b>Approval Status</b>
+              </span>
+            </template>
             <template #body="{ data }">
               <Tag
                 v-if="data.approval_status"
@@ -278,7 +291,6 @@ const onCloseNavToast = () => {
           <!--          </Column>-->
           <Column
             field="analysis.build_status"
-            header="Build Status"
             filterField="analysis.build_status"
             :showFilterMatchModes="false"
             :showClearButton="false"
@@ -286,6 +298,14 @@ const onCloseNavToast = () => {
             :showFilterOperator="false"
             :showAddButton="false"
           >
+            <template #header>
+              <span
+                class="help-text"
+                v-tooltip.top="'Build stage of the analysis Docker image'"
+              >
+                <b>Build Status</b>
+              </span>
+            </template>
             <template #body="{ data }">
               <Tag
                 v-if="data.analysis.build_status"
@@ -317,7 +337,6 @@ const onCloseNavToast = () => {
           </Column>
           <Column
             field="run_status"
-            header="Run Status"
             filterField="run_status"
             :showFilterMatchModes="false"
             :showClearButton="false"
@@ -325,6 +344,14 @@ const onCloseNavToast = () => {
             :showFilterOperator="false"
             :showAddButton="false"
           >
+            <template #header>
+              <span
+                class="help-text"
+                v-tooltip.top="'Current run status of the analysis container'"
+              >
+                <b>Run Status</b>
+              </span>
+            </template>
             <template #body="{ data }">
               <Tag
                 v-if="data.run_status"
@@ -353,25 +380,42 @@ const onCloseNavToast = () => {
               </MultiSelect>
             </template>
           </Column>
-          <Column field="project_name" header="Project" :sortable="true" />
-          <Column
-            header="Created On"
-            field="created_at.timestamp"
-            dataType="date"
-            :sortable="true"
-          >
+          <Column field="project_name" :sortable="true">
+            <template #header>
+              <span
+                class="help-text"
+                v-tooltip.top="'Date the analysis image was created'"
+              >
+                <b>Project</b>
+              </span>
+            </template>
+          </Column>
+          <Column field="created_at.timestamp" dataType="date" :sortable="true">
+            <template #header>
+              <span
+                class="help-text"
+                v-tooltip.top="'Date the analysis image was created'"
+              >
+                <b>Created On</b>
+              </span>
+            </template>
             <template #body="{ data }">
               <p v-tooltip.top="data.created_at.long">
                 {{ data.created_at.short }}
               </p>
             </template>
           </Column>
-          <Column
-            header="Last Updated"
-            field="updated_at.timestamp"
-            dataType="date"
-            :sortable="true"
-          >
+          <Column field="updated_at.timestamp" dataType="date" :sortable="true">
+            <template #header>
+              <span
+                class="help-text"
+                v-tooltip.top="
+                  'Date the analysis container on the node was last modified'
+                "
+              >
+                <b>Last Updated</b>
+              </span>
+            </template>
             <template #body="{ data }">
               <p v-tooltip.top="data.updated_at.long">
                 {{ data.updated_at.short }}
@@ -379,12 +423,15 @@ const onCloseNavToast = () => {
             </template>
           </Column>
           <!--          <Column field="node.name" header="Node" :sortable="true" />-->
-          <Column
-            field="expand.id"
-            header="Toggle Analysis"
-            style="min-width: 13em"
-            :exportable="false"
-          >
+          <Column field="expand.id" style="min-width: 13em" :exportable="false">
+            <template #header>
+              <span
+                class="help-text"
+                v-tooltip.top="'Controls for the analysis container'"
+              >
+                <b>Toggle Analysis</b>
+              </span>
+            </template>
             <template #body="slotProps">
               <div
                 class="control-buttons"
