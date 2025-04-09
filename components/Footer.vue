@@ -21,9 +21,9 @@ const pkgVersion = config.public.version;
         </div>
 
         <div class="build-version">
-          <span
-            ><b>v{{ pkgVersion }}</b></span
-          >
+          <Badge>
+            <span>v{{ pkgVersion }}</span>
+          </Badge>
         </div>
       </div>
     </div>
