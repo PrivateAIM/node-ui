@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { ref, watch } from "vue";
 import { useNuxtApp } from "#app";
 import InputText from "primevue/inputtext";
@@ -26,12 +26,12 @@ const helpActive = ref();
 const toast = useToast();
 
 // Project settings
-const availableMethods = ["GET", "POST", "PUT", "DELETE"];
+// const availableMethods = ["GET", "POST", "PUT", "DELETE"];
 const dataStoreTypes = ["FHIR", "S3"];
 
 const selectedProject = ref();
 
-const selectedAllowedMethods = ref(["GET"]);
+// const selectedAllowedMethods = ref(["GET"]);
 const selectedDataStoreType = ref("FHIR");
 
 // Datastore settings
@@ -85,7 +85,8 @@ async function onSubmitCreateDataStoreAndProject() {
   const configSettings: kongBody = {
     datastore: datastoreSettings,
     project_id: selectedProject.value.id,
-    methods: selectedAllowedMethods.value,
+    // methods: selectedAllowedMethods.value,
+    methods: ["GET"], // Hardcode to GET only to prevent abuse/security issues
     ds_type: selectedDataStoreType.value.toLowerCase() as string,
   };
 
@@ -155,8 +156,8 @@ async function onSubmitCreateDataStoreAndProject() {
         <div class="data-store-panel">
           <div class="data-store-input-fields">
             <InputGroup
-              style="margin-bottom: 20px"
               class="data-store-project-input"
+              style="margin-bottom: 20px"
             >
               <InputGroupAddon class="data-store-field-name">
                 <i class="pi pi-cog"></i>
@@ -165,9 +166,9 @@ async function onSubmitCreateDataStoreAndProject() {
               <Select
                 v-model="selectedProject"
                 :options="props.projects"
+                class="project-picker"
                 optionLabel="dropdown"
                 placeholder="Select a Project"
-                class="project-picker"
               />
             </InputGroup>
             <InputGroup>
@@ -186,10 +187,10 @@ async function onSubmitCreateDataStoreAndProject() {
                     @click="activateHelp(HelpTextField.Server)"
                   >
                     <p
-                      class="help-text"
                       v-tooltip.top="
                         'Name of the server on which the data resides'
                       "
+                      class="help-text"
                     >
                       Server
                     </p>
@@ -197,9 +198,9 @@ async function onSubmitCreateDataStoreAndProject() {
                 </div>
               </InputGroupAddon>
               <InputText
-                placeholder="Server or hostname"
                 v-model="host"
                 :invalid="host === ''"
+                placeholder="Server or hostname"
               />
             </InputGroup>
             <InputGroup class="data-store-path-input">
@@ -211,8 +212,8 @@ async function onSubmitCreateDataStoreAndProject() {
                     @click="activateHelp(HelpTextField.Path)"
                   >
                     <p
-                      class="help-text"
                       v-tooltip.top="'Absolute directory path'"
+                      class="help-text"
                     >
                       Data Path
                     </p>
@@ -220,9 +221,9 @@ async function onSubmitCreateDataStoreAndProject() {
                 </div>
               </InputGroupAddon>
               <InputText
-                placeholder="Data path (must start with '/')"
                 v-model="path"
                 :invalid="path === '' || !path.startsWith('/')"
+                placeholder="Data path (must start with '/')"
               />
             </InputGroup>
             <InputGroup class="data-store-type-input">
@@ -234,8 +235,8 @@ async function onSubmitCreateDataStoreAndProject() {
                     @click="activateHelp(HelpTextField.Type)"
                   >
                     <p
-                      class="help-text"
                       v-tooltip.top="'Type of server the data is stored on'"
+                      class="help-text"
                     >
                       Data Server Type
                     </p>
@@ -257,8 +258,8 @@ async function onSubmitCreateDataStoreAndProject() {
                     @click="activateHelp(HelpTextField.Port)"
                   >
                     <p
-                      class="help-text"
                       v-tooltip.top="'Port number for accessing the data'"
+                      class="help-text"
                     >
                       Port
                     </p>
@@ -266,9 +267,9 @@ async function onSubmitCreateDataStoreAndProject() {
                 </div>
               </InputGroupAddon>
               <InputNumber
-                placeholder="Port e.g. 443"
                 v-model="port"
                 :invalid="port < 0 || port > 65535"
+                placeholder="Port e.g. 443"
               />
             </InputGroup>
             <InputGroup class="data-store-protocol-input">
@@ -280,10 +281,10 @@ async function onSubmitCreateDataStoreAndProject() {
                     @click="activateHelp(HelpTextField.Protocol)"
                   >
                     <p
-                      class="help-text"
                       v-tooltip.top="
                         'Access protocol for the data storage server'
                       "
+                      class="help-text"
                     >
                       Protocol
                     </p>
@@ -296,40 +297,18 @@ async function onSubmitCreateDataStoreAndProject() {
                 class="w-full md:w-56 communication-protocol-picker"
               />
             </InputGroup>
-            <InputGroup>
-              <InputGroupAddon class="data-store-field-name">
-                <i class="pi pi-warehouse"></i>
-                <div class="data-store-field-name-box">
-                  <button
-                    class="help-button"
-                    @click="activateHelp(HelpTextField.Methods)"
-                  >
-                    <p class="help-text" v-tooltip.top="'Allowed HTTP methods'">
-                      Allowed Methods
-                    </p>
-                  </button>
-                </div>
-              </InputGroupAddon>
-              <MultiSelect
-                v-model="selectedAllowedMethods"
-                display="chip"
-                :options="availableMethods"
-                placeholder="Select methods"
-                class="methods-picker"
-              />
-            </InputGroup>
             <Button
-              label="Submit"
-              icon="pi pi-check"
-              iconPos="right"
-              severity="info"
-              style="margin-top: 20px"
               :loading="loading"
               class="create-data-store-btn"
+              icon="pi pi-check"
+              iconPos="right"
+              label="Submit"
+              severity="info"
+              style="margin-top: 20px"
               @click="onSubmitCreateDataStoreAndProject"
             />
           </div>
-          <div class="data-store-help-box" v-if="helpActive">
+          <div v-if="helpActive" class="data-store-help-box">
             <DataStoreHelpBox
               :helpField="helpActive"
               @closeHelp="deactivateHelp"
@@ -341,7 +320,7 @@ async function onSubmitCreateDataStoreAndProject() {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .intro-text {
   padding-bottom: 3em;
 }
