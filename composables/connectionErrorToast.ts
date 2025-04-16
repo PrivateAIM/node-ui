@@ -1,7 +1,4 @@
-import { useToast } from "primevue/usetoast";
-
-export const showHubAdapterConnectionErrorToast = () => {
-  const toast = useToast();
+export const showHubAdapterConnectionErrorToast = (toast) => {
   toast.add({
     severity: "error",
     summary: "Connection error",
@@ -11,8 +8,7 @@ export const showHubAdapterConnectionErrorToast = () => {
   console.warn("Hub Adapter API service unreachable");
 };
 
-export const showKongConnectionErrorToast = () => {
-  const toast = useToast();
+export const showKongConnectionErrorToast = (toast) => {
   toast.add({
     severity: "error",
     summary: "Connection error",
@@ -22,8 +18,7 @@ export const showKongConnectionErrorToast = () => {
   console.warn("Kong service unreachable");
 };
 
-export const showDownstreamConnectionErrorToast = (service: string) => {
-  const toast = useToast();
+export const showDownstreamConnectionErrorToast = (toast, service: string) => {
   toast.add({
     severity: "error",
     summary: "Service unavailable error",
@@ -33,8 +28,7 @@ export const showDownstreamConnectionErrorToast = (service: string) => {
   console.warn(`The ${service} service is unreachable`);
 };
 
-export const showInvalidRobotCredentialsToast = () => {
-  const toast = useToast();
+export const showInvalidRobotCredentialsToast = (toast) => {
   toast.add({
     severity: "error",
     summary: "Invalid Robot Credentials",
@@ -46,8 +40,7 @@ export const showInvalidRobotCredentialsToast = () => {
   console.warn("Invalid robot credentials");
 };
 
-export const showWrongRobotIdToast = () => {
-  const toast = useToast();
+export const showWrongRobotIdToast = (toast) => {
   toast.add({
     severity: "error",
     summary: "Invalid Robot ID",
@@ -58,8 +51,7 @@ export const showWrongRobotIdToast = () => {
   console.warn("Invalid robot ID");
 };
 
-export const showHubConnectionError = () => {
-  const toast = useToast();
+export const showHubConnectionError = (toast) => {
   toast.add({
     severity: "error",
     summary: "Connection error",
