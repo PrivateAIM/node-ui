@@ -2,9 +2,7 @@ name: Build and push Docker images
 
 on:
   workflow_dispatch:
-  pull_request:
-    types:
-      - closed
+  push:
     branches:
       - develop
 
@@ -16,39 +14,26 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  bump:
-    name: "Bump version"
+  release-please:
+    name: Release
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.bumpv.outputs.newTag }}
+      version: ${{ steps.release.outputs.version }}
     permissions:
-      contents: write # for checkout
+      contents: write
+      packages: write
+      pull-requests: write
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-
-      - name:  Automated Version Bump
-        id: bumpv
-        uses:  phips28/gh-action-bump-version@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: googleapis/release-please-action@v4
+        name: release-please
+        id: release
         with:
-          major-wording: 'BREAKING CHANGE'
-          minor-wording: 'minor'
-          target-branch: 'develop'
-
-#      - name: Install deps
-#        run: pnpm i
-#
-#      - name: Build pkg
-#        run: pnpm run build
-#
-#      - name: Release
-#        uses: softprops/action-gh-release@v2
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   build-prod-image:
     name: Build and push production Docker image
-    needs: bump  # Wait until pkg bumped
+    if: ${{ needs.release-please.outputs.release_created }}
+    needs: release-please  # Wait until pkg bumped
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -62,7 +47,7 @@ jobs:
         with:
           platforms: linux/amd64
           docker_file: prod.Dockerfile
-          image_tags: ${{ needs.bump.outputs.version }}
+          image_tags: ${{ needs.release-please.outputs.version }}
           push: 'true'
           token: ${{ secrets.GITHUB_TOKEN }}
 
