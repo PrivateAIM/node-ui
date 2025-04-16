@@ -28,7 +28,7 @@ jobs:
         name: release-please
         id: release
         with:
-          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   build-prod-image:
     name: Build and push production Docker image
