@@ -33,7 +33,7 @@ async function onSubmitApproval(isApproved: boolean) {
       })
       .catch((e) => console.error(e));
   }
-  console.log(JSON.stringify(approvalResp));
+
   if ("approval_status" in approvalResp) {
     showSuccessfulSubmission(isApproved);
     // Send data to parent component
