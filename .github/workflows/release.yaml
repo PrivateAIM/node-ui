@@ -33,7 +33,7 @@ jobs:
 
   build-prod-image:
     name: Build and push production Docker image
-    if: ${{ needs.release-please.outputs.released }}
+    if: ${{ needs.release-please.outputs.released == 'true' }}
     needs: release-please  # Wait until pkg bumped
     runs-on: ubuntu-latest
     permissions:
