@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.11](https://github.com/PrivateAIM/node-ui/compare/node-ui-v0.2.10...node-ui-v0.2.11) (2025-04-22)
+
+
+### Bug Fixes
+
+* fake fix ([efd8db2](https://github.com/PrivateAIM/node-ui/commit/efd8db2c9d78b947d0443e0ac5c1b9d72a48da2e))
+* fake fix ([85c70b6](https://github.com/PrivateAIM/node-ui/commit/85c70b63fb0d38c18dca1cc868da5ef7cc665384))
+
 ## [0.2.10](https://github.com/PrivateAIM/node-ui/compare/node-ui-v0.2.9...node-ui-v0.2.10) (2025-04-22) 
 
 
