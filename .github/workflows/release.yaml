@@ -45,6 +45,10 @@ jobs:
       - name: Checkout  # required for finding action
         uses: actions/checkout@v4
 
+      - name: check-version
+        run: |
+          echo "Version from release please: ${{ needs.release-please.outputs.version }}"
+
       - name: Build production image
         uses: ./.github/actions/build-docker-image
         with:
