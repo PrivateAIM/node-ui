@@ -31,33 +31,51 @@ const runStatuses = Object.values(AnalysisNodeRunStatus);
 const approvalStatuses = Object.values(ApprovalStatus);
 const buildStatuses = Object.values(AnalysisBuildStatus);
 
-const { data: response, status, error, refresh } = await getAnalysisNodes();
-const { data: projData, status: projStatus } = await useFetch("/projects", {
-  $fetch: useNuxtApp().$hubApi,
-  method: "GET",
-  query: {
-    sort: "-updated_at",
-    fields: "id,name",
+interface ModifiedAnalysisNode extends AnalysisNode {
+  project_name: string | undefined;
+  expand: {
+    [key: string]: string;
+  };
+}
+
+const {
+  data: analysisNodeResp,
+  status,
+  error,
+  refresh,
+} = await getAnalysisNodes();
+const { data: projData, status: projStatus } = await useFetch<Project[]>(
+  "/projects",
+  {
+    $fetch: useNuxtApp().$hubApi,
+    method: "GET",
+    query: {
+      sort: "-updated_at",
+      fields: "id,name",
+    },
   },
-});
+);
 
 // Iterate through projects and populate map with proj UUID: name
 const projMap = new Map<string, string>();
-if (projStatus.value === "success") {
+if (projStatus.value === "success" && projData.value) {
+  // @ts-expect-error Jetbrains can't infer data from useFetch
   projData.value.data.forEach((proj: Project) => {
-    projMap.set(proj.id, proj.name);
+    if (proj.name) {
+      projMap.set(proj.id!, proj.name);
+    }
   });
 }
 
 function parseData() {
   if (status.value === "success") {
     const formattedAnalyses = formatDataRow(
-      response.value!.data,
+      analysisNodeResp.value!.data,
       ["created_at", "updated_at"],
       expandRowEntries,
     );
     if (projMap.size > 0) {
-      formattedAnalyses.forEach((analysisEntry: AnalysisNode) => {
+      formattedAnalyses.forEach((analysisEntry: ModifiedAnalysisNode) => {
         const projId = analysisEntry.analysis?.project_id;
         if (projId && projMap.has(projId)) {
           analysisEntry.project_name = projMap.get(projId);
@@ -66,7 +84,7 @@ function parseData() {
     }
     analyses.value = formattedAnalyses;
   } else if (error.value?.statusCode === 500) {
-    showHubAdapterConnectionErrorToast();
+    showHubAdapterConnectionErrorToast(toast);
   }
 }
 
@@ -122,10 +140,10 @@ function updateRunStatus(analysisNodeId: string, newStatus: string) {
 // Missing data store for row toast
 const showDataStoreNavToast = () => {
   toast.add({
-    severity: "error",
+    severity: "warn",
     summary:
-      "Unable to find a data store to this analysis, click the button below " +
-      "to create a data store for the associated project",
+      "Unable to find an associated data store, click the button below " +
+      "to create a data store for the project of this analysis",
     group: "datastoreToastLink",
   });
 };
@@ -152,16 +170,16 @@ const onCloseNavToast = () => {
 <template>
   <div class="card flex justify-content-center">
     <Toast
-      position="top-center"
+      position="top-right"
       group="datastoreToastLink"
       @close="onCloseNavToast()"
     >
       <template #message="slotProps">
-        <div class="flex flex-column align-items-start" style="flex: 1">
-          <div class="flex align-items-center gap-2">
+        <div class="flex flex-col items-start flex-auto">
+          <div class="flex items-center gap-2">
             <span class="font-bold text-900">Missing Data Store!</span>
           </div>
-          <div class="font-medium text-lg my-3 text-900">
+          <div class="font-medium my-4">
             <span>{{ slotProps.message.summary }}</span>
           </div>
           <Button
