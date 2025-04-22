@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.2.10](https://github.com/PrivateAIM/node-ui/compare/node-ui-v0.2.9...node-ui-v0.2.10) (2025-04-22)
+## [0.2.10](https://github.com/PrivateAIM/node-ui/compare/node-ui-v0.2.9...node-ui-v0.2.10) (2025-04-22) 
 
 
 ### Features
