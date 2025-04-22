@@ -1,3 +1,4 @@
+import { useToast } from "primevue/usetoast";
 import {
   showDownstreamConnectionErrorToast,
   showHubAdapterConnectionErrorToast,
@@ -7,6 +8,8 @@ import {
   showWrongRobotIdToast,
 } from "~/composables/connectionErrorToast";
 import { $fetch } from "ofetch";
+
+const toast = useToast();
 
 export const fakeHubApi = $fetch.create({
   baseURL: "",
@@ -21,9 +24,9 @@ export const fakeHubApi = $fetch.create({
     console.error(response);
     if (response.status === 500) {
       if (typeof request === "string" && request.includes("kong")) {
-        showKongConnectionErrorToast();
+        showKongConnectionErrorToast(toast);
       } else {
-        showHubAdapterConnectionErrorToast();
+        showHubAdapterConnectionErrorToast(toast);
       }
     } else if (response.status === 503) {
       let downstreamService: string;
@@ -32,17 +35,17 @@ export const fakeHubApi = $fetch.create({
       } else {
         downstreamService = "needed";
       }
-      showDownstreamConnectionErrorToast(downstreamService);
+      showDownstreamConnectionErrorToast(toast, downstreamService);
     } else if (response.status === 400) {
       navigateTo("/");
       if (response._data.detail.code === "invalid_credentials") {
-        showInvalidRobotCredentialsToast();
+        showInvalidRobotCredentialsToast(toast);
       } else {
-        showWrongRobotIdToast();
+        showWrongRobotIdToast(toast);
       }
     } else if (response.status === 408) {
       navigateTo("/");
-      showHubConnectionError();
+      showHubConnectionError(toast);
     }
   },
 });

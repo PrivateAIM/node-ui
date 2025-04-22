@@ -4,6 +4,9 @@ import { formatDataRow } from "~/utils/format-data-row";
 import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
 import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
+import { useToast } from "primevue/usetoast";
+
+const toast = useToast();
 
 const projects = ref();
 
@@ -17,10 +20,10 @@ function parseData() {
     projects.value = formatDataRow(
       response.value!.data as unknown as Map<string, string | number | null>[],
       dataRowUnixCols,
-      expandRowEntries
+      expandRowEntries,
     );
   } else if (error.value?.statusCode === 500) {
-    showHubAdapterConnectionErrorToast();
+    showHubAdapterConnectionErrorToast(toast);
   }
 }
 parseData();
