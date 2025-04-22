@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.2.11](https://github.com/PrivateAIM/node-ui/compare/v0.2.10...v0.2.11) (2025-04-22)
+
+
+### Bug Fixes
+
+* ci again ([4145058](https://github.com/PrivateAIM/node-ui/commit/4145058781e5b5ab3468ae7f8bd5752005e7f3af))
+* ci again ([8dafe73](https://github.com/PrivateAIM/node-ui/commit/8dafe73c48fa38eaab69e3697d7c868f405f094b))
+* ci again ([ed80bd5](https://github.com/PrivateAIM/node-ui/commit/ed80bd59ed08469b2493f944a3802e75517a99c0))
+* ci again ([569e0c9](https://github.com/PrivateAIM/node-ui/commit/569e0c9f4ab8d2d1d09ae096b1c96f8b8a5756b1))
+* ci again ([718587b](https://github.com/PrivateAIM/node-ui/commit/718587ba6807d9e36fbc25e2060c4d2cb45ec047))
+* ci again ([092ab6c](https://github.com/PrivateAIM/node-ui/commit/092ab6c72bc29e2435a5701d48138dd0d0130512))
+* ci again ([47174e0](https://github.com/PrivateAIM/node-ui/commit/47174e01f04f3de6aaabf4b7407c9fe72a1c456b))
+* ci again ([9e6502f](https://github.com/PrivateAIM/node-ui/commit/9e6502f9a689e010503631faf19f2d8625801b6e))
+
+
+### Reverts
+
+* to v0.2.9 ([61251cb](https://github.com/PrivateAIM/node-ui/commit/61251cbbf62eb48a22350c37cd3ae05bf60f3f84))
+
 ## [0.2.10](https://github.com/PrivateAIM/node-ui/compare/v0.2.9...v0.2.10) (2025-04-22)
 
 
