@@ -2,6 +2,11 @@ name: Build and push Docker images
 
 on:
   workflow_dispatch:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - develop
   push:
     branches:
       - develop
