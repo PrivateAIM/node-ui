@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       released: ${{ steps.release.outputs.release_created }}
+      version: ${{ steps.release.outputs.version }}
     permissions:
       contents: write
       packages: write
@@ -30,6 +31,7 @@ jobs:
       - name: check-release
         run: |
           echo "Was a release created: ${{ steps.release.outputs.release_created }}"
+          echo "New version: ${{ steps.release.outputs.version }}"
 
   build-prod-image:
     name: Build and push production Docker image
