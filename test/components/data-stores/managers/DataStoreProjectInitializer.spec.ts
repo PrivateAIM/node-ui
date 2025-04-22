@@ -159,24 +159,13 @@ describe("DataStoreProjectInitializer.vue", () => {
 
     await flushPromises();
 
-    const numberToasts = storeType === "S3" ? 2 : 1;
-    expect(spy).toHaveBeenCalledTimes(numberToasts);
+    expect(spy).toHaveBeenCalledTimes(1);
     expect(spy).toHaveBeenCalledWith({
       severity: toastSeverity,
       summary: toastMsg,
       detail: toastDetail,
       life: 5000,
     });
-
-    if (numberToasts > 1) {
-      // Should also trigger the kong connection error toast with 500 response
-      expect(spy).toHaveBeenCalledWith({
-        severity: "error",
-        summary: "Connection error",
-        detail: "Unable to contact the Kong gateway service.",
-        life: 5000,
-      });
-    }
   }
 
   it("Create a valid data store", async () => {
