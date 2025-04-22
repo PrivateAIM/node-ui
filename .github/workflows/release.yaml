@@ -2,17 +2,9 @@ name: Build and push Docker images
 
 on:
   workflow_dispatch:
-  pull_request:
-    types:
-      - closed
-    branches:
-      - develop
   push:
     branches:
       - develop
-
-permissions:
-  contents: read # for checkout
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -23,7 +15,7 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
+      released: ${{ steps.release.outputs.release_created }}
     permissions:
       contents: write
       packages: write
@@ -35,9 +27,12 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: check-release
+        run: echo ${{ steps.release.outputs.release_created }}
+
   build-prod-image:
     name: Build and push production Docker image
-    if: ${{ needs.release-please.outputs.release_created }}
+    if: ${{ needs.release-please.outputs.released }}
     needs: release-please  # Wait until pkg bumped
     runs-on: ubuntu-latest
     permissions:
