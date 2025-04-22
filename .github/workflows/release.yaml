@@ -28,9 +28,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: check-release
-        env:
-          OUTPUT1: ${{ steps.release.outputs.release_created }}
-        run: echo "$OUTPUT1"
+        run: |
+          echo "Was a release created: ${{ steps.release.outputs.release_created }}"
 
   build-prod-image:
     name: Build and push production Docker image
