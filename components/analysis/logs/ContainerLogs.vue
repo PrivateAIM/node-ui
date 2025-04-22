@@ -31,8 +31,6 @@ const {
   error,
 } = await getAnalysisLogs(analysisId);
 
-console.log(response.value);
-
 function parseLogs(logResp: logResponse | null): logEntry[] {
   const analysisPods = logResp?.analysis as Map<string, string>;
   let compiledLogs: logEntry[] = [];

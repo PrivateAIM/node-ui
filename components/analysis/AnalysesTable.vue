@@ -140,7 +140,7 @@ function updateRunStatus(analysisNodeId: string, newStatus: string) {
 // Missing data store for row toast
 const showDataStoreNavToast = () => {
   toast.add({
-    severity: "warn",
+    severity: "error",
     summary:
       "Unable to find an associated data store, click the button below " +
       "to create a data store for the project of this analysis",
