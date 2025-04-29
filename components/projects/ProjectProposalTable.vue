@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { useToast } from "primevue/usetoast";
 import { getProjectNodes } from "~/composables/useAPIFetch";
 import ApproveRejectButtons from "~/components/table/ApproveRejectButtons.vue";
 import { formatDataRow } from "~/utils/format-data-row";
@@ -8,6 +9,8 @@ import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErro
 import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
 import { getApprovalStatusSeverity } from "~/utils/status-tag-severity";
+
+const toast = useToast();
 
 const proposals = ref();
 const expandedRows = ref({});
@@ -28,7 +31,7 @@ function parseData() {
       expandRowEntries,
     );
   } else if (error.value?.statusCode === 500) {
-    showHubAdapterConnectionErrorToast();
+    showHubAdapterConnectionErrorToast(toast);
   }
 }
 

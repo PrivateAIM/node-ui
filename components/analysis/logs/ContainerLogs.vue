@@ -7,6 +7,7 @@ import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErro
 import RefreshSwitch from "~/components/analysis/logs/RefreshSwitch.vue";
 import AnalysisLogCardContent from "~/components/analysis/logs/AnalysisLogCardContent.vue";
 import { useNuxtApp } from "#app";
+import { useToast } from "primevue/usetoast";
 
 interface logResponse {
   analysis: Map<string, string>;
@@ -20,6 +21,7 @@ interface logEntry {
 }
 
 const route = useRoute();
+const toast = useToast();
 const analysisId = route.params.id as string;
 const currentLogs = ref([]);
 const prevLogs = ref([]);
@@ -30,8 +32,6 @@ const {
   status,
   error,
 } = await getAnalysisLogs(analysisId);
-
-console.log(response.value);
 
 function parseLogs(logResp: logResponse | null): logEntry[] {
   const analysisPods = logResp?.analysis as Map<string, string>;
@@ -54,7 +54,7 @@ function gatherCurrentLogs() {
   if (status.value === "success") {
     currentLogs.value = parseLogs(response.value);
   } else if (error.value?.statusCode === 500) {
-    showHubAdapterConnectionErrorToast();
+    showHubAdapterConnectionErrorToast(toast);
   }
 }
 
