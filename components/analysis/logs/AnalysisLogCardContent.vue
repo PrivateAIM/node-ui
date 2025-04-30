@@ -1,8 +1,17 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { Card, ScrollPanel } from "primevue";
 const props = defineProps({
   nginxLogs: String || null,
   analysisLogs: String || null,
+});
+const logBottom = ref();
+
+const scrollToBottom = (element) => {
+  element.scrollIntoView({ behavior: "smooth", block: "nearest" });
+};
+
+onMounted(() => {
+  scrollToBottom(logBottom.value);
 });
 </script>
 
@@ -19,6 +28,7 @@ const props = defineProps({
               {{ props.nginxLogs }}
             </span>
             <span v-else>No logs found...</span>
+            <div ref="logBottom"></div>
           </ScrollPanel>
         </div>
       </template>
@@ -33,6 +43,7 @@ const props = defineProps({
             {{ props.analysisLogs }}
           </span>
           <span v-else>No logs found...</span>
+          <div ref="logBottom"></div>
         </ScrollPanel>
       </template>
     </Card>
