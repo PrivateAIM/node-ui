@@ -77,7 +77,12 @@ async function onSubmitCreateDataStoreAndProject() {
 
   for (const key in datastoreSettings) {
     if (!datastoreSettings[key]) {
-      alert(`${key} is not defined!`);
+      toast.add({
+        severity: "error",
+        summary: "Value missing",
+        detail: `${key} is not defined!`,
+        life: 5000,
+      });
       return;
     }
   }
