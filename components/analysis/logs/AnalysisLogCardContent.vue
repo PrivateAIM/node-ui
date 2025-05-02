@@ -4,14 +4,22 @@ const props = defineProps({
   nginxLogs: String || null,
   analysisLogs: String || null,
 });
-const logBottom = ref();
+const nginxLogBottom = ref();
+const analysisLogBottom = ref();
 
 const scrollToBottom = (element) => {
   element.scrollIntoView({ behavior: "smooth", block: "nearest" });
 };
 
 onMounted(() => {
-  scrollToBottom(logBottom.value);
+  scrollToBottom(nginxLogBottom.value);
+  scrollToBottom(analysisLogBottom.value);
+});
+
+onUpdated(() => {
+  // When refresh is toggled on
+  scrollToBottom(nginxLogBottom.value);
+  scrollToBottom(analysisLogBottom.value);
 });
 </script>
 
@@ -28,7 +36,7 @@ onMounted(() => {
               {{ props.nginxLogs }}
             </span>
             <span v-else>No logs found...</span>
-            <div ref="logBottom"></div>
+            <div ref="nginxLogBottom"></div>
           </ScrollPanel>
         </div>
       </template>
@@ -43,7 +51,7 @@ onMounted(() => {
             {{ props.analysisLogs }}
           </span>
           <span v-else>No logs found...</span>
-          <div ref="logBottom"></div>
+          <div ref="analysisLogBottom"></div>
         </ScrollPanel>
       </template>
     </Card>
