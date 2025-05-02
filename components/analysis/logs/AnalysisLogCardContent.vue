@@ -1,8 +1,26 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { Card, ScrollPanel } from "primevue";
+import { ref, onMounted, onUpdated } from "vue";
 const props = defineProps({
   nginxLogs: String || null,
   analysisLogs: String || null,
+});
+const nginxLogBottom = ref();
+const analysisLogBottom = ref();
+
+const scrollToBottom = (element) => {
+  element.scrollIntoView({ behavior: "smooth", block: "nearest" });
+};
+
+onMounted(() => {
+  scrollToBottom(nginxLogBottom.value);
+  scrollToBottom(analysisLogBottom.value);
+});
+
+onUpdated(() => {
+  // When refresh is toggled on
+  scrollToBottom(nginxLogBottom.value);
+  scrollToBottom(analysisLogBottom.value);
 });
 </script>
 
@@ -19,6 +37,7 @@ const props = defineProps({
               {{ props.nginxLogs }}
             </span>
             <span v-else>No logs found...</span>
+            <div ref="nginxLogBottom"></div>
           </ScrollPanel>
         </div>
       </template>
@@ -33,6 +52,7 @@ const props = defineProps({
             {{ props.analysisLogs }}
           </span>
           <span v-else>No logs found...</span>
+          <div ref="analysisLogBottom"></div>
         </ScrollPanel>
       </template>
     </Card>
