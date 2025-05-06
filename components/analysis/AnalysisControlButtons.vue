@@ -3,6 +3,7 @@ import {
   AnalysisBuildStatus,
   AnalysisNodeRunStatus,
   type BodyCreateAnalysisPoPost,
+  type LinkProjectAnalysis,
 } from "~/services/Api";
 import { useToast } from "primevue/usetoast";
 import { useNuxtApp } from "#app";
@@ -94,7 +95,7 @@ async function onStartAnalysis() {
   analysisProps.node_id = props.nodeId!;
 
   // Bind data to Analysis via Kong
-  let bindDataStoreResp: unknown;
+  let bindDataStoreResp: LinkProjectAnalysis | null = null;
   try {
     bindDataStoreResp = await useNuxtApp().$hubApi("/kong/analysis", {
       method: "POST",
@@ -111,7 +112,6 @@ async function onStartAnalysis() {
         "Duplicate entry error",
         "A data store is already mapped to this analysis and will be reused",
       );
-      bindDataStoreResp = "duplicate";
     } else {
       // If not 409, show error and quit process
       if (error.status === 404) {
@@ -132,6 +132,7 @@ async function onStartAnalysis() {
   // Start Pod
   if (bindDataStoreResp) {
     // Only start the pod if a data store is ready for the analysis
+    analysisProps.kong_token = bindDataStoreResp.keyauth.key!;
     const startPodResp: POResp = (await useNuxtApp()
       .$hubApi("/po", {
         method: "POST",

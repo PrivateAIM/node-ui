@@ -269,6 +269,12 @@ export interface BodyCreateAnalysisPoPost {
    */
   project_id: string;
   /**
+   * Kong Token
+   * Analysis keyauth kong token
+   * @format uuid
+   */
+  kong_token: string;
+  /**
    * Node Id
    * Node UUID
    * @format uuid
@@ -288,6 +294,20 @@ export interface BodyCreateAndConnectAnalysisToProjectKongAnalysisPost {
    * UUID or name of the analysis
    */
   analysis_id: string;
+}
+
+/** Body_create_data_store_kong_datastore_post */
+export interface BodyCreateDataStoreKongDatastorePost {
+  /**
+   * Data store metadata.
+   * Required information for creating a new data store.
+   */
+  datastore: ServiceRequest;
+  /**
+   * Ds Type
+   * Data store type. Either 's3' or 'fhir'
+   */
+  ds_type: string;
 }
 
 /** Body_create_datastore_and_project_with_link_kong_initialize_post */
@@ -313,9 +333,8 @@ export interface BodyCreateDatastoreAndProjectWithLinkKongInitializePost {
   /**
    * Ds Type
    * Data store type. Either 's3' or 'fhir'
-   * @default "fhir"
    */
-  ds_type?: string;
+  ds_type: string;
   /**
    * Data store metadata.
    * Required information for creating a new data store.
@@ -328,13 +347,11 @@ export interface BodyCreateProjectAndConnectToDatastoreKongProjectPost {
   /**
    * Data Store Id
    * UUID of the data store or 'service'
-   * @format uuid
    */
   data_store_id: string;
   /**
    * Project Id
    * UUID of the project
-   * @format uuid
    */
   project_id: string;
   /**
@@ -371,6 +388,12 @@ export interface BodyGetAnalysisImageUrlAnalysisImagePost {
    * @format uuid
    */
   project_id: string;
+  /**
+   * Kong Token
+   * Analysis keyauth kong token
+   * @format uuid
+   */
+  kong_token: string;
   /**
    * Node Id
    * Node UUID
@@ -497,8 +520,7 @@ export interface CreateServiceRequestClientCertificate {
  * Response from disconnecting a project from a datastore.
  */
 export interface DeleteProject {
-  /** Removed Routes */
-  removed_routes: string[] | null;
+  removed: Route | null;
   /** Status */
   status?: number | null;
 }
@@ -2422,7 +2444,7 @@ export class Api<
      * @secure
      */
     createDataStoreKongDatastorePost: (
-      data: ServiceRequest,
+      data: BodyCreateDataStoreKongDatastorePost,
       params: RequestParams = {},
     ) =>
       this.request<Service, void | HTTPValidationError>({
@@ -2576,6 +2598,7 @@ export class Api<
      * @secure
      */
     deleteProjectKongProjectProjectIdDelete: (
+      projectRouteId: string,
       projectId: string,
       params: RequestParams = {},
     ) =>
