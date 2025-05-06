@@ -1,5 +1,6 @@
 /* eslint-disable */
 /* tslint:disable */
+// @ts-nocheck
 /*
  * ---------------------------------------------------------------
  * ## THIS FILE WAS GENERATED VIA SWAGGER-TYPESCRIPT-API        ##
@@ -8,6 +9,87 @@
  * ## SOURCE: https://github.com/acacode/swagger-typescript-api ##
  * ---------------------------------------------------------------
  */
+
+/**
+ * ConfigurationStatus
+ * "Possible values for configuration status.
+ */
+export enum ConfigurationStatus {
+  Base = "base",
+  SecurityConfigured = "security_configured",
+  ResourceConfigured = "resource_configured",
+  HashGenerated = "hash_generated",
+  HashSigned = "hash_signed",
+  Finished = "finished",
+}
+
+/**
+ * BucketType
+ * Bucket types.
+ */
+export enum BucketType {
+  CODE = "CODE",
+  RESULT = "RESULT",
+  TEMP = "TEMP",
+}
+
+/**
+ * ApprovalStatus
+ * Status of project possibilities.
+ */
+export enum ApprovalStatus {
+  Approved = "approved",
+  Rejected = "rejected",
+}
+
+/** AnalysisStatus */
+export enum AnalysisStatus {
+  Started = "started",
+  Created = "created",
+  Running = "running",
+  Stopped = "stopped",
+}
+
+/**
+ * AnalysisRunStatus
+ * Possible values for analysis run status.
+ */
+export enum AnalysisRunStatus {
+  Running = "running",
+  Starting = "starting",
+  Started = "started",
+  Stopping = "stopping",
+  Stopped = "stopped",
+  Finished = "finished",
+  Failed = "failed",
+}
+
+/**
+ * AnalysisNodeRunStatus
+ * Possible values for analysis run status.
+ */
+export enum AnalysisNodeRunStatus {
+  Running = "running",
+  Starting = "starting",
+  Started = "started",
+  Stopping = "stopping",
+  Stopped = "stopped",
+  Finished = "finished",
+  Failed = "failed",
+}
+
+/**
+ * AnalysisBuildStatus
+ * Possible values for analysis build status.
+ */
+export enum AnalysisBuildStatus {
+  Starting = "starting",
+  Started = "started",
+  Stopping = "stopping",
+  Stopped = "stopped",
+  Finished = "finished",
+  Failed = "failed",
+}
 
 /**
  * ACL
@@ -50,8 +132,8 @@ export interface ACLConsumer {
 export interface AllAnalyses {
   /** Data */
   data: DetailedAnalysis[];
-  /** Meta */
-  meta: object;
+  /** Metadata included with hub responses */
+  meta: Metadata;
 }
 
 /**
@@ -61,8 +143,8 @@ export interface AllAnalyses {
 export interface AllProjects {
   /** Data */
   data: Project[];
-  /** Meta */
-  meta: object;
+  /** Metadata included with hub responses */
+  meta: Metadata;
 }
 
 /**
@@ -128,19 +210,6 @@ export interface AnalysisOutput {
 }
 
 /**
- * AnalysisBuildStatus
- * Possible values for analysis build status.
- */
-export enum AnalysisBuildStatus {
-  Starting = "starting",
-  Started = "started",
-  Stopping = "stopping",
-  Stopped = "stopped",
-  Finished = "finished",
-  Failed = "failed",
-}
-
-/**
  * AnalysisNode
  * Node analysis response model.
  */
@@ -171,50 +240,6 @@ export interface AnalysisNode {
   node_realm_id?: string | null;
   analysis?: DetailedAnalysis | null;
   node?: Node | null;
-}
-
-/**
- * AnalysisNodeRunStatus
- * Possible values for analysis run status.
- */
-export enum AnalysisNodeRunStatus {
-  Running = "running",
-  Starting = "starting",
-  Started = "started",
-  Stopping = "stopping",
-  Stopped = "stopped",
-  Finished = "finished",
-  Failed = "failed",
-}
-
-/**
- * AnalysisRunStatus
- * Possible values for analysis run status.
- */
-export enum AnalysisRunStatus {
-  Running = "running",
-  Starting = "starting",
-  Started = "started",
-  Stopping = "stopping",
-  Stopped = "stopped",
-  Finished = "finished",
-  Failed = "failed",
-}
-
-/** AnalysisStatus */
-export enum AnalysisStatus {
-  Created = "created",
-  Running = "running",
-  Stopped = "stopped",
-}
-
-/**
- * ApprovalStatus
- * Status of project possibilities.
- */
-export enum ApprovalStatus {
-  Approved = "approved",
-  Rejected = "rejected",
 }
 
 /** Body_accept_reject_analysis_node_analysis_nodes__analysis_id__post */
@@ -420,31 +445,8 @@ export interface Bucket {
 export interface BucketList {
   /** Data */
   data: Bucket[];
-  /** Meta */
-  meta: object;
-}
-
-/**
- * BucketType
- * Bucket types.
- */
-export enum BucketType {
-  CODE = "CODE",
-  RESULT = "RESULT",
-  TEMP = "TEMP",
-}
-
-/**
- * ConfigurationStatus
- * "Possible values for configuration status.
- */
-export enum ConfigurationStatus {
-  Base = "base",
-  SecurityConfigured = "security_configured",
-  ResourceConfigured = "resource_configured",
-  HashGenerated = "hash_generated",
-  HashSigned = "hash_signed",
-  Finished = "finished",
+  /** Metadata included with hub responses */
+  meta: Metadata;
 }
 
 /**
@@ -553,7 +555,7 @@ export interface DetailedRoute {
    * Headers
    * One or more lists of values indexed by header name that will cause this route to match if present in the request. The `Host` header cannot be used with this hosts should be specified using the `hosts` attribute. When `headers` contains only one value and that value starts with the special prefix `~*`, the value is interpreted as a regular expression.
    */
-  headers?: object | null;
+  headers?: Record<string, any> | null;
   /**
    * Hosts
    * A list of domain names that match this route. Note that the hosts value is case sensitive.
@@ -760,11 +762,11 @@ export interface DetailedService {
  */
 export interface DownstreamHealthCheck {
   /** Po */
-  po: object | string;
+  po: Record<string, any> | string;
   /** Results */
-  results: object | string;
+  results: Record<string, any> | string;
   /** Kong */
-  kong: object | string;
+  kong: Record<string, any> | string;
 }
 
 /** HTTPValidationError */
@@ -843,8 +845,8 @@ export interface LinkProjectAnalysis {
 export interface ListAnalysisNodes {
   /** Data */
   data: AnalysisNode[];
-  /** Meta */
-  meta: object;
+  /** Metadata included with hub responses */
+  meta: Metadata;
 }
 
 /**
@@ -865,8 +867,8 @@ export interface ListConsumers {
 export interface ListProjectNodes {
   /** Data */
   data: ProjectNode[];
-  /** Meta */
-  meta: object;
+  /** Metadata included with hub responses */
+  meta: Metadata;
 }
 
 /**
@@ -900,9 +902,9 @@ export interface ListServices {
 /** LogResponse */
 export interface LogResponse {
   /** Analysis */
-  analysis?: object | null;
+  analysis?: Record<string, any> | null;
   /** Nginx */
-  nginx?: object | null;
+  nginx?: Record<string, any> | null;
 }
 
 /**
@@ -928,6 +930,28 @@ export interface MasterImage {
   command?: string | null;
   /** Command Arguments */
   command_arguments?: string | null;
+}
+
+/**
+ * Metadata
+ * Metadata included with hub responses
+ */
+export interface Metadata {
+  /**
+   * Total
+   * @default 0
+   */
+  total?: number;
+  /**
+   * Limit
+   * @default 0
+   */
+  limit?: number;
+  /**
+   * Offset
+   * @default 0
+   */
+  offset?: number;
 }
 
 /**
@@ -993,8 +1017,8 @@ export interface PartialAnalysisBucketFile {
 export interface PartialBucketFilesList {
   /** Data */
   data: PartialAnalysisBucketFile[];
-  /** Meta */
-  meta: object;
+  /** Metadata included with hub responses */
+  meta: Metadata;
 }
 
 /** PodResponse */
@@ -1135,7 +1159,7 @@ export interface Route {
    * Headers
    * One or more lists of values indexed by header name that will cause this route to match if present in the request. The `Host` header cannot be used with this hosts should be specified using the `hosts` attribute. When `headers` contains only one value and that value starts with the special prefix `~*`, the value is interpreted as a regular expression.
    */
-  headers?: object | null;
+  headers?: Record<string, any> | null;
   /**
    * Hosts
    * A list of domain names that match this route. Note that the hosts value is case sensitive.
@@ -1436,7 +1460,7 @@ export interface ServiceRequest {
 /** StatusResponse */
 export interface StatusResponse {
   /** Status */
-  status?: object | null;
+  status?: Record<string, any> | null;
 }
 
 /**
@@ -1488,16 +1512,22 @@ export interface FullRequestParams extends Omit<RequestInit, "body"> {
   cancelToken?: CancelToken;
 }
 
-export type RequestParams = Omit<FullRequestParams, "body" | "method" | "query" | "path">;
+export type RequestParams = Omit<
+  FullRequestParams,
+  "body" | "method" | "query" | "path"
+>;
 
 export interface ApiConfig<SecurityDataType = unknown> {
   baseUrl?: string;
   baseApiParams?: Omit<RequestParams, "baseUrl" | "cancelToken" | "signal">;
-  securityWorker?: (securityData: SecurityDataType | null) => Promise<RequestParams | void> | RequestParams | void;
+  securityWorker?: (
+    securityData: SecurityDataType | null,
+  ) => Promise<RequestParams | void> | RequestParams | void;
   customFetch?: typeof fetch;
 }
 
-export interface HttpResponse<D extends unknown, E extends unknown = unknown> extends Response {
+export interface HttpResponse<D extends unknown, E extends unknown = unknown>
+  extends Response {
   data: D;
   error: E;
 }
@@ -1516,7 +1546,8 @@ export class HttpClient<SecurityDataType = unknown> {
   private securityData: SecurityDataType | null = null;
   private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
   private abortControllers = new Map<CancelToken, AbortController>();
-  private customFetch = (...fetchParams: Parameters<typeof fetch>) => fetch(...fetchParams);
+  private customFetch = (...fetchParams: Parameters<typeof fetch>) =>
+    fetch(...fetchParams);
 
   private baseApiParams: RequestParams = {
     credentials: "same-origin",
@@ -1549,9 +1580,15 @@ export class HttpClient<SecurityDataType = unknown> {
 
   protected toQueryString(rawQuery?: QueryParamsType): string {
     const query = rawQuery || {};
-    const keys = Object.keys(query).filter((key) => "undefined" !== typeof query[key]);
+    const keys = Object.keys(query).filter(
+      (key) => "undefined" !== typeof query[key],
+    );
     return keys
-      .map((key) => (Array.isArray(query[key]) ? this.addArrayQueryParam(query, key) : this.addQueryParam(query, key)))
+      .map((key) =>
+        Array.isArray(query[key])
+          ? this.addArrayQueryParam(query, key)
+          : this.addQueryParam(query, key),
+      )
       .join("&");
   }
 
@@ -1562,8 +1599,13 @@ export class HttpClient<SecurityDataType = unknown> {
 
   private contentFormatters: Record<ContentType, (input: any) => any> = {
     [ContentType.Json]: (input: any) =>
-      input !== null && (typeof input === "object" || typeof input === "string") ? JSON.stringify(input) : input,
-    [ContentType.Text]: (input: any) => (input !== null && typeof input !== "string" ? JSON.stringify(input) : input),
+      input !== null && (typeof input === "object" || typeof input === "string")
+        ? JSON.stringify(input)
+        : input,
+    [ContentType.Text]: (input: any) =>
+      input !== null && typeof input !== "string"
+        ? JSON.stringify(input)
+        : input,
     [ContentType.FormData]: (input: any) =>
       Object.keys(input || {}).reduce((formData, key) => {
         const property = input[key];
@@ -1580,7 +1622,10 @@ export class HttpClient<SecurityDataType = unknown> {
     [ContentType.UrlEncoded]: (input: any) => this.toQueryString(input),
   };
 
-  protected mergeRequestParams(params1: RequestParams, params2?: RequestParams): RequestParams {
+  protected mergeRequestParams(
+    params1: RequestParams,
+    params2?: RequestParams,
+  ): RequestParams {
     return {
       ...this.baseApiParams,
       ...params1,
@@ -1593,7 +1638,9 @@ export class HttpClient<SecurityDataType = unknown> {
     };
   }
 
-  protected createAbortSignal = (cancelToken: CancelToken): AbortSignal | undefined => {
+  protected createAbortSignal = (
+    cancelToken: CancelToken,
+  ): AbortSignal | undefined => {
     if (this.abortControllers.has(cancelToken)) {
       const abortController = this.abortControllers.get(cancelToken);
       if (abortController) {
@@ -1637,15 +1684,26 @@ export class HttpClient<SecurityDataType = unknown> {
     const payloadFormatter = this.contentFormatters[type || ContentType.Json];
     const responseFormat = format || requestParams.format;
 
-    return this.customFetch(`${baseUrl || this.baseUrl || ""}${path}${queryString ? `?${queryString}` : ""}`, {
-      ...requestParams,
-      headers: {
-        ...(requestParams.headers || {}),
-        ...(type && type !== ContentType.FormData ? { "Content-Type": type } : {}),
+    return this.customFetch(
+      `${baseUrl || this.baseUrl || ""}${path}${queryString ? `?${queryString}` : ""}`,
+      {
+        ...requestParams,
+        headers: {
+          ...(requestParams.headers || {}),
+          ...(type && type !== ContentType.FormData
+            ? { "Content-Type": type }
+            : {}),
+        },
+        signal:
+          (cancelToken
+            ? this.createAbortSignal(cancelToken)
+            : requestParams.signal) || null,
+        body:
+          typeof body === "undefined" || body === null
+            ? null
+            : payloadFormatter(body),
       },
-      signal: (cancelToken ? this.createAbortSignal(cancelToken) : requestParams.signal) || null,
-      body: typeof body === "undefined" || body === null ? null : payloadFormatter(body),
-    }).then(async (response) => {
+    ).then(async (response) => {
       const r = response.clone() as HttpResponse<T, E>;
       r.data = null as unknown as T;
       r.error = null as unknown as E;
@@ -1683,7 +1741,9 @@ export class HttpClient<SecurityDataType = unknown> {
  *
  * FLAME project API for interacting with various microservices within the node for the UI.
  */
-export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
+export class Api<
+  SecurityDataType extends unknown,
+> extends HttpClient<SecurityDataType> {
   po = {
     /**
      * @description Gather the image URL for the requested analysis container and send information to the PO.
@@ -1694,7 +1754,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request POST:/po
      * @secure
      */
-    createAnalysisPoPost: (data: BodyCreateAnalysisPoPost, params: RequestParams = {}) =>
+    createAnalysisPoPost: (
+      data: BodyCreateAnalysisPoPost,
+      params: RequestParams = {},
+    ) =>
       this.request<CreatePodResponse, void | HTTPValidationError>({
         path: `/po`,
         method: "POST",
@@ -1714,7 +1777,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/po/{analysis_id}/logs
      * @secure
      */
-    getAnalysisLogsPoAnalysisIdLogsGet: (analysisId: string | null, params: RequestParams = {}) =>
+    getAnalysisLogsPoAnalysisIdLogsGet: (
+      analysisId: string | null,
+      params: RequestParams = {},
+    ) =>
       this.request<LogResponse, void | HTTPValidationError>({
         path: `/po/${analysisId}/logs`,
         method: "GET",
@@ -1732,7 +1798,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/po/{analysis_id}/history
      * @secure
      */
-    getAnalysisLogHistoryPoAnalysisIdHistoryGet: (analysisId: string | null, params: RequestParams = {}) =>
+    getAnalysisLogHistoryPoAnalysisIdHistoryGet: (
+      analysisId: string | null,
+      params: RequestParams = {},
+    ) =>
       this.request<LogResponse, void | HTTPValidationError>({
         path: `/po/${analysisId}/history`,
         method: "GET",
@@ -1750,7 +1819,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/po/{analysis_id}/status
      * @secure
      */
-    getAnalysisStatusPoAnalysisIdStatusGet: (analysisId: string | null, params: RequestParams = {}) =>
+    getAnalysisStatusPoAnalysisIdStatusGet: (
+      analysisId: string | null,
+      params: RequestParams = {},
+    ) =>
       this.request<StatusResponse, void | HTTPValidationError>({
         path: `/po/${analysisId}/status`,
         method: "GET",
@@ -1768,7 +1840,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/po/{analysis_id}/pods
      * @secure
      */
-    getAnalysisPodsPoAnalysisIdPodsGet: (analysisId: string | null, params: RequestParams = {}) =>
+    getAnalysisPodsPoAnalysisIdPodsGet: (
+      analysisId: string | null,
+      params: RequestParams = {},
+    ) =>
       this.request<PodResponse, void | HTTPValidationError>({
         path: `/po/${analysisId}/pods`,
         method: "GET",
@@ -1786,7 +1861,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request PUT:/po/{analysis_id}/stop
      * @secure
      */
-    stopAnalysisPoAnalysisIdStopPut: (analysisId: string | null, params: RequestParams = {}) =>
+    stopAnalysisPoAnalysisIdStopPut: (
+      analysisId: string | null,
+      params: RequestParams = {},
+    ) =>
       this.request<StatusResponse, void | HTTPValidationError>({
         path: `/po/${analysisId}/stop`,
         method: "PUT",
@@ -1804,7 +1882,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request DELETE:/po/{analysis_id}/delete
      * @secure
      */
-    deleteAnalysisPoAnalysisIdDeleteDelete: (analysisId: string | null, params: RequestParams = {}) =>
+    deleteAnalysisPoAnalysisIdDeleteDelete: (
+      analysisId: string | null,
+      params: RequestParams = {},
+    ) =>
       this.request<StatusResponse, void | HTTPValidationError>({
         path: `/po/${analysisId}/delete`,
         method: "DELETE",
@@ -1823,7 +1904,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/local/{object_id}
      * @secure
      */
-    retrieveIntermediateResultFromLocalLocalObjectIdGet: (objectId: string, params: RequestParams = {}) =>
+    retrieveIntermediateResultFromLocalLocalObjectIdGet: (
+      objectId: string,
+      params: RequestParams = {},
+    ) =>
       this.request<any, void | HTTPValidationError>({
         path: `/local/${objectId}`,
         method: "GET",
@@ -1865,7 +1949,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/intermediate/{object_id}
      * @secure
      */
-    retrieveIntermediateResultFromHubIntermediateObjectIdGet: (objectId: string, params: RequestParams = {}) =>
+    retrieveIntermediateResultFromHubIntermediateObjectIdGet: (
+      objectId: string,
+      params: RequestParams = {},
+    ) =>
       this.request<any, void | HTTPValidationError>({
         path: `/intermediate/${objectId}`,
         method: "GET",
@@ -1907,7 +1994,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request PUT:/final
      * @secure
      */
-    submitFinalResultToHubFinalPut: (data: BodySubmitFinalResultToHubFinalPut, params: RequestParams = {}) =>
+    submitFinalResultToHubFinalPut: (
+      data: BodySubmitFinalResultToHubFinalPut,
+      params: RequestParams = {},
+    ) =>
       this.request<void, void | HTTPValidationError>({
         path: `/final`,
         method: "PUT",
@@ -1945,7 +2035,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/projects/{project_id}
      * @secure
      */
-    listSpecificProjectProjectsProjectIdGet: (projectId: string, params: RequestParams = {}) =>
+    listSpecificProjectProjectsProjectIdGet: (
+      projectId: string,
+      params: RequestParams = {},
+    ) =>
       this.request<Project, void | HTTPValidationError>({
         path: `/projects/${projectId}`,
         method: "GET",
@@ -1964,10 +2057,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/project-nodes
      * @secure
      */
-    listProjectProposalsProjectNodesGet: (params: RequestParams = {}) =>
-      this.request<ListProjectNodes, void>({
+    listProjectProposalsProjectNodesGet: (
+      query?: {
+        /**
+         * Debug
+         * @default false
+         */
+        debug?: boolean;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ListProjectNodes, void | HTTPValidationError>({
         path: `/project-nodes`,
         method: "GET",
+        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -1985,11 +2088,19 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     acceptRejectProjectProposalProjectNodesProposalIdPost: (
       proposalId: string,
       data: BodyAcceptRejectProjectProposalProjectNodesProposalIdPost,
+      query?: {
+        /**
+         * Debug
+         * @default false
+         */
+        debug?: boolean;
+      },
       params: RequestParams = {},
     ) =>
       this.request<ProjectNode, void | HTTPValidationError>({
         path: `/project-nodes/${proposalId}`,
         method: "POST",
+        query: query,
         body: data,
         secure: true,
         type: ContentType.UrlEncoded,
@@ -2007,10 +2118,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/analysis-nodes
      * @secure
      */
-    listAnalysesOfNodesAnalysisNodesGet: (params: RequestParams = {}) =>
-      this.request<ListAnalysisNodes, void>({
+    listAnalysesOfNodesAnalysisNodesGet: (
+      query?: {
+        /**
+         * Debug
+         * @default false
+         */
+        debug?: boolean;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ListAnalysisNodes, void | HTTPValidationError>({
         path: `/analysis-nodes`,
         method: "GET",
+        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -2025,10 +2146,21 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/analysis-nodes/{analysis_id}
      * @secure
      */
-    listSpecificAnalysisNodeAnalysisNodesAnalysisIdGet: (analysisId: string, params: RequestParams = {}) =>
+    listSpecificAnalysisNodeAnalysisNodesAnalysisIdGet: (
+      analysisId: string,
+      query?: {
+        /**
+         * Debug
+         * @default false
+         */
+        debug?: boolean;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<AnalysisNode, void | HTTPValidationError>({
         path: `/analysis-nodes/${analysisId}`,
         method: "GET",
+        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -2086,7 +2218,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/analyses/{analysis_id}
      * @secure
      */
-    listSpecificAnalysisAnalysesAnalysisIdGet: (analysisId: string, params: RequestParams = {}) =>
+    listSpecificAnalysisAnalysesAnalysisIdGet: (
+      analysisId: string,
+      params: RequestParams = {},
+    ) =>
       this.request<AnalysisOutput, void | HTTPValidationError>({
         path: `/analyses/${analysisId}`,
         method: "GET",
@@ -2193,7 +2328,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/analysis-buckets/{bucket_id}
      * @secure
      */
-    listSpecificAnalysisBucketsAnalysisBucketsBucketIdGet: (bucketId: string, params: RequestParams = {}) =>
+    listSpecificAnalysisBucketsAnalysisBucketsBucketIdGet: (
+      bucketId: string,
+      params: RequestParams = {},
+    ) =>
       this.request<Bucket, void | HTTPValidationError>({
         path: `/analysis-buckets/${bucketId}`,
         method: "GET",
@@ -2212,7 +2350,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/analysis-bucket-files
      * @secure
      */
-    listAllAnalysisBucketFilesAnalysisBucketFilesGet: (params: RequestParams = {}) =>
+    listAllAnalysisBucketFilesAnalysisBucketFilesGet: (
+      params: RequestParams = {},
+    ) =>
       this.request<PartialBucketFilesList, void>({
         path: `/analysis-bucket-files`,
         method: "GET",
@@ -2281,7 +2421,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request POST:/kong/datastore
      * @secure
      */
-    createDataStoreKongDatastorePost: (data: ServiceRequest, params: RequestParams = {}) =>
+    createDataStoreKongDatastorePost: (
+      data: ServiceRequest,
+      params: RequestParams = {},
+    ) =>
       this.request<Service, void | HTTPValidationError>({
         path: `/kong/datastore`,
         method: "POST",
@@ -2331,7 +2474,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request DELETE:/kong/datastore/{data_store_name}
      * @secure
      */
-    deleteDataStoreKongDatastoreDataStoreNameDelete: (dataStoreName: string, params: RequestParams = {}) =>
+    deleteDataStoreKongDatastoreDataStoreNameDelete: (
+      dataStoreName: string,
+      params: RequestParams = {},
+    ) =>
       this.request<any, void | HTTPValidationError>({
         path: `/kong/datastore/${dataStoreName}`,
         method: "DELETE",
@@ -2421,7 +2567,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * @description Disconnect a project from all connected data stores (i.e. delete the "route").
+     * No description
      *
      * @tags Kong
      * @name DeleteProjectKongProjectProjectIdDelete
@@ -2429,7 +2575,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request DELETE:/kong/project/{project_id}
      * @secure
      */
-    deleteProjectKongProjectProjectIdDelete: (projectId: string, params: RequestParams = {}) =>
+    deleteProjectKongProjectProjectIdDelete: (
+      projectId: string,
+      params: RequestParams = {},
+    ) =>
       this.request<DeleteProject, void | HTTPValidationError>({
         path: `/kong/project/${projectId}`,
         method: "DELETE",
@@ -2442,18 +2591,23 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description List all analyses (referred to as consumers by kong) available, can be filtered by analysis_id.
      *
      * @tags Kong
-     * @name ListAnalysesKongAnalysisGet
-     * @summary List Analyses
+     * @name GetAnalysesKongAnalysisGet
+     * @summary Get Analyses
      * @request GET:/kong/analysis
      * @secure
      */
-    listAnalysesKongAnalysisGet: (
+    getAnalysesKongAnalysisGet: (
       query?: {
         /**
          * Analysis Id
          * UUID of the analysis.
          */
         analysis_id?: string | null;
+        /**
+         * Tag
+         * Tag to filter by e.g. project ID
+         */
+        tag?: string | null;
       },
       params: RequestParams = {},
     ) =>
@@ -2498,7 +2652,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request DELETE:/kong/analysis/{analysis_id}
      * @secure
      */
-    deleteAnalysisKongAnalysisAnalysisIdDelete: (analysisId: string, params: RequestParams = {}) =>
+    deleteAnalysisKongAnalysisAnalysisIdDelete: (
+      analysisId: string,
+      params: RequestParams = {},
+    ) =>
       this.request<any, void | HTTPValidationError>({
         path: `/kong/analysis/${analysisId}`,
         method: "DELETE",
@@ -2533,7 +2690,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Perform a Health Check on the downstream microservices
      * @request GET:/health/services
      */
-    getHealthDownstreamServicesHealthServicesGet: (params: RequestParams = {}) =>
+    getHealthDownstreamServicesHealthServicesGet: (
+      params: RequestParams = {},
+    ) =>
       this.request<DownstreamHealthCheck, any>({
         path: `/health/services`,
         method: "GET",
@@ -2550,7 +2709,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Get a token from the IDP
      * @request POST:/token
      */
-    getTokenTokenPost: (data: BodyGetTokenTokenPost, params: RequestParams = {}) =>
+    getTokenTokenPost: (
+      data: BodyGetTokenTokenPost,
+      params: RequestParams = {},
+    ) =>
       this.request<Token, void | HTTPValidationError>({
         path: `/token`,
         method: "POST",
@@ -2569,7 +2731,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request POST:/token/inspect
      */
     inspectTokenTokenInspectPost: (data: string, params: RequestParams = {}) =>
-      this.request<object, void | HTTPValidationError>({
+      this.request<Record<string, any>, void | HTTPValidationError>({
         path: `/token/inspect`,
         method: "POST",
         body: data,

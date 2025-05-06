@@ -11,7 +11,7 @@
     "coverage": "vitest run --coverage",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
-    "build-api": "npx swagger-typescript-api -p ./services/hub_adapter_swagger.json -o ./services/",
+    "build-api": "npx swagger-typescript-api generate -p ./services/hub_adapter_swagger.json -o ./services/",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "prod": "node .output/server/index.mjs",
