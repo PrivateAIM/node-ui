@@ -26,7 +26,11 @@ export const fakeHubApi = $fetch.create({
       if (typeof request === "string" && request.includes("kong")) {
         showKongConnectionErrorToast(toast);
       } else {
-        showHubAdapterConnectionErrorToast(toast);
+        let brokenSvc = null;
+        if (response._data.detail.service) {
+          brokenSvc = response._data.detail.service;
+        }
+        showHubAdapterConnectionErrorToast(toast, brokenSvc);
       }
     } else if (response.status === 503) {
       let downstreamService: string;
