@@ -73,6 +73,6 @@ jobs:
         uses: ./.github/actions/build-docker-image
         with:
           platforms: linux/amd64
-          docker_file: Dockerfile
+          docker_file: prod.Dockerfile
           push: 'true'
           token: ${{ secrets.GITHUB_TOKEN }}

@@ -116,7 +116,33 @@ export const handlers = [
     return HttpResponse.text("200");
   }),
   http.post(`/kong/analysis`, () => {
-    return HttpResponse.text("200");
+    return HttpResponse.json({
+      consumer: {
+        created_at: 1746525117,
+        custom_id: "2923b3c1-e92f-4540-92cc-8595865b72b7-flame",
+        id: "2e21e380-ddfa-4605-9a77-ab35ae4696b9",
+        tags: ["7ecec11f-6db0-425d-81cf-4c4b043f5c27"],
+        username: "2923b3c1-e92f-4540-92cc-8595865b72b7-flame",
+      },
+      keyauth: {
+        consumer: {
+          id: "2e21e380-ddfa-4605-9a77-ab35ae4696b9",
+        },
+        created_at: 1746525117,
+        id: "fd130816-da9b-4a38-b7b3-c0b758d36276",
+        key: "8TzlwgmVuXXovFCcD2tqOQwEUPkq7OmH",
+        tags: ["7ecec11f-6db0-425d-81cf-4c4b043f5c27"],
+      },
+      acl: {
+        consumer: {
+          id: "2e21e380-ddfa-4605-9a77-ab35ae4696b9",
+        },
+        created_at: 1746525117,
+        id: "1ef5b933-9d02-41f7-bab7-518c0c1fceea",
+        group: "7ecec11f-6db0-425d-81cf-4c4b043f5c27",
+        tags: ["7ecec11f-6db0-425d-81cf-4c4b043f5c27"],
+      },
+    });
   }),
   http.post(`/kong/initialize`, async ({ request }) => {
     const body = (await request.json()) as kongBody;
