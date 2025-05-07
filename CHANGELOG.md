@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.2.11](https://github.com/PrivateAIM/node-ui/compare/v0.2.10...v0.2.11) (2025-05-07)
+
+
+### Features
+
+* check for running pod if kong consumer already exists ([aa70912](https://github.com/PrivateAIM/node-ui/commit/aa709123248a3e1b16947d2874d83c15dfe489e9))
+* improved downstream error analysis ([2c63130](https://github.com/PrivateAIM/node-ui/commit/2c63130273940c37cf71c03b0f3fc9af860062af))
+* log scroll bottom works on periodic update ([3b34005](https://github.com/PrivateAIM/node-ui/commit/3b34005113a21292ce0301fc7a29490853d53246))
+* **logs:** jump to bottom of logs ([876a9f0](https://github.com/PrivateAIM/node-ui/commit/876a9f0fb6edcc10f5fb37a83ab4884a730502b6))
+
+
+### Bug Fixes
+
+* better PO response inspection ([0396216](https://github.com/PrivateAIM/node-ui/commit/0396216293bb2a7cb88d190890f0f8245c90a9a1))
+
 ## [0.2.10](https://github.com/PrivateAIM/node-ui/compare/v0.2.9...v0.2.10) (2025-04-22)
 
 
