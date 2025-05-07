@@ -136,9 +136,9 @@ describe("AnalysisControlButtons.vue", () => {
   it("Stop analysis button - missing", async () => {
     await basicButtonCheck(
       ".stop-analysis-btn",
-      "error",
-      "Stop failure",
-      "Failed to stop the analysis container, pod not found",
+      "warn",
+      "Status unknown",
+      "Pod was not found, but the stop command was still issued",
       fakeMissingAnalysisId,
       false,
       {
