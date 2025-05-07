@@ -130,7 +130,8 @@ async function checkPodStatus() {
     })
     .catch(() => null)) as POResp; // Set the response to null if an error occurs
 
-  if (podStatus && podStatus.status) {
+  // If response is not null AND "status" in response AND "status" is not empty
+  if (podStatus && podStatus.status && Object.keys(podStatus.status).length) {
     // If the status is not empty
     showToast(
       "warn",
