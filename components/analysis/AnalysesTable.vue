@@ -84,7 +84,7 @@ function parseData() {
     }
     analyses.value = formattedAnalyses;
   } else if (error.value?.statusCode === 500) {
-    showHubAdapterConnectionErrorToast(toast);
+    showHubAdapterConnectionErrorToast(toast, "Hub");
   }
 }
 
