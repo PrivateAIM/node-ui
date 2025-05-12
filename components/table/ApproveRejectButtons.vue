@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { useNuxtApp } from "#app";
 import { useToast } from "primevue/usetoast";
 
@@ -33,7 +33,7 @@ async function onSubmitApproval(isApproved: boolean) {
       })
       .catch((e) => console.error(e));
   }
-  console.log(JSON.stringify(approvalResp));
+
   if ("approval_status" in approvalResp) {
     showSuccessfulSubmission(isApproved);
     // Send data to parent component
@@ -67,25 +67,23 @@ const showFailedSubmission = () => {
 <template>
   <div class="approvalButtons">
     <Button
-      icon="pi pi-check"
-      class="project-approve-btn"
-      aria-label="Approve"
       v-tooltip.top="'Send approval'"
+      aria-label="Approve"
+      class="project-approve-btn"
+      icon="pi pi-check"
       severity="success"
-      :loading="loading"
       style="margin-right: 10px"
       @click="onSubmitApproval(true)"
     />
     <Button
-      icon="pi pi-times"
-      class="project-reject-btn"
-      aria-label="Reject"
       v-tooltip.top="'Send rejection'"
+      aria-label="Reject"
+      class="project-reject-btn"
+      icon="pi pi-times"
       severity="danger"
-      :loading="loading"
       @click="onSubmitApproval(false)"
     />
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style lang="scss" scoped></style>
