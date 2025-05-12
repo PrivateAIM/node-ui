@@ -31,7 +31,7 @@ function parseData() {
       expandRowEntries,
     );
   } else if (error.value?.statusCode === 500) {
-    showHubAdapterConnectionErrorToast(toast);
+    showHubAdapterConnectionErrorToast(toast, "Hub");
   }
 }
 

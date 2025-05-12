@@ -54,7 +54,7 @@ function gatherCurrentLogs() {
   if (status.value === "success") {
     currentLogs.value = parseLogs(response.value);
   } else if (error.value?.statusCode === 500) {
-    showHubAdapterConnectionErrorToast(toast);
+    showHubAdapterConnectionErrorToast(toast, "PO");
   }
 }
 

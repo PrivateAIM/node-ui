@@ -3,6 +3,7 @@ import {
   AnalysisBuildStatus,
   AnalysisNodeRunStatus,
   type BodyCreateAnalysisPoPost,
+  type LinkProjectAnalysis,
 } from "~/services/Api";
 import { useToast } from "primevue/usetoast";
 import { useNuxtApp } from "#app";
@@ -85,16 +86,8 @@ const showToast = (severity: ToastSeverity, summary: string, msg: string) => {
   });
 };
 
-async function onStartAnalysis() {
-  loading.value = true;
-  setButtonStatuses(AnalysisNodeRunStatus.Starting);
-  const analysisProps = {} as BodyCreateAnalysisPoPost;
-  analysisProps.analysis_id = props.analysisId!;
-  analysisProps.project_id = props.projectId!;
-  analysisProps.node_id = props.nodeId!;
-
-  // Bind data to Analysis via Kong
-  let bindDataStoreResp: unknown;
+async function registerAnalysis() {
+  let bindDataStoreResp: LinkProjectAnalysis | null = null;
   try {
     bindDataStoreResp = await useNuxtApp().$hubApi("/kong/analysis", {
       method: "POST",
@@ -111,9 +104,9 @@ async function onStartAnalysis() {
         "Duplicate entry error",
         "A data store is already mapped to this analysis and will be reused",
       );
-      bindDataStoreResp = "duplicate";
+      await checkPodStatus(); // Check to see if the analysis pod already exists
     } else {
-      // If not 409, show error and quit process
+      // If not 409, show error and quit the process
       if (error.status === 404) {
         emit("missingDataStore");
       } else {
@@ -125,13 +118,45 @@ async function onStartAnalysis() {
       }
       loading.value = false;
       setButtonStatuses(null);
-      return;
     }
   }
+  return bindDataStoreResp;
+}
 
-  // Start Pod
+async function checkPodStatus() {
+  const podStatus: POResp = (await useNuxtApp()
+    .$hubApi(`/po/${props.analysisId}/status`, {
+      method: "GET",
+    })
+    .catch(() => null)) as POResp; // Set the response to null if an error occurs
+
+  // If response is not null AND "status" in response AND "status" is not empty
+  if (podStatus && podStatus.status && Object.keys(podStatus.status).length) {
+    // If the status is not empty
+    showToast(
+      "warn",
+      "Analysis already running",
+      "The analysis is already running on this node. Controls will be updated",
+    );
+    setButtonStatuses(AnalysisNodeRunStatus.Running); // TODO implement better status check (other statuses)
+  }
+}
+
+async function onStartAnalysis() {
+  loading.value = true;
+  setButtonStatuses(AnalysisNodeRunStatus.Starting);
+  const analysisProps = {} as BodyCreateAnalysisPoPost;
+  analysisProps.analysis_id = props.analysisId!;
+  analysisProps.project_id = props.projectId!;
+  analysisProps.node_id = props.nodeId!;
+
+  // Bind data to Analysis via Kong
+  const bindDataStoreResp = await registerAnalysis(); // either null or has kong response
+
+  // Start Pod via the Pod Orchestrator
   if (bindDataStoreResp) {
     // Only start the pod if a data store is ready for the analysis
+    analysisProps.kong_token = bindDataStoreResp.keyauth.key!;
     const startPodResp: POResp = (await useNuxtApp()
       .$hubApi("/po", {
         method: "POST",
@@ -168,9 +193,9 @@ async function onStopAnalysis() {
     } else {
       // No pod statuses returned from PO
       showToast(
-        "error",
-        "Stop failure",
-        "Failed to stop the analysis container, pod not found",
+        "warn",
+        "Status unknown",
+        "Pod was not found, but the stop command was still issued",
       );
     }
     buttonStatuses.value = setButtonStatuses(AnalysisNodeRunStatus.Stopped);

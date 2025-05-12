@@ -1,11 +1,17 @@
-export const showHubAdapterConnectionErrorToast = (toast) => {
+export const showHubAdapterConnectionErrorToast = (
+  toast,
+  svc: string | null,
+) => {
+  let msg = "Unable to contact the API";
+  if (svc) {
+    msg = `Issue with the ${svc}, please check its logs`;
+  }
   toast.add({
     severity: "error",
     summary: "Connection error",
-    detail: "Unable to contact the API.",
+    detail: msg,
     life: 3000,
   });
-  console.warn("Hub Adapter API service unreachable");
 };
 
 export const showKongConnectionErrorToast = (toast) => {
