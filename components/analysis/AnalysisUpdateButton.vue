@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { useNuxtApp } from "#app";
+import { useToast } from "primevue/usetoast";
 import { AnalysisNodeRunStatus } from "~/services/Api";
 
 const props = defineProps({
-  analysisNodeId: String,
+  analysisId: String,
 });
 
 type PoStatusResp = { status: object } | null;
@@ -15,7 +16,7 @@ const toast = useToast();
 async function onClickUpdate() {
   loading.value = true;
   const poUpdate: PoStatusResp = (await useNuxtApp()
-    .$hubApi(`/po/${props.analysisNodeId}/status`, {
+    .$hubApi(`/po/${props.analysisId}/status`, {
       method: "GET",
     })
     .catch(() => {
