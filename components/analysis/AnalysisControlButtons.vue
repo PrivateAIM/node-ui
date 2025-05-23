@@ -3,8 +3,9 @@ import {
   AnalysisBuildStatus,
   AnalysisNodeRunStatus,
   type BodyCreateAnalysisPoPost,
-  type LinkProjectAnalysis,
+  type LinkProjectAnalysis
 } from "~/services/Api";
+import AnalysisUpdateButton from "./AnalysisUpdateButton.vue";
 import { useToast } from "primevue/usetoast";
 import { useNuxtApp } from "#app";
 
@@ -22,12 +23,12 @@ const props = defineProps({
   analysisBuildStatus: [String, null],
   analysisRunStatus: {
     type: [String, null],
-    required: true,
+    required: true
   },
   analysisNodeId: String,
   analysisId: String,
   projectId: String,
-  nodeId: String,
+  nodeId: String
 });
 
 const emit = defineEmits(["newRunStatus", "missingDataStore"]);
@@ -39,13 +40,13 @@ const rerunButtonActiveStates: Array<string | null> = [
   AnalysisNodeRunStatus.Failed,
   AnalysisNodeRunStatus.Finished,
   AnalysisNodeRunStatus.Stopped,
-  AnalysisNodeRunStatus.Stopping,
+  AnalysisNodeRunStatus.Stopping
 ];
 const stopButtonActiveStates: Array<string | null> = [
   AnalysisNodeRunStatus.Running,
   AnalysisNodeRunStatus.Starting,
   AnalysisNodeRunStatus.Started,
-  AnalysisNodeRunStatus.Stopping,
+  AnalysisNodeRunStatus.Stopping
 ];
 const deleteButtonActiveStates: Array<string | null> = [
   AnalysisNodeRunStatus.Failed,
@@ -54,16 +55,16 @@ const deleteButtonActiveStates: Array<string | null> = [
   AnalysisNodeRunStatus.Stopping,
   AnalysisNodeRunStatus.Running,
   AnalysisNodeRunStatus.Starting,
-  AnalysisNodeRunStatus.Started,
+  AnalysisNodeRunStatus.Started
 ];
 
 const buttonStatuses = ref<ButtonStates>(
-  setButtonStatuses(props.analysisRunStatus, false),
+  setButtonStatuses(props.analysisRunStatus, false)
 );
 
 function setButtonStatuses(
   podStatus: string | null,
-  updateTable: boolean = true,
+  updateTable: boolean = true
 ) {
   if (updateTable) {
     emit("newRunStatus", props.analysisNodeId, podStatus);
@@ -73,7 +74,7 @@ function setButtonStatuses(
     playActive: playButtonActiveStates.includes(podStatus),
     rerunActive: rerunButtonActiveStates.includes(podStatus),
     stopActive: stopButtonActiveStates.includes(podStatus),
-    deleteActive: deleteButtonActiveStates.includes(podStatus),
+    deleteActive: deleteButtonActiveStates.includes(podStatus)
   };
 }
 
@@ -82,13 +83,13 @@ const showToast = (severity: ToastSeverity, summary: string, msg: string) => {
     severity: severity,
     summary: summary,
     detail: msg,
-    life: 5000,
+    life: 5000
   });
 };
 
 async function registerAnalysis(
   attempt: number = 0,
-  maxAttempts: number = 10,
+  maxAttempts: number = 10
 ): Promise<LinkProjectAnalysis | null> {
   let bindDataStoreResp: LinkProjectAnalysis | null = null;
   try {
@@ -96,8 +97,8 @@ async function registerAnalysis(
       method: "POST",
       body: {
         project_id: props.projectId!,
-        analysis_id: props.analysisId!,
-      },
+        analysis_id: props.analysisId!
+      }
     });
   } catch (error) {
     // Catch 409 and let proceed
@@ -105,19 +106,19 @@ async function registerAnalysis(
       showToast(
         "warn",
         "Duplicate entry error",
-        "A data store is already mapped to this analysis and will be removed",
+        "A data store is already mapped to this analysis and will be removed"
       );
       const podRunning = await checkPodStatus(); // Check to see if the analysis pod already exists
       if (!podRunning) {
         await useNuxtApp()
           .$hubApi(`/kong/analysis/${props.analysisId}`, {
-            method: "DELETE",
+            method: "DELETE"
           })
           .catch(() => {
             showToast(
               "error",
               "Disconnect failure",
-              "Unable to delete the consumer",
+              "Unable to delete the consumer"
             );
           });
         attempt++;
@@ -133,7 +134,7 @@ async function registerAnalysis(
         showToast(
           "error",
           "Data mapping failed",
-          "Unable to map a data store to this analysis due to a technical error.",
+          "Unable to map a data store to this analysis due to a technical error."
         );
       }
       loading.value = false;
@@ -146,7 +147,7 @@ async function registerAnalysis(
 async function checkPodStatus(): Promise<boolean> {
   const podStatus: POResp = (await useNuxtApp()
     .$hubApi(`/po/${props.analysisId}/status`, {
-      method: "GET",
+      method: "GET"
     })
     .catch(() => null)) as POResp; // Set the response to null if an error occurs
 
@@ -156,7 +157,7 @@ async function checkPodStatus(): Promise<boolean> {
     showToast(
       "warn",
       "Analysis already running",
-      "The analysis is already running on this node. Controls will be updated",
+      "The analysis is already running on this node. Controls will be updated"
     );
     setButtonStatuses(Object.values(podStatus.status)[0]); // Grab the first status update
     return true;
@@ -182,7 +183,7 @@ async function onStartAnalysis() {
     const startPodResp: POResp = (await useNuxtApp()
       .$hubApi("/po", {
         method: "POST",
-        body: analysisProps,
+        body: analysisProps
       })
       .catch(() => null)) as POResp; // Set the response to null if an error occurs
 
@@ -204,7 +205,7 @@ async function onStopAnalysis() {
 
   const stopResp: POResp = (await useNuxtApp()
     .$hubApi(`/po/${props.analysisId}/stop`, {
-      method: "PUT",
+      method: "PUT"
     })
     .catch(() => null)) as POResp;
   if (stopResp && "status" in stopResp) {
@@ -217,7 +218,7 @@ async function onStopAnalysis() {
       showToast(
         "warn",
         "Status unknown",
-        "Pod was not found, but the stop command was still issued",
+        "Pod was not found, but the stop command was still issued"
       );
     }
     buttonStatuses.value = setButtonStatuses(AnalysisNodeRunStatus.Stopped);
@@ -236,19 +237,19 @@ async function onDeleteAnalysis() {
 
   await useNuxtApp()
     .$hubApi(`/kong/analysis/${props.analysisId}`, {
-      method: "DELETE",
+      method: "DELETE"
     })
     .catch(() => {
       showToast(
         "warn",
         "Disconnect failure",
-        "Unable to disconnect the data store from the analysis",
+        "Unable to disconnect the data store from the analysis"
       );
     });
 
   const deleteResp: POResp = (await useNuxtApp()
     .$hubApi(`/po/${props.analysisId}/delete`, {
-      method: "DELETE",
+      method: "DELETE"
     })
     .catch(() => null)) as POResp;
 
@@ -261,7 +262,7 @@ async function onDeleteAnalysis() {
       showToast(
         "warn",
         "Status unknown",
-        "Pod was not found, but the delete command was still issued",
+        "Pod was not found, but the delete command was still issued"
       );
     }
   } else {
@@ -269,10 +270,14 @@ async function onDeleteAnalysis() {
     showToast(
       "error",
       "Delete failure",
-      "Failed to delete the analysis container",
+      "Failed to delete the analysis container"
     );
   }
   loading.value = false;
+}
+
+function onUpdateAnalysis(updatedPodStatus: AnalysisNodeRunStatus | null) {
+  buttonStatuses.value = setButtonStatuses(updatedPodStatus);
 }
 </script>
 
@@ -346,6 +351,7 @@ async function onDeleteAnalysis() {
         :disabled="!buttonStatuses.deleteActive"
       />
     </NuxtLink>
+    <AnalysisUpdateButton :analysisNodeId="props.analysisId" @updatedRunStatus="onUpdateAnalysis" />
   </div>
 </template>
 
