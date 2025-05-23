@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.12](https://github.com/PrivateAIM/node-ui/compare/v0.2.11...v0.2.12) (2025-05-23)
+
+
+### Features
+
+* **analysis:** add button to update analysis using PO ([4072369](https://github.com/PrivateAIM/node-ui/commit/4072369b75e670e0666fbfaafd72fd8a03edfac1))
+
+
+### Bug Fixes
+
+* **kong:** improve check for existing analysis entry in kong and control button update ([91cecd8](https://github.com/PrivateAIM/node-ui/commit/91cecd871280651bb1628b850543c741f9baa0bd))
+
 ## [0.2.11](https://github.com/PrivateAIM/node-ui/compare/v0.2.10...v0.2.11) (2025-05-07)
 
 
