@@ -49,24 +49,29 @@ describe("AnalysisUpdateButton.vue", () => {
       detail: toastMsg,
       life: 5000,
     });
+    return wrapper;
   }
 
   it("Update analysis status - some running", async () => {
-    await basicButtonCheck(
+    const wrapper = await basicButtonCheck(
       "info",
       "Analysis status successfully update",
       "The current status of the analysis container was successfully updated.",
       fakeAnalysisId,
     );
+    expect(wrapper.emitted("updatedRunStatus")).toHaveLength(1);
+    expect(wrapper.emitted("updatedRunStatus")![0]).toEqual(["running"]);
   });
 
   it("Update analysis status - none running", async () => {
-    await basicButtonCheck(
+    const wrapper = await basicButtonCheck(
       "info",
       "No analysis pod found",
       "There are no running pods for this analysis on this node.",
       fakeMissingAnalysisId,
     );
+    expect(wrapper.emitted("updatedRunStatus")).toHaveLength(1);
+    expect(wrapper.emitted("updatedRunStatus")![0]).toEqual([null]);
   });
 
   it("Update analysis status - broken", async () => {
