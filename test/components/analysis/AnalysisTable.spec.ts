@@ -2,7 +2,7 @@ import { useFetch, useNuxtApp } from "#app";
 import { useToast } from "primevue/usetoast";
 import { defineComponent } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
-import { vi, describe, test, expect, beforeAll, beforeEach } from "vitest";
+import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import AnalysesTable from "~/components/analysis/AnalysesTable.vue";
 import {
   fakeAnalysisNodes,

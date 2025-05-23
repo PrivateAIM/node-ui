@@ -5,6 +5,7 @@ import {
   type BodyCreateAnalysisPoPost,
   type LinkProjectAnalysis,
 } from "~/services/Api";
+import AnalysisUpdateButton from "./AnalysisUpdateButton.vue";
 import { useToast } from "primevue/usetoast";
 import { useNuxtApp } from "#app";
 
@@ -86,7 +87,10 @@ const showToast = (severity: ToastSeverity, summary: string, msg: string) => {
   });
 };
 
-async function registerAnalysis() {
+async function registerAnalysis(
+  attempt: number = 0,
+  maxAttempts: number = 10,
+): Promise<LinkProjectAnalysis | null> {
   let bindDataStoreResp: LinkProjectAnalysis | null = null;
   try {
     bindDataStoreResp = await useNuxtApp().$hubApi("/kong/analysis", {
@@ -102,9 +106,26 @@ async function registerAnalysis() {
       showToast(
         "warn",
         "Duplicate entry error",
-        "A data store is already mapped to this analysis and will be reused",
+        "A data store is already mapped to this analysis and will be removed",
       );
-      await checkPodStatus(); // Check to see if the analysis pod already exists
+      const podRunning = await checkPodStatus(); // Check to see if the analysis pod already exists
+      if (!podRunning) {
+        await useNuxtApp()
+          .$hubApi(`/kong/analysis/${props.analysisId}`, {
+            method: "DELETE",
+          })
+          .catch(() => {
+            showToast(
+              "error",
+              "Disconnect failure",
+              "Unable to delete the consumer",
+            );
+          });
+        attempt++;
+        if (attempt < maxAttempts) {
+          return await registerAnalysis(attempt);
+        }
+      }
     } else {
       // If not 409, show error and quit the process
       if (error.status === 404) {
@@ -123,7 +144,7 @@ async function registerAnalysis() {
   return bindDataStoreResp;
 }
 
-async function checkPodStatus() {
+async function checkPodStatus(): Promise<boolean> {
   const podStatus: POResp = (await useNuxtApp()
     .$hubApi(`/po/${props.analysisId}/status`, {
       method: "GET",
@@ -131,15 +152,17 @@ async function checkPodStatus() {
     .catch(() => null)) as POResp; // Set the response to null if an error occurs
 
   // If response is not null AND "status" in response AND "status" is not empty
-  if (podStatus && podStatus.status && Object.keys(podStatus.status).length) {
+  if (podStatus && podStatus.status && Object.values(podStatus.status).length) {
     // If the status is not empty
     showToast(
       "warn",
       "Analysis already running",
       "The analysis is already running on this node. Controls will be updated",
     );
-    setButtonStatuses(AnalysisNodeRunStatus.Running); // TODO implement better status check (other statuses)
+    setButtonStatuses(Object.values(podStatus.status)[0]); // Grab the first status update
+    return true;
   }
+  return false;
 }
 
 async function onStartAnalysis() {
@@ -252,6 +275,10 @@ async function onDeleteAnalysis() {
   }
   loading.value = false;
 }
+
+function onUpdateAnalysis(updatedPodStatus: AnalysisNodeRunStatus | null) {
+  buttonStatuses.value = setButtonStatuses(updatedPodStatus);
+}
 </script>
 
 <template>
@@ -324,6 +351,10 @@ async function onDeleteAnalysis() {
         :disabled="!buttonStatuses.deleteActive"
       />
     </NuxtLink>
+    <AnalysisUpdateButton
+      :analysisId="props.analysisId"
+      @updatedRunStatus="onUpdateAnalysis"
+    />
   </div>
 </template>
 

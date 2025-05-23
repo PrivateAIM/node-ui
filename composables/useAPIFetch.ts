@@ -10,8 +10,8 @@ import type {
   ListServices,
   Service,
 } from "~/services/Api";
-import { useNuxtApp, useFetch } from "#app";
 import type { UseFetchOptions } from "#app";
+import { useFetch, useNuxtApp } from "#app";
 
 export function useAPIFetch<T>(
   request: string | (() => string),

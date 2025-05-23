@@ -29,6 +29,7 @@ export const handlers = [
       });
     }
   }),
+
   // Analysis logs
   http.get("/po/85629f5b-da04-4f7c-84fc-097b2db93de5/history", () => {
     return HttpResponse.json({
@@ -47,6 +48,7 @@ export const handlers = [
       },
     });
   }),
+
   // Working analysis controls
   http.post(`/po`, async ({ request }) => {
     const body = (await request.json()) as BodyCreateAnalysisPoPost;
@@ -81,6 +83,29 @@ export const handlers = [
       },
     });
   }),
+
+  // Update Analysis Button - running analysis TODO remove
+  http.get(`/po/${fakeAnalysisId}/status`, () => {
+    return HttpResponse.json({
+      status: {
+        "analysis-15518efa-5146-4290-a7cb-95d27f41d9913518": "running",
+        "analysis-15518efa-5146-4290-a7cb-95d27f41d9918148": "stopped",
+      },
+    });
+  }),
+
+  // Update Analysis Button - no running analyses TODO remove
+  http.get(`/po/${fakeMissingAnalysisId}/status`, () => {
+    return HttpResponse.json({
+      status: {},
+    });
+  }),
+
+  // Update Analysis Button - broken TODO remove
+  http.get(`/po/${fakeBrokenAnalysisId}/status`, () => {
+    return HttpResponse.error();
+  }),
+
   // Broken analysis controls
   http.put(`/po/${fakeBrokenAnalysisId}/*`, () => {
     return HttpResponse.json({
@@ -100,6 +125,7 @@ export const handlers = [
       },
     });
   }),
+
   // Missing analysis controls
   http.put(`/po/${fakeMissingAnalysisId}/stop`, () => {
     return HttpResponse.json({
@@ -111,6 +137,7 @@ export const handlers = [
       status: {},
     });
   }),
+
   // Kong
   http.delete(`/kong/analysis/*`, () => {
     return HttpResponse.text("200");

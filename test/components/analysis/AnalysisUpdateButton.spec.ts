@@ -1,0 +1,85 @@
+import { useToast } from "primevue/usetoast";
+import { flushPromises, mount } from "@vue/test-utils";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import AnalysisUpdateButton from "~/components/analysis/AnalysisUpdateButton.vue";
+import {
+  fakeAnalysisId,
+  fakeBrokenAnalysisId,
+  fakeMissingAnalysisId,
+} from "~/test/mockapi/handlers";
+
+describe("AnalysisUpdateButton.vue", () => {
+  let spy;
+  let mockToast;
+
+  beforeAll(() => {
+    mockToast = { add: vi.fn() };
+    vi.mocked(useToast).mockReturnValue(mockToast);
+    spy = vi.spyOn(mockToast, "add");
+  });
+
+  afterEach(() => {
+    spy.mockReset();
+  });
+
+  async function basicButtonCheck(
+    toastSeverity: string,
+    toastSummary: string,
+    toastMsg: string,
+    analysisId: string,
+  ) {
+    const wrapper = mount(AnalysisUpdateButton, {
+      props: {
+        analysisId: analysisId,
+      },
+    });
+
+    expect(AnalysisUpdateButton).toBeTruthy();
+
+    // Success check
+    const toggle = wrapper.find(".update-analysis-btn");
+    await toggle.trigger("click");
+
+    await flushPromises();
+
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith({
+      severity: toastSeverity,
+      summary: toastSummary,
+      detail: toastMsg,
+      life: 5000,
+    });
+    return wrapper;
+  }
+
+  it("Update analysis status - some running", async () => {
+    const wrapper = await basicButtonCheck(
+      "info",
+      "Analysis status successfully update",
+      "The current status of the analysis container was successfully updated.",
+      fakeAnalysisId,
+    );
+    expect(wrapper.emitted("updatedRunStatus")).toHaveLength(1);
+    expect(wrapper.emitted("updatedRunStatus")![0]).toEqual(["running"]);
+  });
+
+  it("Update analysis status - none running", async () => {
+    const wrapper = await basicButtonCheck(
+      "info",
+      "No analysis pod found",
+      "There are no running pods for this analysis on this node.",
+      fakeMissingAnalysisId,
+    );
+    expect(wrapper.emitted("updatedRunStatus")).toHaveLength(1);
+    expect(wrapper.emitted("updatedRunStatus")![0]).toEqual([null]);
+  });
+
+  it("Update analysis status - broken", async () => {
+    await basicButtonCheck(
+      "error",
+      "Unable to get a status update",
+      "An error occurred while trying to contact the PO for a status update. Try again later.",
+      fakeBrokenAnalysisId,
+    );
+  });
+});
