@@ -3,7 +3,6 @@ import { useFetch, useNuxtApp } from "#app";
 import { useToast } from "primevue/usetoast";
 import { getAnalysisNodes } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
-import TableRowMetadata from "~/components/TableRowMetadata.vue";
 import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
 import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
@@ -59,8 +58,7 @@ const { data: projData, status: projStatus } = await useFetch<Project[]>(
 // Iterate through projects and populate map with proj UUID: name
 const projMap = new Map<string, string>();
 if (projStatus.value === "success" && projData.value) {
-  // @ts-expect-error Jetbrains can't infer data from useFetch
-  projData.value.data.forEach((proj: Project) => {
+  projData.value.forEach((proj: Project) => {
     if (proj.name) {
       projMap.set(proj.id!, proj.name);
     }
@@ -70,7 +68,7 @@ if (projStatus.value === "success" && projData.value) {
 function parseData() {
   if (status.value === "success") {
     const formattedAnalyses = formatDataRow(
-      analysisNodeResp.value!.data,
+      analysisNodeResp.value,
       ["created_at", "updated_at"],
       expandRowEntries,
     );
@@ -89,10 +87,6 @@ function parseData() {
 }
 
 parseData();
-
-// function onToggleRowExpansion(rowIds) {
-//   expandedRows.value = rowIds;
-// }
 
 async function onTableRefresh() {
   await refresh();
@@ -247,6 +241,8 @@ const onCloseNavToast = () => {
           v-model:filters="filters"
           filterDisplay="menu"
           :globalFilterFields="['analysis.name', 'project_name', 'node.name']"
+          sortField="updated_at.timestamp"
+          :sortOrder="-1"
         >
           <template #empty> No analyses found.</template>
           <Column expander style="width: 5rem" v-if="expandRowEntries.length" />
@@ -445,7 +441,6 @@ const onCloseNavToast = () => {
               </p>
             </template>
           </Column>
-          <!--          <Column field="node.name" header="Node" :sortable="true" />-->
           <Column field="expand.id" style="min-width: 13em" :exportable="false">
             <template #header>
               <span
@@ -473,11 +468,6 @@ const onCloseNavToast = () => {
               </div>
             </template>
           </Column>
-          <template #expansion="slotProps">
-            <div class="p-3">
-              <TableRowMetadata :rowMetadata="slotProps.data.expand" />
-            </div>
-          </template>
         </DataTable>
       </template>
     </Card>

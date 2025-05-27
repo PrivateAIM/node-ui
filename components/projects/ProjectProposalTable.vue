@@ -3,7 +3,6 @@ import { useToast } from "primevue/usetoast";
 import { getProjectNodes } from "~/composables/useAPIFetch";
 import ApproveRejectButtons from "~/components/table/ApproveRejectButtons.vue";
 import { formatDataRow } from "~/utils/format-data-row";
-import TableRowMetadata from "~/components/TableRowMetadata.vue";
 import { ApprovalStatus, type ProjectNode } from "~/services/Api";
 import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
 import { FilterMatchMode } from "@primevue/core/api";
@@ -26,7 +25,7 @@ const { data: response, status, error, refresh } = await getProjectNodes();
 function parseData() {
   if (status.value === "success") {
     proposals.value = formatDataRow(
-      response.value!.data as unknown as Map<string, string | number | null>[],
+      response.value as unknown as Map<string, string | number | null>[],
       dataRowUnixCols,
       expandRowEntries,
     );
@@ -220,11 +219,6 @@ const updateFilters = (filterText: string) => {
               />
             </template>
           </Column>
-          <template #expansion="slotProps">
-            <div class="p-3">
-              <TableRowMetadata :rowMetadata="slotProps.data.expand" />
-            </div>
-          </template>
         </DataTable>
       </template>
     </Card>
