@@ -3,11 +3,12 @@ import { useToast } from "primevue/usetoast";
 import { getProjectNodes } from "~/composables/useAPIFetch";
 import ApproveRejectButtons from "~/components/table/ApproveRejectButtons.vue";
 import { formatDataRow } from "~/utils/format-data-row";
-import { ApprovalStatus, type ProjectNode } from "~/services/Api";
+import { type ProjectNode } from "~/services/Api";
 import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
 import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
 import { getApprovalStatusSeverity } from "~/utils/status-tag-severity";
+import { ApprovalStatus } from "~/types/node";
 
 const toast = useToast();
 

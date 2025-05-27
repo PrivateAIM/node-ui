@@ -12,18 +12,18 @@ import {
   getBuildStatusSeverity,
   getRunStatusSeverity,
 } from "~/utils/status-tag-severity";
-import {
-  AnalysisBuildStatus,
-  type AnalysisNode,
-  AnalysisNodeRunStatus,
-  ApprovalStatus,
-  type Project,
-} from "~/services/Api";
+import { type AnalysisNode, type Project } from "~/services/Api";
+import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
+import { ApprovalStatus } from "~/types/node";
 
 const expandedRows = ref();
-const analyses = ref();
+const analyses = ref([]);
 const toast = useToast();
 const filters = ref();
+
+let allResultsRetrieved = false;
+const queryLimit = 50;
+let currentOffset = 50; // Start with query limit and will increment by same amount
 
 const expandRowEntries = [];
 const runStatuses = Object.values(AnalysisNodeRunStatus);
@@ -42,7 +42,7 @@ const {
   status,
   error,
   refresh,
-} = await getAnalysisNodes();
+} = await getAnalysisNodes(); // Get the first batch of 50
 const { data: projData, status: projStatus } = await useFetch<Project[]>(
   "/projects",
   {
@@ -65,10 +65,10 @@ if (projStatus.value === "success" && projData.value) {
   });
 }
 
-function parseData() {
-  if (status.value === "success") {
+function parseData(respStatus: string, respData: AnalysisNode[] | null) {
+  if (respStatus === "success") {
     const formattedAnalyses = formatDataRow(
-      analysisNodeResp.value,
+      respData,
       ["created_at", "updated_at"],
       expandRowEntries,
     );
@@ -78,19 +78,60 @@ function parseData() {
         if (projId && projMap.has(projId)) {
           analysisEntry.project_name = projMap.get(projId);
         }
+        analyses.value.push(analysisEntry);
       });
     }
-    analyses.value = formattedAnalyses;
   } else if (error.value?.statusCode === 500) {
     showHubAdapterConnectionErrorToast(toast, "Hub");
   }
 }
 
-parseData();
+parseData(status.value, analysisNodeResp.value);
 
 async function onTableRefresh() {
   await refresh();
-  parseData();
+  parseData(status.value, analysisNodeResp.value);
+}
+
+function onPage(event) {
+  const currentPage = event.page + 1;
+  const currentNumberEntries = analyses.value.length;
+  const currentMaxPage = Math.ceil(currentNumberEntries / event.rows);
+
+  if (!allResultsRetrieved) {
+    // If not all results retrieved
+    if (currentPage >= currentMaxPage - 1) {
+      // If page before last is clicked
+      getNextPage();
+    }
+  }
+}
+
+async function getNextPage() {
+  const nextSetResults = (await useNuxtApp()
+    .$hubApi("/analysis-nodes", {
+      method: "GET",
+      query: {
+        page: {
+          offset: currentOffset,
+          limit: queryLimit,
+        },
+        include: "analysis,node",
+        sort: "-updated_at",
+      },
+    })
+    .catch(() => null)) as AnalysisNode[];
+  if (nextSetResults.length > 0) {
+    if (nextSetResults.length < queryLimit) {
+      // Fewer than limit means we are at the end
+      allResultsRetrieved = true;
+    }
+    currentOffset += queryLimit; // Increment offset value
+    parseData("success", nextSetResults);
+  } else {
+    // No results returned means all were retrieved
+    allResultsRetrieved = true;
+  }
 }
 
 // Table filters
@@ -122,8 +163,11 @@ const updateFilters = (filterText: string) => {
   filters.value.global.value = filterText;
 };
 
-function updateRunStatus(analysisNodeId: string, newStatus: string) {
-  for (let row of analyses.value) {
+function updateRunStatus(
+  analysisNodeId: string,
+  newStatus: typeof runStatuses,
+) {
+  for (let row of analyses.value as AnalysisNode[]) {
     if (row.id === analysisNodeId) {
       row.run_status = newStatus;
       break;
@@ -150,15 +194,6 @@ const onNavigate = () => {
 const onCloseNavToast = () => {
   toast.removeGroup("datastoreToastLink");
 };
-
-// function updateTable(newData: AnalysisNode) {
-//   for (let row of analyses.value) {
-//     if (row.id === newData.id) {
-//       row.approval_status = newData.approval_status;
-//       return;
-//     }
-//   }
-// }
 </script>
 
 <template>
@@ -235,6 +270,7 @@ const onCloseNavToast = () => {
             table: 'table table-striped',
           }"
           paginator
+          @page="onPage"
           :rows="10"
           :rowsPerPageOptions="[10, 20, 50]"
           tableStyle="min-width: 50rem"
