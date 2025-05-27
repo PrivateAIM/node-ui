@@ -1,8 +1,5 @@
-import {
-  AnalysisBuildStatus,
-  AnalysisRunStatus,
-  ApprovalStatus,
-} from "~/services/Api";
+import { ApprovalStatus } from "~/types/node";
+import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
 
 export const getApprovalStatusSeverity = (status: string) => {
   switch (status) {
@@ -38,25 +35,25 @@ export const getBuildStatusSeverity = (status: string) => {
 
 export const getRunStatusSeverity = (status: string) => {
   switch (status) {
-    case AnalysisRunStatus.Starting:
+    case AnalysisNodeRunStatus.Starting:
       return "info";
 
-    case AnalysisRunStatus.Started:
+    case AnalysisNodeRunStatus.Started:
       return "info";
 
-    case AnalysisRunStatus.Running:
+    case AnalysisNodeRunStatus.Running:
       return "contrast";
 
-    case AnalysisRunStatus.Stopping:
+    case AnalysisNodeRunStatus.Stopping:
       return "warning";
 
-    case AnalysisRunStatus.Stopped:
+    case AnalysisNodeRunStatus.Stopped:
       return "warning";
 
-    case AnalysisRunStatus.Failed:
+    case AnalysisNodeRunStatus.Failed:
       return "danger";
 
-    case AnalysisRunStatus.Finished:
+    case AnalysisNodeRunStatus.Finished:
       return "success";
   }
 };

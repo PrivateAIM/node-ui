@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import {
-  AnalysisBuildStatus,
-  AnalysisNodeRunStatus,
   type BodyCreateAnalysisPoPost,
   type LinkProjectAnalysis,
 } from "~/services/Api";
 import AnalysisUpdateButton from "./AnalysisUpdateButton.vue";
 import { useToast } from "primevue/usetoast";
 import { useNuxtApp } from "#app";
+import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
 
 type ToastSeverity = "success" | "info" | "warn" | "error" | undefined;
 type POResp = { status?: string | string[] | object; detail?: string } | null;
@@ -276,7 +275,7 @@ async function onDeleteAnalysis() {
   loading.value = false;
 }
 
-function onUpdateAnalysis(updatedPodStatus: AnalysisNodeRunStatus | null) {
+function onUpdateAnalysis(updatedPodStatus: string | null) {
   buttonStatuses.value = setButtonStatuses(updatedPodStatus);
 }
 </script>

@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { useNuxtApp } from "#app";
 import { useToast } from "primevue/usetoast";
-import { AnalysisNodeRunStatus } from "~/services/Api";
 
 const props = defineProps({
-  analysisId: String,
+  analysisId: String
 });
 
 type PoStatusResp = { status: object } | null;
@@ -17,7 +16,7 @@ async function onClickUpdate() {
   loading.value = true;
   const poUpdate: PoStatusResp = (await useNuxtApp()
     .$hubApi(`/po/${props.analysisId}/status`, {
-      method: "GET",
+      method: "GET"
     })
     .catch(() => {
       toast.add({
@@ -25,7 +24,7 @@ async function onClickUpdate() {
         summary: "Unable to get a status update",
         detail:
           "An error occurred while trying to contact the PO for a status update. Try again later.",
-        life: 5000,
+        life: 5000
       });
     })) as PoStatusResp;
   if (poUpdate) {
@@ -37,18 +36,18 @@ async function onClickUpdate() {
         summary: "Analysis status successfully update",
         detail:
           "The current status of the analysis container was successfully updated.",
-        life: 5000,
+        life: 5000
       });
       emit(
         "updatedRunStatus",
-        Object.values(poStatuses)[0] as AnalysisNodeRunStatus,
+        Object.values(poStatuses)[0]
       ); // Return first status
     } else {
       toast.add({
         severity: "info",
         summary: "No analysis pod found",
         detail: "There are no running pods for this analysis on this node.",
-        life: 5000,
+        life: 5000
       });
       emit("updatedRunStatus", null);
     }

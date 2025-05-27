@@ -1,13 +1,13 @@
 import type {
-  AllAnalyses,
-  AllProjects,
+  Analysis,
+  AnalysisNode,
   BodyCreateProjectAndConnectToDatastoreKongProjectPost,
   DeleteProject,
   LinkDataStoreProject,
-  ListAnalysisNodes,
   ListConsumers,
-  ListProjectNodes,
   ListServices,
+  Project,
+  ProjectNode,
   Service,
 } from "~/services/Api";
 import type { UseFetchOptions } from "#app";
@@ -25,7 +25,7 @@ export function useAPIFetch<T>(
 
 // Hub endpoints
 export function getProjectNodes(opts?) {
-  return useAPIFetch<ListProjectNodes>("/project-nodes", {
+  return useAPIFetch<ProjectNode[]>("/project-nodes", {
     ...opts,
     method: "GET",
     query: {
@@ -36,7 +36,7 @@ export function getProjectNodes(opts?) {
 }
 
 export function getProjects(opts?) {
-  return useAPIFetch<AllProjects>("/projects", {
+  return useAPIFetch<Project[]>("/projects", {
     ...opts,
     method: "GET",
     query: {
@@ -46,7 +46,7 @@ export function getProjects(opts?) {
 }
 
 export function getAnalyses(opts?) {
-  return useAPIFetch<AllAnalyses>("/analyses", {
+  return useAPIFetch<Analysis[]>("/analyses", {
     ...opts,
     method: "GET",
     query: {
@@ -56,16 +56,13 @@ export function getAnalyses(opts?) {
 }
 
 export function getAnalysisNodes(opts?) {
-  return useAPIFetch<ListAnalysisNodes>(
-    "/analysis-nodes?include=analysis,node",
-    {
-      ...opts,
-      method: "GET",
-      query: {
-        sort: "-updated_at",
-      },
+  return useAPIFetch<AnalysisNode[]>("/analysis-nodes?include=analysis,node", {
+    ...opts,
+    method: "GET",
+    query: {
+      sort: "-updated_at",
     },
-  );
+  });
 }
 
 // Kong endpoints
