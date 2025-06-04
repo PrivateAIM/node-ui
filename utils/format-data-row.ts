@@ -11,7 +11,6 @@ export function formatDataRow(
   rowExpansionKeys: string[],
 ) {
   if (rowEntries) {
-    console.log(rowEntries);
     rowEntries.map((row) => {
       parseUnixTimestamp(row, datetimeKeys);
       const expandData: object = {};
