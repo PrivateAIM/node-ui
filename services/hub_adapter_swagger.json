@@ -56,9 +56,6 @@
         },
         "security": [
           {
-            "OAuth2AuthorizationCodeBearer": []
-          },
-          {
             "JWT": []
           }
         ]
@@ -73,9 +70,6 @@
         "description": "Get the logs for a specific analysis run.",
         "operationId": "get_analysis_logs_po__analysis_id__logs_get",
         "security": [
-          {
-            "OAuth2AuthorizationCodeBearer": []
-          },
           {
             "JWT": []
           }
@@ -138,9 +132,6 @@
         "operationId": "get_analysis_log_history_po__analysis_id__history_get",
         "security": [
           {
-            "OAuth2AuthorizationCodeBearer": []
-          },
-          {
             "JWT": []
           }
         ],
@@ -201,9 +192,6 @@
         "description": "Get the status for a specific analysis run.",
         "operationId": "get_analysis_status_po__analysis_id__status_get",
         "security": [
-          {
-            "OAuth2AuthorizationCodeBearer": []
-          },
           {
             "JWT": []
           }
@@ -266,9 +254,6 @@
         "operationId": "get_analysis_pods_po__analysis_id__pods_get",
         "security": [
           {
-            "OAuth2AuthorizationCodeBearer": []
-          },
-          {
             "JWT": []
           }
         ],
@@ -329,9 +314,6 @@
         "description": "Stop a specific analysis run.",
         "operationId": "stop_analysis_po__analysis_id__stop_put",
         "security": [
-          {
-            "OAuth2AuthorizationCodeBearer": []
-          },
           {
             "JWT": []
           }
@@ -394,9 +376,6 @@
         "operationId": "delete_analysis_po__analysis_id__delete_delete",
         "security": [
           {
-            "OAuth2AuthorizationCodeBearer": []
-          },
-          {
             "JWT": []
           }
         ],
@@ -457,9 +436,6 @@
         "description": "Get a local result as file from local storage.",
         "operationId": "retrieve_intermediate_result_from_local_local__object_id__get",
         "security": [
-          {
-            "OAuth2AuthorizationCodeBearer": []
-          },
           {
             "JWT": []
           }
@@ -545,9 +521,6 @@
         },
         "security": [
           {
-            "OAuth2AuthorizationCodeBearer": []
-          },
-          {
             "JWT": []
           }
         ]
@@ -562,9 +535,6 @@
         "description": "Get an intermediate result as file from the FLAME Hub.",
         "operationId": "retrieve_intermediate_result_from_hub_intermediate__object_id__get",
         "security": [
-          {
-            "OAuth2AuthorizationCodeBearer": []
-          },
           {
             "JWT": []
           }
@@ -651,9 +621,6 @@
         },
         "security": [
           {
-            "OAuth2AuthorizationCodeBearer": []
-          },
-          {
             "JWT": []
           }
         ]
@@ -697,9 +664,6 @@
         },
         "security": [
           {
-            "OAuth2AuthorizationCodeBearer": []
-          },
-          {
             "JWT": []
           }
         ]
@@ -734,9 +698,6 @@
         },
         "security": [
           {
-            "OAuth2AuthorizationCodeBearer": []
-          },
-          {
             "JWT": []
           }
         ]
@@ -751,9 +712,6 @@
         "description": "List project for a given UUID.",
         "operationId": "list_specific_project_projects__project_id__get",
         "security": [
-          {
-            "OAuth2AuthorizationCodeBearer": []
-          },
           {
             "JWT": []
           }
@@ -816,9 +774,6 @@
         "operationId": "list_project_proposals_project_nodes_get",
         "security": [
           {
-            "OAuth2AuthorizationCodeBearer": []
-          },
-          {
             "JWT": []
           }
         ],
@@ -874,9 +829,6 @@
         "description": "Set the approval status of a project proposal.",
         "operationId": "list_project_proposal_project_nodes__project_node_id__get",
         "security": [
-          {
-            "OAuth2AuthorizationCodeBearer": []
-          },
           {
             "JWT": []
           }
@@ -936,9 +888,6 @@
         "description": "Set the approval status of a project proposal.",
         "operationId": "accept_reject_project_proposal_project_nodes__project_node_id__post",
         "security": [
-          {
-            "OAuth2AuthorizationCodeBearer": []
-          },
           {
             "JWT": []
           }
@@ -1011,9 +960,6 @@
         "operationId": "list_analysis_nodes_analysis_nodes_get",
         "security": [
           {
-            "OAuth2AuthorizationCodeBearer": []
-          },
-          {
             "JWT": []
           }
         ],
@@ -1069,9 +1015,6 @@
         "description": "List a specific analysis node.",
         "operationId": "list_specific_analysis_node_analysis_nodes__analysis_node_id__get",
         "security": [
-          {
-            "OAuth2AuthorizationCodeBearer": []
-          },
           {
             "JWT": []
           }
@@ -1131,9 +1074,6 @@
         "description": "Set the approval status of an analysis proposal.",
         "operationId": "accept_reject_analysis_node_analysis_nodes__analysis_node_id__post",
         "security": [
-          {
-            "OAuth2AuthorizationCodeBearer": []
-          },
           {
             "JWT": []
           }
@@ -1225,9 +1165,6 @@
         },
         "security": [
           {
-            "OAuth2AuthorizationCodeBearer": []
-          },
-          {
             "JWT": []
           }
         ]
@@ -1242,9 +1179,6 @@
         "description": "List a specific analysis.",
         "operationId": "list_specific_analysis_analyses__analysis_id__get",
         "security": [
-          {
-            "OAuth2AuthorizationCodeBearer": []
-          },
           {
             "JWT": []
           }
@@ -1304,9 +1238,6 @@
         "description": "Update analysis with a given UUID.",
         "operationId": "update_specific_analysis_analyses__analysis_id__post",
         "security": [
-          {
-            "OAuth2AuthorizationCodeBearer": []
-          },
           {
             "JWT": []
           }
@@ -1380,9 +1311,6 @@
         "description": "List registry data for a project.",
         "operationId": "get_registry_metadata_for_project_registry_projects__registry_project_id__get",
         "security": [
-          {
-            "OAuth2AuthorizationCodeBearer": []
-          },
           {
             "JWT": []
           }
@@ -1480,9 +1408,6 @@
         },
         "security": [
           {
-            "OAuth2AuthorizationCodeBearer": []
-          },
-          {
             "JWT": []
           }
         ]
@@ -1511,9 +1436,6 @@
         },
         "security": [
           {
-            "OAuth2AuthorizationCodeBearer": []
-          },
-          {
             "JWT": []
           }
         ]
@@ -1528,9 +1450,6 @@
         "description": "List a specific analysis bucket.",
         "operationId": "list_specific_analysis_buckets_analysis_buckets__analysis_bucket_id__get",
         "security": [
-          {
-            "OAuth2AuthorizationCodeBearer": []
-          },
           {
             "JWT": []
           }
@@ -1606,9 +1525,6 @@
         },
         "security": [
           {
-            "OAuth2AuthorizationCodeBearer": []
-          },
-          {
             "JWT": []
           }
         ]
@@ -1623,9 +1539,6 @@
         "description": "List specific partial analysis bucket file.",
         "operationId": "list_specific_analysis_bucket_file_analysis_bucket_files__analysis_bucket_file_id__get",
         "security": [
-          {
-            "OAuth2AuthorizationCodeBearer": []
-          },
           {
             "JWT": []
           }
@@ -1686,9 +1599,6 @@
         "operationId": "list_data_stores_kong_datastore_get",
         "security": [
           {
-            "OAuth2AuthorizationCodeBearer": []
-          },
-          {
             "JWT": []
           }
         ],
@@ -1741,9 +1651,6 @@
         "operationId": "create_data_store_kong_datastore_post",
         "security": [
           {
-            "OAuth2AuthorizationCodeBearer": []
-          },
-          {
             "JWT": []
           }
         ],
@@ -1793,9 +1700,6 @@
         "description": "List all available data stores (referred to as services by kong).\n\nWill be composed of the Project UUID and the datastore type (fhir/s3) i.e. {project_id}-{ds_type}. This is found\nvia the tags.",
         "operationId": "list_specific_data_store_kong_datastore__project_id__get",
         "security": [
-          {
-            "OAuth2AuthorizationCodeBearer": []
-          },
           {
             "JWT": []
           }
@@ -1869,9 +1773,6 @@
         "operationId": "delete_data_store_kong_datastore__data_store_name__delete",
         "security": [
           {
-            "OAuth2AuthorizationCodeBearer": []
-          },
-          {
             "JWT": []
           }
         ],
@@ -1922,9 +1823,6 @@
         "description": "List all projects (referred to as routes by kong) available, can be filtered by project_id.\n\nSet \"detailed\" to True to include detailed information on the linked data stores.",
         "operationId": "get_projects_kong_project_get",
         "security": [
-          {
-            "OAuth2AuthorizationCodeBearer": []
-          },
           {
             "JWT": []
           }
@@ -1999,9 +1897,6 @@
         "description": "Connect a project (referred to as a route by kong) to an existing data store.",
         "operationId": "create_project_and_connect_to_datastore_kong_project_post",
         "security": [
-          {
-            "OAuth2AuthorizationCodeBearer": []
-          },
           {
             "JWT": []
           }
@@ -2088,9 +1983,6 @@
         },
         "security": [
           {
-            "OAuth2AuthorizationCodeBearer": []
-          },
-          {
             "JWT": []
           }
         ]
@@ -2104,9 +1996,6 @@
         "summary": "Delete Project",
         "operationId": "delete_project_kong_project__project_id__delete",
         "security": [
-          {
-            "OAuth2AuthorizationCodeBearer": []
-          },
           {
             "JWT": []
           }
@@ -2160,9 +2049,6 @@
         "description": "List all analyses (referred to as consumers by kong) available, can be filtered by analysis_id.",
         "operationId": "get_analyses_kong_analysis_get",
         "security": [
-          {
-            "OAuth2AuthorizationCodeBearer": []
-          },
           {
             "JWT": []
           }
@@ -2244,9 +2130,6 @@
         "operationId": "create_and_connect_analysis_to_project_kong_analysis_post",
         "security": [
           {
-            "OAuth2AuthorizationCodeBearer": []
-          },
-          {
             "JWT": []
           }
         ],
@@ -2296,9 +2179,6 @@
         "description": "Delete the listed analysis.",
         "operationId": "delete_analysis_kong_analysis__analysis_id__delete",
         "security": [
-          {
-            "OAuth2AuthorizationCodeBearer": []
-          },
           {
             "JWT": []
           }
@@ -6091,16 +5971,6 @@
       }
     },
     "securitySchemes": {
-      "OAuth2AuthorizationCodeBearer": {
-        "type": "oauth2",
-        "flows": {
-          "authorizationCode": {
-            "scopes": {},
-            "authorizationUrl": "https://frontend.semplitude.com/keycloak/realms/flame/protocol/openid-connect/auth",
-            "tokenUrl": "https://frontend.semplitude.com/keycloak/realms/flame/protocol/openid-connect/token"
-          }
-        }
-      },
       "JWT": {
         "type": "http",
         "description": "Pass a valid JWT here for authentication. Can be obtained from /token endpoint.",
