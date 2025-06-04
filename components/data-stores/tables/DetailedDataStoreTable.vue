@@ -8,13 +8,25 @@ import { extractUuid } from "~/utils/extract-uuid-from-kong-username";
 import { parseUnixTimestamp } from "~/utils/format-data-row";
 import { getDataStoreTypeSeverity } from "~/utils/status-tag-severity";
 
+interface DetailedDataStoreTableRow {
+  name?: string | null;
+  type?: string | null;
+  project?: string | null;
+  path?: string | null;
+  host?: string | null;
+  port?: number | null;
+  protocol?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+}
+
 const props = defineProps({
   stores: Array<DetailedService>,
   projectNameMap: Map<string, string>,
   loading: Boolean,
 });
 
-const dataStores = ref([]);
+const dataStores = ref();
 const confirm = useConfirm();
 const toast = useToast();
 const deleteLoading = ref(false);
@@ -22,24 +34,24 @@ const deleteLoading = ref(false);
 const dataStoreTypes = ["s3", "fhir"];
 
 function compiledTableRows() {
-  let tableRows = [];
+  let tableRows: DetailedDataStoreTableRow[] = [];
 
   if (props.stores && props.stores.length > 0) {
     props.stores.forEach((store: DetailedService) => {
-      const formattedRow = parseUnixTimestamp(store, [
-        "created_at",
-        "updated_at",
-      ]);
+      const formattedRow: DetailedDataStoreTableRow = parseUnixTimestamp(
+        store,
+        ["created_at", "updated_at"],
+      );
       const routes = store.routes;
       if (routes && routes.length > 0) {
         routes.forEach((proj: Route) => {
           const projectParts = extractUuid(proj.name!);
           const dataStoreType = projectParts[0];
           const projectUuid = projectParts[1];
-          const newRow = {
+          const newRow: DetailedDataStoreTableRow = {
             name: store.name,
             type: dataStoreType,
-            project: props.projectNameMap.has(projectUuid)
+            project: props.projectNameMap?.has(projectUuid)
               ? props.projectNameMap.get(projectUuid)!
               : "N/A",
             path: store.path,
@@ -154,7 +166,7 @@ const updateFilters = (filterText: string) => {
         'protocol',
       ]"
     >
-      <template #empty> No data stores found. </template>
+      <template #empty> No data stores found.</template>
       <Column
         field="name"
         header="Name"
