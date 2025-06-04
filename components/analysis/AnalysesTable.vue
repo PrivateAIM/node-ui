@@ -10,7 +10,7 @@ import AnalysisControlButtons from "./AnalysisControlButtons.vue";
 import {
   getApprovalStatusSeverity,
   getBuildStatusSeverity,
-  getRunStatusSeverity,
+  getRunStatusSeverity
 } from "~/utils/status-tag-severity";
 import { type AnalysisNode, type Project } from "~/services/Api";
 import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
@@ -41,7 +41,7 @@ const {
   data: analysisNodeResp,
   status,
   error,
-  refresh,
+  refresh
 } = await getAnalysisNodes(); // Get the first batch of 50
 const { data: projData, status: projStatus } = await useFetch<Project[]>(
   "/projects",
@@ -50,9 +50,9 @@ const { data: projData, status: projStatus } = await useFetch<Project[]>(
     method: "GET",
     query: {
       sort: "-updated_at",
-      fields: "id,name",
-    },
-  },
+      fields: "id,name"
+    }
+  }
 );
 
 // Iterate through projects and populate map with proj UUID: name
@@ -70,7 +70,7 @@ function parseData(respStatus: string, respData: AnalysisNode[] | null) {
     const formattedAnalyses = formatDataRow(
       respData,
       ["created_at", "updated_at"],
-      expandRowEntries,
+      expandRowEntries
     );
     if (projMap.size > 0) {
       formattedAnalyses.forEach((analysisEntry: ModifiedAnalysisNode) => {
@@ -114,11 +114,11 @@ async function getNextPage() {
       query: {
         page: {
           offset: currentOffset,
-          limit: queryLimit,
+          limit: queryLimit
         },
         include: "analysis,node",
-        sort: "-updated_at",
-      },
+        sort: "-updated_at"
+      }
     })
     .catch(() => null)) as AnalysisNode[];
   if (nextSetResults.length > 0) {
@@ -139,7 +139,7 @@ const defaultFilters = {
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   approval_status: { value: null, matchMode: FilterMatchMode.EQUALS },
   "analysis.build_status": { value: null, matchMode: FilterMatchMode.IN },
-  run_status: { value: null, matchMode: FilterMatchMode.IN },
+  run_status: { value: null, matchMode: FilterMatchMode.IN }
   // Below are more examples
   // "analysis.name": { value: null, matchMode: FilterMatchMode.CONTAINS },
   // status: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -152,7 +152,7 @@ function resetFilters() {
   const clearedFilters = {};
   for (const filterKey in defaultFilters) {
     clearedFilters[filterKey] = {
-      ...defaultFilters[filterKey],
+      ...defaultFilters[filterKey]
     };
     clearedFilters[filterKey].value = null;
   }
@@ -165,7 +165,7 @@ const updateFilters = (filterText: string) => {
 
 function updateRunStatus(
   analysisNodeId: string,
-  newStatus: typeof runStatuses,
+  newStatus: typeof runStatuses
 ) {
   for (let row of analyses.value as AnalysisNode[]) {
     if (row.id === analysisNodeId) {
@@ -183,6 +183,7 @@ const showDataStoreNavToast = () => {
       "Unable to find an associated data store, click the button below " +
       "to create a data store for the project of this analysis",
     group: "datastoreToastLink",
+    life: 10000
   });
 };
 
