@@ -5,6 +5,7 @@ import {
 } from "~/services/Api";
 import AnalysisUpdateButton from "./AnalysisUpdateButton.vue";
 import { useToast } from "primevue/usetoast";
+import { showMissingRegistryRobotCredentialsToast } from "~/composables/connectionErrorToast";
 import { useNuxtApp } from "#app";
 import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
 
@@ -102,11 +103,7 @@ async function registerAnalysis(
   } catch (error) {
     // Catch 409 and let proceed
     if (error.status === 409) {
-      showToast(
-        "warn",
-        "Duplicate entry error",
-        "A data store is already mapped to this analysis and will be removed"
-      );
+      console.warn("A data store is already mapped to this analysis and will be removed");
       const podRunning = await checkPodStatus(); // Check to see if the analysis pod already exists
       if (!podRunning) {
         await useNuxtApp()
@@ -172,6 +169,8 @@ async function onStartAnalysis() {
   analysisProps.project_id = props.projectId!;
   analysisProps.node_id = props.nodeId!;
 
+  let currentRunStatus: string | null = null;
+
   // Bind data to Analysis via Kong
   const bindDataStoreResp = await registerAnalysis(); // either null or has kong response
 
@@ -179,28 +178,35 @@ async function onStartAnalysis() {
   if (bindDataStoreResp) {
     // Only start the pod if a data store is ready for the analysis
     analysisProps.kong_token = bindDataStoreResp.keyauth.key!;
-    const startPodResp: POResp = (await useNuxtApp().$hubApi("/po", {
-      method: "POST",
-      body: analysisProps
-    }).catch((e) => {
-      if (e.status == 408) {  // Timed out waiting for image to pull
-        buttonStatuses.value = setButtonStatuses(AnalysisNodeRunStatus.Started);
-        showToast(
-          "info",
-          "Analysis submitted",
-          "Successfully started the container"
-        );
-      }
-    })) as POResp;
+    let startPodResp: POResp = (await useNuxtApp()
+      .$hubApi("/po", {
+        method: "POST",
+        body: analysisProps
+      })
+      .catch((e) => {
+        if (e.status == 408) {
+          // Timed out waiting for image to pull
+          currentRunStatus = AnalysisNodeRunStatus.Started;
+          showToast(
+            "info",
+            "Analysis submitted",
+            "The PodOrc did not respond in time, but the request was sent to start the analysis. " +
+            "The timeout was likely due to a large image being pulled."
+          );
+        } else if (e.status == 404) {
+          // Registry credentials not found
+          showMissingRegistryRobotCredentialsToast(toast);
+        } else {
+          showToast("error", "Start failure", "Failed to start the analysis");
+        }
+      })) as POResp;
 
     if (startPodResp && "status" in startPodResp) {
-      const currentRunStatus = startPodResp.status as string;
-      buttonStatuses.value = setButtonStatuses(currentRunStatus);
+      currentRunStatus = startPodResp.status as string;
       showToast("info", "Start success", "Successfully started the container");
-    } else {
-      showToast("error", "Start failure", "Failed to start the analysis");
     }
   }
+  buttonStatuses.value = setButtonStatuses(currentRunStatus);
   loading.value = false;
 }
 

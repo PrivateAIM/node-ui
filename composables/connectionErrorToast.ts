@@ -50,7 +50,8 @@ export const showMissingRegistryRobotCredentialsToast = (toast) => {
   toast.add({
     severity: "error",
     summary: "Missing Registry Credentials",
-    detail: "Unable to retrieve the credentials for accessing the registry",
+    detail:
+      "Unable to retrieve the credentials for accessing the registry so the analysis could not be started",
     life: 10000,
   });
   console.warn("Missing registry credentials");

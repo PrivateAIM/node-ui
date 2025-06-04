@@ -4,7 +4,6 @@ import {
   showHubConnectionError,
   showInvalidRobotCredentialsToast,
   showKongConnectionErrorToast,
-  showMissingRegistryRobotCredentialsToast,
   showWrongRobotIdToast,
 } from "~/composables/connectionErrorToast";
 import type { SessionData } from "h3";
@@ -58,8 +57,6 @@ export default defineNuxtPlugin(() => {
           downstreamService = "needed";
         }
         showDownstreamConnectionErrorToast(toast, downstreamService);
-      } else if (response.status === 404) {
-        showMissingRegistryRobotCredentialsToast(toast);
       } else if (response.status === 400) {
         if (response._data.detail.code === "invalid_credentials") {
           showInvalidRobotCredentialsToast(toast);
