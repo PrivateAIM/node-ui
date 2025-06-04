@@ -2,14 +2,11 @@ import { expect, test } from "vitest";
 import {
   getApprovalStatusSeverity,
   getBuildStatusSeverity,
-  getRunStatusSeverity,
   getDataStoreTypeSeverity,
+  getRunStatusSeverity,
 } from "~/utils/status-tag-severity";
-import {
-  AnalysisBuildStatus,
-  AnalysisRunStatus,
-  ApprovalStatus,
-} from "~/services/Api";
+import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
+import { ApprovalStatus } from "~/types/node";
 
 test("Approval status severity tag", () => {
   const expectations = {
@@ -50,7 +47,7 @@ test("Analysis run status severity tag", () => {
     failed: "danger",
   };
 
-  for (const runStatus of Object.values(AnalysisRunStatus)) {
+  for (const runStatus of Object.values(AnalysisNodeRunStatus)) {
     expect(getRunStatusSeverity(runStatus)).toStrictEqual(
       expectations[runStatus],
     );
