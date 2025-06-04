@@ -179,12 +179,19 @@ async function onStartAnalysis() {
   if (bindDataStoreResp) {
     // Only start the pod if a data store is ready for the analysis
     analysisProps.kong_token = bindDataStoreResp.keyauth.key!;
-    const startPodResp: POResp = (await useNuxtApp()
-      .$hubApi("/po", {
-        method: "POST",
-        body: analysisProps
-      })
-      .catch(() => null)) as POResp; // Set the response to null if an error occurs
+    const startPodResp: POResp = (await useNuxtApp().$hubApi("/po", {
+      method: "POST",
+      body: analysisProps
+    }).catch((e) => {
+      if (e.status == 408) {  // Timed out waiting for image to pull
+        buttonStatuses.value = setButtonStatuses(AnalysisNodeRunStatus.Started);
+        showToast(
+          "info",
+          "Analysis submitted",
+          "Successfully started the container"
+        );
+      }
+    })) as POResp;
 
     if (startPodResp && "status" in startPodResp) {
       const currentRunStatus = startPodResp.status as string;
