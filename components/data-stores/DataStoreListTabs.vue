@@ -12,14 +12,14 @@ import {
 } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
 import type {
-  ModifiedDetailedService,
   ModifiedConsumer,
+  ModifiedDetailedService,
 } from "~/services/modifiedApiInterfaces";
 import type {
-  Project,
-  Route,
   DetailedAnalysis,
   ListServices,
+  Project,
+  Route,
 } from "~/services/Api";
 import DetailedDataStoreTable from "~/components/data-stores/tables/DetailedDataStoreTable.vue";
 import DetailedAnalysisTable from "~/components/data-stores/tables/DetailedAnalysisTable.vue";
@@ -123,20 +123,20 @@ function extractProjectIdFromPath(paths: string[]): string {
     <Tabs value="0">
       <TabList>
         <Tab value="0" class="detailed-data-store-tab"
-          >Detailed Data Store View</Tab
-        >
+          >Detailed Data Store View
+        </Tab>
         <Tab
           value="1"
           class="detailed-analysis-tab"
           :disabled="dataStores.length === 0"
-          >Detailed Analyses View</Tab
-        >
+          >Detailed Analyses View
+        </Tab>
         <Tab
           value="2"
           class="data-store-tree-table-tab"
           :disabled="dataStores.length === 0"
-          >Data Store Tree Table</Tab
-        >
+          >Data Store Tree Table
+        </Tab>
       </TabList>
       <TabPanels>
         <TabPanel value="0">

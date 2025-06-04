@@ -3,7 +3,6 @@ import { useFetch, useNuxtApp } from "#app";
 import { useToast } from "primevue/usetoast";
 import { getAnalysisNodes } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
-import TableRowMetadata from "~/components/TableRowMetadata.vue";
 import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
 import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
@@ -11,20 +10,20 @@ import AnalysisControlButtons from "./AnalysisControlButtons.vue";
 import {
   getApprovalStatusSeverity,
   getBuildStatusSeverity,
-  getRunStatusSeverity,
+  getRunStatusSeverity
 } from "~/utils/status-tag-severity";
-import {
-  AnalysisBuildStatus,
-  type AnalysisNode,
-  AnalysisNodeRunStatus,
-  ApprovalStatus,
-  type Project,
-} from "~/services/Api";
+import { type AnalysisNode, type Project } from "~/services/Api";
+import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
+import { ApprovalStatus } from "~/types/node";
 
 const expandedRows = ref();
-const analyses = ref();
+const analyses = ref([]);
 const toast = useToast();
 const filters = ref();
+
+let allResultsRetrieved = false;
+const queryLimit = 50;
+let currentOffset = 50; // Start with query limit and will increment by same amount
 
 const expandRowEntries = [];
 const runStatuses = Object.values(AnalysisNodeRunStatus);
@@ -42,8 +41,8 @@ const {
   data: analysisNodeResp,
   status,
   error,
-  refresh,
-} = await getAnalysisNodes();
+  refresh
+} = await getAnalysisNodes(); // Get the first batch of 50
 const { data: projData, status: projStatus } = await useFetch<Project[]>(
   "/projects",
   {
@@ -51,28 +50,27 @@ const { data: projData, status: projStatus } = await useFetch<Project[]>(
     method: "GET",
     query: {
       sort: "-updated_at",
-      fields: "id,name",
-    },
-  },
+      fields: "id,name"
+    }
+  }
 );
 
 // Iterate through projects and populate map with proj UUID: name
 const projMap = new Map<string, string>();
 if (projStatus.value === "success" && projData.value) {
-  // @ts-expect-error Jetbrains can't infer data from useFetch
-  projData.value.data.forEach((proj: Project) => {
+  projData.value.forEach((proj: Project) => {
     if (proj.name) {
       projMap.set(proj.id!, proj.name);
     }
   });
 }
 
-function parseData() {
-  if (status.value === "success") {
+function parseData(respStatus: string, respData: AnalysisNode[] | null) {
+  if (respStatus === "success") {
     const formattedAnalyses = formatDataRow(
-      analysisNodeResp.value!.data,
+      respData,
       ["created_at", "updated_at"],
-      expandRowEntries,
+      expandRowEntries
     );
     if (projMap.size > 0) {
       formattedAnalyses.forEach((analysisEntry: ModifiedAnalysisNode) => {
@@ -80,23 +78,60 @@ function parseData() {
         if (projId && projMap.has(projId)) {
           analysisEntry.project_name = projMap.get(projId);
         }
+        analyses.value.push(analysisEntry);
       });
     }
-    analyses.value = formattedAnalyses;
   } else if (error.value?.statusCode === 500) {
     showHubAdapterConnectionErrorToast(toast, "Hub");
   }
 }
 
-parseData();
-
-// function onToggleRowExpansion(rowIds) {
-//   expandedRows.value = rowIds;
-// }
+parseData(status.value, analysisNodeResp.value);
 
 async function onTableRefresh() {
   await refresh();
-  parseData();
+  parseData(status.value, analysisNodeResp.value);
+}
+
+function onPage(event) {
+  const currentPage = event.page + 1;
+  const currentNumberEntries = analyses.value.length;
+  const currentMaxPage = Math.ceil(currentNumberEntries / event.rows);
+
+  if (!allResultsRetrieved) {
+    // If not all results retrieved
+    if (currentPage >= currentMaxPage - 1) {
+      // If page before last is clicked
+      getNextPage();
+    }
+  }
+}
+
+async function getNextPage() {
+  const nextSetResults = (await useNuxtApp()
+    .$hubApi("/analysis-nodes", {
+      method: "GET",
+      query: {
+        page: {
+          offset: currentOffset,
+          limit: queryLimit
+        },
+        include: "analysis,node",
+        sort: "-updated_at"
+      }
+    })
+    .catch(() => null)) as AnalysisNode[];
+  if (nextSetResults.length > 0) {
+    if (nextSetResults.length < queryLimit) {
+      // Fewer than limit means we are at the end
+      allResultsRetrieved = true;
+    }
+    currentOffset += queryLimit; // Increment offset value
+    parseData("success", nextSetResults);
+  } else {
+    // No results returned means all were retrieved
+    allResultsRetrieved = true;
+  }
 }
 
 // Table filters
@@ -104,7 +139,7 @@ const defaultFilters = {
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   approval_status: { value: null, matchMode: FilterMatchMode.EQUALS },
   "analysis.build_status": { value: null, matchMode: FilterMatchMode.IN },
-  run_status: { value: null, matchMode: FilterMatchMode.IN },
+  run_status: { value: null, matchMode: FilterMatchMode.IN }
   // Below are more examples
   // "analysis.name": { value: null, matchMode: FilterMatchMode.CONTAINS },
   // status: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -117,7 +152,7 @@ function resetFilters() {
   const clearedFilters = {};
   for (const filterKey in defaultFilters) {
     clearedFilters[filterKey] = {
-      ...defaultFilters[filterKey],
+      ...defaultFilters[filterKey]
     };
     clearedFilters[filterKey].value = null;
   }
@@ -128,8 +163,11 @@ const updateFilters = (filterText: string) => {
   filters.value.global.value = filterText;
 };
 
-function updateRunStatus(analysisNodeId: string, newStatus: string) {
-  for (let row of analyses.value) {
+function updateRunStatus(
+  analysisNodeId: string,
+  newStatus: typeof runStatuses
+) {
+  for (let row of analyses.value as AnalysisNode[]) {
     if (row.id === analysisNodeId) {
       row.run_status = newStatus;
       break;
@@ -145,6 +183,7 @@ const showDataStoreNavToast = () => {
       "Unable to find an associated data store, click the button below " +
       "to create a data store for the project of this analysis",
     group: "datastoreToastLink",
+    life: 10000
   });
 };
 
@@ -156,15 +195,6 @@ const onNavigate = () => {
 const onCloseNavToast = () => {
   toast.removeGroup("datastoreToastLink");
 };
-
-// function updateTable(newData: AnalysisNode) {
-//   for (let row of analyses.value) {
-//     if (row.id === newData.id) {
-//       row.approval_status = newData.approval_status;
-//       return;
-//     }
-//   }
-// }
 </script>
 
 <template>
@@ -241,12 +271,15 @@ const onCloseNavToast = () => {
             table: 'table table-striped',
           }"
           paginator
+          @page="onPage"
           :rows="10"
           :rowsPerPageOptions="[10, 20, 50]"
           tableStyle="min-width: 50rem"
           v-model:filters="filters"
           filterDisplay="menu"
           :globalFilterFields="['analysis.name', 'project_name', 'node.name']"
+          sortField="updated_at.timestamp"
+          :sortOrder="-1"
         >
           <template #empty> No analyses found.</template>
           <Column expander style="width: 5rem" v-if="expandRowEntries.length" />
@@ -445,7 +478,6 @@ const onCloseNavToast = () => {
               </p>
             </template>
           </Column>
-          <!--          <Column field="node.name" header="Node" :sortable="true" />-->
           <Column field="expand.id" style="min-width: 13em" :exportable="false">
             <template #header>
               <span
@@ -473,11 +505,6 @@ const onCloseNavToast = () => {
               </div>
             </template>
           </Column>
-          <template #expansion="slotProps">
-            <div class="p-3">
-              <TableRowMetadata :rowMetadata="slotProps.data.expand" />
-            </div>
-          </template>
         </DataTable>
       </template>
     </Card>

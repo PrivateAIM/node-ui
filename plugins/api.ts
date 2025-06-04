@@ -1,10 +1,11 @@
 import {
-  showKongConnectionErrorToast,
-  showHubAdapterConnectionErrorToast,
   showDownstreamConnectionErrorToast,
-  showWrongRobotIdToast,
-  showInvalidRobotCredentialsToast,
+  showHubAdapterConnectionErrorToast,
   showHubConnectionError,
+  showInvalidRobotCredentialsToast,
+  showKongConnectionErrorToast,
+  showMissingRegistryRobotCredentialsToast,
+  showWrongRobotIdToast,
 } from "~/composables/connectionErrorToast";
 import type { SessionData } from "h3";
 import { useToast } from "primevue/usetoast";
@@ -57,15 +58,15 @@ export default defineNuxtPlugin(() => {
           downstreamService = "needed";
         }
         showDownstreamConnectionErrorToast(toast, downstreamService);
+      } else if (response.status === 404) {
+        showMissingRegistryRobotCredentialsToast(toast);
       } else if (response.status === 400) {
-        navigateTo("/");
         if (response._data.detail.code === "invalid_credentials") {
           showInvalidRobotCredentialsToast(toast);
         } else {
           showWrongRobotIdToast(toast);
         }
       } else if (response.status === 408) {
-        navigateTo("/");
         showHubConnectionError(toast);
       }
     },

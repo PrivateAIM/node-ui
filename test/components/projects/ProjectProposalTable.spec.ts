@@ -1,10 +1,10 @@
 import { useToast } from "primevue/usetoast";
 import { defineComponent } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
-import { vi, describe, test, expect, beforeAll, beforeEach } from "vitest";
+import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import ProjectProposalTable from "~/components/projects/ProjectProposalTable.vue";
 import { getProjectNodes } from "~/composables/useAPIFetch";
-import type { ListAnalysisNodes } from "~/services/Api";
+import type { ProjectNode } from "~/services/Api";
 import { fakeProposalsResp } from "~/test/components/projects/constants";
 
 vi.mock("~/composables/useAPIFetch", () => ({
@@ -64,7 +64,7 @@ describe("ProjectProposalTable.vue", () => {
   });
 
   test("No projects returned", async () => {
-    const emptyResp: ListAnalysisNodes = { data: [], meta: {} };
+    const emptyResp: ProjectNode[] = [];
     vi.mocked(getProjectNodes).mockResolvedValue({
       data: ref(emptyResp),
       pending: ref(false),

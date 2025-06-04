@@ -1,9 +1,8 @@
 import {
-  type AllAnalyses,
-  type AllProjects,
-  AnalysisBuildStatus,
+  type Analysis,
   type ListConsumers,
   type ListServices,
+  type Project,
 } from "~/services/Api";
 
 export const validProjectId = "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483";
@@ -192,45 +191,43 @@ export const fakeDetailedAnalysisTableProps = {
   ]),
 };
 
-export const fakeProjectResp: AllProjects = {
-  data: [
-    {
-      id: "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483",
-      created_at: "2025-01-28T14:58:02.143000Z",
-      updated_at: "2025-02-14T09:05:02Z",
-      name: "ds-project-test",
-      analyses: 17,
-      realm_id: "ab1fbc92-3dc8-4bdd-9d51-3b571c2d7aaa",
-      user_id: "5ec456e2-e30c-4a29-96de-6425fe5b9355",
-      master_image_id: null,
-      master_image: null,
-    },
-  ],
-  meta: {},
-};
-export const fakeAnalysisResp: AllAnalyses = {
-  data: [
-    {
-      id: "8003eefe-e39b-4bd4-aec4-78046c63b39b",
-      created_at: "2025-02-05T10:15:22.833000Z",
-      updated_at: "2025-03-20T10:05:26Z",
-      name: "T004",
-      nodes: 2,
-      configuration_status: null,
-      build_status: AnalysisBuildStatus.Finished,
-      run_status: null,
-      registry_id: "bab3aa4f-9144-444c-8ec7-6ebbbe8e300f",
-      realm_id: "ab1fbc92-3dc8-4bdd-9d51-3b571c2d7aaa",
-      user_id: "5ec456e2-e30c-4a29-96de-6425fe5b9355",
-      project_id: "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483",
-      project: null,
-      master_image_id: null,
-      registry: null,
-      master_image: null,
-    },
-  ],
-  meta: {},
-};
+export const fakeProjectResp: Project[] = [
+  {
+    id: "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483",
+    created_at: "2025-01-28T14:58:02.143000Z",
+    updated_at: "2025-02-14T09:05:02Z",
+    name: "ds-project-test",
+    analyses: 17,
+    realm_id: "ab1fbc92-3dc8-4bdd-9d51-3b571c2d7aaa",
+    user_id: "5ec456e2-e30c-4a29-96de-6425fe5b9355",
+    master_image_id: null,
+    master_image: null,
+    description: null,
+    nodes: 0,
+    robot_id: null,
+  },
+];
+export const fakeAnalysisResp: Analysis[] = [
+  {
+    id: "8003eefe-e39b-4bd4-aec4-78046c63b39b",
+    created_at: "2025-02-05T10:15:22.833000Z",
+    updated_at: "2025-03-20T10:05:26Z",
+    name: "T004",
+    nodes: 2,
+    build_status: "finished",
+    run_status: null,
+    registry_id: "bab3aa4f-9144-444c-8ec7-6ebbbe8e300f",
+    realm_id: "ab1fbc92-3dc8-4bdd-9d51-3b571c2d7aaa",
+    user_id: "5ec456e2-e30c-4a29-96de-6425fe5b9355",
+    project_id: "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483",
+    project: undefined,
+    master_image_id: null,
+    registry: null,
+    master_image: null,
+    description: null,
+    configuration_locked: true,
+  },
+];
 export const fakeConsumerResp: ListConsumers = {
   data: [
     {

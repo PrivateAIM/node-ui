@@ -1,12 +1,12 @@
 import { useToast } from "primevue/usetoast";
 import { flushPromises, mount } from "@vue/test-utils";
-import { vi, describe, it, expect, afterEach, beforeAll } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import AnalysisControlButtons from "~/components/analysis/AnalysisControlButtons.vue";
-import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/services/Api";
+import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
 import {
   fakeAnalysisId,
-  fakeMissingAnalysisId,
   fakeBrokenAnalysisId,
+  fakeMissingAnalysisId,
 } from "~/test/mockapi/handlers";
 
 interface ButtonStates {

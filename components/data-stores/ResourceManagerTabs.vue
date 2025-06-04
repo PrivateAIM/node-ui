@@ -7,7 +7,7 @@ const availableProjects = ref();
 const { data: projects, status: projStatus } = await getProjectNodes();
 
 if (projStatus.value === "success") {
-  const projectData = projects.value.data as unknown as Array<ProjectNode>;
+  const projectData = projects.value as unknown as Array<ProjectNode>;
   if (projectData.length > 0) {
     availableProjects.value = projectData.map((proj: ProjectNode) => {
       return {

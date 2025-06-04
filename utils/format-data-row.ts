@@ -10,17 +10,20 @@ export function formatDataRow(
   datetimeKeys: string[],
   rowExpansionKeys: string[],
 ) {
-  rowEntries.map((row) => {
-    parseUnixTimestamp(row, datetimeKeys);
-    const expandData: object = {};
-    rowExpansionKeys.forEach((key) => {
-      if (key in row) {
-        expandData[key] = row[key];
-        delete row[key];
-      }
+  if (rowEntries) {
+    console.log(rowEntries);
+    rowEntries.map((row) => {
+      parseUnixTimestamp(row, datetimeKeys);
+      const expandData: object = {};
+      rowExpansionKeys.forEach((key) => {
+        if (key in row) {
+          expandData[key] = row[key];
+          delete row[key];
+        }
+      });
+      row["expand"] = expandData;
     });
-    row["expand"] = expandData;
-  });
+  }
   return rowEntries;
 }
 

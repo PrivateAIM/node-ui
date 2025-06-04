@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useNuxtApp } from "#app";
 import { useToast } from "primevue/usetoast";
+import type { AnalysisNode, ProjectNode } from "~/services/Api";
 
 const props = defineProps({
   objectId: String,
@@ -16,25 +17,25 @@ async function onSubmitApproval(isApproved: boolean) {
   loading.value = true;
   const formData = new FormData();
   formData.append("approval_status", isApproved ? "approved" : "rejected");
-  let approvalResp;
+  let approvalResp: AnalysisNode | ProjectNode | undefined;
 
   if (props.objectClass == "project") {
-    approvalResp = await useNuxtApp()
+    approvalResp = (await useNuxtApp()
       .$hubApi(`/project-nodes/${props.objectId}`, {
         method: "POST",
         body: formData,
       })
-      .catch((e) => console.error(e));
+      .catch((e) => console.error(e))) as ProjectNode;
   } else if (props.objectClass == "analysis") {
-    approvalResp = await useNuxtApp()
+    approvalResp = (await useNuxtApp()
       .$hubApi(`/analysis-nodes/${props.objectId}`, {
         method: "POST",
         body: formData,
       })
-      .catch((e) => console.error(e));
+      .catch((e) => console.error(e))) as AnalysisNode;
   }
 
-  if ("approval_status" in approvalResp) {
+  if (approvalResp && "approval_status" in approvalResp) {
     showSuccessfulSubmission(isApproved);
     // Send data to parent component
     emit("updatedRow", approvalResp);

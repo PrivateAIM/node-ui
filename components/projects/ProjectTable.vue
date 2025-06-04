@@ -18,7 +18,7 @@ const { data: response, status, error, refresh } = await getProjects();
 function parseData() {
   if (status.value === "success") {
     projects.value = formatDataRow(
-      response.value!.data as unknown as Map<string, string | number | null>[],
+      response.value! as unknown as Map<string, string | number | null>[],
       dataRowUnixCols,
       expandRowEntries,
     );
@@ -26,6 +26,7 @@ function parseData() {
     showHubAdapterConnectionErrorToast(toast, "Hub");
   }
 }
+
 parseData();
 
 async function onTableRefresh() {
@@ -76,7 +77,7 @@ const updateFilters = (filterText: string) => {
           filterDisplay="menu"
           :globalFilterFields="['name', 'master_image_id']"
         >
-          <template #empty> No projects found. </template>
+          <template #empty> No projects found.</template>
           <template #header>
             <div class="table-header-row">
               <SearchBar

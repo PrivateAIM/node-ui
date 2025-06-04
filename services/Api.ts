@@ -10,85 +10,12 @@
  * ---------------------------------------------------------------
  */
 
-/**
- * ConfigurationStatus
- * "Possible values for configuration status.
- */
-export enum ConfigurationStatus {
-  Base = "base",
-  SecurityConfigured = "security_configured",
-  ResourceConfigured = "resource_configured",
-  HashGenerated = "hash_generated",
-  HashSigned = "hash_signed",
-  Finished = "finished",
-}
-
-/**
- * BucketType
- * Bucket types.
- */
-export enum BucketType {
-  CODE = "CODE",
-  RESULT = "RESULT",
-  TEMP = "TEMP",
-}
-
-/**
- * ApprovalStatus
- * Status of project possibilities.
- */
-export enum ApprovalStatus {
-  Approved = "approved",
-  Rejected = "rejected",
-}
-
 /** AnalysisStatus */
 export enum AnalysisStatus {
   Started = "started",
   Created = "created",
   Running = "running",
   Stopped = "stopped",
-}
-
-/**
- * AnalysisRunStatus
- * Possible values for analysis run status.
- */
-export enum AnalysisRunStatus {
-  Running = "running",
-  Starting = "starting",
-  Started = "started",
-  Stopping = "stopping",
-  Stopped = "stopped",
-  Finished = "finished",
-  Failed = "failed",
-}
-
-/**
- * AnalysisNodeRunStatus
- * Possible values for analysis run status.
- */
-export enum AnalysisNodeRunStatus {
-  Running = "running",
-  Starting = "starting",
-  Started = "started",
-  Stopping = "stopping",
-  Stopped = "stopped",
-  Finished = "finished",
-  Failed = "failed",
-}
-
-/**
- * AnalysisBuildStatus
- * Possible values for analysis build status.
- */
-export enum AnalysisBuildStatus {
-  Starting = "starting",
-  Started = "started",
-  Stopping = "stopping",
-  Stopped = "stopped",
-  Finished = "finished",
-  Failed = "failed",
 }
 
 /**
@@ -125,133 +52,205 @@ export interface ACLConsumer {
   id?: string | null;
 }
 
-/**
- * AllAnalyses
- * List of all projects.
- */
-export interface AllAnalyses {
-  /** Data */
-  data: DetailedAnalysis[];
-  /** Metadata included with hub responses */
-  meta: Metadata;
-}
-
-/**
- * AllProjects
- * List of all projects.
- */
-export interface AllProjects {
-  /** Data */
-  data: Project[];
-  /** Metadata included with hub responses */
-  meta: Metadata;
-}
-
-/**
- * Analysis
- * Model representing a single detailed analysis.
- */
-export interface AnalysisInput {
-  /** Id */
-  id?: string | null;
-  /** Created At */
-  created_at?: string | null;
-  /** Updated At */
-  updated_at?: string | null;
+/** Analysis */
+export interface Analysis {
+  /** Description */
+  description: string | null;
   /** Name */
-  name?: string | null;
-  /** Nodes */
-  nodes?: number | null;
-  configuration_status?: ConfigurationStatus | null;
-  build_status?: AnalysisBuildStatus | null;
-  run_status?: AnalysisRunStatus | null;
+  name: string | null;
+  /**
+   * Project Id
+   * @format uuid
+   */
+  project_id: string;
+  /** Master Image Id */
+  master_image_id: string | null;
   /** Registry Id */
-  registry_id?: string | null;
-  /** Realm Id */
-  realm_id?: string | null;
-  /** User Id */
-  user_id?: string | null;
+  registry_id: string | null;
+  /** Image Command Arguments */
+  image_command_arguments?: MasterImageCommandArgument[];
+  /**
+   * Id
+   * @format uuid
+   */
+  id: string;
+  /** Configuration Locked */
+  configuration_locked: boolean;
+  /** Nodes */
+  nodes: number;
+  /** Build Status */
+  build_status:
+    | "starting"
+    | "started"
+    | "stopping"
+    | "stopped"
+    | "finished"
+    | "failed"
+    | null;
+  /** Run Status */
+  run_status:
+    | "starting"
+    | "started"
+    | "running"
+    | "stopping"
+    | "stopped"
+    | "finished"
+    | "failed"
+    | null;
+  /**
+   * Created At
+   * @format date-time
+   */
+  created_at: string;
+  /**
+   * Updated At
+   * @format date-time
+   */
+  updated_at: string;
+  registry?: Registry | null;
+  /**
+   * Realm Id
+   * @format uuid
+   */
+  realm_id: string;
+  /**
+   * User Id
+   * @format uuid
+   */
+  user_id: string;
+  project?: Project;
+  master_image?: MasterImage | null;
+}
+
+/** AnalysisBucket */
+export interface AnalysisBucket {
+  /**
+   * Id
+   * @format uuid
+   */
+  id: string;
+  /** Type */
+  type: "CODE" | "RESULT" | "TEMP";
+  /** External Id */
+  external_id: string | null;
+  /**
+   * Created At
+   * @format date-time
+   */
+  created_at: string;
+  /**
+   * Updated At
+   * @format date-time
+   */
+  updated_at: string;
+  /**
+   * Analysis Id
+   * @format uuid
+   */
+  analysis_id: string;
+  analysis?: Analysis;
+  /**
+   * Realm Id
+   * @format uuid
+   */
+  realm_id: string;
+}
+
+/** AnalysisImageUrl */
+export interface AnalysisImageUrl {
+  /** Image Url */
+  image_url: string;
   /** Project Id */
   project_id?: string | null;
-  project?: Project | null;
-  /** Master Image Id */
-  master_image_id?: string | null;
-}
-
-/**
- * Analysis
- * Model representing a single detailed analysis.
- */
-export interface AnalysisOutput {
-  /** Id */
-  id?: string | null;
-  /** Created At */
-  created_at?: string | null;
-  /** Updated At */
-  updated_at?: string | null;
-  /** Name */
-  name?: string | null;
-  /** Nodes */
-  nodes?: number | null;
-  configuration_status?: ConfigurationStatus | null;
-  build_status?: AnalysisBuildStatus | null;
-  run_status?: AnalysisRunStatus | null;
-  /** Registry Id */
-  registry_id?: string | null;
-  /** Realm Id */
-  realm_id?: string | null;
-  /** User Id */
-  user_id?: string | null;
-  /** Project Id */
-  project_id?: string | null;
-  project?: Project | null;
-  /** Master Image Id */
-  master_image_id?: string | null;
-}
-
-/**
- * AnalysisNode
- * Node analysis response model.
- */
-export interface AnalysisNode {
-  /** Id */
-  id?: string | null;
-  /** Created At */
-  created_at?: string | null;
-  /** Updated At */
-  updated_at?: string | null;
-  approval_status?: ApprovalStatus | null;
-  run_status?: AnalysisNodeRunStatus | null;
-  /** Comment */
-  comment?: string | null;
-  /** Index */
-  index?: number | null;
-  /** Artifact Tag */
-  artifact_tag?: string | null;
-  /** Artifact Digest */
-  artifact_digest?: string | null;
+  /** Kong Token */
+  kong_token?: string | null;
   /** Analysis Id */
-  analysis_id?: string | null;
-  /** Analysis Realm Id */
-  analysis_realm_id?: string | null;
-  /** Node Id */
-  node_id?: string | null;
-  /** Node Realm Id */
-  node_realm_id?: string | null;
-  analysis?: DetailedAnalysis | null;
-  node?: Node | null;
+  analysis_id: string;
+  /** Registry Url */
+  registry_url: string;
+  /** Registry User */
+  registry_user?: string | null;
+  /** Registry Password */
+  registry_password?: string | null;
 }
 
-/** Body_accept_reject_analysis_node_analysis_nodes__analysis_id__post */
-export interface BodyAcceptRejectAnalysisNodeAnalysisNodesAnalysisIdPost {
-  /** Set the approval status of project for the node. Either 'rejected' or 'approved' */
-  approval_status: ApprovalStatus;
+/** AnalysisNode */
+export interface AnalysisNode {
+  /**
+   * Analysis Id
+   * @format uuid
+   */
+  analysis_id: string;
+  /**
+   * Node Id
+   * @format uuid
+   */
+  node_id: string;
+  /**
+   * Id
+   * @format uuid
+   */
+  id: string;
+  /** Approval Status */
+  approval_status: "rejected" | "approved" | null;
+  /** Run Status */
+  run_status:
+    | "starting"
+    | "started"
+    | "running"
+    | "stopping"
+    | "stopped"
+    | "finished"
+    | "failed"
+    | null;
+  /** Comment */
+  comment: string | null;
+  /** Index */
+  index: number;
+  /** Artifact Tag */
+  artifact_tag: string | null;
+  /** Artifact Digest */
+  artifact_digest: string | null;
+  /**
+   * Created At
+   * @format date-time
+   */
+  created_at: string;
+  /**
+   * Updated At
+   * @format date-time
+   */
+  updated_at: string;
+  analysis?: Analysis;
+  node?: Node;
+  /**
+   * Analysis Realm Id
+   * @format uuid
+   */
+  analysis_realm_id: string;
+  /**
+   * Node Realm Id
+   * @format uuid
+   */
+  node_realm_id: string;
 }
 
-/** Body_accept_reject_project_proposal_project_nodes__proposal_id__post */
-export interface BodyAcceptRejectProjectProposalProjectNodesProposalIdPost {
-  /** Set the approval status of project for the node. Either 'rejected' or 'approved' */
-  approval_status: ApprovalStatus;
+/** Body_accept_reject_analysis_node_analysis_nodes__analysis_node_id__post */
+export interface BodyAcceptRejectAnalysisNodeAnalysisNodesAnalysisNodeIdPost {
+  /**
+   * Approval Status
+   * Set the approval status of project for the node. Either 'rejected' or 'approved'
+   */
+  approval_status: "rejected" | "approved";
+}
+
+/** Body_accept_reject_project_proposal_project_nodes__project_node_id__post */
+export interface BodyAcceptRejectProjectProposalProjectNodesProjectNodeIdPost {
+  /**
+   * Approval Status
+   * Set the approval status of project for the node. Either 'rejected' or 'approved'
+   */
+  approval_status: "rejected" | "approved";
 }
 
 /** Body_create_analysis_po_post */
@@ -259,25 +258,21 @@ export interface BodyCreateAnalysisPoPost {
   /**
    * Analysis Id
    * Analysis UUID
-   * @format uuid
    */
   analysis_id: string;
   /**
    * Project Id
    * Project UUID
-   * @format uuid
    */
   project_id: string;
   /**
    * Kong Token
    * Analysis keyauth kong token
-   * @format uuid
    */
-  kong_token: string;
+  kong_token?: string;
   /**
    * Node Id
    * Node UUID
-   * @format uuid
    */
   node_id: string;
 }
@@ -379,25 +374,21 @@ export interface BodyGetAnalysisImageUrlAnalysisImagePost {
   /**
    * Analysis Id
    * Analysis UUID
-   * @format uuid
    */
   analysis_id: string;
   /**
    * Project Id
    * Project UUID
-   * @format uuid
    */
   project_id: string;
   /**
    * Kong Token
    * Analysis keyauth kong token
-   * @format uuid
    */
-  kong_token: string;
+  kong_token?: string;
   /**
    * Node Id
    * Node UUID
-   * @format uuid
    */
   node_id: string;
 }
@@ -441,35 +432,6 @@ export interface BodySubmitIntermediateResultToLocalLocalPut {
    * @format binary
    */
   file: File;
-}
-
-/**
- * Bucket
- * Bucket data.
- */
-export interface Bucket {
-  /** Id */
-  id?: string | null;
-  /** Created At */
-  created_at?: string | null;
-  /** Updated At */
-  updated_at?: string | null;
-  type?: BucketType | null;
-  /** External Id */
-  external_id?: string | null;
-  /** Analysis Id */
-  analysis_id?: string | null;
-  analysis?: DetailedAnalysis | null;
-  /** Realm Id */
-  realm_id?: string | null;
-}
-
-/** BucketList */
-export interface BucketList {
-  /** Data */
-  data: Bucket[];
-  /** Metadata included with hub responses */
-  meta: Metadata;
 }
 
 /**
@@ -530,31 +492,71 @@ export interface DeleteProject {
  * Model representing a single detailed analysis.
  */
 export interface DetailedAnalysis {
-  /** Id */
-  id?: string | null;
-  /** Created At */
-  created_at?: string | null;
-  /** Updated At */
-  updated_at?: string | null;
+  /** Description */
+  description: string | null;
   /** Name */
-  name?: string | null;
-  /** Nodes */
-  nodes?: number | null;
-  configuration_status?: ConfigurationStatus | null;
-  build_status?: AnalysisBuildStatus | null;
-  run_status?: AnalysisRunStatus | null;
-  /** Registry Id */
-  registry_id?: string | null;
-  /** Realm Id */
-  realm_id?: string | null;
-  /** User Id */
-  user_id?: string | null;
-  /** Project Id */
-  project_id?: string | null;
-  project?: Project | null;
+  name: string | null;
+  /**
+   * Project Id
+   * @format uuid
+   */
+  project_id: string;
   /** Master Image Id */
-  master_image_id?: string | null;
+  master_image_id: string | null;
+  /** Registry Id */
+  registry_id: string | null;
+  /** Image Command Arguments */
+  image_command_arguments?: MasterImageCommandArgument[];
+  /**
+   * Id
+   * @format uuid
+   */
+  id: string;
+  /** Configuration Locked */
+  configuration_locked: boolean;
+  /** Nodes */
+  nodes: number;
+  /** Build Status */
+  build_status:
+    | "starting"
+    | "started"
+    | "stopping"
+    | "stopped"
+    | "finished"
+    | "failed"
+    | null;
+  /** Run Status */
+  run_status:
+    | "starting"
+    | "started"
+    | "running"
+    | "stopping"
+    | "stopped"
+    | "finished"
+    | "failed"
+    | null;
+  /**
+   * Created At
+   * @format date-time
+   */
+  created_at: string;
+  /**
+   * Updated At
+   * @format date-time
+   */
+  updated_at: string;
   registry?: Registry | null;
+  /**
+   * Realm Id
+   * @format uuid
+   */
+  realm_id: string;
+  /**
+   * User Id
+   * @format uuid
+   */
+  user_id: string;
+  project?: Project | null;
   master_image?: MasterImage | null;
 }
 
@@ -863,14 +865,6 @@ export interface LinkProjectAnalysis {
   acl: ACL;
 }
 
-/** ListAnalysisNodes */
-export interface ListAnalysisNodes {
-  /** Data */
-  data: AnalysisNode[];
-  /** Metadata included with hub responses */
-  meta: Metadata;
-}
-
 /**
  * ListConsumers
  * Custom route list response model.
@@ -883,14 +877,6 @@ export interface ListConsumers {
    * Offset is used to paginate through the API. Provide this value to the next list operation to fetch the next page
    */
   offset?: string | null;
-}
-
-/** ListProjectNodes */
-export interface ListProjectNodes {
-  /** Data */
-  data: ProjectNode[];
-  /** Metadata included with hub responses */
-  meta: Metadata;
 }
 
 /**
@@ -929,118 +915,87 @@ export interface LogResponse {
   nginx?: Record<string, any> | null;
 }
 
-/**
- * MasterImage
- * Master image details.
- */
+/** MasterImage */
 export interface MasterImage {
-  /** Id */
-  id?: string | null;
-  /** Created At */
-  created_at?: string | null;
-  /** Updated At */
-  updated_at?: string | null;
+  /**
+   * Id
+   * @format uuid
+   */
+  id: string;
   /** Path */
-  path?: string | null;
+  path: string | null;
   /** Virtual Path */
-  virtual_path?: string | null;
+  virtual_path: string;
   /** Group Virtual Path */
-  group_virtual_path?: string | null;
+  group_virtual_path: string;
   /** Name */
-  name?: string | null;
+  name: string;
   /** Command */
-  command?: string | null;
+  command: string | null;
   /** Command Arguments */
-  command_arguments?: string | null;
+  command_arguments: MasterImageCommandArgument[] | null;
+  /**
+   * Created At
+   * @format date-time
+   */
+  created_at: string;
+  /**
+   * Updated At
+   * @format date-time
+   */
+  updated_at: string;
 }
 
-/**
- * Metadata
- * Metadata included with hub responses
- */
-export interface Metadata {
-  /**
-   * Total
-   * @default 0
-   */
-  total?: number;
-  /**
-   * Limit
-   * @default 0
-   */
-  limit?: number;
-  /**
-   * Offset
-   * @default 0
-   */
-  offset?: number;
+/** MasterImageCommandArgument */
+export interface MasterImageCommandArgument {
+  /** Value */
+  value: string;
+  /** Position */
+  position: "before" | "after" | null;
 }
 
-/**
- * Node
- * Node details.
- */
+/** Node */
 export interface Node {
-  /** Id */
-  id?: string | null;
-  /** Created At */
-  created_at?: string | null;
-  /** Updated At */
-  updated_at?: string | null;
   /** External Name */
-  external_name?: string | null;
-  /** Name */
-  name?: string | null;
+  external_name: string | null;
   /** Hidden */
-  hidden?: boolean | null;
-  /** Type */
-  type?: string | null;
-  /** Online */
-  online?: boolean | null;
-  /** Registry Id */
-  registry_id?: string | null;
-  /** Registry Project Id */
-  registry_project_id?: string | null;
-  /** Robot Id */
-  robot_id?: string | null;
-  /** Realm Id */
-  realm_id?: string | null;
-}
-
-/** PartialAnalysisBucketFile */
-export interface PartialAnalysisBucketFile {
-  /** Id */
-  id?: string | null;
-  /** Created At */
-  created_at?: string | null;
-  /** Updated At */
-  updated_at?: string | null;
+  hidden: boolean | null;
   /** Name */
-  name?: string | null;
-  /** Root */
-  root?: boolean | null;
-  /** External Id */
-  external_id?: string | null;
-  /** Bucket Id */
-  bucket_id?: string | null;
-  bucket?: Bucket | null;
-  /** Analysis Id */
-  analysis_id?: string | null;
-  analysis?: DetailedAnalysis | null;
+  name: string;
   /** Realm Id */
-  realm_id?: string | null;
-  /** User Id */
-  user_id?: string | null;
-  /** Robot Id */
-  robot_id?: string | null;
-}
-
-/** PartialBucketFilesList */
-export interface PartialBucketFilesList {
-  /** Data */
-  data: PartialAnalysisBucketFile[];
-  /** Metadata included with hub responses */
-  meta: Metadata;
+  realm_id: string | null;
+  /** Registry Id */
+  registry_id: string | null;
+  /** Type */
+  type: "aggregator" | "default" | null;
+  /**
+   * Id
+   * @format uuid
+   */
+  id: string;
+  /** Public Key */
+  public_key: string | null;
+  /** Online */
+  online: boolean;
+  registry?: Registry | null;
+  /** Registry Project Id */
+  registry_project_id: string | null;
+  registry_project?: RegistryProject | null;
+  /**
+   * Robot Id
+   * @format uuid
+   */
+  robot_id: string;
+  /**
+   * Created At
+   * @format date-time
+   */
+  created_at: string;
+  /**
+   * Updated At
+   * @format date-time
+   */
+  updated_at: string;
 }
 
 /** PodResponse */
@@ -1049,108 +1004,168 @@ export interface PodResponse {
   pods?: any[] | null;
 }
 
-/**
- * Project
- * Single project response model.
- */
+/** Project */
 export interface Project {
-  /** Id */
-  id?: string | null;
-  /** Created At */
-  created_at?: string | null;
-  /** Updated At */
-  updated_at?: string | null;
-  /** Name */
-  name?: string | null;
-  /** Analyses */
-  analyses?: number | null;
-  /** Realm Id */
-  realm_id?: string | null;
-  /** User Id */
-  user_id?: string | null;
+  /** Description */
+  description: string | null;
   /** Master Image Id */
-  master_image_id?: string | null;
-  master_image?: MasterImage | null;
-}
-
-/**
- * ProjectNode
- * Single project proposal.
- */
-export interface ProjectNode {
-  /** Id */
-  id?: string | null;
-  /** Created At */
-  created_at?: string | null;
-  /** Updated At */
-  updated_at?: string | null;
-  approval_status?: ApprovalStatus | null;
-  /** Comment */
-  comment?: string | null;
-  /** Project Id */
-  project_id?: string | null;
-  /** Project Realm Id */
-  project_realm_id?: string | null;
-  /** Node Id */
-  node_id?: string | null;
-  /** Node Realm Id */
-  node_realm_id?: string | null;
-  project?: Project | null;
-  node?: Node | null;
-}
-
-/**
- * Registry
- * Details the registry information.
- */
-export interface Registry {
-  /** Id */
-  id?: string | null;
-  /** Created At */
-  created_at?: string | null;
-  /** Updated At */
-  updated_at?: string | null;
+  master_image_id: string | null;
   /** Name */
-  name?: string | null;
+  name: string;
+  /**
+   * Id
+   * @format uuid
+   */
+  id: string;
+  /** Analyses */
+  analyses: number;
+  /** Nodes */
+  nodes: number;
+  master_image?: MasterImage | null;
+  /**
+   * Created At
+   * @format date-time
+   */
+  created_at: string;
+  /**
+   * Updated At
+   * @format date-time
+   */
+  updated_at: string;
+  /**
+   * Realm Id
+   * @format uuid
+   */
+  realm_id: string;
+  /** User Id */
+  user_id: string | null;
+  /** Robot Id */
+  robot_id: string | null;
+}
+
+/** ProjectNode */
+export interface ProjectNode {
+  /**
+   * Node Id
+   * @format uuid
+   */
+  node_id: string;
+  /**
+   * Project Id
+   * @format uuid
+   */
+  project_id: string;
+  /**
+   * Id
+   * @format uuid
+   */
+  id: string;
+  /** Approval Status */
+  approval_status: "rejected" | "approved";
+  /** Comment */
+  comment: string | null;
+  /**
+   * Created At
+   * @format date-time
+   */
+  created_at: string;
+  /**
+   * Updated At
+   * @format date-time
+   */
+  updated_at: string;
+  node?: Node;
+  project?: Project;
+  /**
+   * Project Realm Id
+   * @format uuid
+   */
+  project_realm_id: string;
+  /**
+   * Node Realm Id
+   * @format uuid
+   */
+  node_realm_id: string;
+}
+
+/** Registry */
+export interface Registry {
+  /** Name */
+  name: string;
   /** Host */
-  host?: string | null;
+  host: string;
   /** Account Name */
-  account_name?: string | null;
+  account_name: string | null;
   /** Account Secret */
   account_secret?: string | null;
+  /**
+   * Id
+   * @format uuid
+   */
+  id: string;
+  /**
+   * Created At
+   * @format date-time
+   */
+  created_at: string;
+  /**
+   * Updated At
+   * @format date-time
+   */
+  updated_at: string;
 }
 
 /** RegistryProject */
 export interface RegistryProject {
-  /** Id */
-  id?: string | null;
-  /** Created At */
-  created_at?: string | null;
-  /** Updated At */
-  updated_at?: string | null;
   /** Name */
-  name?: string | null;
+  name: string;
   /** Type */
-  type?: string | null;
-  /** Public */
-  public?: boolean | null;
+  type:
+    | "default"
+    | "aggregator"
+    | "incoming"
+    | "outgoing"
+    | "masterImages"
+    | "node";
+  /**
+   * Registry Id
+   * @format uuid
+   */
+  registry_id: string;
   /** External Name */
-  external_name?: string | null;
+  external_name: string;
+  /**
+   * Id
+   * @format uuid
+   */
+  id: string;
+  /** Public */
+  public: boolean;
   /** External Id */
-  external_id?: string | null;
+  external_id: string | null;
   /** Webhook Name */
-  webhook_name?: string | null;
+  webhook_name: string | null;
   /** Webhook Exists */
-  webhook_exists?: boolean | null;
+  webhook_exists: boolean | null;
+  /** Realm Id */
+  realm_id: string | null;
+  registry?: Registry;
+  /** Account Id */
+  account_id?: string | null;
   /** Account Name */
   account_name?: string | null;
   /** Account Secret */
   account_secret?: string | null;
-  /** Registry Id */
-  registry_id?: string | null;
-  registry?: Registry | null;
-  /** Realm Id */
-  realm_id?: string | null;
+  /**
+   * Created At
+   * @format date-time
+   */
+  created_at: string;
+  /**
+   * Updated At
+   * @format date-time
+   */
+  updated_at: string;
 }
 
 /**
@@ -2035,12 +2050,12 @@ export class Api<
      *
      * @tags Hub
      * @name ListAllProjectsProjectsGet
-     * @summary List All Projects
+     * @summary List all of the projects
      * @request GET:/projects
      * @secure
      */
     listAllProjectsProjectsGet: (params: RequestParams = {}) =>
-      this.request<AllProjects, void>({
+      this.request<Project[], void>({
         path: `/projects`,
         method: "GET",
         secure: true,
@@ -2053,7 +2068,7 @@ export class Api<
      *
      * @tags Hub
      * @name ListSpecificProjectProjectsProjectIdGet
-     * @summary List Specific Project
+     * @summary List a specific project
      * @request GET:/projects/{project_id}
      * @secure
      */
@@ -2075,7 +2090,7 @@ export class Api<
      *
      * @tags Hub
      * @name ListProjectProposalsProjectNodesGet
-     * @summary List Project Proposals
+     * @summary List all of the project proposals
      * @request GET:/project-nodes
      * @secure
      */
@@ -2089,7 +2104,7 @@ export class Api<
       },
       params: RequestParams = {},
     ) =>
-      this.request<ListProjectNodes, void | HTTPValidationError>({
+      this.request<ProjectNode[], void | HTTPValidationError>({
         path: `/project-nodes`,
         method: "GET",
         query: query,
@@ -2102,27 +2117,40 @@ export class Api<
      * @description Set the approval status of a project proposal.
      *
      * @tags Hub
-     * @name AcceptRejectProjectProposalProjectNodesProposalIdPost
-     * @summary Accept Reject Project Proposal
-     * @request POST:/project-nodes/{proposal_id}
+     * @name ListProjectProposalProjectNodesProjectNodeIdGet
+     * @summary List a specific project proposal
+     * @request GET:/project-nodes/{project_node_id}
      * @secure
      */
-    acceptRejectProjectProposalProjectNodesProposalIdPost: (
-      proposalId: string,
-      data: BodyAcceptRejectProjectProposalProjectNodesProposalIdPost,
-      query?: {
-        /**
-         * Debug
-         * @default false
-         */
-        debug?: boolean;
-      },
+    listProjectProposalProjectNodesProjectNodeIdGet: (
+      projectNodeId: string,
       params: RequestParams = {},
     ) =>
       this.request<ProjectNode, void | HTTPValidationError>({
-        path: `/project-nodes/${proposalId}`,
+        path: `/project-nodes/${projectNodeId}`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Set the approval status of a project proposal.
+     *
+     * @tags Hub
+     * @name AcceptRejectProjectProposalProjectNodesProjectNodeIdPost
+     * @summary Update a specific project proposal
+     * @request POST:/project-nodes/{project_node_id}
+     * @secure
+     */
+    acceptRejectProjectProposalProjectNodesProjectNodeIdPost: (
+      projectNodeId: string,
+      data: BodyAcceptRejectProjectProposalProjectNodesProjectNodeIdPost,
+      params: RequestParams = {},
+    ) =>
+      this.request<ProjectNode, void | HTTPValidationError>({
+        path: `/project-nodes/${projectNodeId}`,
         method: "POST",
-        query: query,
         body: data,
         secure: true,
         type: ContentType.UrlEncoded,
@@ -2132,15 +2160,15 @@ export class Api<
   };
   analysisNodes = {
     /**
-     * @description List analyses for a node.
+     * @description List all analysis nodes for give node.
      *
      * @tags Hub
-     * @name ListAnalysesOfNodesAnalysisNodesGet
-     * @summary List Analyses Of Nodes
+     * @name ListAnalysisNodesAnalysisNodesGet
+     * @summary List all of the analysis proposals
      * @request GET:/analysis-nodes
      * @secure
      */
-    listAnalysesOfNodesAnalysisNodesGet: (
+    listAnalysisNodesAnalysisNodesGet: (
       query?: {
         /**
          * Debug
@@ -2150,7 +2178,7 @@ export class Api<
       },
       params: RequestParams = {},
     ) =>
-      this.request<ListAnalysisNodes, void | HTTPValidationError>({
+      this.request<AnalysisNode[], void | HTTPValidationError>({
         path: `/analysis-nodes`,
         method: "GET",
         query: query,
@@ -2160,50 +2188,42 @@ export class Api<
       }),
 
     /**
-     * @description List project for a given UUID.
+     * @description List a specific analysis node.
      *
      * @tags Hub
-     * @name ListSpecificAnalysisNodeAnalysisNodesAnalysisIdGet
-     * @summary List Specific Analysis Node
-     * @request GET:/analysis-nodes/{analysis_id}
+     * @name ListSpecificAnalysisNodeAnalysisNodesAnalysisNodeIdGet
+     * @summary List a specific analysis node
+     * @request GET:/analysis-nodes/{analysis_node_id}
      * @secure
      */
-    listSpecificAnalysisNodeAnalysisNodesAnalysisIdGet: (
-      analysisId: string,
-      query?: {
-        /**
-         * Debug
-         * @default false
-         */
-        debug?: boolean;
-      },
+    listSpecificAnalysisNodeAnalysisNodesAnalysisNodeIdGet: (
+      analysisNodeId: string,
       params: RequestParams = {},
     ) =>
       this.request<AnalysisNode, void | HTTPValidationError>({
-        path: `/analysis-nodes/${analysisId}`,
+        path: `/analysis-nodes/${analysisNodeId}`,
         method: "GET",
-        query: query,
         secure: true,
         format: "json",
         ...params,
       }),
 
     /**
-     * @description Set the approval status of a analysis.
+     * @description Set the approval status of an analysis proposal.
      *
      * @tags Hub
-     * @name AcceptRejectAnalysisNodeAnalysisNodesAnalysisIdPost
-     * @summary Accept Reject Analysis Node
-     * @request POST:/analysis-nodes/{analysis_id}
+     * @name AcceptRejectAnalysisNodeAnalysisNodesAnalysisNodeIdPost
+     * @summary Update a specific analysis proposal
+     * @request POST:/analysis-nodes/{analysis_node_id}
      * @secure
      */
-    acceptRejectAnalysisNodeAnalysisNodesAnalysisIdPost: (
-      analysisId: string,
-      data: BodyAcceptRejectAnalysisNodeAnalysisNodesAnalysisIdPost,
+    acceptRejectAnalysisNodeAnalysisNodesAnalysisNodeIdPost: (
+      analysisNodeId: string,
+      data: BodyAcceptRejectAnalysisNodeAnalysisNodesAnalysisNodeIdPost,
       params: RequestParams = {},
     ) =>
       this.request<AnalysisNode, void | HTTPValidationError>({
-        path: `/analysis-nodes/${analysisId}`,
+        path: `/analysis-nodes/${analysisNodeId}`,
         method: "POST",
         body: data,
         secure: true,
@@ -2214,16 +2234,16 @@ export class Api<
   };
   analyses = {
     /**
-     * @description List project for a given UUID.
+     * @description List all registered analyses.
      *
      * @tags Hub
      * @name ListAllAnalysesAnalysesGet
-     * @summary List All Analyses
+     * @summary List all of the analysis proposals
      * @request GET:/analyses
      * @secure
      */
     listAllAnalysesAnalysesGet: (params: RequestParams = {}) =>
-      this.request<AllAnalyses, void>({
+      this.request<Analysis[], void>({
         path: `/analyses`,
         method: "GET",
         secure: true,
@@ -2232,11 +2252,11 @@ export class Api<
       }),
 
     /**
-     * @description List project for a given UUID.
+     * @description List a specific analysis.
      *
      * @tags Hub
      * @name ListSpecificAnalysisAnalysesAnalysisIdGet
-     * @summary List Specific Analysis
+     * @summary List a specific analysis
      * @request GET:/analyses/{analysis_id}
      * @secure
      */
@@ -2244,7 +2264,7 @@ export class Api<
       analysisId: string,
       params: RequestParams = {},
     ) =>
-      this.request<AnalysisOutput, void | HTTPValidationError>({
+      this.request<Analysis, void | HTTPValidationError>({
         path: `/analyses/${analysisId}`,
         method: "GET",
         secure: true,
@@ -2257,13 +2277,13 @@ export class Api<
      *
      * @tags Hub
      * @name UpdateSpecificAnalysisAnalysesAnalysisIdPost
-     * @summary Update Specific Analysis
+     * @summary Update a specific analysis proposal
      * @request POST:/analyses/{analysis_id}
      * @secure
      */
     updateSpecificAnalysisAnalysesAnalysisIdPost: (
       analysisId: string,
-      data: AnalysisInput,
+      data: string,
       params: RequestParams = {},
     ) =>
       this.request<DetailedAnalysis, void | HTTPValidationError>({
@@ -2282,7 +2302,7 @@ export class Api<
      *
      * @tags Hub
      * @name GetRegistryMetadataForProjectRegistryProjectsRegistryProjectIdGet
-     * @summary Get Registry Metadata For Project
+     * @summary Get registry project
      * @request GET:/registry-projects/{registry_project_id}
      * @secure
      */
@@ -2290,7 +2310,7 @@ export class Api<
       registryProjectId: string,
       params: RequestParams = {},
     ) =>
-      this.request<RegistryProject, void>({
+      this.request<RegistryProject, void | HTTPValidationError>({
         path: `/registry-projects/${registryProjectId}`,
         method: "GET",
         secure: true,
@@ -2312,7 +2332,7 @@ export class Api<
       data: BodyGetAnalysisImageUrlAnalysisImagePost,
       params: RequestParams = {},
     ) =>
-      this.request<any, void | HTTPValidationError>({
+      this.request<AnalysisImageUrl, void | HTTPValidationError>({
         path: `/analysis/image`,
         method: "POST",
         body: data,
@@ -2324,16 +2344,16 @@ export class Api<
   };
   analysisBuckets = {
     /**
-     * @description List analysis buckets.
+     * @description List all analysis buckets.
      *
      * @tags Hub
      * @name ListAllAnalysisBucketsAnalysisBucketsGet
-     * @summary List All Analysis Buckets
+     * @summary List a specific analysis bucket
      * @request GET:/analysis-buckets
      * @secure
      */
     listAllAnalysisBucketsAnalysisBucketsGet: (params: RequestParams = {}) =>
-      this.request<BucketList, void>({
+      this.request<any, void>({
         path: `/analysis-buckets`,
         method: "GET",
         secure: true,
@@ -2342,20 +2362,20 @@ export class Api<
       }),
 
     /**
-     * @description List analysis buckets.
+     * @description List a specific analysis bucket.
      *
      * @tags Hub
-     * @name ListSpecificAnalysisBucketsAnalysisBucketsBucketIdGet
-     * @summary List Specific Analysis Buckets
-     * @request GET:/analysis-buckets/{bucket_id}
+     * @name ListSpecificAnalysisBucketsAnalysisBucketsAnalysisBucketIdGet
+     * @summary List a specific analysis bucket
+     * @request GET:/analysis-buckets/{analysis_bucket_id}
      * @secure
      */
-    listSpecificAnalysisBucketsAnalysisBucketsBucketIdGet: (
-      bucketId: string,
+    listSpecificAnalysisBucketsAnalysisBucketsAnalysisBucketIdGet: (
+      analysisBucketId: string,
       params: RequestParams = {},
     ) =>
-      this.request<Bucket, void | HTTPValidationError>({
-        path: `/analysis-buckets/${bucketId}`,
+      this.request<AnalysisBucket, void | HTTPValidationError>({
+        path: `/analysis-buckets/${analysisBucketId}`,
         method: "GET",
         secure: true,
         format: "json",
@@ -2368,14 +2388,14 @@ export class Api<
      *
      * @tags Hub
      * @name ListAllAnalysisBucketFilesAnalysisBucketFilesGet
-     * @summary List All Analysis Bucket Files
+     * @summary List partial analysis bucket files.
      * @request GET:/analysis-bucket-files
      * @secure
      */
     listAllAnalysisBucketFilesAnalysisBucketFilesGet: (
       params: RequestParams = {},
     ) =>
-      this.request<PartialBucketFilesList, void>({
+      this.request<any, void>({
         path: `/analysis-bucket-files`,
         method: "GET",
         secure: true,
@@ -2387,17 +2407,17 @@ export class Api<
      * @description List specific partial analysis bucket file.
      *
      * @tags Hub
-     * @name ListSpecificAnalysisBucketFileAnalysisBucketFilesBucketFileIdGet
-     * @summary List Specific Analysis Bucket File
-     * @request GET:/analysis-bucket-files/{bucket_file_id}
+     * @name ListSpecificAnalysisBucketFileAnalysisBucketFilesAnalysisBucketFileIdGet
+     * @summary List partial analysis bucket files.
+     * @request GET:/analysis-bucket-files/{analysis_bucket_file_id}
      * @secure
      */
-    listSpecificAnalysisBucketFileAnalysisBucketFilesBucketFileIdGet: (
-      bucketFileId: string,
+    listSpecificAnalysisBucketFileAnalysisBucketFilesAnalysisBucketFileIdGet: (
+      analysisBucketFileId: string,
       params: RequestParams = {},
     ) =>
-      this.request<PartialAnalysisBucketFile, void | HTTPValidationError>({
-        path: `/analysis-bucket-files/${bucketFileId}`,
+      this.request<any, void | HTTPValidationError>({
+        path: `/analysis-bucket-files/${analysisBucketFileId}`,
         method: "GET",
         secure: true,
         format: "json",
@@ -2458,16 +2478,16 @@ export class Api<
       }),
 
     /**
-     * @description List all available data stores (referred to as services by kong).
+     * @description List all available data stores (referred to as services by kong). Will be composed of the Project UUID and the datastore type (fhir/s3) i.e. {project_id}-{ds_type}. This is found via the tags.
      *
      * @tags Kong
-     * @name ListSpecificDataStoreKongDatastoreDataStoreNameGet
+     * @name ListSpecificDataStoreKongDatastoreProjectIdGet
      * @summary List Specific Data Store
-     * @request GET:/kong/datastore/{data_store_name}
+     * @request GET:/kong/datastore/{project_id}
      * @secure
      */
-    listSpecificDataStoreKongDatastoreDataStoreNameGet: (
-      dataStoreName: string | null,
+    listSpecificDataStoreKongDatastoreProjectIdGet: (
+      projectId: string | null,
       query?: {
         /**
          * Detailed
@@ -2479,7 +2499,7 @@ export class Api<
       params: RequestParams = {},
     ) =>
       this.request<ListServices, void | HTTPValidationError>({
-        path: `/kong/datastore/${dataStoreName}`,
+        path: `/kong/datastore/${projectId}`,
         method: "GET",
         query: query,
         secure: true,
@@ -2741,58 +2761,6 @@ export class Api<
         method: "POST",
         body: data,
         type: ContentType.UrlEncoded,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Return information about the provided token.
-     *
-     * @tags Auth
-     * @name InspectTokenTokenInspectPost
-     * @summary Get information about a provided token from the IDP
-     * @request POST:/token/inspect
-     */
-    inspectTokenTokenInspectPost: (data: string, params: RequestParams = {}) =>
-      this.request<Record<string, any>, void | HTTPValidationError>({
-        path: `/token/inspect`,
-        method: "POST",
-        body: data,
-        type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-  };
-  authorize = {
-    /**
-     * @description Check token authorization.
-     *
-     * @tags Auth
-     * @name AuthorizeAuthorizePost
-     * @summary Authorize
-     * @request POST:/authorize
-     */
-    authorizeAuthorizePost: (params: RequestParams = {}) =>
-      this.request<any, void>({
-        path: `/authorize`,
-        method: "POST",
-        format: "json",
-        ...params,
-      }),
-  };
-  userinfo = {
-    /**
-     * @description Get user information.
-     *
-     * @tags Auth
-     * @name UserInfoUserinfoPost
-     * @summary User Info
-     * @request POST:/userinfo
-     */
-    userInfoUserinfoPost: (params: RequestParams = {}) =>
-      this.request<any, void>({
-        path: `/userinfo`,
-        method: "POST",
         format: "json",
         ...params,
       }),
