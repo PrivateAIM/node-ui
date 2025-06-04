@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.2.13](https://github.com/PrivateAIM/node-ui/compare/v0.2.12...v0.2.13) (2025-06-04)
+
+
+### Features
+
+* **analysis:** working dynamic pagination using hub offset ([ae32ed9](https://github.com/PrivateAIM/node-ui/commit/ae32ed907aab2053ecba2e8d8e50120ebbd78453))
+* **error:** add error toast for missing registry credentials ([ed1311c](https://github.com/PrivateAIM/node-ui/commit/ed1311c4291315109c0391e0078ff43dabd0f9ca))
+* update response parsing for new HA ([92a36ed](https://github.com/PrivateAIM/node-ui/commit/92a36ed4cc06dc8453f8c0684b3120b0a9333a03))
+
+
+### Bug Fixes
+
+* add empty input for helper method ([61a3386](https://github.com/PrivateAIM/node-ui/commit/61a338665b6c97d3300fa3fa0c09af7bbfaadeab))
+* **analysis:** run status no longer stuck on starting during failed start ([e730223](https://github.com/PrivateAIM/node-ui/commit/e7302237f0bda67078b7d370315b7375f36e5e93))
+
 ## [0.2.12](https://github.com/PrivateAIM/node-ui/compare/v0.2.11...v0.2.12) (2025-05-23)
 
 
