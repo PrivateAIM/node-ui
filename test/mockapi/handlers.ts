@@ -58,12 +58,8 @@ export const handlers = [
         status: "started",
       });
     } else {
-      return HttpResponse.json({
-        detail: {
-          message:
-            "HTTP Request: POST http://flame-node-po-service:8000/po - HTTP Status: 503 - Service is unavailable. Check the PodOrc service at http://flame-node-po-service:8000",
-          service: "PodOrc",
-        },
+      return HttpResponse.json(null, {
+        status: 503,
       });
     }
   }),
@@ -141,6 +137,38 @@ export const handlers = [
   // Kong
   http.delete(`/kong/analysis/*`, () => {
     return HttpResponse.text("200");
+  }),
+  http.get(`/kong/project`, () => {
+    return HttpResponse.json({
+      data: [
+        {
+          created_at: 1749192126,
+          destinations: null,
+          headers: null,
+          hosts: null,
+          https_redirect_status_code: 426,
+          id: "ca6ba716-3e3a-4841-a9c3-0db732a74cd9",
+          methods: ["GET"],
+          name: "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483-fhir",
+          path_handling: "v0",
+          paths: ["/7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483-fhir/fhir"],
+          preserve_host: false,
+          protocols: ["http"],
+          regex_priority: 0,
+          request_buffering: true,
+          response_buffering: true,
+          service: {
+            id: "1b7bc86e-fe14-4e15-ade5-4187183aad46",
+          },
+          snis: null,
+          sources: null,
+          strip_path: true,
+          tags: ["7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483", "fhir"],
+          updated_at: 1749192126,
+        },
+      ],
+      offset: null,
+    });
   }),
   http.post(`/kong/analysis`, () => {
     return HttpResponse.json({
