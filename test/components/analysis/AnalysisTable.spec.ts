@@ -69,13 +69,13 @@ describe("AnalysesTable.vue", () => {
     expect(headerRow.length).toBe(1);
     const headerCols = headerRow[0].findAll("th");
     expect(headerCols[0].text()).toBe("Name"); // First col
-    expect(headerCols[7].text()).toBe("Toggle Analysis"); // Last col
+    expect(headerCols[8].text()).toBe("Analysis Controls"); // Last col
 
     // Verify the second row's content
     const secondRowCells = rows[1].findAll("td");
     expect(secondRowCells[0].text()).toBe("T004"); // Name
     expect(secondRowCells[1].text()).toBe("approved"); // Approval status
-    expect(secondRowCells[6].text()).toBe("14.03.2025"); // Last Updated
+    expect(secondRowCells[7].text()).toBe("14.03.2025"); // Last Updated
   });
 
   test("No analyses returned", async () => {

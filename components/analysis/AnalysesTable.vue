@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useFetch, useNuxtApp } from "#app";
+import Badge from "primevue/badge";
 import { useToast } from "primevue/usetoast";
 import { getAnalysisNodes } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
@@ -10,14 +11,19 @@ import AnalysisControlButtons from "./AnalysisControlButtons.vue";
 import {
   getApprovalStatusSeverity,
   getBuildStatusSeverity,
-  getRunStatusSeverity
+  getRunStatusSeverity,
 } from "~/utils/status-tag-severity";
-import { type AnalysisNode, type Project } from "~/services/Api";
+import {
+  type AnalysisNode,
+  type ListRoutes,
+  type Project,
+  type Route,
+} from "~/services/Api";
 import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
 import { ApprovalStatus } from "~/types/node";
 
 const expandedRows = ref();
-const analyses = ref([]);
+const analyses = ref<ModifiedAnalysisNode[]>([]);
 const toast = useToast();
 const filters = ref();
 
@@ -26,6 +32,7 @@ const queryLimit = 50;
 let currentOffset = 50; // Start with query limit and will increment by same amount
 
 const expandRowEntries = [];
+const kongRoutes = ref<Set<string>>(new Set());
 const runStatuses = Object.values(AnalysisNodeRunStatus);
 const approvalStatuses = Object.values(ApprovalStatus);
 const buildStatuses = Object.values(AnalysisBuildStatus);
@@ -35,13 +42,14 @@ interface ModifiedAnalysisNode extends AnalysisNode {
   expand: {
     [key: string]: string;
   };
+  datastore: boolean;
 }
 
 const {
   data: analysisNodeResp,
   status,
   error,
-  refresh
+  refresh,
 } = await getAnalysisNodes(); // Get the first batch of 50
 const { data: projData, status: projStatus } = await useFetch<Project[]>(
   "/projects",
@@ -50,10 +58,28 @@ const { data: projData, status: projStatus } = await useFetch<Project[]>(
     method: "GET",
     query: {
       sort: "-updated_at",
-      fields: "id,name"
-    }
-  }
+      fields: "id,name",
+    },
+  },
 );
+
+const kongProjectsResp = (await useNuxtApp()
+  .$hubApi("/kong/project", {
+    method: "GET",
+  })
+  .catch(() => null)) as ListRoutes;
+if (kongProjectsResp && kongProjectsResp.data) {
+  const projIds: string[] = [];
+  kongProjectsResp.data.forEach((proj: Route) => {
+    const nameChunks = proj.name?.split("-");
+    if (nameChunks && nameChunks.length > 1) {
+      nameChunks.pop(); // Remove suffix, either "fhir" or "s3"
+      const projUuid = nameChunks.join("-");
+      projIds.push(projUuid);
+    }
+  });
+  kongRoutes.value = new Set(projIds);
+}
 
 // Iterate through projects and populate map with proj UUID: name
 const projMap = new Map<string, string>();
@@ -70,13 +96,16 @@ function parseData(respStatus: string, respData: AnalysisNode[] | null) {
     const formattedAnalyses = formatDataRow(
       respData,
       ["created_at", "updated_at"],
-      expandRowEntries
+      expandRowEntries,
     );
     if (projMap.size > 0) {
       formattedAnalyses.forEach((analysisEntry: ModifiedAnalysisNode) => {
         const projId = analysisEntry.analysis?.project_id;
-        if (projId && projMap.has(projId)) {
-          analysisEntry.project_name = projMap.get(projId);
+        if (projId) {
+          analysisEntry.project_name = projMap.has(projId)
+            ? projMap.get(projId)
+            : "";
+          analysisEntry.datastore = kongRoutes.value.has(projId);
         }
         analyses.value.push(analysisEntry);
       });
@@ -114,11 +143,11 @@ async function getNextPage() {
       query: {
         page: {
           offset: currentOffset,
-          limit: queryLimit
+          limit: queryLimit,
         },
         include: "analysis,node",
-        sort: "-updated_at"
-      }
+        sort: "-updated_at",
+      },
     })
     .catch(() => null)) as AnalysisNode[];
   if (nextSetResults.length > 0) {
@@ -139,7 +168,7 @@ const defaultFilters = {
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   approval_status: { value: null, matchMode: FilterMatchMode.EQUALS },
   "analysis.build_status": { value: null, matchMode: FilterMatchMode.IN },
-  run_status: { value: null, matchMode: FilterMatchMode.IN }
+  run_status: { value: null, matchMode: FilterMatchMode.IN },
   // Below are more examples
   // "analysis.name": { value: null, matchMode: FilterMatchMode.CONTAINS },
   // status: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -152,7 +181,7 @@ function resetFilters() {
   const clearedFilters = {};
   for (const filterKey in defaultFilters) {
     clearedFilters[filterKey] = {
-      ...defaultFilters[filterKey]
+      ...defaultFilters[filterKey],
     };
     clearedFilters[filterKey].value = null;
   }
@@ -165,7 +194,7 @@ const updateFilters = (filterText: string) => {
 
 function updateRunStatus(
   analysisNodeId: string,
-  newStatus: typeof runStatuses
+  newStatus: AnalysisNode["run_status"],
 ) {
   for (let row of analyses.value as AnalysisNode[]) {
     if (row.id === analysisNodeId) {
@@ -183,7 +212,7 @@ const showDataStoreNavToast = () => {
       "Unable to find an associated data store, click the button below " +
       "to create a data store for the project of this analysis",
     group: "datastoreToastLink",
-    life: 10000
+    life: 10000,
   });
 };
 
@@ -446,6 +475,31 @@ const onCloseNavToast = () => {
               </span>
             </template>
           </Column>
+          <Column field="datastore" :sortable="true">
+            <template #header>
+              <span
+                class="help-text"
+                v-tooltip.top="'Whether the analysis has access to data'"
+              >
+                <b>Data Store</b>
+              </span>
+            </template>
+            <template #body="{ data }">
+              <div v-if="data.datastore" class="datastore-badge">
+                <Badge severity="success" class="w-8 h-8 rounded-full"
+                  ><i class="pi pi-check" v-tooltip.top="'Data store found'"></i
+                ></Badge>
+              </div>
+              <div v-else class="datastore-badge">
+                <Badge severity="danger" class="w-8 h-8 rounded-full"
+                  ><i
+                    class="pi pi-times"
+                    v-tooltip.top="'Data store missing!'"
+                  ></i
+                ></Badge>
+              </div>
+            </template>
+          </Column>
           <Column field="created_at.timestamp" dataType="date" :sortable="true">
             <template #header>
               <span
@@ -484,7 +538,7 @@ const onCloseNavToast = () => {
                 class="help-text"
                 v-tooltip.top="'Controls for the analysis container'"
               >
-                <b>Toggle Analysis</b>
+                <b>Analysis Controls</b>
               </span>
             </template>
             <template #body="slotProps">
@@ -521,5 +575,9 @@ const onCloseNavToast = () => {
 
 .nav-btn {
   margin-top: 10px;
+}
+
+.datastore-badge {
+  margin-left: 2em;
 }
 </style>
