@@ -19,6 +19,10 @@ interface ButtonStates {
   deleteActive: boolean;
 }
 
+interface ApiError extends Error {
+  status?: number;
+}
+
 const props = defineProps({
   analysisBuildStatus: [String, null],
   analysisRunStatus: {
@@ -34,6 +38,11 @@ const props = defineProps({
 const emit = defineEmits(["newRunStatus", "missingDataStore"]);
 const toast = useToast();
 const loading = ref(false);
+
+// API Constants
+const MAX_RETRY_ATTEMPTS = 10;
+const CONFLICT_STATUS = 409;
+const NOT_FOUND_STATUS = 404;
 
 const playButtonActiveStates = [null, ""];
 const rerunButtonActiveStates: Array<string | null> = [
@@ -59,10 +68,10 @@ const deleteButtonActiveStates: Array<string | null> = [
 ];
 
 const buttonStatuses = ref<ButtonStates>(
-  setButtonStatuses(props.analysisRunStatus, false),
+  getButtonStatuses(props.analysisRunStatus, false),
 );
 
-function setButtonStatuses(
+function getButtonStatuses(
   podStatus: string | null,
   updateTable: boolean = true,
 ) {
@@ -78,6 +87,13 @@ function setButtonStatuses(
   };
 }
 
+function setButtonStates(
+  podStatus: string | null,
+  updateTable: boolean = true,
+) {
+  buttonStatuses.value = getButtonStatuses(podStatus, updateTable);
+}
+
 const showToast = (severity: ToastSeverity, summary: string, msg: string) => {
   toast.add({
     severity: severity,
@@ -89,58 +105,77 @@ const showToast = (severity: ToastSeverity, summary: string, msg: string) => {
 
 async function registerAnalysis(
   attempt: number = 0,
-  maxAttempts: number = 10,
+  maxAttempts: number = MAX_RETRY_ATTEMPTS,
 ): Promise<LinkProjectAnalysis | null> {
-  let bindDataStoreResp: LinkProjectAnalysis | null = null;
   try {
-    // @ts-expect-error Weird recursive depth complaint
-    bindDataStoreResp = await useNuxtApp().$hubApi("/kong/analysis", {
+    // @ts-expect-error Nuxt error
+    return (await useNuxtApp().$hubApi("/kong/analysis", {
       method: "POST",
       body: {
         project_id: props.projectId!,
         analysis_id: props.analysisId!,
       },
-    });
+    })) as LinkProjectAnalysis;
   } catch (error) {
+    return await handleRegistrationError(
+      error as ApiError,
+      attempt,
+      maxAttempts,
+    );
+  }
+}
+
+async function handleRegistrationError(
+  error: ApiError,
+  attempt: number,
+  maxAttempts: number,
+): Promise<LinkProjectAnalysis | null> {
+  if (error.status === CONFLICT_STATUS) {
     // Catch 409 and let proceed
-    if (error.status === 409) {
-      console.warn(
-        "A data store is already mapped to this analysis and will be removed",
-      );
-      const podRunning = await checkPodStatus(); // Check to see if the analysis pod already exists
-      if (!podRunning) {
-        await useNuxtApp()
-          .$hubApi(`/kong/analysis/${props.analysisId}`, {
-            method: "DELETE",
-          })
-          .catch(() => {
-            showToast(
-              "error",
-              "Disconnect failure",
-              "Unable to delete the consumer",
-            );
-          });
-        attempt++;
-        if (attempt < maxAttempts) {
-          return await registerAnalysis(attempt);
-        }
-      }
+    return await handleConflictError(attempt, maxAttempts);
+  } else {
+    // If not 409, show error and quit the process
+    if (error.status === NOT_FOUND_STATUS) {
+      emit("missingDataStore");
     } else {
-      // If not 409, show error and quit the process
-      if (error.status === 404) {
-        emit("missingDataStore");
-      } else {
+      showToast(
+        "error",
+        "Data mapping failed",
+        "Unable to map a data store to this analysis due to a technical error.",
+      );
+    }
+    loading.value = false;
+    setButtonStates(null);
+  }
+  return null;
+}
+
+async function handleConflictError(
+  attempt: number,
+  maxAttempts: number,
+): Promise<LinkProjectAnalysis | null> {
+  console.warn(
+    "A data store is already mapped to this analysis and will be removed",
+  );
+  const podRunning = await checkPodStatus(); // Check to see if the analysis pod already exists
+  if (!podRunning) {
+    await useNuxtApp()
+      .$hubApi(`/kong/analysis/${props.analysisId}`, {
+        method: "DELETE",
+      })
+      .catch(() => {
         showToast(
           "error",
-          "Data mapping failed",
-          "Unable to map a data store to this analysis due to a technical error.",
+          "Disconnect failure",
+          "Unable to delete the consumer",
         );
-      }
-      loading.value = false;
-      setButtonStatuses(null);
+      });
+    attempt++;
+    if (attempt < maxAttempts) {
+      return await registerAnalysis(attempt);
     }
   }
-  return bindDataStoreResp;
+  return null;
 }
 
 async function checkPodStatus(): Promise<boolean> {
@@ -156,9 +191,9 @@ async function checkPodStatus(): Promise<boolean> {
     showToast(
       "warn",
       "Analysis already running",
-      "The analysis is already running on this node. Controls will be updated",
+      "The analysis is already running on this node, the controls have been updated",
     );
-    setButtonStatuses(Object.values(podStatus.status)[0]); // Grab the first status update
+    setButtonStates(Object.values(podStatus.status)[0]); // Grab the first status update
     return true;
   }
   return false;
@@ -166,13 +201,11 @@ async function checkPodStatus(): Promise<boolean> {
 
 async function onStartAnalysis() {
   loading.value = true;
-  setButtonStatuses(AnalysisNodeRunStatus.Starting);
+  setButtonStates(AnalysisNodeRunStatus.Starting);
   const analysisProps = {} as BodyCreateAnalysisPoPost;
   analysisProps.analysis_id = props.analysisId!;
   analysisProps.project_id = props.projectId!;
   analysisProps.node_id = props.nodeId!;
-
-  let currentRunStatus: string | null = null;
 
   // Bind data to Analysis via Kong
   const bindDataStoreResp = await registerAnalysis(); // either null or has kong response
@@ -189,36 +222,39 @@ async function onStartAnalysis() {
       .catch((e) => {
         if (e.status_code == 408) {
           // Timed out waiting for image to pull
-          currentRunStatus = AnalysisNodeRunStatus.Started;
+          setButtonStates(AnalysisNodeRunStatus.Started);
           showToast(
             "info",
             "Analysis submitted",
             "The PodOrc did not respond in time, but the request was sent to start the analysis. " +
               "The timeout was likely due to a large image being pulled.",
           );
-        } else if (e.status_code == 404) {
-          // Registry credentials not found
-          showMissingRegistryRobotCredentialsToast(toast);
-          currentRunStatus = null;
         } else {
-          showToast("error", "Start failure", "Failed to start the analysis");
-          currentRunStatus = null;
+          setButtonStates(null);
+          e.status_code == 404
+            ? showMissingRegistryRobotCredentialsToast(toast)
+            : showToast(
+                "error",
+                "Start failure",
+                "Failed to start the analysis",
+              );
         }
       })) as POResp;
 
     if (startPodResp && "status" in startPodResp) {
-      currentRunStatus = startPodResp.status as string;
+      const currentRunStatus = startPodResp.status as string;
+      setButtonStates(currentRunStatus);
       showToast("info", "Start success", "Successfully started the container");
     }
   }
-  buttonStatuses.value = setButtonStatuses(currentRunStatus);
+
   loading.value = false;
 }
 
 async function onStopAnalysis() {
   loading.value = true;
   const originalRunStatus = props.analysisRunStatus;
-  setButtonStatuses(AnalysisNodeRunStatus.Stopping);
+  setButtonStates(AnalysisNodeRunStatus.Stopping);
 
   const stopResp: POResp = (await useNuxtApp()
     .$hubApi(`/po/${props.analysisId}/stop`, {
@@ -238,10 +274,10 @@ async function onStopAnalysis() {
         "Pod was not found, but the stop command was still issued",
       );
     }
-    buttonStatuses.value = setButtonStatuses(AnalysisNodeRunStatus.Stopped);
+    setButtonStates(AnalysisNodeRunStatus.Stopped);
   } else {
     // Communication error with PO
-    setButtonStatuses(originalRunStatus);
+    setButtonStates(originalRunStatus);
     showToast("error", "Stop failure", "Failed to stop the analysis container");
   }
   loading.value = false;
@@ -250,7 +286,7 @@ async function onStopAnalysis() {
 async function onDeleteAnalysis() {
   loading.value = true;
   const originalRunStatus = props.analysisRunStatus;
-  setButtonStatuses(AnalysisNodeRunStatus.Stopping);
+  setButtonStates(AnalysisNodeRunStatus.Stopping);
 
   await useNuxtApp()
     .$hubApi(`/kong/analysis/${props.analysisId}`, {
@@ -272,7 +308,7 @@ async function onDeleteAnalysis() {
 
   if (deleteResp && "status" in deleteResp) {
     const deletedPods = deleteResp.status as object;
-    buttonStatuses.value = setButtonStatuses("");
+    setButtonStates("");
     if (Object.keys(deletedPods).length) {
       showToast("info", "Delete success", "Successfully removed the container");
     } else {
@@ -283,7 +319,7 @@ async function onDeleteAnalysis() {
       );
     }
   } else {
-    setButtonStatuses(originalRunStatus);
+    setButtonStates(originalRunStatus);
     showToast(
       "error",
       "Delete failure",
@@ -294,7 +330,7 @@ async function onDeleteAnalysis() {
 }
 
 function onUpdateAnalysis(updatedPodStatus: string | null) {
-  buttonStatuses.value = setButtonStatuses(updatedPodStatus);
+  setButtonStates(updatedPodStatus);
 }
 </script>
 

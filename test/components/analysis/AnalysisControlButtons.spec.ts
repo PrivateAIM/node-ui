@@ -81,13 +81,13 @@ describe("AnalysisControlButtons.vue", () => {
   }
 
   it("Start analysis button - working", async () => {
-    await basicButtonCheck(
+    const wrapper = await basicButtonCheck(
       ".start-analysis-btn",
       "info",
       "Start success",
       "Successfully started the container",
       fakeAnalysisId,
-      false,
+      true, // Start button disappears so can't check if disabled
       {
         playActive: false,
         rerunActive: false,
@@ -96,6 +96,9 @@ describe("AnalysisControlButtons.vue", () => {
       },
       "",
     );
+    // Start button should be replaced by rerun
+    expect(wrapper.find(".start-analysis-btn").exists()).toBeFalsy();
+    expect(wrapper.find(".rerun-analysis-btn").exists()).toBeTruthy();
   });
 
   it("Start analysis button - PO broken", async () => {
