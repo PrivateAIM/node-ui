@@ -21,23 +21,31 @@ import {
 } from "~/services/Api";
 import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
 import { ApprovalStatus } from "~/types/node";
+import ContainerCounter from "~/components/analysis/ContainerCounter.vue";
 
-const expandedRows = ref();
-const analyses = ref<ModifiedAnalysisNode[]>([]);
 const toast = useToast();
+
+const analyses = ref<ModifiedAnalysisNode[]>([]);
+
+const expandRowEntries = [];
+const expandedRows = ref();
+
+// Filter settings
 const filters = ref();
 
+// Paginated table
 let allResultsRetrieved = false;
 const queryLimit = 50;
 let currentOffset = 50; // Start with query limit and will increment by same amount
 
-const expandRowEntries = [];
 const kongRoutes = ref<Set<string>>(new Set());
+
+// Imported values
 const runStatuses = Object.values(AnalysisNodeRunStatus);
 const approvalStatuses = Object.values(ApprovalStatus);
 const buildStatuses = Object.values(AnalysisBuildStatus);
 
-interface ModifiedAnalysisNode extends AnalysisNode {
+export interface ModifiedAnalysisNode extends AnalysisNode {
   project_name: string | undefined;
   expand: {
     [key: string]: string;
@@ -257,23 +265,29 @@ const onCloseNavToast = () => {
     <Card class="content-card">
       <template #title>Analyses</template>
       <template #content>
-        <div class="analysis-description">
-          <Message
-            severity="warn"
-            class="control-warning-message"
-            icon="pi pi-exclamation-triangle"
-          >
-            Some controls may be disabled!
-          </Message>
-          <p>
-            If the image for the analysis is not yet
-            <Tag
-              style="margin-left: 0.5em; margin-right: 0.5em"
-              :value="'finished'"
-              :severity="'success'"
-            />
-            (see Build Status), a container for the analysis cannot be started.
-          </p>
+        <div class="analysis-description-box">
+          <div class="analysis-description">
+            <Message
+              severity="warn"
+              class="control-warning-message"
+              icon="pi pi-exclamation-triangle"
+            >
+              Some controls may be disabled!
+            </Message>
+            <p>
+              If the image for the analysis is not yet
+              <Tag
+                style="margin-left: 0.5em; margin-right: 0.5em"
+                :value="'finished'"
+                :severity="'success'"
+              />
+              (see Build Status), a container for the analysis cannot be
+              started.
+            </p>
+          </div>
+          <div class="analysis-container-counter">
+            <ContainerCounter :analyses="analyses" />
+          </div>
         </div>
         <div class="table-header-row">
           <SearchBar
@@ -579,5 +593,21 @@ const onCloseNavToast = () => {
 
 .datastore-badge {
   margin-left: 2em;
+}
+
+.analysis-description-box {
+  display: flex;
+  width: 100%;
+}
+
+.analysis-description {
+  flex: 2;
+}
+
+.analysis-container-counter {
+  flex: 1;
+  display: flex;
+  justify-content: right;
+  align-items: flex-end;
 }
 </style>
