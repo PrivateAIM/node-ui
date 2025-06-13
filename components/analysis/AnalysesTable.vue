@@ -177,15 +177,11 @@ const defaultFilters = {
   approval_status: { value: null, matchMode: FilterMatchMode.EQUALS },
   "analysis.build_status": { value: null, matchMode: FilterMatchMode.IN },
   run_status: { value: null, matchMode: FilterMatchMode.IN },
-  // Below are more examples
-  // "analysis.name": { value: null, matchMode: FilterMatchMode.CONTAINS },
-  // status: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  // verified: { value: null, matchMode: FilterMatchMode.EQUALS },
-  // name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
 };
 filters.value = defaultFilters;
 
 function resetFilters() {
+  console.log(filters.value.run_status);
   const clearedFilters = {};
   for (const filterKey in defaultFilters) {
     clearedFilters[filterKey] = {
@@ -208,6 +204,31 @@ function updateRunStatus(
     if (row.id === analysisNodeId) {
       row.run_status = newStatus;
       break;
+    }
+  }
+}
+
+function updateRunStatusFilter(filterText: string) {
+  const currentRunStatusFilters = filters.value.run_status.value;
+  if (!currentRunStatusFilters) {
+    // If value is null then initialize with filter in array
+    filters.value.run_status.value = [filterText];
+  } else {
+    // Already run status filters present
+    if (currentRunStatusFilters.includes(filterText)) {
+      // If filter already there, then remove it
+      const filteredStatuses = currentRunStatusFilters.filter(
+        (item) => item !== filterText,
+      );
+      if (filteredStatuses.length == 0) {
+        // If empty array after filtering then set to null
+        filters.value.run_status.value = null;
+      } else {
+        filters.value.run_status.value = filteredStatuses;
+      }
+    } else {
+      // Apply filter since it isn't present
+      filters.value.run_status.value.push(filterText);
     }
   }
 }
@@ -286,7 +307,11 @@ const onCloseNavToast = () => {
             </p>
           </div>
           <div class="analysis-container-counter">
-            <ContainerCounter :analyses="analyses" />
+            <ContainerCounter
+              :analyses="analyses"
+              :activeFilters="filters"
+              @applyRunStatusFilter="updateRunStatusFilter"
+            />
           </div>
         </div>
         <div class="table-header-row">
