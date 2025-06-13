@@ -4,7 +4,7 @@ export const showHubAdapterConnectionErrorToast = (
 ) => {
   let msg = "Unable to contact the API";
   if (svc) {
-    msg = `Issue with the ${svc}, please check its logs`;
+    msg = `Unable to contact the ${svc}, please check its logs`;
   }
   toast.add({
     severity: "error",
@@ -12,6 +12,16 @@ export const showHubAdapterConnectionErrorToast = (
     detail: msg,
     life: 3000,
   });
+};
+
+export const showHubSpecificErrorMessage = (toast, msg: string) => {
+  toast.add({
+    severity: "error",
+    summary: "Connection error",
+    detail: msg,
+    life: 5000,
+  });
+  console.warn(msg);
 };
 
 export const showKongConnectionErrorToast = (toast) => {
