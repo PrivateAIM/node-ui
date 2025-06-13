@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import {
-  type containerCount,
-  countAnalysisContainers,
-} from "~/utils/count-analyses";
+import { countAnalysisContainers } from "~/utils/count-analyses";
 import type { ModifiedAnalysisNode } from "~/components/analysis/AnalysesTable.vue";
 
 const props = defineProps({
@@ -12,13 +9,9 @@ const props = defineProps({
   },
 });
 
-const counts: containerCount = ref(
+const counts = computed(() =>
   countAnalysisContainers(props.analyses as ModifiedAnalysisNode[]),
 );
-
-watch(() => props.analyses, (newVal, oldVal) => {
-  counts = countAnalysisContainers(newVal);
-})
 </script>
 
 <template>
