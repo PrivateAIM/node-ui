@@ -100,6 +100,7 @@ if (projStatus.value === "success" && projData.value) {
 }
 
 function parseData(respStatus: string, respData: AnalysisNode[] | null) {
+  const parsedAnalyses: ModifiedAnalysisNode[] = [];
   if (respStatus === "success") {
     const formattedAnalyses = formatDataRow(
       respData,
@@ -115,8 +116,9 @@ function parseData(respStatus: string, respData: AnalysisNode[] | null) {
             : "";
           analysisEntry.datastore = kongRoutes.value.has(projId);
         }
-        analyses.value.push(analysisEntry);
+        parsedAnalyses.push(analysisEntry);
       });
+      analyses.value = parsedAnalyses;
     }
   } else if (error.value?.statusCode === 500) {
     showHubAdapterConnectionErrorToast(toast, "Hub");
@@ -325,6 +327,7 @@ const onCloseNavToast = () => {
               v-tooltip.top="'Refresh table'"
               :loading="status === 'pending'"
               aria-label="Filter"
+              class="table-refresh-btn"
               icon="pi pi-refresh"
               severity="contrast"
               @click="onTableRefresh"
