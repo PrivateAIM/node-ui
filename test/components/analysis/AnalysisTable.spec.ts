@@ -6,7 +6,7 @@ import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import AnalysesTable from "~/components/analysis/AnalysesTable.vue";
 import {
   fakeAnalysisNodes,
-  fakeProjects,
+  fakeProjects, newFakeAnalysisNode
 } from "~/test/components/analysis/constants";
 import { getAnalysisNodes } from "~/composables/useAPIFetch";
 import type { AnalysisNode } from "~/services/Api";
@@ -22,17 +22,8 @@ describe("AnalysesTable.vue", () => {
   beforeEach(() => {
     vi.mocked(useToast).mockReturnValue(mockToast);
     vi.restoreAllMocks(); // Reset mocks before each test
-  });
 
-  // Render the component with the fake params
-  beforeAll(async () => {
-    AnalysisTableTestComponent = defineComponent({
-      components: { AnalysesTable },
-      template: "<Suspense><AnalysesTable/></Suspense>",
-    });
-  });
-
-  test("Return analysis node data", async () => {
+    // The basic response
     vi.mocked(getAnalysisNodes).mockResolvedValue({
       data: ref(fakeAnalysisNodes),
       pending: ref(false),
@@ -53,7 +44,17 @@ describe("AnalysesTable.vue", () => {
       clear: vi.fn(),
     });
     vi.mocked(useNuxtApp);
+  });
 
+  // Render the component with the fake params
+  beforeAll(async () => {
+    AnalysisTableTestComponent = defineComponent({
+      components: { AnalysesTable },
+      template: "<Suspense><AnalysesTable/></Suspense>",
+    });
+  });
+
+  test("Return analysis node data", async () => {
     const wrapper = mount(AnalysisTableTestComponent);
     await flushPromises();
 
@@ -78,6 +79,32 @@ describe("AnalysesTable.vue", () => {
     expect(secondRowCells[7].text()).toBe("14.03.2025"); // Last Updated
   });
 
+  test("Refresh table", async () => {
+    const wrapper = mount(AnalysisTableTestComponent);
+    await flushPromises();
+
+    const rows = wrapper.findAll("tbody tr");
+    expect(rows.length).toBe(3); // Ensure 3 rows exist as defined in fakeAnalysisNodes
+
+    // "Updated" response
+    fakeAnalysisNodes.push(newFakeAnalysisNode)  // Add new entry to output
+    vi.mocked(getAnalysisNodes).mockResolvedValue({
+      data: ref(fakeAnalysisNodes),
+      pending: ref(false),
+      error: ref(null),
+      status: ref("success"),
+      refresh: vi.fn(),
+      execute: vi.fn(),
+      clear: vi.fn(),
+    });
+    const refreshButton = wrapper.find(".table-refresh-btn");
+    await refreshButton.trigger("click");
+    await flushPromises();
+
+    expect(wrapper.findAll("tbody tr").length).toBe(4);  // Should be one entry bigger
+
+  })
+
   test("No analyses returned", async () => {
     const emptyResp: AnalysisNode[] = [];
     vi.mocked(getAnalysisNodes).mockResolvedValue({
@@ -99,7 +126,6 @@ describe("AnalysesTable.vue", () => {
       execute: vi.fn(),
       clear: vi.fn(),
     });
-    vi.mocked(useNuxtApp);
 
     const wrapper = mount(AnalysisTableTestComponent);
     await flushPromises();
