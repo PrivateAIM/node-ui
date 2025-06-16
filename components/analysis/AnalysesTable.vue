@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { useFetch, useNuxtApp } from "#app";
 import Badge from "primevue/badge";
 import { useToast } from "primevue/usetoast";
@@ -258,8 +258,8 @@ const onCloseNavToast = () => {
 <template>
   <div class="card flex justify-content-center">
     <Toast
-      position="top-right"
       group="datastoreToastLink"
+      position="top-right"
       @close="onCloseNavToast()"
     >
       <template #message="slotProps">
@@ -273,8 +273,8 @@ const onCloseNavToast = () => {
           <Button
             class="p-button-sm nav-btn"
             label="Create a Data Store"
-            @click="onNavigate"
             severity="info"
+            @click="onNavigate"
           >
             Create Data Store
           </Button>
@@ -289,18 +289,18 @@ const onCloseNavToast = () => {
         <div class="analysis-description-box">
           <div class="analysis-description">
             <Message
-              severity="warn"
               class="control-warning-message"
               icon="pi pi-exclamation-triangle"
+              severity="warn"
             >
               Some controls may be disabled!
             </Message>
             <p>
               If the image for the analysis is not yet
               <Tag
-                style="margin-left: 0.5em; margin-right: 0.5em"
-                :value="'finished'"
                 :severity="'success'"
+                :value="'finished'"
+                style="margin-left: 0.5em; margin-right: 0.5em"
               />
               (see Build Status), a container for the analysis cannot be
               started.
@@ -308,8 +308,8 @@ const onCloseNavToast = () => {
           </div>
           <div class="analysis-container-counter">
             <ContainerCounter
-              :analyses="analyses"
               :activeFilters="filters"
+              :analyses="analyses"
               @applyRunStatusFilter="updateRunStatusFilter"
             />
           </div>
@@ -322,54 +322,54 @@ const onCloseNavToast = () => {
           />
           <div class="card flex justify-content-center refresh-switch">
             <Button
-              icon="pi pi-refresh"
-              aria-label="Filter"
-              :loading="status === 'pending'"
               v-tooltip.top="'Refresh table'"
-              @click="onTableRefresh"
+              :loading="status === 'pending'"
+              aria-label="Filter"
+              icon="pi pi-refresh"
               severity="contrast"
+              @click="onTableRefresh"
             />
           </div>
         </div>
         <DataTable
-          :value="analyses"
           v-model:expandedRows="expandedRows"
-          dataKey="id"
+          v-model:filters="filters"
+          :globalFilterFields="['analysis.name', 'project_name', 'node.name']"
           :pt="{
             table: 'table table-striped',
           }"
-          paginator
-          @page="onPage"
           :rows="10"
           :rowsPerPageOptions="[10, 20, 50]"
-          tableStyle="min-width: 50rem"
-          v-model:filters="filters"
-          filterDisplay="menu"
-          :globalFilterFields="['analysis.name', 'project_name', 'node.name']"
-          sortField="updated_at.timestamp"
           :sortOrder="-1"
+          :value="analyses"
+          dataKey="id"
+          filterDisplay="menu"
+          paginator
+          sortField="updated_at.timestamp"
+          tableStyle="min-width: 50rem"
+          @page="onPage"
         >
           <template #empty> No analyses found.</template>
-          <Column expander style="width: 5rem" v-if="expandRowEntries.length" />
-          <Column field="analysis.name" :sortable="true">
+          <Column v-if="expandRowEntries.length" expander style="width: 5rem" />
+          <Column :sortable="true" field="analysis.name">
             <template #header>
-              <span class="help-text" v-tooltip.top="'Name of the analysis'">
+              <span v-tooltip.top="'Name of the analysis'" class="help-text">
                 <b>Name</b>
               </span>
             </template>
           </Column>
           <Column
-            field="approval_status"
-            :showFilterMatchModes="false"
-            :showClearButton="false"
-            :showApplyButton="false"
-            :showFilterOperator="false"
             :showAddButton="false"
+            :showApplyButton="false"
+            :showClearButton="false"
+            :showFilterMatchModes="false"
+            :showFilterOperator="false"
+            field="approval_status"
           >
             <template #header>
               <span
-                class="help-text"
                 v-tooltip.top="'Whether the project was approved or rejected'"
+                class="help-text"
               >
                 <b>Approval Status</b>
               </span>
@@ -377,23 +377,23 @@ const onCloseNavToast = () => {
             <template #body="{ data }">
               <Tag
                 v-if="data.approval_status"
-                :value="data.approval_status"
                 :severity="getApprovalStatusSeverity(data.approval_status)"
+                :value="data.approval_status"
               />
             </template>
             <template #filter="{ filterModel, filterCallback }">
               <Select
                 v-model="filterModel.value"
-                @change="filterCallback()"
                 :options="approvalStatuses"
-                placeholder="Select One"
-                class="p-column-filter"
                 :showClear="true"
+                class="p-column-filter"
+                placeholder="Select One"
+                @change="filterCallback()"
               >
                 <template #option="slotProps">
                   <Tag
-                    :value="slotProps.option"
                     :severity="getApprovalStatusSeverity(slotProps.option)"
+                    :value="slotProps.option"
                   />
                 </template>
               </Select>
@@ -414,18 +414,18 @@ const onCloseNavToast = () => {
           <!--            </template>-->
           <!--          </Column>-->
           <Column
+            :showAddButton="false"
+            :showApplyButton="false"
+            :showClearButton="false"
+            :showFilterMatchModes="false"
+            :showFilterOperator="false"
             field="analysis.build_status"
             filterField="analysis.build_status"
-            :showFilterMatchModes="false"
-            :showClearButton="false"
-            :showApplyButton="false"
-            :showFilterOperator="false"
-            :showAddButton="false"
           >
             <template #header>
               <span
-                class="help-text"
                 v-tooltip.top="'Build stage of the analysis Docker image'"
+                class="help-text"
               >
                 <b>Build Status</b>
               </span>
@@ -433,26 +433,26 @@ const onCloseNavToast = () => {
             <template #body="{ data }">
               <Tag
                 v-if="data.analysis.build_status"
-                :value="data.analysis.build_status"
                 :severity="getBuildStatusSeverity(data.analysis.build_status)"
+                :value="data.analysis.build_status"
               />
             </template>
             <template #filter="{ filterModel, filterCallback }">
               <MultiSelect
                 v-model="filterModel.value"
-                @change="filterCallback()"
                 :options="buildStatuses"
+                class="p-column-filter"
+                display="chip"
                 optionLabel=""
                 placeholder="Any"
-                display="chip"
-                class="p-column-filter"
+                @change="filterCallback()"
               >
                 <template #option="slotProps">
                   <div class="flex align-items-center gap-2">
                     <Tag
                       v-if="slotProps.option"
-                      :value="slotProps.option"
                       :severity="getBuildStatusSeverity(slotProps.option)"
+                      :value="slotProps.option"
                     />
                   </div>
                 </template>
@@ -460,18 +460,18 @@ const onCloseNavToast = () => {
             </template>
           </Column>
           <Column
+            :showAddButton="false"
+            :showApplyButton="false"
+            :showClearButton="false"
+            :showFilterMatchModes="false"
+            :showFilterOperator="false"
             field="run_status"
             filterField="run_status"
-            :showFilterMatchModes="false"
-            :showClearButton="false"
-            :showApplyButton="false"
-            :showFilterOperator="false"
-            :showAddButton="false"
           >
             <template #header>
               <span
-                class="help-text"
                 v-tooltip.top="'Current run status of the analysis container'"
+                class="help-text"
               >
                 <b>Run Status</b>
               </span>
@@ -479,71 +479,71 @@ const onCloseNavToast = () => {
             <template #body="{ data }">
               <Tag
                 v-if="data.run_status"
-                :value="data.run_status"
                 :severity="getRunStatusSeverity(data.run_status)"
+                :value="data.run_status"
               />
             </template>
             <template #filter="{ filterModel, filterCallback }">
               <MultiSelect
                 v-model="filterModel.value"
-                @change="filterCallback()"
                 :options="runStatuses"
+                class="p-column-filter"
                 optionLabel=""
                 placeholder="Any"
-                class="p-column-filter"
+                @change="filterCallback()"
               >
                 <template #option="slotProps">
                   <div class="flex align-items-center gap-2">
                     <Tag
                       v-if="slotProps.option"
-                      :value="slotProps.option"
                       :severity="getRunStatusSeverity(slotProps.option)"
+                      :value="slotProps.option"
                     />
                   </div>
                 </template>
               </MultiSelect>
             </template>
           </Column>
-          <Column field="project_name" :sortable="true">
+          <Column :sortable="true" field="project_name">
             <template #header>
               <span
-                class="help-text"
                 v-tooltip.top="'Date the analysis image was created'"
+                class="help-text"
               >
                 <b>Project</b>
               </span>
             </template>
           </Column>
-          <Column field="datastore" :sortable="true">
+          <Column :sortable="true" field="datastore">
             <template #header>
               <span
-                class="help-text"
                 v-tooltip.top="'Whether the analysis has access to data'"
+                class="help-text"
               >
                 <b>Data Store</b>
               </span>
             </template>
             <template #body="{ data }">
               <div v-if="data.datastore" class="datastore-badge">
-                <Badge severity="success" class="w-8 h-8 rounded-full"
-                  ><i class="pi pi-check" v-tooltip.top="'Data store found'"></i
+                <Badge class="w-8 h-8 rounded-full" severity="success"
+                  ><i v-tooltip.top="'Data store found'" class="pi pi-check"></i
                 ></Badge>
               </div>
               <div v-else class="datastore-badge">
-                <Badge severity="danger" class="w-8 h-8 rounded-full"
+                <Badge class="w-8 h-8 rounded-full" severity="danger"
                   ><i
-                    class="pi pi-times"
                     v-tooltip.top="'Data store missing!'"
+                    class="pi pi-times"
                   ></i
                 ></Badge>
               </div>
             </template>
           </Column>
-          <Column field="created_at.timestamp" dataType="date" :sortable="true">
+          <Column :sortable="true" dataType="date" field="created_at.timestamp">
             <template #header>
               <span
-                class="help-text"
                 v-tooltip.top="'Date the analysis image was created'"
+                class="help-text"
               >
                 <b>Created On</b>
               </span>
@@ -554,13 +554,13 @@ const onCloseNavToast = () => {
               </p>
             </template>
           </Column>
-          <Column field="updated_at.timestamp" dataType="date" :sortable="true">
+          <Column :sortable="true" dataType="date" field="updated_at.timestamp">
             <template #header>
               <span
-                class="help-text"
                 v-tooltip.top="
                   'Date the analysis container on the node was last modified'
                 "
+                class="help-text"
               >
                 <b>Last Updated</b>
               </span>
@@ -571,29 +571,29 @@ const onCloseNavToast = () => {
               </p>
             </template>
           </Column>
-          <Column field="expand.id" style="min-width: 13em" :exportable="false">
+          <Column :exportable="false" field="expand.id" style="min-width: 13em">
             <template #header>
               <span
-                class="help-text"
                 v-tooltip.top="'Controls for the analysis container'"
+                class="help-text"
               >
                 <b>Analysis Controls</b>
               </span>
             </template>
             <template #body="slotProps">
               <div
-                class="control-buttons"
                 v-if="slotProps.data.approval_status === 'approved'"
+                class="control-buttons"
               >
                 <AnalysisControlButtons
                   :analysisBuildStatus="slotProps.data.analysis.build_status"
-                  :analysisRunStatus="slotProps.data.run_status"
-                  :analysisNodeId="slotProps.data.id"
                   :analysisId="slotProps.data.analysis_id"
-                  :projectId="slotProps.data.analysis.project_id"
+                  :analysisNodeId="slotProps.data.id"
+                  :analysisRunStatus="slotProps.data.run_status"
                   :nodeId="slotProps.data.node_id"
-                  @newRunStatus="updateRunStatus"
+                  :projectId="slotProps.data.analysis.project_id"
                   @missingDataStore="showDataStoreNavToast"
+                  @newRunStatus="updateRunStatus"
                 />
               </div>
             </template>

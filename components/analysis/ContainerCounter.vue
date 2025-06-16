@@ -1,4 +1,5 @@
-<script setup lang="ts">
+<script lang="ts" setup>
+import Badge from "primevue/badge"
 import { countAnalysisContainers } from "~/utils/count-analyses";
 import type { ModifiedAnalysisNode } from "~/components/analysis/AnalysesTable.vue";
 import { AnalysisNodeRunStatus } from "~/types/analysis";
@@ -27,7 +28,7 @@ function onApplyRunStatusFilter(runStatus: string) {
 </script>
 
 <template>
-  <div class="container-counter">
+  <div class="counter-div">
     <Card class="counter-card">
       <template #title>
         <span style="font-size: 1.2rem"> Analysis Overview </span>
@@ -43,13 +44,13 @@ function onApplyRunStatusFilter(runStatus: string) {
                     AnalysisNodeRunStatus.Starting,
                 ),
             }"
-            class="counter-badge"
+            class="container-counter container-counter-started"
           >
             <Badge
-              size="xlarge"
-              class="counter-badge container-counter-started"
               :value="counts.started || 0"
+              class="counter-badge counter-badge-started"
               severity="info"
+              size="xlarge"
               @click="onApplyRunStatusFilter(AnalysisNodeRunStatus.Started)"
             />
             <span class="counter-id-txt">Started</span>
@@ -60,13 +61,13 @@ function onApplyRunStatusFilter(runStatus: string) {
                 currentFilters.value &&
                 !currentFilters.value.includes(AnalysisNodeRunStatus.Running),
             }"
-            class="counter-badge"
+            class="container-counter container-counter-running"
           >
             <Badge
-              size="xlarge"
-              class="counter-badge container-counter-running"
               :value="counts.running || 0"
+              class="counter-badge counter-badge-running"
               severity="contrast"
+              size="xlarge"
               @click="onApplyRunStatusFilter(AnalysisNodeRunStatus.Running)"
             />
             <span class="counter-id-txt">Running</span>
@@ -80,13 +81,13 @@ function onApplyRunStatusFilter(runStatus: string) {
                     AnalysisNodeRunStatus.Stopping,
                 ),
             }"
-            class="counter-badge"
+            class="container-counter container-counter-stopped"
           >
             <Badge
-              size="xlarge"
-              class="counter-badge container-counter-stopped"
               :value="counts.stopped || 0"
+              class="counter-badge counter-badge-stopped"
               severity="warning"
+              size="xlarge"
               @click="onApplyRunStatusFilter(AnalysisNodeRunStatus.Stopped)"
             />
             <span class="counter-id-txt">Stopped</span>
@@ -97,13 +98,13 @@ function onApplyRunStatusFilter(runStatus: string) {
                 currentFilters.value &&
                 !currentFilters.value.includes(AnalysisNodeRunStatus.Failed),
             }"
-            class="counter-badge"
+            class="container-counter container-counter-failed"
           >
             <Badge
-              size="xlarge"
-              class="counter-badge container-counter-failed"
               :value="counts.failed || 0"
+              class="counter-badge counter-badge-failed"
               severity="danger"
+              size="xlarge"
               @click="onApplyRunStatusFilter(AnalysisNodeRunStatus.Failed)"
             />
             <span class="counter-id-txt">Failed</span>
@@ -114,13 +115,13 @@ function onApplyRunStatusFilter(runStatus: string) {
                 currentFilters.value &&
                 !currentFilters.value.includes(AnalysisNodeRunStatus.Finished),
             }"
-            class="counter-badge"
+            class="container-counter container-counter-finished"
           >
             <Badge
-              size="xlarge"
-              class="counter-badge container-counter-finished"
               :value="counts.finished || 0"
+              class="counter-badge counter-badge-finished"
               severity="success"
+              size="xlarge"
               @click="onApplyRunStatusFilter(AnalysisNodeRunStatus.Finished)"
             />
             <span class="counter-id-txt">Finished</span>
@@ -131,25 +132,32 @@ function onApplyRunStatusFilter(runStatus: string) {
   </div>
 </template>
 
-<style scoped lang="scss">
-.container-counter {
+<style lang="scss" scoped>
+.counter-div {
   width: 65%;
 }
 
 .counter-card {
-  background: var(--p-select-filled-hover-background);
+  background: var(--p-content-hover-background);
 }
 
 .counter-badge-all {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
 }
 
-.counter-badge {
-  display: flex;
+.container-counter {
+  display: inline-flex;
   flex-direction: column;
   align-items: center;
+}
+
+.counter-badge {
   cursor: pointer;
+  width: 2.6rem;
+  height: 2.3rem;
+  border-radius: 30%;
 }
 
 .opaque-badge {
