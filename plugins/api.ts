@@ -2,6 +2,7 @@ import {
   showDownstreamConnectionErrorToast,
   showHubAdapterConnectionErrorToast,
   showHubConnectionError,
+  showHubSpecificErrorMessage,
   showInvalidRobotCredentialsToast,
   showKongConnectionErrorToast,
   showWrongRobotIdToast,
@@ -60,6 +61,8 @@ export default defineNuxtPlugin(() => {
       } else if (response.status === 400) {
         if (response._data.detail.code === "invalid_credentials") {
           showInvalidRobotCredentialsToast(toast);
+        } else if (response._data.detail.message) {
+          showHubSpecificErrorMessage(toast, response._data.detail.message);
         } else {
           showWrongRobotIdToast(toast);
         }
