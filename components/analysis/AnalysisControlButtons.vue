@@ -59,7 +59,6 @@ const stopButtonActiveStates: Array<string | null> = [
 ];
 const deleteButtonActiveStates: Array<string | null> = [
   AnalysisNodeRunStatus.Failed,
-  AnalysisNodeRunStatus.Finished,
   AnalysisNodeRunStatus.Stopped,
   AnalysisNodeRunStatus.Stopping,
   AnalysisNodeRunStatus.Running,
