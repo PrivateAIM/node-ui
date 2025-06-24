@@ -1,2 +1,0 @@
-patchedDependencies:
-  next-auth: patches/next-auth.patch

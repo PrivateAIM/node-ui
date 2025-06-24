@@ -29,7 +29,7 @@
     "@vueuse/core": "^11.3.0",
     "globals": "^15.15.0",
     "https-proxy-agent": "^5.0.0",
-    "next-auth": "4.24.5",
+    "next-auth": "~4.21.1",
     "nuxt": "^3.17.1",
     "pinia": "^2.3.1",
     "prettier": "^3.5.3",
@@ -61,5 +61,10 @@
     "typescript-eslint": "^7.18.0",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.1.2"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "next-auth@4.21.1": "patches/next-auth.patch"
+    }
   }
 }
