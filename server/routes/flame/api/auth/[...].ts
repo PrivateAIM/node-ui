@@ -1,4 +1,3 @@
-// @ts-expect-error module is a dependency of sidebase/nuxt-auth and is installed
 import KeycloakProvider from "next-auth/providers/keycloak";
 import { NuxtAuthHandler } from "#auth";
 
