@@ -61,5 +61,10 @@
     "typescript-eslint": "^7.18.0",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.1.2"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "next-auth@4.21.1": "patches/next-auth.patch"
+    }
   }
 }
