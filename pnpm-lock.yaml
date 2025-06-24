@@ -44,7 +44,7 @@ importers:
         specifier: ^5.0.0
         version: 5.0.1
       next-auth:
-        specifier: 4.21.1
+        specifier: ~4.21.1
         version: 4.21.1(patch_hash=798da4f950404b362cc4b00c0a14ac17dcd825603ab43a8a71d0a04e99c57d27)(next@13.5.11(@babel/core@7.27.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.89.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       nuxt:
         specifier: ^3.17.1
