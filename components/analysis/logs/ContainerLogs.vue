@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { useRoute } from "#vue-router";
 import { Card, Fieldset } from "primevue";
 import { useIntervalFn } from "@vueuse/core";
@@ -100,14 +100,27 @@ if (prevLogResp) {
     </template>
     <template #content>
       <div class="current-logs-card">
-        <Fieldset legend="Current Run" :toggleable="true">
+        <Fieldset
+          v-if="!currentLogs.length && prevLogs.length"
+          :toggleable="true"
+          class="log-card-failed-fs"
+          legend="Previous Failed Run"
+        >
+          <div class="log-card-failed">
+            <AnalysisLogCardContent
+              :analysisLogs="prevLogs[0].analysis"
+              :nginxLogs="prevLogs[0].nginx"
+            />
+          </div>
+        </Fieldset>
+        <Fieldset v-else :toggleable="true" legend="Current Run">
           <div v-if="currentLogs.length > 1">
             <Fieldset
               v-for="currentLog in currentLogs"
               :key="currentLog.podId"
-              :toggleable="true"
-              :legend="currentLog.podId"
               :collapsed="true"
+              :legend="currentLog.podId"
+              :toggleable="true"
             >
               <AnalysisLogCardContent
                 :analysisLogs="currentLog.analysis"
@@ -124,14 +137,14 @@ if (prevLogResp) {
         </Fieldset>
       </div>
       <div class="previous-logs-collection-card">
-        <Fieldset legend="Previous Runs" :toggleable="true">
-          <div class="previous-logs-card" v-if="prevLogs.length">
+        <Fieldset :toggleable="true" legend="All Previous Runs">
+          <div v-if="prevLogs.length" class="previous-logs-card">
             <Fieldset
               v-for="log in prevLogs"
               :key="log.podId"
-              :toggleable="true"
-              :legend="log.podId"
               :collapsed="true"
+              :legend="log.podId"
+              :toggleable="true"
             >
               <AnalysisLogCardContent
                 :analysisLogs="log.analysis"
@@ -148,8 +161,12 @@ if (prevLogResp) {
   </Card>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
 .previous-logs-collection-card {
   margin-top: 2em;
+}
+
+.log-card-failed-fs .p-fieldset-toggle-button {
+  background: red;
 }
 </style>
