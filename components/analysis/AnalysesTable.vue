@@ -183,7 +183,6 @@ const defaultFilters = {
 filters.value = defaultFilters;
 
 function resetFilters() {
-  console.log(filters.value.run_status);
   const clearedFilters = {};
   for (const filterKey in defaultFilters) {
     clearedFilters[filterKey] = {

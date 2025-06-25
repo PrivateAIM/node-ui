@@ -5,8 +5,6 @@ const props = defineProps({
   disabled: Boolean,
 });
 
-console.log(props.disabled);
-
 const periodicRefresh = ref(false);
 const tooltip = props.disabled
   ? "Refresh disabled since there is no current active run"
