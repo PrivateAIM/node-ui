@@ -95,13 +95,16 @@ if (prevLogResp) {
     <template #subtitle>
       <div class="table-header-row">
         <span>{{ analysisId }}</span>
-        <RefreshSwitch @change="onRefreshToggle" />
+        <RefreshSwitch
+          :disabled="!currentLogs.length"
+          @change="onRefreshToggle"
+        />
       </div>
     </template>
     <template #content>
       <div class="current-logs-card">
         <Fieldset
-          v-if="!currentLogs.length && prevLogs.length"
+          v-if="!currentLogs.length && prevLogs.length > 0"
           :toggleable="true"
           class="log-card-failed-fs"
           legend="Most Recent Run"
@@ -130,15 +133,17 @@ if (prevLogResp) {
           </div>
           <div v-else class="log-card-single">
             <AnalysisLogCardContent
-              :analysisLogs="currentLogs.length ? currentLogs[0].analysis : ''"
-              :nginxLogs="currentLogs.length ? currentLogs[0].nginx : ''"
+              :analysisLogs="
+                currentLogs.length > 0 ? currentLogs[0].analysis : ''
+              "
+              :nginxLogs="currentLogs.length > 0 ? currentLogs[0].nginx : ''"
             />
           </div>
         </Fieldset>
       </div>
       <div class="previous-logs-collection-card">
         <Fieldset :toggleable="true" legend="All Previous Runs">
-          <div v-if="prevLogs.length" class="previous-logs-card">
+          <div v-if="prevLogs.length > 0" class="previous-logs-card">
             <Fieldset
               v-for="log in prevLogs"
               :key="log.podId"
