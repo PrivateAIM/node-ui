@@ -55,6 +55,9 @@ describe("ContainerLogs.vue", () => {
 
     expect(LogTestComponent).toBeTruthy();
     expect(wrapper.text()).toContain("Starting FlameCoreSDK");
+    expect(wrapper.find("#refreshBtn").attributes("data-p-disabled")).toBe(
+      "false",
+    );
   });
 
   test("Empty analysis logs", async () => {
@@ -76,5 +79,8 @@ describe("ContainerLogs.vue", () => {
     expect(LogTestComponent).toBeTruthy();
     expect(wrapper.text()).toContain("85629f5b-da04-4f7c-84fc-097b2db93de5");
     expect(wrapper.text()).toContain("No logs found...");
+    expect(wrapper.find("#refreshBtn").attributes("data-p-disabled")).toBe(
+      "true",
+    );
   });
 });
