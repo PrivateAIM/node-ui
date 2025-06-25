@@ -104,7 +104,7 @@ if (prevLogResp) {
           v-if="!currentLogs.length && prevLogs.length"
           :toggleable="true"
           class="log-card-failed-fs"
-          legend="Previous Failed Run"
+          legend="Most Recent Run"
         >
           <div class="log-card-failed">
             <AnalysisLogCardContent
@@ -166,7 +166,7 @@ if (prevLogResp) {
   margin-top: 2em;
 }
 
-.log-card-failed-fs .p-fieldset-toggle-button {
-  background: red;
-}
+//.log-card-failed-fs .p-fieldset-toggle-button {
+//  background: red;
+//}
 </style>
