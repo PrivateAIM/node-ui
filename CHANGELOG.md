@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.2.14](https://github.com/PrivateAIM/node-ui/compare/v0.2.13...v0.2.14) (2025-06-25)
+
+
+### Features
+
+* **analysis:** add column indicating datastore status ([0eb3250](https://github.com/PrivateAIM/node-ui/commit/0eb3250c38b3ee8757678ef1fd02989ab1b06ed7))
+* **analysis:** add column indicating datastore status ([b5f7f02](https://github.com/PrivateAIM/node-ui/commit/b5f7f0226943498c8ba7aa0d66598c96150fe500))
+* **analysis:** basic analysis counter ([70d227b](https://github.com/PrivateAIM/node-ui/commit/70d227b1310eee02858fe93d1e459bec54aa0eb1))
+* **counter:** working filter highlighting ([f0da1ce](https://github.com/PrivateAIM/node-ui/commit/f0da1cebd29bd8fe58c54c73ddcbd1792b293b77))
+* **logs:** show previous failed run if no current run ([1f299dd](https://github.com/PrivateAIM/node-ui/commit/1f299ddcc8db290720703344691e9e65c31011bf))
+* **proxy:** add manual patch to enable proxy ([a44e249](https://github.com/PrivateAIM/node-ui/commit/a44e2496c9b65ee9c6094e89e11ca8280e525877))
+* **toast:** improve error parsing for toasts ([ecb716a](https://github.com/PrivateAIM/node-ui/commit/ecb716a5b3a3ecbcf59d5542ecec14f2be7f56ab))
+
+
+### Bug Fixes
+
+* **analysis:** fix duplication bug on analysis table refresh and add unit test ([b5108b6](https://github.com/PrivateAIM/node-ui/commit/b5108b64f16362aa6329dc3ce769c08057af22a1))
+* **analysis:** fixed bug where buttons were not updating ([58d20f4](https://github.com/PrivateAIM/node-ui/commit/58d20f49561375bd0f72fd1bbfa0799b6259d51c))
+* **counter:** change prop to computed ([fd3a925](https://github.com/PrivateAIM/node-ui/commit/fd3a9253396901e74a963356adb42b5152d3901c))
+
 ## [0.2.13](https://github.com/PrivateAIM/node-ui/compare/v0.2.12...v0.2.13) (2025-06-04)
 
 
