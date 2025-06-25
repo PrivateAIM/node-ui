@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import {
   type BodyCreateAnalysisPoPost,
   type LinkProjectAnalysis,
@@ -336,71 +336,74 @@ function onUpdateAnalysis(updatedPodStatus: string | null) {
 <template>
   <div class="analysis-buttons">
     <Button
-      icon="pi pi-play"
-      aria-label="Start"
-      class="start-analysis-btn"
       v-if="buttonStatuses.playActive"
       v-tooltip.top="'Start the analysis'"
-      severity="success"
       :disabled="
         !buttonStatuses.playActive ||
         !(props.analysisBuildStatus === AnalysisBuildStatus.Finished)
       "
       :loading="loading"
+      aria-label="Start"
+      class="start-analysis-btn"
+      icon="pi pi-play"
+      severity="success"
       @click="onStartAnalysis()"
     />
     <Button
-      icon="pi pi-replay"
-      aria-label="Rerun"
-      class="rerun-analysis-btn"
       v-else
       v-tooltip.top="'Rerun the analysis'"
-      severity="success"
       :disabled="
         !buttonStatuses.rerunActive ||
         !(props.analysisBuildStatus === AnalysisBuildStatus.Finished)
       "
       :loading="loading"
+      aria-label="Rerun"
+      class="rerun-analysis-btn"
+      icon="pi pi-replay"
+      severity="success"
       @click="onStartAnalysis()"
     />
     <Button
-      icon="pi pi-stop"
-      aria-label="Stop"
-      class="stop-analysis-btn"
       v-tooltip.top="'Stop the analysis'"
-      severity="warn"
       :disabled="
         !buttonStatuses.stopActive ||
         !(props.analysisBuildStatus === AnalysisBuildStatus.Finished)
       "
       :loading="loading"
+      aria-label="Stop"
+      class="stop-analysis-btn"
+      icon="pi pi-stop"
+      severity="warn"
       @click="onStopAnalysis()"
     />
     <Button
-      icon="pi pi-trash"
-      aria-label="Delete"
-      class="delete-analysis-btn"
       v-tooltip.top="'Delete the analysis container'"
-      severity="danger"
       :disabled="
         !buttonStatuses.deleteActive ||
         !(props.analysisBuildStatus === AnalysisBuildStatus.Finished)
       "
       :loading="loading"
+      aria-label="Delete"
+      class="delete-analysis-btn"
+      icon="pi pi-trash"
+      severity="danger"
       @click="onDeleteAnalysis()"
     />
     <NuxtLink
-      :to="{ name: 'analyses-id', params: { id: props.analysisId } }"
+      :to="{
+        name: 'analyses-id',
+        params: { id: props.analysisId },
+      }"
       target="_blank"
     >
       <Button
-        icon="pi pi-bars"
+        v-tooltip.top="'View the logs'"
+        :disabled="!buttonStatuses.deleteActive"
+        :loading="loading"
         aria-label="Logs"
         class="logs-analysis-btn"
-        v-tooltip.top="'View the logs'"
+        icon="pi pi-bars"
         severity="contrast"
-        :loading="loading"
-        :disabled="!buttonStatuses.deleteActive"
       />
     </NuxtLink>
     <AnalysisUpdateButton
@@ -410,7 +413,7 @@ function onUpdateAnalysis(updatedPodStatus: string | null) {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .analysis-buttons {
   column-gap: 0.3em;
   display: flex;

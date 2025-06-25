@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { useRoute } from "#vue-router";
 import { Card, Fieldset } from "primevue";
 import { useIntervalFn } from "@vueuse/core";
@@ -95,19 +95,35 @@ if (prevLogResp) {
     <template #subtitle>
       <div class="table-header-row">
         <span>{{ analysisId }}</span>
-        <RefreshSwitch @change="onRefreshToggle" />
+        <RefreshSwitch
+          :disabled="!currentLogs.length"
+          @change="onRefreshToggle"
+        />
       </div>
     </template>
     <template #content>
       <div class="current-logs-card">
-        <Fieldset legend="Current Run" :toggleable="true">
+        <Fieldset
+          v-if="!currentLogs.length && prevLogs.length > 0"
+          :toggleable="true"
+          class="log-card-failed-fs"
+          legend="Most Recent Run"
+        >
+          <div class="log-card-failed">
+            <AnalysisLogCardContent
+              :analysisLogs="prevLogs[0].analysis"
+              :nginxLogs="prevLogs[0].nginx"
+            />
+          </div>
+        </Fieldset>
+        <Fieldset v-else :toggleable="true" legend="Current Run">
           <div v-if="currentLogs.length > 1">
             <Fieldset
               v-for="currentLog in currentLogs"
               :key="currentLog.podId"
-              :toggleable="true"
-              :legend="currentLog.podId"
               :collapsed="true"
+              :legend="currentLog.podId"
+              :toggleable="true"
             >
               <AnalysisLogCardContent
                 :analysisLogs="currentLog.analysis"
@@ -117,21 +133,23 @@ if (prevLogResp) {
           </div>
           <div v-else class="log-card-single">
             <AnalysisLogCardContent
-              :analysisLogs="currentLogs.length ? currentLogs[0].analysis : ''"
-              :nginxLogs="currentLogs.length ? currentLogs[0].nginx : ''"
+              :analysisLogs="
+                currentLogs.length > 0 ? currentLogs[0].analysis : ''
+              "
+              :nginxLogs="currentLogs.length > 0 ? currentLogs[0].nginx : ''"
             />
           </div>
         </Fieldset>
       </div>
       <div class="previous-logs-collection-card">
-        <Fieldset legend="Previous Runs" :toggleable="true">
-          <div class="previous-logs-card" v-if="prevLogs.length">
+        <Fieldset :toggleable="true" legend="All Previous Runs">
+          <div v-if="prevLogs.length > 0" class="previous-logs-card">
             <Fieldset
               v-for="log in prevLogs"
               :key="log.podId"
-              :toggleable="true"
-              :legend="log.podId"
               :collapsed="true"
+              :legend="log.podId"
+              :toggleable="true"
             >
               <AnalysisLogCardContent
                 :analysisLogs="log.analysis"
@@ -148,8 +166,12 @@ if (prevLogResp) {
   </Card>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
 .previous-logs-collection-card {
   margin-top: 2em;
 }
+
+//.log-card-failed-fs .p-fieldset-toggle-button {
+//  background: red;
+//}
 </style>
