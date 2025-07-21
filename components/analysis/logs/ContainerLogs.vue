@@ -16,15 +16,15 @@ interface logResponse {
 
 interface logEntry {
   podId: string;
-  analysis: string | null;
-  nginx: string | null;
+  analysis: string | undefined;
+  nginx: string | undefined;
 }
 
 const route = useRoute();
 const toast = useToast();
 const analysisId = route.params.id as string;
-const currentLogs = ref([]);
-const prevLogs = ref([]);
+const currentLogs = ref([] as logEntry[]);
+const prevLogs = ref([] as logEntry[]);
 
 const {
   data: response,
@@ -52,7 +52,7 @@ function parseLogs(logResp: logResponse | null): logEntry[] {
 
 function gatherCurrentLogs() {
   if (status.value === "success") {
-    currentLogs.value = parseLogs(response.value);
+    currentLogs.value = parseLogs(response.value as logResponse);
   } else if (error.value?.statusCode === 500) {
     showHubAdapterConnectionErrorToast(toast, "PO");
   }
@@ -78,11 +78,11 @@ function onRefreshToggle() {
 }
 
 // Previous logs
-const prevLogResp = await useNuxtApp()
+const prevLogResp: logResponse = (await useNuxtApp()
   .$hubApi(`/po/${analysisId}/history`, {
     method: "GET",
   })
-  .catch(() => null);
+  .catch(() => null)) as logResponse;
 
 if (prevLogResp) {
   prevLogs.value = parseLogs(prevLogResp);
@@ -102,7 +102,7 @@ if (prevLogResp) {
       </div>
     </template>
     <template #content>
-      <div class="current-logs-card">
+      <div class="log-container current-logs-card">
         <Fieldset
           v-if="!currentLogs.length && prevLogs.length > 0"
           :toggleable="true"
@@ -141,7 +141,7 @@ if (prevLogResp) {
           </div>
         </Fieldset>
       </div>
-      <div class="previous-logs-collection-card">
+      <div class="log-container previous-logs-collection-card">
         <Fieldset :toggleable="true" legend="All Previous Runs">
           <div v-if="prevLogs.length > 0" class="previous-logs-card">
             <Fieldset

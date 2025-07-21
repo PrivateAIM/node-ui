@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { Card, ScrollPanel } from "primevue";
-import { ref, onMounted, onUpdated } from "vue";
+import { onMounted, onUpdated, ref } from "vue";
+
 const props = defineProps({
   nginxLogs: String || null,
   analysisLogs: String || null,
@@ -89,6 +90,7 @@ onUpdated(() => {
   height: 30em;
   padding: 1em;
   white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .log-header-row {
