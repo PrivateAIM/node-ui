@@ -188,7 +188,7 @@ async function checkPodStatus(): Promise<boolean> {
   if (podStatus && podStatus.status && Object.values(podStatus.status).length) {
     const currentPodStatus = Object.values(podStatus.status)[0];
     // If the status is not empty and not FINISHED
-    if (currentPodStatus.status != AnalysisNodeRunStatus.Finished) {
+    if (currentPodStatus != AnalysisNodeRunStatus.Finished) {
       showToast(
         "warn",
         "Analysis already running",
