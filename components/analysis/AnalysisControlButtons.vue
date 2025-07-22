@@ -186,14 +186,17 @@ async function checkPodStatus(): Promise<boolean> {
 
   // If response is not null AND "status" in response AND "status" is not empty
   if (podStatus && podStatus.status && Object.values(podStatus.status).length) {
-    // If the status is not empty
-    showToast(
-      "warn",
-      "Analysis already running",
-      "The analysis is already running on this node, the controls have been updated",
-    );
-    setButtonStates(Object.values(podStatus.status)[0]); // Grab the first status update
-    return true;
+    const currentPodStatus = Object.values(podStatus.status)[0];
+    // If the status is not empty and not FINISHED
+    if (currentPodStatus.status != AnalysisNodeRunStatus.Finished) {
+      showToast(
+        "warn",
+        "Analysis already running",
+        "The analysis is already running on this node, the controls have been updated",
+      );
+      setButtonStates(currentPodStatus); // Grab the first status update
+      return true;
+    }
   }
   return false;
 }
