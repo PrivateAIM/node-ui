@@ -401,7 +401,7 @@ function onUpdateAnalysis(updatedPodStatus: string | null) {
     >
       <Button
         v-tooltip.top="'View the logs'"
-        :disabled="!buttonStatuses.deleteActive"
+        :disabled="buttonStatuses.playActive"
         :loading="loading"
         aria-label="Logs"
         class="logs-analysis-btn"
