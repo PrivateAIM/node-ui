@@ -220,4 +220,48 @@ describe("AnalysisControlButtons.vue", () => {
       },
     );
   });
+
+  it("Log btn check", async () => {
+    const wrapper = mount(AnalysisControlButtons, {
+      props: {
+        analysisBuildStatus: AnalysisBuildStatus.Finished,
+        analysisRunStatus: null,
+        analysisNodeId: "8003eefe-e39b-4bd4-aec4-78046c63b39b",
+        analysisId: fakeAnalysisId,
+        projectId: "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483",
+        nodeId: "e3b89572-327f-4936-8cf0-fbfbcc6336b7",
+      },
+    });
+
+    expect(AnalysisControlButtons).toBeTruthy();
+
+    // Success check
+    const logBtn = wrapper.find(".logs-analysis-btn");
+    expect(logBtn.attributes("data-p-disabled")).toBe("true");
+
+    // @ts-expect-error Accessing a known method
+    wrapper.vm.setButtonStates(AnalysisNodeRunStatus.Started);
+    await wrapper.vm.$nextTick();
+    expect(logBtn.attributes("data-p-disabled")).toBe("false");
+
+    // @ts-expect-error Accessing a known method
+    wrapper.vm.setButtonStates(AnalysisNodeRunStatus.Running);
+    await wrapper.vm.$nextTick();
+    expect(logBtn.attributes("data-p-disabled")).toBe("false");
+
+    // @ts-expect-error Accessing a known method
+    wrapper.vm.setButtonStates(AnalysisNodeRunStatus.Failed);
+    await wrapper.vm.$nextTick();
+    expect(logBtn.attributes("data-p-disabled")).toBe("false");
+
+    // @ts-expect-error Accessing a known method
+    wrapper.vm.setButtonStates(AnalysisNodeRunStatus.Finished);
+    await wrapper.vm.$nextTick();
+    expect(logBtn.attributes("data-p-disabled")).toBe("false");
+
+    // @ts-expect-error Accessing a known method
+    wrapper.vm.setButtonStates("");
+    await wrapper.vm.$nextTick();
+    expect(logBtn.attributes("data-p-disabled")).toBe("true");
+  });
 });
