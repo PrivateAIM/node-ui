@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { onMounted } from "vue";
 import TreeTable from "primevue/treetable";
 import type { Route } from "~/services/Api";
@@ -19,11 +19,11 @@ const props = defineProps({
     required: true,
   },
   analysisNameMap: {
-    type: Map<string, string>,
+    type: Map<string, string | null>,
     required: true,
   },
   projectNameMap: {
-    type: Map<string, string>,
+    type: Map<string, string | null>,
     required: true,
   },
 });
@@ -106,17 +106,17 @@ function formatDataStoreNodes(projectNodeMap: Map<string, TreeNode[]>) {
 
 <template>
   <div class="card">
-    <div class="ds-tree-table" v-if="nodes && nodes.length">
+    <div v-if="nodes && nodes.length" class="ds-tree-table">
       <TreeTable :value="nodes">
-        <Column field="name" header="Name" expander></Column>
+        <Column expander field="name" header="Name"></Column>
         <Column field="uuid" header="UUID"></Column>
         <Column field="resourceType" header="Type"></Column>
       </TreeTable>
     </div>
-    <div class="ds-tree-table-empty" v-else>
+    <div v-else class="ds-tree-table-empty">
       <p>No local nodes found.</p>
     </div>
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style lang="scss" scoped></style>

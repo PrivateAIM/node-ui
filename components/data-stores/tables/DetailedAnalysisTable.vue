@@ -1,9 +1,11 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { deleteAnalysisFromKong } from "~/composables/useAPIFetch";
-import type { ModifiedConsumer } from "~/services/modifiedApiInterfaces";
+import type {
+  ModifiedConsumer,
+  modifiedTimestamp,
+} from "~/services/modifiedApiInterfaces";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
-import type { Consumer } from "~/services/Api";
 import { formatDataRow } from "~/utils/format-data-row";
 import { extractUuid } from "~/utils/extract-uuid-from-kong-username";
 import { FilterMatchMode } from "@primevue/core/api";
@@ -15,11 +17,11 @@ const props = defineProps({
     required: true,
   },
   analysisNameMap: {
-    type: Map<string, string>,
+    type: Map<string, string | null>,
     required: true,
   },
   projectNameMap: {
-    type: Map<string, string>,
+    type: Map<string, string | null>,
     required: true,
   },
 });
@@ -29,7 +31,7 @@ interface analysisRow {
   hubAnalysisUuid: string;
   kongAnalysisUserName: string;
   hubProjectName: string;
-  kongAnalysisCreatedAt: number;
+  kongAnalysisCreatedAt: modifiedTimestamp;
 }
 
 const analysisTable = ref();
@@ -98,7 +100,7 @@ function compileAnalysisTable() {
   consumers = formatDataRow(consumers, ["created_at"], []);
 
   if (consumers && consumers.length > 0) {
-    consumers.forEach((consumer: Consumer) => {
+    consumers.forEach((consumer: ModifiedConsumer) => {
       const analysisParts = extractUuid(consumer.username!);
       const analysisUuid = analysisParts[1];
       const analysisName = analysisNameMap.has(analysisUuid)
@@ -160,46 +162,46 @@ const updateFilters = (filterText: string) => {
   </div>
   <div class="detailed-consumers-table">
     <DataTable
-      :value="analysisTable"
-      tableStyle="min-width: 50rem"
-      paginator
-      :rows="10"
-      :rowsPerPageOptions="[10, 20, 50]"
       v-model:filters="filters"
-      filterDisplay="menu"
       :globalFilterFields="[
         'hubAnalysisName',
         'hubAnalysisUuid',
         'kongAnalysisUserName',
         'hubProjectName',
       ]"
+      :rows="10"
+      :rowsPerPageOptions="[10, 20, 50]"
+      :value="analysisTable"
+      filterDisplay="menu"
+      paginator
+      tableStyle="min-width: 50rem"
     >
       <template #empty> No associated linked analyses found.</template>
       <Column
+        :sortable="true"
         field="hubAnalysisName"
         header="Analysis"
-        :sortable="true"
       ></Column>
       <Column
+        :sortable="true"
         field="hubAnalysisUuid"
         header="Analysis UUID"
-        :sortable="true"
       ></Column>
       <Column
+        :sortable="true"
         field="kongAnalysisUserName"
         header="Kong Analysis Name"
-        :sortable="true"
       ></Column>
       <Column
+        :sortable="true"
         field="hubProjectName"
         header="Linked Project Name"
-        :sortable="true"
       ></Column>
       <Column
-        header="Created On"
-        field="kongProjCreatedAt.timestamp"
-        dataType="date"
         :sortable="true"
+        dataType="date"
+        field="kongProjCreatedAt.timestamp"
+        header="Created On"
       >
         <template #body="{ data }">
           <p v-tooltip.top="data.kongAnalysisCreatedAt.long">
@@ -207,9 +209,9 @@ const updateFilters = (filterText: string) => {
           </p>
         </template>
       </Column>
-      <Column field="hubAnalysisUuid" header="Delete?" :exportable="false">
+      <Column :exportable="false" field="hubAnalysisUuid" header="Delete?">
         <template #body="slotProps">
-          <ConfirmPopup group="disconnectAnalysis" class="delete-confirm-box">
+          <ConfirmPopup class="delete-confirm-box" group="disconnectAnalysis">
             <template #message="slotProps">
               <div
                 class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700 p-4 mb-4 pb-0"
@@ -223,11 +225,11 @@ const updateFilters = (filterText: string) => {
             </template>
           </ConfirmPopup>
           <Button
-            icon="pi pi-trash"
-            aria-label="Delete"
-            severity="warning"
-            class="disconnect-consumer-btn"
             :loading="loading"
+            aria-label="Delete"
+            class="disconnect-consumer-btn"
+            icon="pi pi-trash"
+            severity="warning"
             @click="
               confirmDeleteAnalysis(
                 $event,
@@ -242,4 +244,4 @@ const updateFilters = (filterText: string) => {
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style lang="scss" scoped></style>
