@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import Tabs from "primevue/tabs";
 import TabList from "primevue/tablist";
 import Tab from "primevue/tab";
@@ -27,8 +27,12 @@ import DataStoreTreeTable from "~/components/data-stores/tables/DataStoreTreeTab
 
 const dataStores = ref<ModifiedDetailedService[]>([]);
 const consumersAnalyses = ref<ModifiedConsumer[]>([]);
-const projectNameMap = ref();
-const analysisNameMap = ref();
+const projectNameMap = ref<Map<string, string | null>>(
+  new Map<string, string | null>(),
+);
+const analysisNameMap = ref<Map<string, string | null>>(
+  new Map<string, string | null>(),
+);
 
 const loading = ref(true);
 
@@ -39,6 +43,7 @@ const {
   data: dsResp,
   status: dsStatus,
   error: dsError,
+  refresh: dsRefresh,
 } = await getDataStores(true, { lazy: true });
 
 const { data: projectResp } = await getProjects({ lazy: true });
@@ -47,23 +52,32 @@ const { data: consumerResp } = await getAnalysesFromKong({
   lazy: true,
 });
 
-watch(dsResp, (parsedStores) => {
-  const dataStoreData = parsedStores!.data as ListServices;
-  loadDetailedDataStoreTable(dataStoreData, dsStatus.value, dsError);
+watchEffect(() => {
+  if (dsResp.value?.data) {
+    const dataStoreData = dsResp.value.data as ListServices;
+    loadDetailedDataStoreTable(dataStoreData, dsStatus.value, dsError);
+  }
 });
 
-watch(projectResp, (projectArray) => {
-  const projects = (projectArray!.data as unknown as Project[]) || [];
-  projectNameMap.value = mapDataFromHub(projects);
+watchEffect(() => {
+  if (projectResp.value) {
+    const projects = projectResp.value || [];
+    projectNameMap.value = mapDataFromHub(projects);
+  }
 });
 
-watch(analysisResp, (analysisArray) => {
-  const analyses = (analysisArray!.data as unknown as DetailedAnalysis[]) || [];
-  analysisNameMap.value = mapDataFromHub(analyses);
+watchEffect(() => {
+  if (analysisResp.value) {
+    const analyses = analysisResp.value || [];
+    analysisNameMap.value = mapDataFromHub(analyses);
+  }
 });
 
-watch(consumerResp, (consumerData) => {
-  consumersAnalyses.value = consumerData!.data as unknown as ModifiedConsumer[];
+watchEffect(() => {
+  if (consumerResp.value) {
+    consumersAnalyses.value = consumerResp.value
+      .data as unknown as ModifiedConsumer[];
+  }
 });
 
 async function loadDetailedDataStoreTable(
@@ -116,51 +130,56 @@ function mapDataFromHub(hubData: Project[] | DetailedAnalysis[]) {
 function extractProjectIdFromPath(paths: string[]): string {
   return paths[0].split("/")[1];
 }
+
+function onDeleteDataStore(dsName: string) {
+  dataStores.value = dataStores.value.filter(
+    (store: ModifiedDetailedService) => store.name !== dsName,
+  );
+  dsRefresh();
+}
 </script>
 
 <template>
   <div class="card tab-card">
     <Tabs value="0">
       <TabList>
-        <Tab value="0" class="detailed-data-store-tab"
+        <Tab class="detailed-data-store-tab" value="0"
           >Detailed Data Store View
         </Tab>
         <Tab
-          value="1"
-          class="detailed-analysis-tab"
           :disabled="dataStores.length === 0"
+          class="detailed-analysis-tab"
+          value="1"
           >Detailed Analyses View
         </Tab>
         <Tab
-          value="2"
-          class="data-store-tree-table-tab"
           :disabled="dataStores.length === 0"
+          class="data-store-tree-table-tab"
+          value="2"
           >Data Store Tree Table
         </Tab>
       </TabList>
       <TabPanels>
         <TabPanel value="0">
           <DetailedDataStoreTable
-            v-if="dataStores && projectNameMap"
-            :stores="dataStores"
-            :projectNameMap="projectNameMap"
             :loading="loading"
+            :projectNameMap="projectNameMap"
+            :stores="dataStores"
+            @deleteDataStore="onDeleteDataStore"
           />
         </TabPanel>
         <TabPanel value="1">
           <DetailedAnalysisTable
-            v-if="analysisNameMap && projectNameMap"
-            :detailedAnalysisList="consumersAnalyses"
             :analysisNameMap="analysisNameMap"
+            :detailedAnalysisList="consumersAnalyses"
             :projectNameMap="projectNameMap"
           />
         </TabPanel>
         <TabPanel value="2">
           <DataStoreTreeTable
-            v-if="analysisNameMap && projectNameMap"
-            :dataStoreList="dataStores"
             :analyses="consumersAnalyses"
             :analysisNameMap="analysisNameMap"
+            :dataStoreList="dataStores"
             :projectNameMap="projectNameMap"
           />
         </TabPanel>

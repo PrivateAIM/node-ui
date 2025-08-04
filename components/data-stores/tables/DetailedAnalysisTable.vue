@@ -34,13 +34,43 @@ interface analysisRow {
   kongAnalysisCreatedAt: modifiedTimestamp;
 }
 
-const analysisTable = ref();
 const loading = ref(false);
 const toast = useToast();
 const confirm = useConfirm();
 
-onMounted(() => {
-  compileAnalysisTable();
+const analysisTable = computed(() => {
+  let elongatedTableRows = new Array<analysisRow>();
+  const analysisNameMap = props.analysisNameMap;
+  const projectNameMap = props.projectNameMap;
+  let consumers = props.detailedAnalysisList;
+  consumers = formatDataRow(consumers, ["created_at"], []);
+
+  if (consumers && consumers.length > 0) {
+    consumers.forEach((consumer: ModifiedConsumer) => {
+      const analysisParts = extractUuid(consumer.username!);
+      const analysisUuid = analysisParts[1];
+      const analysisName = analysisNameMap.has(analysisUuid)
+        ? analysisNameMap.get(analysisUuid)
+        : "N/A";
+      const projects = consumer.tags;
+      if (projects && projects.length > 0) {
+        projects.forEach((projUuid: string) => {
+          const projectName = projectNameMap.has(projUuid)
+            ? projectNameMap.get(projUuid)
+            : "N/A";
+          const newRow = {
+            hubAnalysisName: analysisName!,
+            hubAnalysisUuid: analysisUuid!,
+            kongAnalysisUserName: consumer.username!,
+            hubProjectName: projectName!,
+            kongAnalysisCreatedAt: consumer.created_at!,
+          };
+          elongatedTableRows.push(newRow);
+        });
+      }
+    });
+  }
+  return elongatedTableRows;
 });
 
 const confirmDeleteAnalysis = (
@@ -90,41 +120,6 @@ async function onConfirmDeleteAnalysis(
     });
   }
   loading.value = false;
-}
-
-function compileAnalysisTable() {
-  let elongatedTableRows = new Array<analysisRow>();
-  const analysisNameMap = props.analysisNameMap;
-  const projectNameMap = props.projectNameMap;
-  let consumers = props.detailedAnalysisList;
-  consumers = formatDataRow(consumers, ["created_at"], []);
-
-  if (consumers && consumers.length > 0) {
-    consumers.forEach((consumer: ModifiedConsumer) => {
-      const analysisParts = extractUuid(consumer.username!);
-      const analysisUuid = analysisParts[1];
-      const analysisName = analysisNameMap.has(analysisUuid)
-        ? analysisNameMap.get(analysisUuid)
-        : "N/A";
-      const projects = consumer.tags;
-      if (projects && projects.length > 0) {
-        projects.forEach((projUuid: string) => {
-          const projectName = projectNameMap.has(projUuid)
-            ? projectNameMap.get(projUuid)
-            : "N/A";
-          const newRow = {
-            hubAnalysisName: analysisName!,
-            hubAnalysisUuid: analysisUuid!,
-            kongAnalysisUserName: consumer.username!,
-            hubProjectName: projectName!,
-            kongAnalysisCreatedAt: consumer.created_at!,
-          };
-          elongatedTableRows.push(newRow);
-        });
-      }
-    });
-  }
-  analysisTable.value = elongatedTableRows;
 }
 
 // Table filters

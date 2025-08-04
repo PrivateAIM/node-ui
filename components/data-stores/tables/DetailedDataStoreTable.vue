@@ -31,6 +31,8 @@ const confirm = useConfirm();
 const toast = useToast();
 const deleteLoading = ref(false);
 
+const emit = defineEmits(["deleteDataStore"]);
+
 const dataStoreTypes = ["s3", "fhir"];
 
 const dataStores = computed(() => {
@@ -80,9 +82,7 @@ async function onConfirmDeleteDataStore(dsName: string) {
       detail: "The data store was successfully deleted",
       life: 3000,
     });
-    // dataStores.value = dataStores.value?.filter(
-    //   (store: DetailedService) => store.name !== dsName,
-    // );
+    emit("deleteDataStore", dsName);
   } else {
     toast.add({
       severity: "error",
