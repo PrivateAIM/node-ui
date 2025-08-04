@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { deleteDataStore } from "~/composables/useAPIFetch";
 import { useConfirm } from "primevue/useconfirm";
+import { useToast } from "primevue/usetoast";
 import type { Route } from "~/services/Api";
 import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";

@@ -1,4 +1,3 @@
-import { nextTick } from "vue";
 import { defineComponent } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import { vi, describe, test, expect, beforeAll, beforeEach } from "vitest";
@@ -9,7 +8,7 @@ import {
   getDataStores,
   getProjects,
 } from "~/composables/useAPIFetch";
-import type { AllAnalyses, AllProjects, ListServices } from "~/services/Api";
+import type { DetailedAnalysis, ListServices, Project } from "~/services/Api";
 import {
   fakeAnalysisResp,
   fakeConsumerResp,
@@ -29,6 +28,16 @@ describe("DataStoreListTabs.vue", () => {
 
   beforeEach(() => {
     vi.restoreAllMocks(); // Reset mocks before each test
+
+    vi.mocked(getAnalysesFromKong).mockResolvedValue({
+      data: ref(fakeConsumerResp),
+      pending: ref(false),
+      error: ref(null),
+      status: ref("success"),
+      refresh: vi.fn(),
+      execute: vi.fn(),
+      clear: vi.fn(),
+    });
   });
 
   // Render the component with the fake params
@@ -41,11 +50,11 @@ describe("DataStoreListTabs.vue", () => {
 
   async function checkTabs(
     datastoreData: ListServices | null,
-    projectData: AllProjects | null,
-    analysisData: AllAnalyses | null,
+    projectData: Project[] | null,
+    analysisData: DetailedAnalysis[] | null,
   ) {
-    vi.mocked(getAnalyses).mockResolvedValue({
-      data: ref(analysisData),
+    vi.mocked(getDataStores).mockResolvedValue({
+      data: ref(datastoreData),
       pending: ref(false),
       error: ref(null),
       status: ref("success"),
@@ -64,18 +73,8 @@ describe("DataStoreListTabs.vue", () => {
       clear: vi.fn(),
     });
 
-    vi.mocked(getAnalysesFromKong).mockResolvedValue({
-      data: ref(fakeConsumerResp),
-      pending: ref(false),
-      error: ref(null),
-      status: ref("success"),
-      refresh: vi.fn(),
-      execute: vi.fn(),
-      clear: vi.fn(),
-    });
-
-    vi.mocked(getDataStores).mockResolvedValue({
-      data: ref(datastoreData),
+    vi.mocked(getAnalyses).mockResolvedValue({
+      data: ref(analysisData),
       pending: ref(false),
       error: ref(null),
       status: ref("success"),
@@ -91,25 +90,24 @@ describe("DataStoreListTabs.vue", () => {
 
     expect(wrapper.text()).toContain("Detailed Data Store View");
 
-    // if (datastoreData) {
-    //   expect(
-    //     wrapper.find(".detailed-analysis-tab").attributes("data-p-disabled"),
-    //   ).toBe("false");
-    //   expect(
-    //     wrapper
-    //       .find(".data-store-tree-table-tab")
-    //       .attributes("data-p-disabled"),
-    //   ).toBe("false");
-    // } else {
-    //   expect(
-    //     wrapper.find(".detailed-analysis-tab").attributes("data-p-disabled"),
-    //   ).toBe("true");
-    //   expect(
-    //     wrapper
-    //       .find(".data-store-tree-table-tab")
-    //       .attributes("data-p-disabled"),
-    //   ).toBe("true");
-    // }
+    const detailedDataStoreTable = wrapper.find(".detailed-data-store-table");
+
+    // Find header and all rows
+    const ddstHeaderRow = detailedDataStoreTable.findAll("thead tr");
+    const rows = detailedDataStoreTable.findAll("tbody tr");
+
+    if (datastoreData && datastoreData.data) {
+      expect(rows.length).toBe(datastoreData.data.length);
+    } else {
+      expect(rows[0].text()).toBe("No data stores found.");
+    }
+
+    // Verify header contents
+    expect(ddstHeaderRow.length).toBe(1);
+    const headerCols = ddstHeaderRow[0].findAll("th");
+    expect(headerCols.length).toBe(10); // First col
+    expect(headerCols[0].text()).toBe("Name"); // First col
+    expect(headerCols[9].text()).toBe("Delete?"); // Last col
   }
 
   test("All data returned", async () => {

@@ -114,6 +114,11 @@ vi.mock("primevue/usetoast", () => ({
   })),
 }));
 
+// Mock PrimeVue's `useToast`
+vi.mock("primevue/useconfirm", () => ({
+  useConfirm: vi.fn(() => ({})),
+}));
+
 // Mock MSW server for HTTP requests
 const server = setupServer(...handlers);
 

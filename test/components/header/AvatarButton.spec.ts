@@ -52,7 +52,7 @@ describe("AvatarButton.vue", () => {
       .find((e1) => e1.text() === "Keycloak Admin");
     if (keycloakBtn) {
       expect(keycloakBtn.attributes()["href"]).toBe(
-        "https://fakenode.com/keycloak",
+        "https://fakenode.com/keycloak/admin",
       );
     } else {
       throw new Error("Keycloak button not found in avatar menu");
