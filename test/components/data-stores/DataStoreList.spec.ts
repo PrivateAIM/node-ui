@@ -1,17 +1,10 @@
 import { defineComponent } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
-import { vi, describe, test, expect, beforeAll, beforeEach } from "vitest";
-import DataStoreListTabs from "~/components/data-stores/DataStoreListTabs.vue";
+import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
+import DataStoreList from "~/components/data-stores/DataStoreList.vue";
+import { getDataStores, getProjects } from "~/composables/useAPIFetch";
+import type { ListServices, Project } from "~/services/Api";
 import {
-  getAnalyses,
-  getAnalysesFromKong,
-  getDataStores,
-  getProjects,
-} from "~/composables/useAPIFetch";
-import type { DetailedAnalysis, ListServices, Project } from "~/services/Api";
-import {
-  fakeAnalysisResp,
-  fakeConsumerResp,
   fakeDataStoreResp,
   fakeProjectResp,
 } from "~/test/components/data-stores/constants";
@@ -23,35 +16,24 @@ vi.mock("~/composables/useAPIFetch", () => ({
   getDataStores: vi.fn(),
 }));
 
-describe("DataStoreListTabs.vue", () => {
-  let DataStoreListTabsTestComponent;
+describe("DataStoreList.vue", () => {
+  let DataStoreListTestComponent;
 
   beforeEach(() => {
     vi.restoreAllMocks(); // Reset mocks before each test
-
-    vi.mocked(getAnalysesFromKong).mockResolvedValue({
-      data: ref(fakeConsumerResp),
-      pending: ref(false),
-      error: ref(null),
-      status: ref("success"),
-      refresh: vi.fn(),
-      execute: vi.fn(),
-      clear: vi.fn(),
-    });
   });
 
   // Render the component with the fake params
   beforeAll(async () => {
-    DataStoreListTabsTestComponent = defineComponent({
-      components: { DataStoreListTabs },
-      template: "<Suspense><DataStoreListTabs/></Suspense>",
+    DataStoreListTestComponent = defineComponent({
+      components: { DataStoreList: DataStoreList },
+      template: "<Suspense><DataStoreList/></Suspense>",
     });
   });
 
   async function checkTabs(
     datastoreData: ListServices | null,
     projectData: Project[] | null,
-    analysisData: DetailedAnalysis[] | null,
   ) {
     vi.mocked(getDataStores).mockResolvedValue({
       data: ref(datastoreData),
@@ -73,22 +55,12 @@ describe("DataStoreListTabs.vue", () => {
       clear: vi.fn(),
     });
 
-    vi.mocked(getAnalyses).mockResolvedValue({
-      data: ref(analysisData),
-      pending: ref(false),
-      error: ref(null),
-      status: ref("success"),
-      refresh: vi.fn(),
-      execute: vi.fn(),
-      clear: vi.fn(),
-    });
-
-    const wrapper = mount(DataStoreListTabsTestComponent);
+    const wrapper = mount(DataStoreListTestComponent);
     expect(wrapper).toBeTruthy();
 
     await flushPromises();
 
-    expect(wrapper.text()).toContain("Detailed Data Store View");
+    expect(wrapper.text()).toContain("Data Stores");
 
     const detailedDataStoreTable = wrapper.find(".detailed-data-store-table");
 
@@ -111,18 +83,14 @@ describe("DataStoreListTabs.vue", () => {
   }
 
   test("All data returned", async () => {
-    await checkTabs(fakeDataStoreResp, fakeProjectResp, fakeAnalysisResp);
+    await checkTabs(fakeDataStoreResp, fakeProjectResp);
   });
 
   test("Missing data store data", async () => {
-    await checkTabs(null, fakeProjectResp, fakeAnalysisResp);
-  });
-
-  test("Missing analysis data", async () => {
-    await checkTabs(fakeDataStoreResp, fakeProjectResp, null);
+    await checkTabs(null, fakeProjectResp);
   });
 
   test("Missing project data", async () => {
-    await checkTabs(fakeDataStoreResp, null, fakeAnalysisResp);
+    await checkTabs(fakeDataStoreResp, null);
   });
 });

@@ -5,7 +5,7 @@ import {
   fakeDataStoreInitSuccess,
   fakeParsedProjects,
 } from "~/test/components/data-stores/constants";
-import type { kongBody } from "~/components/data-stores/managers/DataStoreProjectInitializer.vue";
+import type { kongBody } from "~/components/data-stores/create/DataStoreProjectInitializer.vue";
 import { fakeProposalsResp } from "~/test/components/projects/constants";
 
 export const fakeValidProposalId = "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483";

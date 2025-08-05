@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import DataStoreListTabs from "~/components/data-stores/DataStoreListTabs.vue";
+import DataStoreList from "~/components/data-stores/DataStoreList.vue";
 </script>
 
 <template>
-  <DataStoreListTabs />
+  <DataStoreList />
 </template>
 
 <style scoped lang="scss"></style>

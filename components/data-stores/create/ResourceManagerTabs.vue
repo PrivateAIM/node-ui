@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { getProjectNodes } from "~/composables/useAPIFetch";
 import type { ProjectNode } from "~/services/Api";
+import DataStoreProjectInitializer from "~/components/data-stores/create/DataStoreProjectInitializer.vue";
 
 interface availableProject {
   name: string | null | undefined;
@@ -28,7 +29,7 @@ if (projStatus.value === "success") {
 
 <template>
   <div class="card">
-    <DataStoresManagersDataStoreProjectInitializer
+    <DataStoreProjectInitializer
       v-if="availableProjects"
       :projects="availableProjects"
     />

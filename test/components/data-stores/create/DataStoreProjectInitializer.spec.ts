@@ -1,15 +1,15 @@
 import { useToast } from "primevue/usetoast";
-import { mount, flushPromises } from "@vue/test-utils";
+import { flushPromises, mount } from "@vue/test-utils";
 import {
-  vi,
-  describe,
-  it,
-  expect,
   afterEach,
   beforeAll,
   beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
 } from "vitest";
-import DataStoreProjectInitializer from "~/components/data-stores/managers/DataStoreProjectInitializer.vue";
+import DataStoreProjectInitializer from "~/components/data-stores/create/DataStoreProjectInitializer.vue";
 import { fakeParsedProjects } from "~/test/components/data-stores/constants";
 
 describe("DataStoreProjectInitializer.vue", () => {
