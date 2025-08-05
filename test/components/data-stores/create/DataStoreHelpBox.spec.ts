@@ -1,7 +1,7 @@
 import { mount } from "@vue/test-utils";
-import { describe, it, expect } from "vitest";
-import DataStoreHelpBox from "~/components/data-stores/managers/DataStoreHelpBox.vue";
-import { HelpTextField } from "~/components/data-stores/managers";
+import { describe, expect, it } from "vitest";
+import DataStoreHelpBox from "~/components/data-stores/create/DataStoreHelpBox.vue";
+import { HelpTextField } from "~/components/data-stores/create";
 
 describe("DataStoreHelpBox.vue", () => {
   function checkHelpBox(

@@ -13,7 +13,7 @@ const baseUrl = new URL(config.public.baseUrl).origin;
 
 if (keycloakUrl === baseUrl) {
   // If same as base, then add /keycloak subpath
-  keycloakUrl = `${keycloakUrl}/keycloak`;
+  keycloakUrl = `${keycloakUrl}/keycloak/admin`;
 }
 
 const isAuthenticated = ref(status.value === "authenticated");

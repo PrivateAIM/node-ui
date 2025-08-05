@@ -4,6 +4,7 @@ import {
   type ListServices,
   type Project,
 } from "~/services/Api";
+import type { ModifiedDetailedService } from "~/services/modifiedApiInterfaces";
 
 export const validProjectId = "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483";
 export const duplicateProjectId = "bab3aa4f-9144-444c-8ec7-6ebbbe8e300f";

@@ -1,8 +1,15 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { getProjectNodes } from "~/composables/useAPIFetch";
 import type { ProjectNode } from "~/services/Api";
+import DataStoreProjectInitializer from "~/components/data-stores/create/DataStoreProjectInitializer.vue";
 
-const availableProjects = ref();
+interface availableProject {
+  name: string | null | undefined;
+  id: string;
+  dropdown: string;
+}
+
+const availableProjects = ref<availableProject[]>([]);
 
 const { data: projects, status: projStatus } = await getProjectNodes();
 
@@ -11,9 +18,9 @@ if (projStatus.value === "success") {
   if (projectData.length > 0) {
     availableProjects.value = projectData.map((proj: ProjectNode) => {
       return {
-        name: proj.project.name,
+        name: proj.project?.name,
         id: proj.project_id,
-        dropdown: `${proj.project.name} (${proj.project_id})`,
+        dropdown: `${proj.project?.name} (${proj.project_id})`,
       };
     });
   }
@@ -22,11 +29,11 @@ if (projStatus.value === "success") {
 
 <template>
   <div class="card">
-    <DataStoresManagersDataStoreProjectInitializer
+    <DataStoreProjectInitializer
       v-if="availableProjects"
       :projects="availableProjects"
     />
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style lang="scss" scoped></style>

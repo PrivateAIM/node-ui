@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { HelpTextField } from "~/components/data-stores/managers/index";
+import { HelpTextField } from "~/components/data-stores/create/index";
 import Panel from "primevue/panel";
 
 const props = defineProps({

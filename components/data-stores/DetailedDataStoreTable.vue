@@ -1,12 +1,14 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { deleteDataStore } from "~/composables/useAPIFetch";
 import { useConfirm } from "primevue/useconfirm";
-import type { DetailedService, Route } from "~/services/Api";
+import { useToast } from "primevue/usetoast";
+import type { Route } from "~/services/Api";
 import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
 import { extractUuid } from "~/utils/extract-uuid-from-kong-username";
 import { parseUnixTimestamp } from "~/utils/format-data-row";
 import { getDataStoreTypeSeverity } from "~/utils/status-tag-severity";
+import type { ModifiedDetailedService } from "~/services/modifiedApiInterfaces";
 
 interface DetailedDataStoreTableRow {
   name?: string | null;
@@ -21,23 +23,24 @@ interface DetailedDataStoreTableRow {
 }
 
 const props = defineProps({
-  stores: Array<DetailedService>,
-  projectNameMap: Map<string, string>,
+  stores: Array<ModifiedDetailedService>,
+  projectNameMap: Map<string, string | null>,
   loading: Boolean,
 });
 
-const dataStores = ref();
 const confirm = useConfirm();
 const toast = useToast();
 const deleteLoading = ref(false);
 
+const emit = defineEmits(["deleteDataStore"]);
+
 const dataStoreTypes = ["s3", "fhir"];
 
-function compiledTableRows() {
+const dataStores = computed(() => {
   let tableRows: DetailedDataStoreTableRow[] = [];
 
   if (props.stores && props.stores.length > 0) {
-    props.stores.forEach((store: DetailedService) => {
+    props.stores.forEach((store: ModifiedDetailedService) => {
       const formattedRow: DetailedDataStoreTableRow = parseUnixTimestamp(
         store,
         ["created_at", "updated_at"],
@@ -66,10 +69,9 @@ function compiledTableRows() {
       }
     });
   }
-  dataStores.value = tableRows;
-}
 
-compiledTableRows();
+  return tableRows;
+});
 
 async function onConfirmDeleteDataStore(dsName: string) {
   deleteLoading.value = true;
@@ -81,9 +83,7 @@ async function onConfirmDeleteDataStore(dsName: string) {
       detail: "The data store was successfully deleted",
       life: 3000,
     });
-    dataStores.value = dataStores.value?.filter(
-      (store: DetailedService) => store.name !== dsName,
-    );
+    emit("deleteDataStore", dsName);
   } else {
     toast.add({
       severity: "error",
@@ -149,14 +149,7 @@ const updateFilters = (filterText: string) => {
   </div>
   <div class="detailed-data-store-table">
     <DataTable
-      :value="dataStores"
-      paginator
-      :loading="props.loading"
-      :rows="10"
-      :rowsPerPageOptions="[10, 20, 50]"
-      tableStyle="min-width: 50rem"
       v-model:filters="filters"
-      filterDisplay="menu"
       :globalFilterFields="[
         'name',
         'path',
@@ -165,58 +158,65 @@ const updateFilters = (filterText: string) => {
         'type',
         'protocol',
       ]"
+      :loading="props.loading"
+      :rows="10"
+      :rowsPerPageOptions="[10, 20, 50]"
+      :value="dataStores"
+      filterDisplay="menu"
+      paginator
+      tableStyle="min-width: 50rem"
     >
       <template #empty> No data stores found.</template>
       <Column
+        :sortable="true"
         field="name"
         header="Name"
-        :sortable="true"
         style="width: 30rem"
       ></Column>
-      <Column field="project" header="Project" :sortable="true"></Column>
+      <Column :sortable="true" field="project" header="Project"></Column>
       <Column
+        :showAddButton="false"
+        :showApplyButton="false"
+        :showClearButton="false"
+        :showFilterMatchModes="false"
+        :showFilterOperator="false"
         field="type"
         header="Type"
-        :showFilterMatchModes="false"
-        :showClearButton="false"
-        :showApplyButton="false"
-        :showFilterOperator="false"
-        :showAddButton="false"
       >
         <template #body="{ data }">
           <Tag
             v-if="data.type"
-            :value="data.type"
             :severity="getDataStoreTypeSeverity(data.type)"
+            :value="data.type"
           />
         </template>
         <template #filter="{ filterModel, filterCallback }">
           <Select
             v-model="filterModel.value"
-            @change="filterCallback()"
             :options="dataStoreTypes"
-            placeholder="Select One"
-            class="p-column-filter"
             :showClear="true"
+            class="p-column-filter"
+            placeholder="Select One"
+            @change="filterCallback()"
           >
             <template #option="slotProps">
               <Tag
-                :value="slotProps.option"
                 :severity="getDataStoreTypeSeverity(slotProps.option)"
+                :value="slotProps.option"
               />
             </template>
           </Select>
         </template>
       </Column>
       <Column field="path" header="Path"></Column>
-      <Column field="host" header="Server" :sortable="true"></Column>
+      <Column :sortable="true" field="host" header="Server"></Column>
       <Column field="port" header="Port"></Column>
-      <Column field="protocol" header="Protocol" :sortable="true"></Column>
+      <Column :sortable="true" field="protocol" header="Protocol"></Column>
       <Column
-        header="Created On"
-        field="created_at.timestamp"
-        dataType="date"
         :sortable="true"
+        dataType="date"
+        field="created_at.timestamp"
+        header="Created On"
       >
         <template #body="{ data }">
           <p v-tooltip.top="data.created_at.long">
@@ -225,10 +225,10 @@ const updateFilters = (filterText: string) => {
         </template>
       </Column>
       <Column
-        header="Last Updated"
-        field="updated_at.timestamp"
-        dataType="date"
         :sortable="true"
+        dataType="date"
+        field="updated_at.timestamp"
+        header="Last Updated"
       >
         <template #body="{ data }">
           <p v-tooltip.top="data.updated_at.long">
@@ -236,7 +236,7 @@ const updateFilters = (filterText: string) => {
           </p>
         </template>
       </Column>
-      <Column field="name" header="Delete?" :exportable="false">
+      <Column :exportable="false" field="name" header="Delete?">
         <template #body="slotProps">
           <Toast />
           <ConfirmPopup group="dataStoreDelete" style="width: 20em">
@@ -256,10 +256,10 @@ const updateFilters = (filterText: string) => {
           </ConfirmPopup>
           <div>
             <Button
-              icon="pi pi-trash"
-              aria-label="Delete"
-              severity="danger"
               :loading="deleteLoading"
+              aria-label="Delete"
+              icon="pi pi-trash"
+              severity="danger"
               @click="confirmDelete($event, slotProps.data.name)"
             />
           </div>
@@ -269,7 +269,7 @@ const updateFilters = (filterText: string) => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .expand-btns {
   display: flex;
   justify-content: flex-end;

@@ -3,6 +3,7 @@ import type {
   AnalysisNode,
   BodyCreateProjectAndConnectToDatastoreKongProjectPost,
   DeleteProject,
+  DetailedAnalysis,
   LinkDataStoreProject,
   ListConsumers,
   ListServices,
@@ -46,7 +47,7 @@ export function getProjects(opts?) {
 }
 
 export function getAnalyses(opts?) {
-  return useAPIFetch<Analysis[]>("/analyses", {
+  return useAPIFetch<DetailedAnalysis[]>("/analyses", {
     ...opts,
     method: "GET",
     query: {

@@ -64,6 +64,6 @@ export const getDataStoreTypeSeverity = (status: string) => {
       return "info";
 
     case "fhir":
-      return "danger";
+      return "warn";
   }
 };

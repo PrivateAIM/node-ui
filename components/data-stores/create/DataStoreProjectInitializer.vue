@@ -6,8 +6,8 @@ import Select from "primevue/select";
 import InputNumber from "primevue/inputnumber";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import InputGroup from "primevue/inputgroup";
-import DataStoreHelpBox from "~/components/data-stores/managers/DataStoreHelpBox.vue";
-import { HelpTextField } from "~/components/data-stores/managers/index";
+import DataStoreHelpBox from "~/components/data-stores/create/DataStoreHelpBox.vue";
+import { HelpTextField } from "~/components/data-stores/create/index";
 import { useToast } from "primevue/usetoast";
 
 const props = defineProps({

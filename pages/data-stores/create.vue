@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ResourceManagerTabs from "~/components/data-stores/ResourceManagerTabs.vue";
+import ResourceManagerTabs from "~/components/data-stores/create/ResourceManagerTabs.vue";
 </script>
 
 <template>
