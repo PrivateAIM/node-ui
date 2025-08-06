@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.2.15](https://github.com/PrivateAIM/node-ui/compare/v0.2.14...v0.2.15) (2025-08-06)
+
+
+### Features
+
+* **proxy:** parse NO_PROXY env vars ([a01a58e](https://github.com/PrivateAIM/node-ui/commit/a01a58e26aafe5542d20e251be59918eb8f4a039))
+* **proxy:** parse NO_PROXY env vars ([8e9984c](https://github.com/PrivateAIM/node-ui/commit/8e9984ccfd1bb244e2276e832d4b1374c28a649a))
+
+
+### Bug Fixes
+
+* **analysis:** enable log button when run status is finished ([0b2ab36](https://github.com/PrivateAIM/node-ui/commit/0b2ab36d01f7084023668140e17cad33320457ba))
+* **analysis:** fix rerun button if pod is finished ([6117a16](https://github.com/PrivateAIM/node-ui/commit/6117a168f74659c3728561198636d8c6f75727ca))
+* **analysis:** small bug in pod status check ([3a36fad](https://github.com/PrivateAIM/node-ui/commit/3a36fade3eaca353542be0d29d96eeb5a462840d))
+* **ds:** project name parsing now works ([428e0c2](https://github.com/PrivateAIM/node-ui/commit/428e0c25a8fdb2b2f0cd9c90aa3baefd0b97fabe))
+* **keycloak:** update keycloak link to /keycloak/admin ([545162f](https://github.com/PrivateAIM/node-ui/commit/545162f20ce521a079f699fc8efa0216e40497e6))
+* **logs:** break up long strings to prevent container overflow ([3c67e0d](https://github.com/PrivateAIM/node-ui/commit/3c67e0d58df4929f3148a059f9a1893f2a0552cf))
+* **logs:** break up long strings to prevent container overflow ([034659f](https://github.com/PrivateAIM/node-ui/commit/034659f0cfc3adaed83a0b88d9aa5a36c576797e))
+
 ## [0.2.14](https://github.com/PrivateAIM/node-ui/compare/v0.2.13...v0.2.14) (2025-06-25)
 
 
