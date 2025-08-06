@@ -19,7 +19,7 @@ export default NuxtAuthHandler({
   // A secret string you define, to ensure correct encryption
   secret: useRuntimeConfig().authSecret,
   callbacks: {
-    /* on session retrival */
+    /* on session retrieval */
     async session({ session, token }) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
@@ -36,6 +36,7 @@ export default NuxtAuthHandler({
   },
   providers: [
     // Use .default here for it to work during SSR.
+    // @ts-expect-error default is an option
     KeycloakProvider.default({
       clientId: process.env.NUXT_KEYCLOAK_CLIENT_ID ?? "node-ui",
       clientSecret: process.env.NUXT_KEYCLOAK_CLIENT_SECRET,
