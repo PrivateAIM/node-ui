@@ -17,7 +17,7 @@ COPY . .
 RUN pnpm build
 
 FROM node:23-alpine AS production
-
+RUN apk add --no-cache curl
 RUN adduser -u 10000 -D nodeui
 
 WORKDIR /app
