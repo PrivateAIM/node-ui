@@ -1,4 +1,5 @@
 import KeycloakProvider from "next-auth/providers/keycloak";
+import AuthentikProvider from "next-auth/providers/authentik";
 import { NuxtAuthHandler } from "#auth";
 
 function compileEndpoints() {
@@ -6,11 +7,51 @@ function compileEndpoints() {
     return {
       jwks_endpoint: `${process.env.NUXT_K8S_KEYCLOAK_ENDPOINT}/protocol/openid-connect/certs`,
       wellKnown: undefined,
-      authorization: `${process.env.NUXT_PUBLIC_KEYCLOAK_BASE_URL}/protocol/openid-connect/auth`,
+      authorization: `${process.env.NUXT_IDP_ISSUER}/protocol/openid-connect/auth`,
       token: `${process.env.NUXT_K8S_KEYCLOAK_ENDPOINT}/protocol/openid-connect/token`,
       userinfo: `${process.env.NUXT_K8S_KEYCLOAK_ENDPOINT}/protocol/openid-connect/userinfo`,
     };
   }
+}
+
+function buildProvider() {
+  const idpProvider = process.env.NUXT_IDP_PROVIDER;
+  const clientId = process.env.NUXT_IDP_CLIENT_ID ?? "node-ui";
+  const clientSecret = process.env.NUXT_IDP_CLIENT_SECRET;
+  const clientIssuer =
+    process.env.NUXT_IDP_ISSUER ?? "http://localhost:8080/realms/flame";
+
+  const providers = [];
+
+  switch (idpProvider) {
+    case "keycloak": {
+      const keycloakProvider =
+        // Use .default here for it to work during SSR.
+        // @ts-expect-error default is an option
+        KeycloakProvider.default({
+          clientId: clientId,
+          clientSecret: clientSecret,
+          issuer: clientIssuer,
+          ...endPoints,
+        });
+      providers.push(keycloakProvider);
+      break;
+    }
+
+    case "authentik": {
+      const authentikProvider =
+        // @ts-expect-error default is an option
+        AuthentikProvider.default({
+          clientId: clientId,
+          clientSecret: clientSecret,
+          issuer: clientIssuer,
+        });
+      providers.push(authentikProvider);
+      break;
+    }
+  }
+
+  return providers;
 }
 
 const endPoints = compileEndpoints();
@@ -34,17 +75,5 @@ export default NuxtAuthHandler({
       return token;
     },
   },
-  providers: [
-    // Use .default here for it to work during SSR.
-    // @ts-expect-error default is an option
-    KeycloakProvider.default({
-      clientId: process.env.NUXT_KEYCLOAK_CLIENT_ID ?? "node-ui",
-      clientSecret: process.env.NUXT_KEYCLOAK_CLIENT_SECRET,
-      issuer:
-        process.env.NUXT_PUBLIC_KEYCLOAK_BASE_URL ??
-        "http://localhost:8080/realms/flame",
-      // checks: ["none"],
-      ...endPoints,
-    }),
-  ],
+  providers: buildProvider(),
 });
