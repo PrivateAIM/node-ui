@@ -21,8 +21,8 @@ export default defineNuxtConfig({
       hubAdapterUrl:
         process.env.NUXT_PUBLIC_HUB_ADAPTER_URL || "http://localhost:5000",
       version: process.env.npm_package_version,
-      idpIssuer: process.env.NUXT_IDP_ISSUER,
-      idpProvider: process.env.NUXT_IDP_PROVIDER || "",
+      idpIssuer: process.env.NUXT_PUBLIC_IDP_ISSUER,
+      idpProvider: process.env.NUXT_PUBLIC_IDP_PROVIDER || "",
       internalKeycloakUrl: process.env.NUXT_PUBLIC_INTERNAL_KEYCLOAK_URL || "",
     },
   },
@@ -37,7 +37,7 @@ export default defineNuxtConfig({
     provider: {
       type: "authjs",
       trustHost: false,
-      defaultProvider: process.env.NUXT_IDP_PROVIDER ?? "keycloak",
+      defaultProvider: process.env.NUXT_PUBLIC_IDP_PROVIDER ?? "keycloak",
       addDefaultCallbackUrl: true,
     },
     sessionRefresh: {

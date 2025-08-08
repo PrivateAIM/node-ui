@@ -7,7 +7,7 @@ function compileEndpoints() {
     return {
       jwks_endpoint: `${process.env.NUXT_K8S_KEYCLOAK_ENDPOINT}/protocol/openid-connect/certs`,
       wellKnown: undefined,
-      authorization: `${process.env.NUXT_IDP_ISSUER}/protocol/openid-connect/auth`,
+      authorization: `${process.env.NUXT_PUBLIC_IDP_PROVIDER}/protocol/openid-connect/auth`,
       token: `${process.env.NUXT_K8S_KEYCLOAK_ENDPOINT}/protocol/openid-connect/token`,
       userinfo: `${process.env.NUXT_K8S_KEYCLOAK_ENDPOINT}/protocol/openid-connect/userinfo`,
     };
@@ -15,11 +15,11 @@ function compileEndpoints() {
 }
 
 function buildProvider() {
-  const idpProvider = process.env.NUXT_IDP_PROVIDER;
+  const idpProvider = process.env.NUXT_PUBLIC_IDP_PROVIDER;
   const clientId = process.env.NUXT_IDP_CLIENT_ID ?? "node-ui";
   const clientSecret = process.env.NUXT_IDP_CLIENT_SECRET;
   const clientIssuer =
-    process.env.NUXT_IDP_ISSUER ?? "http://localhost:8080/realms/flame";
+    process.env.NUXT_PUBLIC_IDP_ISSUER ?? "http://localhost:8080/realms/flame";
 
   const providers = [];
 
