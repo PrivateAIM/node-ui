@@ -4,6 +4,8 @@ import { useRuntimeConfig } from "#app";
 const { signIn, signOut, status } = useAuth();
 const config = useRuntimeConfig();
 const idpProvider: string = config.public.idpProvider as string;
+const idpNameCapitalized: string =
+  idpProvider.charAt(0).toUpperCase() + idpProvider.slice(1);
 </script>
 
 <template>
@@ -23,7 +25,7 @@ const idpProvider: string = config.public.idpProvider as string;
         outlined
         severity="success"
         @click="signIn(`${idpProvider}`)"
-        >Login with <span style="padding: 0">{{ idpProvider }}</span>
+        >Login with {{ idpNameCapitalized }}
       </Button>
     </div>
   </div>
