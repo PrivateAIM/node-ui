@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import KeycloakAuth from "~/components/landing/KeycloakAuth.vue";
+import IdpAuthBtns from "~/components/landing/IdpAuthBtns.vue";
 
 const { data } = useAuth();
 </script>
@@ -8,7 +8,7 @@ const { data } = useAuth();
   <div class="landing-buttons">
     <div v-if="!data" class="login-or-learn-container">
       <div class="keycloak-btn landing-btn">
-        <KeycloakAuth />
+        <IdpAuthBtns />
       </div>
       <div class="learn-more-btn landing-btn">
         <NuxtLink
@@ -17,8 +17,8 @@ const { data } = useAuth();
           to="https://privateaim.de/de/index.html"
         >
           <Button label="privateaim" outlined severity="contrast"
-            >Learn More</Button
-          >
+            >Learn More
+          </Button>
         </NuxtLink>
       </div>
     </div>
