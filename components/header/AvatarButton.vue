@@ -46,9 +46,12 @@ const menuItems = ref([
     ],
   },
 ]);
+
 const toggle = (event) => {
   menu.value.toggle(event);
 };
+
+console.log(data);
 </script>
 
 <template>
