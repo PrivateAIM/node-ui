@@ -11,7 +11,9 @@ const config = useRuntimeConfig();
 let internalKeycloakAdminUrl: string;
 const baseUrl = new URL(config.public.baseUrl).origin;
 const idpProvider = config.public.idpProvider;
-const internalKeycloakUrl = new URL(config.public.internalKeycloakUrl);
+const internalKeycloakUrl = config.public.internalKeycloakUrl
+  ? new URL(config.public.internalKeycloakUrl)
+  : "";
 
 if (internalKeycloakUrl) {
   internalKeycloakAdminUrl = `${internalKeycloakUrl}/admin`;
