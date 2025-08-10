@@ -7,7 +7,7 @@ const { data } = useAuth();
 <template>
   <div class="landing-buttons">
     <div v-if="!data" class="login-or-learn-container">
-      <div class="keycloak-btn landing-btn">
+      <div class="idp-btn landing-btn">
         <IdpAuthBtns />
       </div>
       <div class="learn-more-btn landing-btn">
