@@ -8,12 +8,17 @@ const { signIn, signOut, status, data } = useAuth();
 const menu = ref();
 
 const config = useRuntimeConfig();
-let keycloakUrl = new URL(config.public.keycloakBaseUrl).origin;
+let internalKeycloakAdminUrl: string;
 const baseUrl = new URL(config.public.baseUrl).origin;
+const idpProvider = config.public.idpProvider;
+const internalKeycloakUrl = config.public.internalKeycloakUrl
+  ? new URL(config.public.internalKeycloakUrl)
+  : "";
 
-if (keycloakUrl === baseUrl) {
-  // If same as base, then add /keycloak subpath
-  keycloakUrl = `${keycloakUrl}/keycloak/admin`;
+if (internalKeycloakUrl) {
+  internalKeycloakAdminUrl = `${internalKeycloakUrl}/admin`;
+} else {
+  internalKeycloakAdminUrl = `${baseUrl}/keycloak/admin`;
 }
 
 const isAuthenticated = ref(status.value === "authenticated");
@@ -31,21 +36,24 @@ const menuItems = ref([
         label: userActionLabel,
         icon: userActionIcon,
         command: () => {
-          isAuthenticated.value ? signOut() : signIn("keycloak");
+          isAuthenticated.value ? signOut() : signIn(`${idpProvider}`);
         },
       },
       {
-        label: "Keycloak Admin",
+        label: "Node Keycloak Admin",
         icon: "pi pi-external-link",
-        url: keycloakUrl,
+        url: internalKeycloakAdminUrl,
         target: "_blank",
       },
     ],
   },
 ]);
+
 const toggle = (event) => {
   menu.value.toggle(event);
 };
+
+console.log(data);
 </script>
 
 <template>

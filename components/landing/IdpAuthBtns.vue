@@ -1,22 +1,32 @@
 <script lang="ts" setup>
+import { useRuntimeConfig } from "#app";
+
 const { signIn, signOut, status } = useAuth();
+const config = useRuntimeConfig();
+const idpProvider: string = config.public.idpProvider as string;
+const idpNameCapitalized: string =
+  idpProvider.charAt(0).toUpperCase() + idpProvider.slice(1);
 </script>
 
 <template>
-  <div class="keycloak-login-btn">
+  <div class="idp-login-btn">
     <div v-if="status === 'authenticated'">
-      <Button class="kc-success" outlined severity="warn" @click="signOut()"
-        >Sign Out</Button
-      >
+      <Button
+        class="idp-auth-success"
+        outlined
+        severity="warn"
+        @click="signOut()"
+        >Sign Out
+      </Button>
     </div>
     <div v-else>
       <Button
-        class="kc-success"
+        class="idp-auth-success"
         outlined
         severity="success"
-        @click="signIn('keycloak')"
-        >Login with Keycloak</Button
-      >
+        @click="signIn(`${idpProvider}`)"
+        >Login with {{ idpNameCapitalized }}
+      </Button>
     </div>
   </div>
 </template>
@@ -35,9 +45,13 @@ const { signIn, signOut, status } = useAuth();
   margin-right: 2em;
 }
 
-.flame-light .kc-success {
+.flame-light .idp-auth-success {
   border-color: var(--p-green-700);
   color: var(--p-green-600);
+}
+
+span::first-letter {
+  text-transform: uppercase;
 }
 
 //.landing-btn {

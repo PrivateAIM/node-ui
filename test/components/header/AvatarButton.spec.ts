@@ -1,6 +1,6 @@
 import { mount } from "@vue/test-utils";
 import { useRuntimeConfig } from "#app";
-import { vi, describe, it, expect } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import AvatarButton from "~/components/header/AvatarButton.vue";
 
 describe("AvatarButton.vue", () => {
@@ -47,11 +47,11 @@ describe("AvatarButton.vue", () => {
     expect(menu.text()).toContain("Keycloak");
     expect(menu.text()).toContain(logPrompt);
 
-    const keycloakBtn = menu
+    const keycloakAdminBtn = menu
       .findAll("a")
-      .find((e1) => e1.text() === "Keycloak Admin");
-    if (keycloakBtn) {
-      expect(keycloakBtn.attributes()["href"]).toBe(
+      .find((e1) => e1.text() === "Node Keycloak Admin");
+    if (keycloakAdminBtn) {
+      expect(keycloakAdminBtn.attributes()["href"]).toBe(
         "https://fakenode.com/keycloak/admin",
       );
     } else {
