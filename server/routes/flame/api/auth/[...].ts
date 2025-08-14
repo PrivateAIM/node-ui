@@ -1,5 +1,9 @@
 import KeycloakProvider from "next-auth/providers/keycloak";
 import AuthentikProvider from "next-auth/providers/authentik";
+import OktaProvider from "next-auth/providers/okta";
+import OneLoginProvider from "next-auth/providers/onelogin";
+import ZitadelProvider from "next-auth/providers/zitadel";
+
 import { NuxtAuthHandler } from "#auth";
 
 function compileEndpoints() {
@@ -47,6 +51,54 @@ function buildProvider() {
           issuer: clientIssuer,
         });
       providers.push(authentikProvider);
+      break;
+    }
+
+    case "auth0": {
+      const auth0Provider =
+        // @ts-expect-error default is an option
+        Auth0.default({
+          clientId: clientId,
+          clientSecret: clientSecret,
+          issuer: clientIssuer,
+        });
+      providers.push(auth0Provider);
+      break;
+    }
+
+    case "onelogin": {
+      const oneLoginProvider =
+        // @ts-expect-error default is an option
+        OneLoginProvider.default({
+          clientId: clientId,
+          clientSecret: clientSecret,
+          issuer: clientIssuer,
+        });
+      providers.push(oneLoginProvider);
+      break;
+    }
+
+    case "okta": {
+      const oktaProvider =
+        // @ts-expect-error default is an option
+        OktaProvider.default({
+          clientId: clientId,
+          clientSecret: clientSecret,
+          issuer: clientIssuer,
+        });
+      providers.push(oktaProvider);
+      break;
+    }
+
+    case "zitadel": {
+      const zitadelProvider =
+        // @ts-expect-error default is an option
+        ZitadelProvider.default({
+          clientId: clientId,
+          clientSecret: clientSecret,
+          issuer: clientIssuer,
+        });
+      providers.push(zitadelProvider);
       break;
     }
   }

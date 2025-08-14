@@ -35,7 +35,7 @@ NUXT_AUTH_SECRET=xxx  # Unique key for encrypting JWT
 | NUXT_PUBLIC_ORIGIN                | Relative path to sign page (you likely should not modify this)                                                              | $NUXT_PUBLIC_BASE_URL/api/auth |          |
 | NUXT_IDP_CLIENT_ID                | Client ID defined in the IDP provided in NUXT_PUBLIC_IDP_ISSUER                                                             | node-ui                        |          |
 | NUXT_IDP_CLIENT_SECRET            | Client secret defined in the IDP provided in NUXT_PUBLIC_IDP_ISSUER                                                         |                                |    x     |
-| NUXT_PUBLIC_IDP_PROVIDER          | Can be either 'keycloak' or 'authentik'                                                                                     | keycloak                       |          |
+| NUXT_PUBLIC_IDP_PROVIDER          | Can be either 'keycloak', 'auth0', 'authentik', 'onelogin', 'okta', or 'zitadel'                                            | keycloak                       |          |
 | NUXT_PUBLIC_IDP_ISSUER            | URI for the IDP used to identify itself using OpenID Connect (OIDC) protocol                                                |                                |    x     |
 | NUXT_PUBLIC_INTERNAL_KEYCLOAK_URL | If not using the same keycloak instance as the other FLAME Node services for user authentication, then this needs to be set |                                |          |
 | NUXT_AUTH_SECRET                  | Unique key for encrypting JWT, see Setting a Secret below                                                                   |                                |    x     |
