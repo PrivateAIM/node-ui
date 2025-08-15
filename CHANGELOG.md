@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.16](https://github.com/PrivateAIM/node-ui/compare/v0.2.15...v0.2.16) (2025-08-15)
+
+
+### Features
+
+* **idp:** add Auth0, OneLogin, Okta, and Zitadel to accepted IDPs ([65dc99c](https://github.com/PrivateAIM/node-ui/commit/65dc99ce0e19715686fc26a8f1d50028d842d2c6))
+* **idp:** add authentik as possible idp ([0312969](https://github.com/PrivateAIM/node-ui/commit/0312969a999b2e504cd55911cab2acaa56e6b856))
+
+
+### Bug Fixes
+
+* **idp:** env var naming ([c26dbd4](https://github.com/PrivateAIM/node-ui/commit/c26dbd42eb3789b1786820e1ed29f9125698cc67))
+
 ## [0.2.15](https://github.com/PrivateAIM/node-ui/compare/v0.2.14...v0.2.15) (2025-08-06)
 
 
