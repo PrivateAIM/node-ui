@@ -16,14 +16,17 @@ import {
 import {
   type AnalysisNode,
   type ListRoutes,
+  type NodeTypeResponse,
   type Project,
   type Route,
 } from "~/services/Api";
 import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
 import { ApprovalStatus } from "~/types/node";
 import ContainerCounter from "~/components/analysis/ContainerCounter.vue";
+import { useNodeType } from "~/composables/useNodeType";
 
 const toast = useToast();
+const nodeType = useNodeType();
 
 const analyses = ref<ModifiedAnalysisNode[]>([]);
 
@@ -51,6 +54,16 @@ export interface ModifiedAnalysisNode extends AnalysisNode {
     [key: string]: string;
   };
   datastore: boolean;
+}
+
+// check Node type and set if missing
+if (!nodeType.value) {
+  const nodeResp = (await useNuxtApp()
+    .$hubApi("/node-type", {
+      method: "GET",
+    })
+    .catch(() => null)) as NodeTypeResponse;
+  nodeType.value = nodeResp.type;
 }
 
 const {
@@ -516,7 +529,11 @@ const onCloseNavToast = () => {
               </span>
             </template>
           </Column>
-          <Column :sortable="true" field="datastore">
+          <Column
+            :hidden="nodeType === 'aggregator'"
+            :sortable="true"
+            field="datastore"
+          >
             <template #header>
               <span
                 v-tooltip.top="'Whether the analysis has access to data'"

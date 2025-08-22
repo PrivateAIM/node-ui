@@ -15,6 +15,7 @@ export default defineNuxtPlugin(() => {
   const toast = useToast();
 
   const config = useRuntimeConfig();
+  const idpProvider: string = config.public.idpProvider as string;
   const baseUrl = config.public.hubAdapterUrl as string;
 
   const hubApi = $fetch.create({
@@ -37,7 +38,7 @@ export default defineNuxtPlugin(() => {
       // Handle the response errors
       if (response.status === 401) {
         console.warn("User not signed in, returning to login");
-        await signIn("keycloak");
+        await signIn(idpProvider);
       }
       console.error(response);
       if (response.status === 500) {
