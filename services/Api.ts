@@ -998,6 +998,12 @@ export interface Node {
   updated_at: string;
 }
 
+/** NodeTypeResponse */
+export interface NodeTypeResponse {
+  /** Type */
+  type: "aggregator" | "default";
+}
+
 /** PodResponse */
 export interface PodResponse {
   /** Pods */
@@ -1573,6 +1579,7 @@ type CancelToken = Symbol | string | number;
 
 export enum ContentType {
   Json = "application/json",
+  JsonApi = "application/vnd.api+json",
   FormData = "multipart/form-data",
   UrlEncoded = "application/x-www-form-urlencoded",
   Text = "text/plain",
@@ -1636,6 +1643,10 @@ export class HttpClient<SecurityDataType = unknown> {
 
   private contentFormatters: Record<ContentType, (input: any) => any> = {
     [ContentType.Json]: (input: any) =>
+      input !== null && (typeof input === "object" || typeof input === "string")
+        ? JSON.stringify(input)
+        : input,
+    [ContentType.JsonApi]: (input: any) =>
       input !== null && (typeof input === "object" || typeof input === "string")
         ? JSON.stringify(input)
         : input,
@@ -2292,6 +2303,65 @@ export class Api<
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+  };
+  nodes = {
+    /**
+     * @description List all nodes.
+     *
+     * @tags Hub
+     * @name ListAllNodesNodesGet
+     * @summary List all of the nodes
+     * @request GET:/nodes
+     * @secure
+     */
+    listAllNodesNodesGet: (params: RequestParams = {}) =>
+      this.request<Node[], void>({
+        path: `/nodes`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description List a specific node.
+     *
+     * @tags Hub
+     * @name ListSpecificNodeNodesNodeIdGet
+     * @summary List a specific node
+     * @request GET:/nodes/{node_id}
+     * @secure
+     */
+    listSpecificNodeNodesNodeIdGet: (
+      nodeId: string,
+      params: RequestParams = {},
+    ) =>
+      this.request<Node, void | HTTPValidationError>({
+        path: `/nodes/${nodeId}`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+  };
+  nodeType = {
+    /**
+     * @description Return what type of node this API is deployed on.
+     *
+     * @tags Hub
+     * @name GetNodeTypeNodeTypeGet
+     * @summary Return what type of node this API is deployed on
+     * @request GET:/node-type
+     * @secure
+     */
+    getNodeTypeNodeTypeGet: (params: RequestParams = {}) =>
+      this.request<NodeTypeResponse, void>({
+        path: `/node-type`,
+        method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),
