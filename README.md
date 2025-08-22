@@ -19,7 +19,7 @@ NUXT_PUBLIC_ORIGIN="$NUXT_PUBLIC_BASE_URL/api/auth"  # Relative path to sign pag
 
 NUXT_IDP_CLIENT_ID=node-ui  # Client ID defined in the IDP provided in NUXT_PUBLIC_IDP_ISSUER
 NUXT_IDP_CLIENT_SECRET=xxx
-NUXT_PUBLIC_IDP_PROVIDER="authentik"  # Can be either 'keycloak' or 'authentik'
+NUXT_PUBLIC_IDP_PROVIDER="keycloak"  # Can be either 'keycloak' or 'authentik'
 NUXT_PUBLIC_IDP_ISSUER="http://my-keycloak.com/realms/flame"
 
 # If not using the same keycloak instance as the other FLAME Node services for user authentication, then this needs to be set
@@ -42,7 +42,7 @@ NUXT_AUTH_SECRET=xxx  # Unique key for encrypting JWT
 
 ## Setting a Secret
 
-In order to add additioanl security to the generated JWTs, a random string needs to be generated to hash tokens,
+In order to add additional security to the generated JWTs, a random string needs to be generated to hash tokens,
 sign/encrypt cookies, and to generate cryptographic keys. To quickly generate such a string, run the following command:
 
 ```bash

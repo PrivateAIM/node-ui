@@ -22,8 +22,10 @@ import {
 import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
 import { ApprovalStatus } from "~/types/node";
 import ContainerCounter from "~/components/analysis/ContainerCounter.vue";
+import { useNodeType } from "~/composables/useNodeType";
 
 const toast = useToast();
+const nodeType = await useNodeType();
 
 const analyses = ref<ModifiedAnalysisNode[]>([]);
 
@@ -516,7 +518,11 @@ const onCloseNavToast = () => {
               </span>
             </template>
           </Column>
-          <Column :sortable="true" field="datastore">
+          <Column
+            :hidden="nodeType === 'aggregator'"
+            :sortable="true"
+            field="datastore"
+          >
             <template #header>
               <span
                 v-tooltip.top="'Whether the analysis has access to data'"

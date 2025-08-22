@@ -8,6 +8,7 @@ import { useToast } from "primevue/usetoast";
 import { showMissingRegistryRobotCredentialsToast } from "~/composables/connectionErrorToast";
 import { useNuxtApp } from "#app";
 import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
+import { useNodeType } from "~/composables/useNodeType";
 
 type ToastSeverity = "success" | "info" | "warn" | "error" | undefined;
 type POResp = { status?: string | string[] | object; detail?: string } | null;
@@ -209,13 +210,33 @@ async function onStartAnalysis() {
   analysisProps.project_id = props.projectId!;
   analysisProps.node_id = props.nodeId!;
 
-  // Bind data to Analysis via Kong
-  const bindDataStoreResp = await registerAnalysis(); // either null or has kong response
+  // Get node type
+  const nodeType = await useNodeType();
+  let podReady: boolean = false;
 
-  // Start Pod via the Pod Orchestrator
-  if (bindDataStoreResp) {
-    // Only start the pod if a data store is ready for the analysis
-    analysisProps.kong_token = bindDataStoreResp.keyauth.key!;
+  // If default node, then need to bind to a data store
+  if (nodeType.value === "default") {
+    // Bind data to Analysis via Kong
+    const bindDataStoreResp = await registerAnalysis(); // either null or has kong response
+
+    if (bindDataStoreResp) {
+      // Only start the pod if a data store is ready for the analysis
+      analysisProps.kong_token = bindDataStoreResp.keyauth.key!;
+      podReady = true;
+    }
+  } else if (nodeType.value === "aggregator") {
+    analysisProps.kong_token = "none_needed";
+    podReady = true;
+  } else {
+    showToast(
+      "error",
+      "Node type could not be determined",
+      "The Hub Adapter was unable to determine what type of node this is, check the console logs for more info.",
+    );
+  }
+
+  // Start Pod via the Pod Orchestrator if pod is ready
+  if (podReady) {
     let startPodResp: POResp = (await useNuxtApp()
       .$hubApi("/po", {
         method: "POST",
