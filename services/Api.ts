@@ -434,6 +434,22 @@ export interface BodySubmitIntermediateResultToLocalLocalPut {
   file: File;
 }
 
+/** CleanupPodResponse */
+export interface CleanupPodResponse {
+  /** All */
+  all?: string | null;
+  /** Analyzes */
+  analyzes?: string | null;
+  /** Services */
+  services?: string | null;
+  /** Mb */
+  mb?: string | null;
+  /** Rs */
+  rs?: string | null;
+  /** Zombies */
+  zombies?: string | null;
+}
+
 /**
  * Consumer
  * The Consumer object represents a consumer - or a user - of a service. You can either rely on Kong as the primary datastore, or you can map the consumer list with your database to keep consistency between Kong and your existing primary datastore.
@@ -1936,6 +1952,27 @@ export class Api<
     ) =>
       this.request<StatusResponse, void | HTTPValidationError>({
         path: `/po/${analysisId}/delete`,
+        method: "DELETE",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Delete specific types of resources. Should be a comma separated combination of the following entries: 'all', 'analyzes', 'services', 'mb', 'rs'
+     *
+     * @tags PodOrc
+     * @name CleanupNodePoCleanupCleanupTypeDelete
+     * @summary Cleanup Node
+     * @request DELETE:/po/cleanup/{cleanup_type}
+     * @secure
+     */
+    cleanupNodePoCleanupCleanupTypeDelete: (
+      cleanupType: string | null,
+      params: RequestParams = {},
+    ) =>
+      this.request<CleanupPodResponse, void | HTTPValidationError>({
+        path: `/po/cleanup/${cleanupType}`,
         method: "DELETE",
         secure: true,
         format: "json",
