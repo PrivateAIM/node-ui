@@ -22,7 +22,7 @@ export default defineNuxtConfig({
         process.env.NUXT_PUBLIC_HUB_ADAPTER_URL || "http://localhost:5000",
       version: process.env.npm_package_version,
       idpIssuer: process.env.NUXT_PUBLIC_IDP_ISSUER,
-      idpProvider: process.env.NUXT_PUBLIC_IDP_PROVIDER || "",
+      idpProvider: process.env.NUXT_PUBLIC_IDP_PROVIDER || "keycloak",
       internalKeycloakUrl: process.env.NUXT_PUBLIC_INTERNAL_KEYCLOAK_URL || "",
     },
   },

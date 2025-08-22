@@ -19,7 +19,7 @@ function compileEndpoints() {
 }
 
 function buildProvider() {
-  const idpProvider = process.env.NUXT_PUBLIC_IDP_PROVIDER;
+  const idpProvider = process.env.NUXT_PUBLIC_IDP_PROVIDER ?? "keycloak";
   const clientId = process.env.NUXT_IDP_CLIENT_ID ?? "node-ui";
   const clientSecret = process.env.NUXT_IDP_CLIENT_SECRET;
   const clientIssuer =
