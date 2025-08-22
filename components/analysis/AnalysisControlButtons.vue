@@ -211,7 +211,7 @@ async function onStartAnalysis() {
   analysisProps.node_id = props.nodeId!;
 
   // Get node type
-  const nodeType = useNodeType();
+  const nodeType = await useNodeType();
   let podReady: boolean = false;
 
   // If default node, then need to bind to a data store
