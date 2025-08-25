@@ -2,6 +2,7 @@
 import Menu from "primevue/menu";
 import Button from "primevue/button";
 import { useRuntimeConfig } from "#app";
+import CleanupDialog from "~/components/header/CleanupDialog.vue";
 
 const { signIn, signOut, status, data } = useAuth();
 
@@ -22,6 +23,7 @@ if (internalKeycloakUrl) {
 }
 
 const isAuthenticated = ref(status.value === "authenticated");
+const showCleanupDialog = ref(false);
 
 const userActionLabel = isAuthenticated.value ? "Logout" : "Login";
 const userActionIcon = isAuthenticated.value
@@ -44,6 +46,14 @@ const menuItems = ref([
         icon: "pi pi-external-link",
         url: internalKeycloakAdminUrl,
         target: "_blank",
+      },
+      {
+        label: "Clean Up Resources",
+        icon: "pi pi-eject",
+        command: () => {
+          showCleanupDialog.value = true;
+        },
+        disabled: !isAuthenticated.value,
       },
     ],
   },
@@ -103,6 +113,7 @@ const toggle = (event) => {
       </template>
     </Menu>
   </div>
+  <CleanupDialog v-model:cleanUpVisible="showCleanupDialog" />
 </template>
 
 <style lang="scss" scoped>
