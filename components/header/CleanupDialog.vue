@@ -2,6 +2,7 @@
 import { type CleanupPodResponse } from "~/services/Api";
 import { useToast } from "primevue/usetoast";
 import { useNuxtApp } from "#app";
+import Dialog from "primevue/dialog";
 import Listbox from "primevue/listbox";
 import Message from "primevue/message";
 
@@ -81,8 +82,8 @@ async function cleanUpResource(endpoint: string) {
   if (poResp) {
     toast.add({
       severity: "info",
-      summary: "Cleanup request successfully submitted",
-      detail: "PO response: " + poResp[endpoint],
+      summary: "Cleanup Started",
+      detail: "Cleanup request successfully submitted",
       life: 5000,
     });
     if (poResp.zombies) {
@@ -135,12 +136,14 @@ async function cleanUpResource(endpoint: string) {
           :loading="loading"
           label="Submit"
           type="button"
+          class="cleanup-submit-btn"
           @click="cleanUpResource(selectedCleanUpOption.ep)"
         />
         <Button
           label="Cancel"
           severity="secondary"
           type="button"
+          class="cleanup-cancel-btn"
           @click="cleanupVisible = false"
         />
       </div>

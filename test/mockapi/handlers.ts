@@ -1,6 +1,9 @@
 // For spoofing requests not made using the useFetch
 import { http, HttpResponse } from "msw";
-import { type BodyCreateAnalysisPoPost } from "~/services/Api";
+import {
+  type BodyCreateAnalysisPoPost,
+  type CleanupPodResponse,
+} from "~/services/Api";
 import {
   fakeDataStoreInitSuccess,
   fakeParsedProjects,
@@ -132,6 +135,62 @@ export const handlers = [
     return HttpResponse.json({
       status: {},
     });
+  }),
+
+  // PO Cleanup Endpoints
+  http.delete(`/po/cleanup/all`, () => {
+    const cleanupResp: CleanupPodResponse = {
+      all: "Valid response",
+      analyzes: "",
+      mb: "",
+      rs: "",
+      services: "",
+      zombies: "",
+    };
+    return HttpResponse.json(cleanupResp);
+  }),
+
+  http.delete(`/po/cleanup/analyzes`, () => {
+    const cleanupResp: CleanupPodResponse = {
+      all: "",
+      analyzes: "Valid response",
+      mb: "",
+      rs: "",
+      services: "",
+      zombies: "",
+    };
+    return HttpResponse.json(cleanupResp);
+  }),
+
+  http.delete(`/po/cleanup/mb`, () => {
+    const cleanupResp: CleanupPodResponse = {
+      all: "",
+      analyzes: "",
+      mb: "Valid response",
+      rs: "",
+      services: "",
+      zombies: "",
+    };
+    return HttpResponse.json(cleanupResp);
+  }),
+
+  // Error test
+  http.delete(`/po/cleanup/rs`, () => {
+    return HttpResponse.json(null, {
+      status: 503,
+    });
+  }),
+
+  http.delete(`/po/cleanup/services`, () => {
+    const cleanupResp: CleanupPodResponse = {
+      all: "",
+      analyzes: "",
+      mb: "",
+      rs: "",
+      services: "Valid response",
+      zombies: "",
+    };
+    return HttpResponse.json(cleanupResp);
   }),
 
   // Kong
