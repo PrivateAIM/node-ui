@@ -61,8 +61,6 @@ const loading = ref(false);
 const handleCleanupShow = () => {
   selectedCleanUpOption.value = null;
   cleanupVisible.value = true;
-  // You can perform other actions here when dialog shows
-  console.log("Dialog is now visible!");
 };
 
 async function cleanUpResource(endpoint: string) {
@@ -84,9 +82,17 @@ async function cleanUpResource(endpoint: string) {
     toast.add({
       severity: "info",
       summary: "Cleanup request successfully submitted",
-      detail: poResp[endpoint],
+      detail: "PO response: " + poResp[endpoint],
       life: 5000,
     });
+    if (poResp.zombies) {
+      toast.add({
+        severity: "info",
+        summary: "Zombie Report",
+        detail: poResp.zombies,
+        life: 8000,
+      });
+    }
   }
   loading.value = false;
   cleanupVisible.value = false;
@@ -110,9 +116,9 @@ async function cleanUpResource(endpoint: string) {
         v-if="selectedCleanUpOption"
         class="cleanup-entry-warning block mb-5"
       >
-        <Message icon="pi pi-info-circle" severity="warn">{{
-          selectedCleanUpOption.message
-        }}</Message>
+        <Message icon="pi pi-info-circle" severity="warn"
+          >{{ selectedCleanUpOption.message }}
+        </Message>
       </div>
       <div class="flex align-items-center gap-3 mb-3">
         <Listbox
@@ -144,6 +150,6 @@ async function cleanUpResource(endpoint: string) {
 
 <style lang="scss" scoped>
 .cleanup-entry-warning {
-  padding: 0rem 0;
+  padding: 0 0;
 }
 </style>
