@@ -1,25 +1,28 @@
 diff --git a/core/lib/oauth/client.js b/core/lib/oauth/client.js
-index c2f0d40e6bbbdc2eaebddb4c19b8358c22837ef7..b8ccff9823792e50d587d7a689b805d624c4eeb9 100644
+index c2f0d40e6bbbdc2eaebddb4c19b8358c22837ef7..16177a9bf2204f04be14ed26b7abde83231373f5 100644
 --- a/core/lib/oauth/client.js
 +++ b/core/lib/oauth/client.js
-@@ -7,9 +7,19 @@ exports.openidClient = openidClient;
+@@ -7,9 +7,22 @@ exports.openidClient = openidClient;
  
  var _openidClient = require("openid-client");
  
-+var HttpsProxyAgent = require("https-proxy-agent");
++const { getProxyForUrl } = require("proxy-from-env");
++const HttpsProxyAgent = require("https-proxy-agent");
 +
  async function openidClient(options) {
    const provider = options.provider;
 -  if (provider.httpOptions) _openidClient.custom.setHttpOptionsDefaults(provider.httpOptions);
++  
 +  let httpOptions = {};
 +  if (provider.httpOptions) httpOptions = { ...provider.httpOptions };
-+  if (process.env.HTTP_PROXY) {
-+    console.log("Proxy is enabled: " + process.env.HTTP_PROXY)
-+    let agent = new HttpsProxyAgent(process.env.HTTP_PROXY);
-+    httpOptions.agent = agent;
++
++  const proxy = getProxyForUrl(provider.issuer ?? provider.wellKnown);
++  if (proxy) {
++    httpOptions.agent = new HttpsProxyAgent(proxy);
 +  }
++
 +  _openidClient.custom.setHttpOptionsDefaults(httpOptions);
-+ 
++
    let issuer;
  
    if (provider.wellKnown) {
