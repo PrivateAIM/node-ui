@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.2.17](https://github.com/PrivateAIM/node-ui/compare/v0.2.16...v0.2.17) (2025-08-25)
+
+
+### Features
+
+* **analysis:** disable data store requirement if node is aggregator ([3d6aa23](https://github.com/PrivateAIM/node-ui/commit/3d6aa23da78bb54f276f90792191fe6752c1d349))
+* **cleanup:** add dialog box to clean up resources ([227e587](https://github.com/PrivateAIM/node-ui/commit/227e5878235b383d288618e7b84682294d618ecb))
+
+
+### Bug Fixes
+
+* **idp:** add keycloak as default provider if none given in env vars ([fce63c9](https://github.com/PrivateAIM/node-ui/commit/fce63c947698e0de74ab28ad5759a69f5819f061))
+
+
+### Performance Improvements
+
+* **analysis:** make node type global instead of session-based ([428b62d](https://github.com/PrivateAIM/node-ui/commit/428b62d68487aad606ead6606f352ed8b73f8001))
+
 ## [0.2.16](https://github.com/PrivateAIM/node-ui/compare/v0.2.15...v0.2.16) (2025-08-15)
 
 
