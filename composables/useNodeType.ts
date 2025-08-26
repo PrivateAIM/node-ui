@@ -1,3 +1,5 @@
+import type { NodeTypeResponse } from "~/services/Api";
+
 const cachedNodeType: string | null = null;
 
 export async function useNodeType() {
