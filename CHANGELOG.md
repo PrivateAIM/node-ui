@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.18](https://github.com/PrivateAIM/node-ui/compare/v0.2.17...v0.2.18) (2025-08-26)
+
+
+### Bug Fixes
+
+* **proxy:** both proxy and no_proxy now respected ([057b9b2](https://github.com/PrivateAIM/node-ui/commit/057b9b2361f22a1df914cb87625c6f1526b8c586))
+
 ## [0.2.17](https://github.com/PrivateAIM/node-ui/compare/v0.2.16...v0.2.17) (2025-08-25)
 
 
