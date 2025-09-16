@@ -273,6 +273,7 @@ async function onSubmitCreateDataStoreAndProject() {
               </InputGroupAddon>
               <InputNumber
                 v-model="port"
+                :useGrouping="false"
                 :invalid="port < 0 || port > 65535"
                 placeholder="Port e.g. 443"
               />
