@@ -102,40 +102,29 @@ async function onSubmitCreateDataStoreAndProject() {
   };
 
   loading.value = true;
-  const errMsg = { summary: "", msg: "" };
   const creationResp = await useNuxtApp()
     .$hubApi("/kong/initialize", {
       method: "POST",
       body: configSettings,
     })
-    .catch((error) => {
-      if (error.status === 409) {
-        errMsg.summary = "Duplicate entry error";
-        errMsg.msg = "A data store for this project already exists!";
-      } else {
-        console.log(error);
-        errMsg.summary = "Creation failure";
-        errMsg.msg =
-          "An error occurred while trying to register the data store or project";
-      }
+    .catch(() => {
+      toast.add({
+        severity: "error",
+        summary: "Registration failure",
+        detail: "An error occurred while trying to register the data store",
+        life: 5000,
+      });
+      connMsg.value = "Invalid connection!";
     }); // Set the response to null if an error occurs
 
   if (creationResp) {
     toast.add({
       severity: "info",
-      summary: "Creation success",
+      summary: "Registration success",
       detail: "The data store and project were successfully registered",
       life: 5000,
     });
     connMsg.value = "Connection validated!";
-  } else {
-    toast.add({
-      severity: "error",
-      summary: errMsg.summary,
-      detail: errMsg.msg,
-      life: 5000,
-    });
-    connMsg.value = "Invalid connection!";
   }
 
   loading.value = false;
