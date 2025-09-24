@@ -1,4 +1,5 @@
 import type { NodeTypeResponse } from "~/services/Api";
+import { useNuxtApp, useState } from "#app";
 
 const cachedNodeType: string | null = null;
 
@@ -11,7 +12,9 @@ export async function useNodeType() {
         method: "GET",
       })
       .catch(() => null)) as NodeTypeResponse;
-    nodeType.value = nodeResp.type;
+    if (nodeResp) {
+      nodeType.value = nodeResp.type;
+    }
   }
 
   return nodeType;

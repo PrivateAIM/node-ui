@@ -10,6 +10,44 @@
  * ---------------------------------------------------------------
  */
 
+/**
+ * ProtocolCode
+ * Protocol codes.
+ */
+export enum ProtocolCode {
+  Http = "http",
+  Grpc = "grpc",
+  Grpcs = "grpcs",
+  Tls = "tls",
+  Tcp = "tcp",
+}
+
+/**
+ * HttpMethodCode
+ * HTTP method codes.
+ */
+export enum HttpMethodCode {
+  GET = "GET",
+  POST = "POST",
+  PUT = "PUT",
+  PATCH = "PATCH",
+  DELETE = "DELETE",
+  OPTIONS = "OPTIONS",
+  HEAD = "HEAD",
+  CONNECT = "CONNECT",
+  TRACE = "TRACE",
+  CUSTOM = "CUSTOM",
+}
+
+/**
+ * DataStoreType
+ * Data store types.
+ */
+export enum DataStoreType {
+  S3 = "s3",
+  Fhir = "fhir",
+}
+
 /** AnalysisStatus */
 export enum AnalysisStatus {
   Started = "started",
@@ -205,8 +243,6 @@ export interface AnalysisNode {
     | null;
   /** Comment */
   comment: string | null;
-  /** Index */
-  index: number;
   /** Artifact Tag */
   artifact_tag: string | null;
   /** Artifact Digest */
@@ -291,26 +327,11 @@ export interface BodyCreateAndConnectAnalysisToProjectKongAnalysisPost {
   analysis_id: string;
 }
 
-/** Body_create_data_store_kong_datastore_post */
-export interface BodyCreateDataStoreKongDatastorePost {
-  /**
-   * Data store metadata.
-   * Required information for creating a new data store.
-   */
-  datastore: ServiceRequest;
-  /**
-   * Ds Type
-   * Data store type. Either 's3' or 'fhir'
-   */
-  ds_type: string;
-}
-
 /** Body_create_datastore_and_project_with_link_kong_initialize_post */
 export interface BodyCreateDatastoreAndProjectWithLinkKongInitializePost {
   /**
    * Project Id
    * UUID of the project
-   * @format uuid
    */
   project_id: string;
   /**
@@ -318,18 +339,15 @@ export interface BodyCreateDatastoreAndProjectWithLinkKongInitializePost {
    * List of acceptable HTTP methods
    * @default ["GET"]
    */
-  methods?: string[];
+  methods?: HttpMethodCode[];
   /**
    * Protocols
    * List of acceptable transfer protocols. A combo of 'http', 'grpc', 'grpcs', 'tls', 'tcp'
    * @default ["http"]
    */
-  protocols?: string[];
-  /**
-   * Ds Type
-   * Data store type. Either 's3' or 'fhir'
-   */
-  ds_type: string;
+  protocols?: ProtocolCode[];
+  /** Data store type. Either 's3' or 'fhir' */
+  ds_type: DataStoreType;
   /**
    * Data store metadata.
    * Required information for creating a new data store.
@@ -337,8 +355,8 @@ export interface BodyCreateDatastoreAndProjectWithLinkKongInitializePost {
   datastore: ServiceRequest;
 }
 
-/** Body_create_project_and_connect_to_datastore_kong_project_post */
-export interface BodyCreateProjectAndConnectToDatastoreKongProjectPost {
+/** Body_create_route_to_datastore_kong_project_post */
+export interface BodyCreateRouteToDatastoreKongProjectPost {
   /**
    * Data Store Id
    * UUID of the data store or 'service'
@@ -354,19 +372,29 @@ export interface BodyCreateProjectAndConnectToDatastoreKongProjectPost {
    * List of acceptable HTTP methods
    * @default ["GET"]
    */
-  methods?: string[];
+  methods?: HttpMethodCode[];
   /**
    * Protocols
    * List of acceptable transfer protocols. A combo of 'http', 'grpc', 'grpcs', 'tls', 'tcp'
    * @default ["http"]
    */
-  protocols?: string[];
+  protocols?: ProtocolCode[];
   /**
-   * Ds Type
    * Data store type. Either 's3' or 'fhir'
    * @default "fhir"
    */
-  ds_type?: string;
+  ds_type?: DataStoreType;
+}
+
+/** Body_create_service_kong_datastore_post */
+export interface BodyCreateServiceKongDatastorePost {
+  /**
+   * Data store metadata.
+   * Required information for creating a new data store.
+   */
+  datastore: ServiceRequest;
+  /** Data store type. Either 's3' or 'fhir' */
+  ds_type: DataStoreType;
 }
 
 /** Body_get_analysis_image_url_analysis_image_post */
@@ -2565,13 +2593,13 @@ export class Api<
      * @description Create a datastore (referred to as services by kong) by providing necessary metadata.
      *
      * @tags Kong
-     * @name CreateDataStoreKongDatastorePost
-     * @summary Create Data Store
+     * @name CreateServiceKongDatastorePost
+     * @summary Create Service
      * @request POST:/kong/datastore
      * @secure
      */
-    createDataStoreKongDatastorePost: (
-      data: BodyCreateDataStoreKongDatastorePost,
+    createServiceKongDatastorePost: (
+      data: BodyCreateServiceKongDatastorePost,
       params: RequestParams = {},
     ) =>
       this.request<Service, void | HTTPValidationError>({
@@ -2639,12 +2667,12 @@ export class Api<
      * @description List all projects (referred to as routes by kong) available, can be filtered by project_id. Set "detailed" to True to include detailed information on the linked data stores.
      *
      * @tags Kong
-     * @name GetProjectsKongProjectGet
-     * @summary Get Projects
+     * @name ListProjectsKongProjectGet
+     * @summary List Projects
      * @request GET:/kong/project
      * @secure
      */
-    getProjectsKongProjectGet: (
+    listProjectsKongProjectGet: (
       query?: {
         /**
          * Project Id
@@ -2670,16 +2698,16 @@ export class Api<
       }),
 
     /**
-     * @description Connect a project (referred to as a route by kong) to an existing data store.
+     * @description Connect a project to a data store (referred to as a route by kong).
      *
      * @tags Kong
-     * @name CreateProjectAndConnectToDatastoreKongProjectPost
-     * @summary Create Project And Connect To Datastore
+     * @name CreateRouteToDatastoreKongProjectPost
+     * @summary Create Route To Datastore
      * @request POST:/kong/project
      * @secure
      */
-    createProjectAndConnectToDatastoreKongProjectPost: (
-      data: BodyCreateProjectAndConnectToDatastoreKongProjectPost,
+    createRouteToDatastoreKongProjectPost: (
+      data: BodyCreateRouteToDatastoreKongProjectPost,
       params: RequestParams = {},
     ) =>
       this.request<LinkDataStoreProject, void | HTTPValidationError>({
@@ -2693,7 +2721,7 @@ export class Api<
       }),
 
     /**
-     * @description Creates a new datastore (service) and a new project (route), then links them together.
+     * @description Creates a new datastore (service) and a new project (route), then links them together with a health consumer.
      *
      * @tags Kong
      * @name CreateDatastoreAndProjectWithLinkKongInitializePost
@@ -2716,21 +2744,20 @@ export class Api<
       }),
 
     /**
-     * No description
+     * @description Disconnect a project (route) from all data stores (services) and delete associated analyses (consumers).
      *
      * @tags Kong
-     * @name DeleteProjectKongProjectProjectIdDelete
-     * @summary Delete Project
-     * @request DELETE:/kong/project/{project_id}
+     * @name DeleteRouteKongProjectProjectRouteIdDelete
+     * @summary Delete Route
+     * @request DELETE:/kong/project/{project_route_id}
      * @secure
      */
-    deleteProjectKongProjectProjectIdDelete: (
+    deleteRouteKongProjectProjectRouteIdDelete: (
       projectRouteId: string,
-      projectId: string,
       params: RequestParams = {},
     ) =>
       this.request<DeleteProject, void | HTTPValidationError>({
-        path: `/kong/project/${projectId}`,
+        path: `/kong/project/${projectRouteId}`,
         method: "DELETE",
         secure: true,
         format: "json",
@@ -2789,6 +2816,28 @@ export class Api<
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Test whether Kong can read the requested data source. Because we use the key-auth plugin, a consumer is required for pinging the data service.
+     *
+     * @tags Kong
+     * @name TestConnectionKongProjectProjectIdDsTypeHealthGet
+     * @summary Test Connection
+     * @request GET:/kong/project/{project_id}/{ds_type}/health
+     * @secure
+     */
+    testConnectionKongProjectProjectIdDsTypeHealthGet: (
+      projectId: string,
+      dsType: DataStoreType,
+      params: RequestParams = {},
+    ) =>
+      this.request<any, void | HTTPValidationError>({
+        path: `/kong/project/${projectId}/${dsType}/health`,
+        method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),

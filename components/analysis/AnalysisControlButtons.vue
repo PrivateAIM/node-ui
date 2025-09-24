@@ -267,7 +267,11 @@ async function onStartAnalysis() {
     if (startPodResp && "status" in startPodResp) {
       const currentRunStatus = startPodResp.status as string;
       setButtonStates(currentRunStatus);
-      showToast("info", "Start success", "Successfully started the container");
+      showToast(
+        "success",
+        "Start success",
+        "Successfully started the container",
+      );
     }
   }
 

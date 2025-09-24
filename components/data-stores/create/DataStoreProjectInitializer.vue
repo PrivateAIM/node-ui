@@ -23,6 +23,12 @@ export interface kongBody {
 
 const loading = ref(false);
 const helpActive = ref();
+
+const connMsg = ref("");
+const connMsgColor = computed(() =>
+  connMsg.value === "Invalid connection!" ? "#ff2e2e" : "#008800",
+);
+
 const toast = useToast();
 
 // Project settings
@@ -96,37 +102,29 @@ async function onSubmitCreateDataStoreAndProject() {
   };
 
   loading.value = true;
-  const errMsg = { summary: "", msg: "" };
   const creationResp = await useNuxtApp()
     .$hubApi("/kong/initialize", {
       method: "POST",
       body: configSettings,
     })
-    .catch((error) => {
-      if (error.status === 409) {
-        errMsg.summary = "Duplicate entry error";
-        errMsg.msg = "A data store for this project already exists!";
-      } else {
-        errMsg.summary = "Creation failure";
-        errMsg.msg =
-          "An error occurred while trying to register the data store or project";
-      }
+    .catch(() => {
+      toast.add({
+        severity: "error",
+        summary: "Registration failure",
+        detail: "An error occurred while trying to register the data store",
+        life: 5000,
+      });
+      connMsg.value = "Invalid connection!";
     }); // Set the response to null if an error occurs
 
   if (creationResp) {
     toast.add({
-      severity: "info",
-      summary: "Creation success",
+      severity: "success",
+      summary: "Registration success",
       detail: "The data store and project were successfully registered",
       life: 5000,
     });
-  } else {
-    toast.add({
-      severity: "error",
-      summary: errMsg.summary,
-      detail: errMsg.msg,
-      life: 5000,
-    });
+    connMsg.value = "Connection validated!";
   }
 
   loading.value = false;
@@ -273,6 +271,7 @@ async function onSubmitCreateDataStoreAndProject() {
               </InputGroupAddon>
               <InputNumber
                 v-model="port"
+                :useGrouping="false"
                 :invalid="port < 0 || port > 65535"
                 placeholder="Port e.g. 443"
               />
@@ -302,16 +301,22 @@ async function onSubmitCreateDataStoreAndProject() {
                 class="w-full md:w-56 communication-protocol-picker"
               />
             </InputGroup>
-            <Button
-              :loading="loading"
-              class="create-data-store-btn"
-              icon="pi pi-check"
-              iconPos="right"
-              label="Submit"
-              severity="info"
-              style="margin-top: 20px"
-              @click="onSubmitCreateDataStoreAndProject"
-            />
+            <div class="data-store-submission-container">
+              <Button
+                :loading="loading"
+                class="create-data-store-btn"
+                icon="pi pi-check"
+                iconPos="right"
+                label="Submit"
+                severity="info"
+                @click="onSubmitCreateDataStoreAndProject"
+              />
+              <div v-if="connMsg" class="data-store-connection-test-text">
+                <p>
+                  {{ connMsg }}
+                </p>
+              </div>
+            </div>
           </div>
           <div v-if="helpActive" class="data-store-help-box">
             <DataStoreHelpBox
@@ -371,5 +376,19 @@ async function onSubmitCreateDataStoreAndProject() {
   text-decoration-style: dotted;
   text-underline-offset: 3px;
   cursor: help;
+}
+
+.data-store-submission-container {
+  display: flex;
+  align-items: center;
+  margin-top: 1em;
+}
+
+.data-store-connection-test-text {
+  font-weight: bold;
+  margin-left: 1.2em;
+  color: v-bind(connMsgColor);
+  margin-block-start: 0;
+  margin-block-end: 0;
 }
 </style>

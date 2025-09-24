@@ -5,6 +5,12 @@ import {
   showHubSpecificErrorMessage,
   showInvalidRobotCredentialsToast,
   showKongConnectionErrorToast,
+  showKongConnectionTestErrorToast,
+  showKongDuplicateErrorToast,
+  showKongFhirErrorToast,
+  showKongGatewayErrorToast,
+  showKongMissingHealthConsumerErrorToast,
+  showKongS3BucketErrorToast,
   showWrongRobotIdToast,
 } from "~/composables/connectionErrorToast";
 import type { SessionData } from "h3";
@@ -36,34 +42,56 @@ export default defineNuxtPlugin(() => {
     },
     async onResponseError({ request, response }) {
       // Handle the response errors
+      const errMsg = response._data.detail?.message ?? "no message provided";
+      const errSvc = response._data.detail?.service ?? null;
       if (response.status === 401) {
         console.warn("User not signed in, returning to login");
         await signIn(idpProvider);
       }
       console.error(response);
-      if (response.status === 500) {
-        if (typeof request === "string" && request.includes("kong")) {
-          showKongConnectionErrorToast(toast);
-        } else {
-          let brokenSvc = null;
-          if (response._data.detail.service) {
-            brokenSvc = response._data.detail.service;
+      // Kong connection test errors
+      if (typeof request === "string" && request.includes("kong")) {
+        switch (response.status) {
+          case 403:
+            showKongS3BucketErrorToast(toast, errMsg);
+            break;
+
+          case 404:
+            showKongMissingHealthConsumerErrorToast(toast, errMsg);
+            break;
+
+          case 409:
+            showKongDuplicateErrorToast(toast);
+            break;
+
+          case 502:
+            showKongGatewayErrorToast(toast, errMsg);
+            break;
+
+          case 503:
+            if (errMsg && (errSvc == "FHIR" || errSvc == "S3")) {
+              showKongFhirErrorToast(toast, errMsg);
+            } else {
+              showKongConnectionErrorToast(toast);
+            }
+            break;
+
+          default: {
+            showKongConnectionTestErrorToast(toast, errMsg);
+            break;
           }
-          showHubAdapterConnectionErrorToast(toast, brokenSvc);
         }
+      }
+      if (response.status === 500) {
+        showHubAdapterConnectionErrorToast(toast, errSvc);
       } else if (response.status === 503) {
-        let downstreamService: string;
-        if (response._data.detail.service) {
-          downstreamService = response._data.detail.service;
-        } else {
-          downstreamService = "needed";
-        }
+        const downstreamService = errSvc ?? "needed";
         showDownstreamConnectionErrorToast(toast, downstreamService);
       } else if (response.status === 400) {
         if (response._data.detail.code === "invalid_credentials") {
           showInvalidRobotCredentialsToast(toast);
-        } else if (response._data.detail.message) {
-          showHubSpecificErrorMessage(toast, response._data.detail.message);
+        } else if (errMsg) {
+          showHubSpecificErrorMessage(toast, errMsg);
         } else {
           showWrongRobotIdToast(toast);
         }
