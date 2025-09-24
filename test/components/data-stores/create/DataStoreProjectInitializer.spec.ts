@@ -195,7 +195,7 @@ describe("DataStoreProjectInitializer.vue", () => {
     await checkDataStoreInit(
       fakeParsedProjects[0],
       true,
-      "info",
+      "success",
       "Registration success",
       "The data store and project were successfully registered",
     );

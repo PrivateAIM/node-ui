@@ -19,6 +19,16 @@ export const fakeMissingAnalysisId = "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483";
 export const fakeBrokenAnalysisId = "ab1fbc92-3dc8-4bdd-9d51-3b571c2d7aaa";
 
 export const handlers = [
+  // Node-type
+  http.get("/node-type", () => {
+    return HttpResponse.json({
+      status: 200,
+      data: {
+        type: "default",
+      },
+    });
+  }),
+
   // Project approval/rejection
   http.post("/project-nodes/*", ({ request }) => {
     const url = new URL(request.url);

@@ -1,4 +1,5 @@
 import type { NodeTypeResponse } from "~/services/Api";
+import { useNuxtApp, useState } from "#app";
 
 const cachedNodeType: string | null = null;
 

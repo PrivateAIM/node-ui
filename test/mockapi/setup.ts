@@ -1,5 +1,5 @@
-import { vi, afterAll, afterEach, beforeAll } from "vitest";
-import { ref, computed, onMounted, watch } from "vue";
+import { afterAll, afterEach, beforeAll, vi } from "vitest";
+import { computed, onMounted, ref, watch } from "vue";
 import { config } from "@vue/test-utils";
 import { setupServer } from "msw/node";
 import { handlers } from "~/test/mockapi/handlers";
@@ -75,6 +75,9 @@ vi.mock("#app", () => ({
   useNuxtApp: () => ({
     $hubApi: fakeHubApi,
   }),
+  useState: vi.fn(() => ({
+    value: "default",
+  })),
   useFetch: vi.fn(),
   useRuntimeConfig: () => ({
     public: {

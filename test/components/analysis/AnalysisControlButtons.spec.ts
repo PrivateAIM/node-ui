@@ -83,7 +83,7 @@ describe("AnalysisControlButtons.vue", () => {
   it("Start analysis button - working", async () => {
     const wrapper = await basicButtonCheck(
       ".start-analysis-btn",
-      "info",
+      "success",
       "Start success",
       "Successfully started the container",
       fakeAnalysisId,
@@ -101,7 +101,7 @@ describe("AnalysisControlButtons.vue", () => {
     expect(wrapper.find(".rerun-analysis-btn").exists()).toBeTruthy();
   });
 
-  it("Start analysis button - PO broken", async () => {
+  it("Start analysis button - PO brokenq", async () => {
     await basicButtonCheck(
       ".start-analysis-btn",
       "error",

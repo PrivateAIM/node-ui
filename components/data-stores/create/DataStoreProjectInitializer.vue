@@ -119,7 +119,7 @@ async function onSubmitCreateDataStoreAndProject() {
 
   if (creationResp) {
     toast.add({
-      severity: "info",
+      severity: "success",
       summary: "Registration success",
       detail: "The data store and project were successfully registered",
       life: 5000,
