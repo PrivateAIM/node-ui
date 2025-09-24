@@ -3,7 +3,7 @@ import { getProjectNodes } from "~/composables/useAPIFetch";
 import type { ProjectNode } from "~/services/Api";
 import DataStoreProjectInitializer from "~/components/data-stores/create/DataStoreProjectInitializer.vue";
 
-interface availableProject {
+export interface availableProject {
   name: string | null | undefined;
   id: string;
   dropdown: string;

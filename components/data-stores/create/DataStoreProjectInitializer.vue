@@ -311,9 +311,11 @@ async function onSubmitCreateDataStoreAndProject() {
                 severity="info"
                 @click="onSubmitCreateDataStoreAndProject"
               />
-              <p v-if="connMsg" class="data-store-connection-test-text">
-                {{ connMsg }}
-              </p>
+              <div v-if="connMsg" class="data-store-connection-test-text">
+                <p>
+                  {{ connMsg }}
+                </p>
+              </div>
             </div>
           </div>
           <div v-if="helpActive" class="data-store-help-box">
