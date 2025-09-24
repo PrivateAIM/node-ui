@@ -9,6 +9,7 @@ import { extractUuid } from "~/utils/extract-uuid-from-kong-username";
 import { parseUnixTimestamp } from "~/utils/format-data-row";
 import { getDataStoreTypeSeverity } from "~/utils/status-tag-severity";
 import type { ModifiedDetailedService } from "~/services/modifiedApiInterfaces";
+import { useNuxtApp } from "#app";
 
 interface DetailedDataStoreTableRow {
   name?: string | null;
@@ -31,6 +32,7 @@ const props = defineProps({
 const confirm = useConfirm();
 const toast = useToast();
 const deleteLoading = ref(false);
+const checkingConnection = ref(false);
 
 const emit = defineEmits(["deleteDataStore"]);
 
@@ -103,6 +105,7 @@ const confirmDelete = (event, dsName: string) => {
       "Are you sure you want to delete this data store? This will disconnect all projects and analyses from accessing this data.",
     icon: "pi pi-exclamation-circle",
     acceptIcon: "pi pi-check",
+    position: "top",
     acceptLabel: "Confirm",
     rejectIcon: "pi pi-times",
     rejectLabel: "Cancel",
@@ -112,6 +115,33 @@ const confirmDelete = (event, dsName: string) => {
     reject: () => {},
   });
 };
+
+async function onCheckConnection(dsName: string) {
+  checkingConnection.value = true;
+  const [dsType, projectId] = extractUuid(dsName);
+
+  const connStatus = await useNuxtApp()
+    .$hubApi(`/kong/project/${projectId}/${dsType}/health`, {
+      method: "GET",
+    })
+    .catch(() => {
+      toast.add({
+        severity: "error",
+        summary: "Connection test failed",
+        detail: "Unable to contact the downstream data store",
+        life: 5000,
+      });
+    });
+  if (connStatus) {
+    toast.add({
+      severity: "success",
+      summary: "Connection test success",
+      detail: "The downstream data store responded successfully.",
+      life: 3000,
+    });
+  }
+  checkingConnection.value = false;
+}
 
 // Table filters
 const defaultFilters = {
@@ -236,9 +266,34 @@ const updateFilters = (filterText: string) => {
           </p>
         </template>
       </Column>
-      <Column :exportable="false" field="name" header="Delete?">
+      <Column :exportable="false" field="name">
+        <template #header>
+          <span
+            v-tooltip.top="'Test the connection to the data store'"
+            class="help-text"
+          >
+            <b>Test</b>
+          </span>
+        </template>
         <template #body="slotProps">
-          <Toast />
+          <div>
+            <Button
+              :loading="checkingConnection"
+              aria-label="test-connection"
+              icon="pi pi-wifi"
+              severity="contrast"
+              @click="onCheckConnection(slotProps.data.name)"
+            />
+          </div>
+        </template>
+      </Column>
+      <Column :exportable="false" field="name">
+        <template #header>
+          <span v-tooltip.top="'Delete the data store'" class="help-text">
+            <b>Delete?</b>
+          </span>
+        </template>
+        <template #body="slotProps">
           <ConfirmPopup group="dataStoreDelete" style="width: 20em">
             <template #message="slotProps">
               <div
