@@ -1,7 +1,6 @@
 import type {
-  Analysis,
   AnalysisNode,
-  BodyCreateProjectAndConnectToDatastoreKongProjectPost,
+  BodyCreateRouteToDatastoreKongProjectPost,
   DeleteProject,
   DetailedAnalysis,
   LinkDataStoreProject,
@@ -93,7 +92,7 @@ export function deleteDataStore(dataStoreName: string, opts?) {
 }
 
 export function createProject(
-  routeProps: BodyCreateProjectAndConnectToDatastoreKongProjectPost,
+  routeProps: BodyCreateRouteToDatastoreKongProjectPost,
   opts?,
 ) {
   return useAPIFetch<{ data: LinkDataStoreProject }>(`/kong/project`, {
