@@ -1,14 +1,8 @@
 <script lang="ts" setup>
-import {
-  type BodyCreateAnalysisPoPost,
-  type LinkProjectAnalysis,
-} from "~/services/Api";
 import AnalysisUpdateButton from "./AnalysisUpdateButton.vue";
 import { useToast } from "primevue/usetoast";
-import { showMissingRegistryRobotCredentialsToast } from "~/composables/connectionErrorToast";
 import { useNuxtApp } from "#app";
 import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
-import { useNodeType } from "~/composables/useNodeType";
 
 type ToastSeverity = "success" | "info" | "warn" | "error" | undefined;
 type POResp = { status?: string | string[] | object; detail?: string } | null;
@@ -18,10 +12,6 @@ interface ButtonStates {
   rerunActive: boolean;
   stopActive: boolean;
   deleteActive: boolean;
-}
-
-interface ApiError extends Error {
-  status?: number;
 }
 
 const props = defineProps({
@@ -41,9 +31,8 @@ const toast = useToast();
 const loading = ref(false);
 
 // API Constants
-const MAX_RETRY_ATTEMPTS = 10;
-const CONFLICT_STATUS = 409;
 const NOT_FOUND_STATUS = 404;
+const CONFLICT_STATUS = 409;
 
 const playButtonActiveStates = [null, ""];
 const rerunButtonActiveStates: Array<string | null> = [
@@ -103,81 +92,6 @@ const showToast = (severity: ToastSeverity, summary: string, msg: string) => {
   });
 };
 
-async function registerAnalysis(
-  attempt: number = 0,
-  maxAttempts: number = MAX_RETRY_ATTEMPTS,
-): Promise<LinkProjectAnalysis | null> {
-  try {
-    // @ts-expect-error Nuxt error
-    return (await useNuxtApp().$hubApi("/kong/analysis", {
-      method: "POST",
-      body: {
-        project_id: props.projectId!,
-        analysis_id: props.analysisId!,
-      },
-    })) as LinkProjectAnalysis;
-  } catch (error) {
-    return await handleRegistrationError(
-      error as ApiError,
-      attempt,
-      maxAttempts,
-    );
-  }
-}
-
-async function handleRegistrationError(
-  error: ApiError,
-  attempt: number,
-  maxAttempts: number,
-): Promise<LinkProjectAnalysis | null> {
-  if (error.status === CONFLICT_STATUS) {
-    // Catch 409 and let proceed
-    return await handleConflictError(attempt, maxAttempts);
-  } else {
-    // If not 409, show error and quit the process
-    if (error.status === NOT_FOUND_STATUS) {
-      emit("missingDataStore");
-    } else {
-      showToast(
-        "error",
-        "Data mapping failed",
-        "Unable to map a data store to this analysis due to a technical error.",
-      );
-    }
-    loading.value = false;
-    setButtonStates(null);
-  }
-  return null;
-}
-
-async function handleConflictError(
-  attempt: number,
-  maxAttempts: number,
-): Promise<LinkProjectAnalysis | null> {
-  console.warn(
-    "A data store is already mapped to this analysis and will be removed",
-  );
-  const podRunning = await checkPodStatus(); // Check to see if the analysis pod already exists
-  if (!podRunning) {
-    await useNuxtApp()
-      .$hubApi(`/kong/analysis/${props.analysisId}`, {
-        method: "DELETE",
-      })
-      .catch(() => {
-        showToast(
-          "error",
-          "Disconnect failure",
-          "Unable to delete the consumer",
-        );
-      });
-    attempt++;
-    if (attempt < maxAttempts) {
-      return await registerAnalysis(attempt);
-    }
-  }
-  return null;
-}
-
 async function checkPodStatus(): Promise<boolean> {
   const podStatus: POResp = (await useNuxtApp()
     .$hubApi(`/po/${props.analysisId}/status`, {
@@ -205,74 +119,40 @@ async function checkPodStatus(): Promise<boolean> {
 async function onStartAnalysis() {
   loading.value = true;
   setButtonStates(AnalysisNodeRunStatus.Starting);
-  const analysisProps = {} as BodyCreateAnalysisPoPost;
-  analysisProps.analysis_id = props.analysisId!;
-  analysisProps.project_id = props.projectId!;
-  analysisProps.node_id = props.nodeId!;
+  let analysisProps = new FormData();
 
-  // Get node type
-  const nodeType = await useNodeType();
-  let podReady: boolean = false;
+  analysisProps.append("analysis_id", props.analysisId!);
+  analysisProps.append("project_id", props.projectId!);
 
-  // If default node, then need to bind to a data store
-  if (nodeType.value === "default") {
-    // Bind data to Analysis via Kong
-    const bindDataStoreResp = await registerAnalysis(); // either null or has kong response
+  let startPodResp: POResp = (await useNuxtApp()
+    .$hubApi("/analysis/initialize", {
+      method: "POST",
+      body: analysisProps,
+    })
+    .catch((e) => {
+      setButtonStates(null);
+      if (e.status == 408) {
+        // Timed out waiting for image to pull
+        setButtonStates(AnalysisNodeRunStatus.Started);
+        showToast(
+          "info",
+          "Analysis submitted",
+          "The PodOrc did not respond in time, but the request was sent to start the analysis. " +
+            "The timeout was likely due to a large image being pulled.",
+        );
+      } else if (e.status === NOT_FOUND_STATUS) {
+        emit("missingDataStore");
+      } else if (e.status === CONFLICT_STATUS) {
+        checkPodStatus(); // Check to see if the analysis pod already exists, if so, buttons are updated by method
+      } else {
+        showToast("error", "Start failure", "Failed to start the analysis");
+      }
+    })) as POResp;
 
-    if (bindDataStoreResp) {
-      // Only start the pod if a data store is ready for the analysis
-      analysisProps.kong_token = bindDataStoreResp.keyauth.key!;
-      podReady = true;
-    }
-  } else if (nodeType.value === "aggregator") {
-    analysisProps.kong_token = "none_needed";
-    podReady = true;
-  } else {
-    showToast(
-      "error",
-      "Node type could not be determined",
-      "The Hub Adapter was unable to determine what type of node this is, check the console logs for more info.",
-    );
-  }
-
-  // Start Pod via the Pod Orchestrator if pod is ready
-  if (podReady) {
-    let startPodResp: POResp = (await useNuxtApp()
-      .$hubApi("/po", {
-        method: "POST",
-        body: analysisProps,
-      })
-      .catch((e) => {
-        if (e.status_code == 408) {
-          // Timed out waiting for image to pull
-          setButtonStates(AnalysisNodeRunStatus.Started);
-          showToast(
-            "info",
-            "Analysis submitted",
-            "The PodOrc did not respond in time, but the request was sent to start the analysis. " +
-              "The timeout was likely due to a large image being pulled.",
-          );
-        } else {
-          setButtonStates(null);
-          e.status_code == 404
-            ? showMissingRegistryRobotCredentialsToast(toast)
-            : showToast(
-                "error",
-                "Start failure",
-                "Failed to start the analysis",
-              );
-        }
-      })) as POResp;
-
-    if (startPodResp && "status" in startPodResp) {
-      const currentRunStatus = startPodResp.status as string;
-      setButtonStates(currentRunStatus);
-      showToast(
-        "success",
-        "Start success",
-        "Successfully started the container",
-      );
-    }
+  if (startPodResp && "status" in startPodResp) {
+    const currentRunStatus = startPodResp.status as string;
+    setButtonStates(currentRunStatus);
+    showToast("success", "Start success", "Successfully started the container");
   }
 
   loading.value = false;
