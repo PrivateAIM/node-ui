@@ -197,7 +197,7 @@ describe("DataStoreProjectInitializer.vue", () => {
       true,
       "success",
       "Registration success",
-      "The data store and project were successfully registered",
+      "The data store and project were successfully registered, returning to the analyses page...",
     );
   });
 

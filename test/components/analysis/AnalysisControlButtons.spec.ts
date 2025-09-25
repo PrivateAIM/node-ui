@@ -39,6 +39,7 @@ describe("AnalysisControlButtons.vue", () => {
     expectError: boolean = false,
     expectedButtonStates: ButtonStates,
     initialRunStatus: string = AnalysisNodeRunStatus.Running,
+    expectedToastCalls: number = 1,
   ) {
     const wrapper = mount(AnalysisControlButtons, {
       props: {
@@ -66,13 +67,15 @@ describe("AnalysisControlButtons.vue", () => {
       expect(toggle.attributes("data-p-disabled")).toBe("true");
     }
 
-    expect(spy).toHaveBeenCalledTimes(1);
-    expect(spy).toHaveBeenCalledWith({
-      severity: toastSeverity,
-      summary: toastSummary,
-      detail: toastMsg,
-      life: 5000,
-    });
+    if (expectedToastCalls > 0) {
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith({
+        severity: toastSeverity,
+        summary: toastSummary,
+        detail: toastMsg,
+        life: 5000,
+      });
+    }
 
     // @ts-expect-error Linted can't interpret valid refVars
     expect(wrapper.vm.buttonStatuses).toEqual(expectedButtonStates);
@@ -101,7 +104,7 @@ describe("AnalysisControlButtons.vue", () => {
     expect(wrapper.find(".rerun-analysis-btn").exists()).toBeTruthy();
   });
 
-  it("Start analysis button - PO brokenq", async () => {
+  it("Start analysis button - PO broken", async () => {
     await basicButtonCheck(
       ".start-analysis-btn",
       "error",
@@ -117,6 +120,26 @@ describe("AnalysisControlButtons.vue", () => {
       },
       "",
     );
+  });
+
+  it("Start analysis button - Missing data store", async () => {
+    const wrapper = await basicButtonCheck(
+      ".start-analysis-btn",
+      "error",
+      "Start failure",
+      "Failed to start the analysis",
+      fakeMissingAnalysisId,
+      true,
+      {
+        playActive: true,
+        rerunActive: false,
+        stopActive: false,
+        deleteActive: false,
+      },
+      "",
+      0,
+    );
+    expect(wrapper.emitted().missingDataStore).toBeTruthy();
   });
 
   it("Stop analysis button - working", async () => {

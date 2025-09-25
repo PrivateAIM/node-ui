@@ -29,6 +29,21 @@ export const handlers = [
     });
   }),
 
+  http.post("/analysis/initialize", async ({ request }) => {
+    const formData = await request.formData();
+    const analysisId = formData.get("analysis_id");
+
+    if (analysisId === fakeAnalysisId) {
+      return HttpResponse.json({
+        status: "started",
+      });
+    } else if (analysisId === fakeBrokenAnalysisId) {
+      return new HttpResponse(null, { status: 500 });
+    } else if (analysisId === fakeMissingAnalysisId) {
+      return new HttpResponse(null, { status: 404 });
+    }
+  }),
+
   // Project approval/rejection
   http.post("/project-nodes/*", ({ request }) => {
     const url = new URL(request.url);
