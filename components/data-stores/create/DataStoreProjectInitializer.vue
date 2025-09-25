@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, watch } from "vue";
-import { useNuxtApp } from "#app";
+import { navigateTo, useNuxtApp } from "#app";
 import InputText from "primevue/inputtext";
 import Select from "primevue/select";
 import InputNumber from "primevue/inputnumber";
@@ -117,17 +117,20 @@ async function onSubmitCreateDataStoreAndProject() {
       connMsg.value = "Invalid connection!";
     }); // Set the response to null if an error occurs
 
+  loading.value = false;
+
   if (creationResp) {
     toast.add({
       severity: "success",
       summary: "Registration success",
-      detail: "The data store and project were successfully registered",
+      detail:
+        "The data store and project were successfully registered, returning to the analyses page...",
       life: 5000,
     });
     connMsg.value = "Connection validated!";
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+    navigateTo("/analyses");
   }
-
-  loading.value = false;
 }
 </script>
 
