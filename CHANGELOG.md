@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.2.19](https://github.com/PrivateAIM/node-ui/compare/v0.2.18...v0.2.19) (2025-09-25)
+
+
+### Features
+
+* **ds:** add connection test results to data store initialization page ([b6486f2](https://github.com/PrivateAIM/node-ui/commit/b6486f2c6df0e90b5246ff9c332a9f788b78eea3))
+* **ds:** add manual connection test button to data store table ([2409066](https://github.com/PrivateAIM/node-ui/commit/2409066cc3b4a863c78456f08949bb974a316205))
+* **ds:** add redirect to analysis page on successful data store registration ([eed4502](https://github.com/PrivateAIM/node-ui/commit/eed4502b392408b51db338bf122f21c5463a0076))
+
+
+### Bug Fixes
+
+* **ds:** remove comma from port number ([4401606](https://github.com/PrivateAIM/node-ui/commit/4401606d685d4ef8cfd96f46bec706acbee8d5a8))
+* **plugin:** add check for node type request ([b66217f](https://github.com/PrivateAIM/node-ui/commit/b66217fcc125a9a109387ff6401b38cf7b3bea10))
+
 ## [0.2.18](https://github.com/PrivateAIM/node-ui/compare/v0.2.17...v0.2.18) (2025-08-26)
 
 
