@@ -18,6 +18,7 @@ import { useToast } from "primevue/usetoast";
 
 export default defineNuxtPlugin(() => {
   const { signIn, data } = useAuth();
+  const { shouldRefreshToken, refreshToken } = useAuthRefresh();
   const toast = useToast();
 
   const config = useRuntimeConfig();
@@ -26,15 +27,21 @@ export default defineNuxtPlugin(() => {
 
   const hubApi = $fetch.create({
     baseURL: baseUrl,
-    onRequest({ options }) {
+    async onRequest({ options }) {
+      const sessionData = (data as SessionData).value!;
+
+      if (shouldRefreshToken(120)) {
+        const refreshStatus = await refreshToken();
+        if (!refreshStatus.success) {
+          await signIn(idpProvider); // Force sign in again if auto refresh fails
+        }
+      }
+
       // Annoying workaround to avoid typescript from complaining - cast to Headers then set explicitly
       const headers = options.headers
         ? new Headers(options.headers)
         : new Headers();
-      headers.set(
-        "Authorization",
-        `Bearer ${(data as SessionData).value!.accessToken}`,
-      );
+      headers.set("Authorization", `Bearer ${sessionData.accessToken}`);
       options.headers = headers;
     },
     onRequestError({ error }) {
@@ -44,10 +51,10 @@ export default defineNuxtPlugin(() => {
       // Handle the response errors
       const errMsg = response._data.detail?.message ?? "no message provided";
       const errSvc = response._data.detail?.service ?? null;
-      if (response.status === 401) {
-        console.warn("User not signed in, returning to login");
-        await signIn(idpProvider);
-      }
+      // if (response.status === 401) {
+      //   console.warn("User not signed in, returning to login");
+      //   await signIn(idpProvider);
+      // }
       console.error(response);
       // Kong connection test errors
       if (typeof request === "string" && request.includes("kong")) {
