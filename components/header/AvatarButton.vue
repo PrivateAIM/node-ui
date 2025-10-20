@@ -9,18 +9,8 @@ const { signIn, signOut, status, data } = useAuth();
 const menu = ref();
 
 const config = useRuntimeConfig();
-let internalKeycloakAdminUrl: string;
 const baseUrl = new URL(config.public.baseUrl).origin;
 const idpProvider = config.public.idpProvider;
-const internalKeycloakUrl = config.public.internalKeycloakUrl
-  ? new URL(config.public.internalKeycloakUrl)
-  : "";
-
-if (internalKeycloakUrl) {
-  internalKeycloakAdminUrl = `${internalKeycloakUrl}/admin`;
-} else {
-  internalKeycloakAdminUrl = `${baseUrl}/keycloak/admin`;
-}
 
 const isAuthenticated = ref(status.value === "authenticated");
 const showCleanupDialog = ref(false);
@@ -44,7 +34,7 @@ const menuItems = ref([
       {
         label: "Node Keycloak Admin",
         icon: "pi pi-external-link",
-        url: internalKeycloakAdminUrl,
+        url: `${baseUrl}/keycloak/admin`,
         target: "_blank",
       },
       {

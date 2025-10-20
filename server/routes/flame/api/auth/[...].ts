@@ -7,23 +7,34 @@ import ZitadelProvider from "next-auth/providers/zitadel";
 import { NuxtAuthHandler } from "#auth";
 
 function compileEndpoints() {
-  if (process.env.NUXT_K8S_KEYCLOAK_ENDPOINT) {
-    return {
-      jwks_endpoint: `${process.env.NUXT_K8S_KEYCLOAK_ENDPOINT}/protocol/openid-connect/certs`,
-      wellKnown: undefined,
-      authorization: `${process.env.NUXT_PUBLIC_IDP_PROVIDER}/protocol/openid-connect/auth`,
-      token: `${process.env.NUXT_K8S_KEYCLOAK_ENDPOINT}/protocol/openid-connect/token`,
-      userinfo: `${process.env.NUXT_K8S_KEYCLOAK_ENDPOINT}/protocol/openid-connect/userinfo`,
-    };
-  }
-}
-
-function buildProvider() {
-  const idpProvider = process.env.NUXT_PUBLIC_IDP_PROVIDER ?? "keycloak";
   const clientId = process.env.NUXT_IDP_CLIENT_ID ?? "node-ui";
   const clientSecret = process.env.NUXT_IDP_CLIENT_SECRET;
   const clientIssuer =
     process.env.NUXT_PUBLIC_IDP_ISSUER ?? "http://localhost:8080/realms/flame";
+  const internalEndpoint =
+    process.env.NUXT_PUBLIC_INTERNAL_KEYCLOAK_URL ?? clientIssuer;
+
+  return {
+    clientId: clientId,
+    clientSecret: clientSecret,
+    issuer: clientIssuer,
+    wellKnown: undefined, // Overrides issuer
+    jwks_endpoint: `${internalEndpoint}/protocol/openid-connect/certs`,
+    authorization: {
+      url: `${clientIssuer}/protocol/openid-connect/auth`,
+    },
+    token: {
+      url: `${internalEndpoint}/protocol/openid-connect/token`,
+    },
+    userinfo: {
+      url: `${internalEndpoint}/protocol/openid-connect/userinfo`,
+    },
+  };
+}
+
+function buildProvider() {
+  const idpProvider = process.env.NUXT_PUBLIC_IDP_PROVIDER ?? "keycloak";
+  const endPoints = compileEndpoints();
 
   const providers = [];
 
@@ -33,9 +44,6 @@ function buildProvider() {
         // Use .default here for it to work during SSR.
         // @ts-expect-error default is an option
         KeycloakProvider.default({
-          clientId: clientId,
-          clientSecret: clientSecret,
-          issuer: clientIssuer,
           ...endPoints,
         });
       providers.push(keycloakProvider);
@@ -46,9 +54,7 @@ function buildProvider() {
       const authentikProvider =
         // @ts-expect-error default is an option
         AuthentikProvider.default({
-          clientId: clientId,
-          clientSecret: clientSecret,
-          issuer: clientIssuer,
+          ...endPoints,
         });
       providers.push(authentikProvider);
       break;
@@ -58,9 +64,7 @@ function buildProvider() {
       const auth0Provider =
         // @ts-expect-error default is an option
         Auth0.default({
-          clientId: clientId,
-          clientSecret: clientSecret,
-          issuer: clientIssuer,
+          ...endPoints,
         });
       providers.push(auth0Provider);
       break;
@@ -70,9 +74,7 @@ function buildProvider() {
       const oneLoginProvider =
         // @ts-expect-error default is an option
         OneLoginProvider.default({
-          clientId: clientId,
-          clientSecret: clientSecret,
-          issuer: clientIssuer,
+          ...endPoints,
         });
       providers.push(oneLoginProvider);
       break;
@@ -82,9 +84,7 @@ function buildProvider() {
       const oktaProvider =
         // @ts-expect-error default is an option
         OktaProvider.default({
-          clientId: clientId,
-          clientSecret: clientSecret,
-          issuer: clientIssuer,
+          ...endPoints,
         });
       providers.push(oktaProvider);
       break;
@@ -94,9 +94,7 @@ function buildProvider() {
       const zitadelProvider =
         // @ts-expect-error default is an option
         ZitadelProvider.default({
-          clientId: clientId,
-          clientSecret: clientSecret,
-          issuer: clientIssuer,
+          ...endPoints,
         });
       providers.push(zitadelProvider);
       break;
@@ -105,8 +103,6 @@ function buildProvider() {
 
   return providers;
 }
-
-const endPoints = compileEndpoints();
 
 export default NuxtAuthHandler({
   // A secret string you define, to ensure correct encryption
