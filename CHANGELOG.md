@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.20](https://github.com/PrivateAIM/node-ui/compare/v0.2.19...v0.2.20) (2025-10-21)
+
+
+### Bug Fixes
+
+* **auth:** enable localhost authentication in k8s ([76f5565](https://github.com/PrivateAIM/node-ui/commit/76f55654de39be407e080051a770261b321999e5))
+
 ## [0.2.19](https://github.com/PrivateAIM/node-ui/compare/v0.2.18...v0.2.19) (2025-09-25)
 
 
