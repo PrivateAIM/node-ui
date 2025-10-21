@@ -3,9 +3,10 @@ import ToggleSwitch from "primevue/toggleswitch";
 
 const props = defineProps({
   disabled: Boolean,
+  startEnabled: Boolean,
 });
 
-const periodicRefresh = ref(false);
+const periodicRefresh = ref(props.startEnabled);
 const tooltip = props.disabled
   ? "Refresh disabled since there is no current active run"
   : "Refresh logs every 5 seconds";

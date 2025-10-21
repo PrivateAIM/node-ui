@@ -62,7 +62,7 @@ const { pause, resume, isActive } = useIntervalFn(
     refreshLogs();
   },
   5000,
-  { immediate: false },
+  { immediate: currentLogs.value.length > 0 },
 );
 
 async function refreshLogs() {
@@ -94,6 +94,7 @@ if (prevLogResp) {
         <span>{{ analysisId }}</span>
         <RefreshSwitch
           :disabled="!currentLogs.length"
+          :startEnabled="currentLogs.length > 0"
           @change="onRefreshToggle"
         />
       </div>
