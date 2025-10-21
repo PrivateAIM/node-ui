@@ -361,6 +361,11 @@ const onCloseNavToast = () => {
                 <b>Name</b>
               </span>
             </template>
+            <template #body="{ data }">
+              <span v-tooltip.right="data.analysis_id" class="help-text">
+                {{ data.analysis.name }}
+              </span>
+            </template>
           </Column>
           <Column
             :showAddButton="false"
@@ -403,20 +408,6 @@ const onCloseNavToast = () => {
               </Select>
             </template>
           </Column>
-          <!--          <Column-->
-          <!--            field="id"-->
-          <!--            header="Set Approval"-->
-          <!--            style="min-width: 10em"-->
-          <!--            :exportable="false"-->
-          <!--          >-->
-          <!--            <template #body="slotProps">-->
-          <!--              <ApproveRejectButtons-->
-          <!--                :objectId="slotProps.data.id"-->
-          <!--                :objectClass="'analysis'"-->
-          <!--                @updatedRow="updateTable"-->
-          <!--              />-->
-          <!--            </template>-->
-          <!--          </Column>-->
           <Column
             :showAddButton="false"
             :showApplyButton="false"
@@ -511,10 +502,15 @@ const onCloseNavToast = () => {
           <Column :sortable="true" field="project_name">
             <template #header>
               <span
-                v-tooltip.top="'Date the analysis image was created'"
+                v-tooltip.top="'Name of the associated project'"
                 class="help-text"
               >
                 <b>Project</b>
+              </span>
+            </template>
+            <template #body="{ data }">
+              <span v-tooltip.top="data.analysis.project_id" class="help-text">
+                {{ data.project_name }}
               </span>
             </template>
           </Column>
@@ -618,6 +614,16 @@ const onCloseNavToast = () => {
   display: inline-flex;
   justify-content: center;
   border: 1px solid #eab308;
+}
+
+.p-tooltip {
+  max-width: none !important;
+  white-space: nowrap !important;
+}
+
+.p-tooltip-text {
+  width: auto !important;
+  display: inline-block;
 }
 
 .nav-btn {
