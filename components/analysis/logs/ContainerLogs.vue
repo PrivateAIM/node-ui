@@ -8,11 +8,7 @@ import RefreshSwitch from "~/components/analysis/logs/RefreshSwitch.vue";
 import AnalysisLogCardContent from "~/components/analysis/logs/AnalysisLogCardContent.vue";
 import { useNuxtApp } from "#app";
 import { useToast } from "primevue/usetoast";
-
-interface logResponse {
-  analysis: Map<string, string>;
-  nginx: Map<string, string>;
-}
+import type { LogResponse } from "~/services/Api";
 
 interface logEntry {
   podId: string;
@@ -33,16 +29,17 @@ const {
   error,
 } = await getAnalysisLogs(analysisId);
 
-function parseLogs(logResp: logResponse | null): logEntry[] {
-  const analysisPods = logResp?.analysis as Map<string, string>;
+function parseLogs(logResp: LogResponse | null): logEntry[] {
+  const analysisLogs = logResp?.analysis;
+  const nginxLogs = logResp?.nginx;
   let compiledLogs: logEntry[] = [];
-  if (analysisPods) {
-    const analysisPodIds = Object.keys(analysisPods);
+  if (analysisLogs) {
+    const analysisPodIds = Object.keys(analysisLogs);
     analysisPodIds.forEach((analysisPodId: string) => {
       const newLogEntry: logEntry = {
         podId: analysisPodId,
-        analysis: logResp?.analysis[analysisPodId][0],
-        nginx: logResp?.nginx[`nginx-${analysisPodId}`][0],
+        analysis: analysisLogs[analysisPodId][0] ?? undefined,
+        nginx: nginxLogs![analysisPodId][0] ?? undefined,
       };
       compiledLogs.push(newLogEntry);
     });
@@ -52,7 +49,7 @@ function parseLogs(logResp: logResponse | null): logEntry[] {
 
 function gatherCurrentLogs() {
   if (status.value === "success") {
-    currentLogs.value = parseLogs(response.value as logResponse);
+    currentLogs.value = parseLogs(response.value as LogResponse);
   } else if (error.value?.statusCode === 500) {
     showHubAdapterConnectionErrorToast(toast, "PO");
   }
@@ -78,11 +75,11 @@ function onRefreshToggle() {
 }
 
 // Previous logs
-const prevLogResp: logResponse = (await useNuxtApp()
-  .$hubApi(`/po/${analysisId}/history`, {
+const prevLogResp: LogResponse = (await useNuxtApp()
+  .$hubApi(`/po/history/${analysisId}`, {
     method: "GET",
   })
-  .catch(() => null)) as logResponse;
+  .catch(() => null)) as LogResponse;
 
 if (prevLogResp) {
   prevLogs.value = parseLogs(prevLogResp);

@@ -3,9 +3,9 @@ import AnalysisUpdateButton from "./AnalysisUpdateButton.vue";
 import { useToast } from "primevue/usetoast";
 import { useNuxtApp } from "#app";
 import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
+import type { StatusResponse } from "~/services/Api";
 
 type ToastSeverity = "success" | "info" | "warn" | "error" | undefined;
-type POResp = { status?: string | string[] | object; detail?: string } | null;
 
 interface ButtonStates {
   playActive: boolean;
@@ -21,9 +21,18 @@ const props = defineProps({
     required: true,
   },
   analysisNodeId: String,
-  analysisId: String,
-  projectId: String,
-  nodeId: String,
+  analysisId: {
+    type: String,
+    required: true,
+  },
+  projectId: {
+    type: String,
+    required: true,
+  },
+  nodeId: {
+    type: String,
+    required: true,
+  },
 });
 
 const emit = defineEmits(["newRunStatus", "missingDataStore"]);
@@ -92,16 +101,24 @@ const showToast = (severity: ToastSeverity, summary: string, msg: string) => {
   });
 };
 
+const showStatusUnknownToast = () => {
+  showToast(
+    "warn",
+    "Status unknown",
+    "Pod was not found, but the stop command was still issued",
+  );
+};
+
 async function checkPodStatus(): Promise<boolean> {
-  const podStatus: POResp = (await useNuxtApp()
-    .$hubApi(`/po/${props.analysisId}/status`, {
+  const podStatus: StatusResponse = (await useNuxtApp()
+    .$hubApi(`/po/status/${props.analysisId}`, {
       method: "GET",
     })
-    .catch(() => null)) as POResp; // Set the response to null if an error occurs
+    .catch(() => null)) as StatusResponse; // Set the response to null if an error occurs
 
   // If response is not null AND "status" in response AND "status" is not empty
-  if (podStatus && podStatus.status && Object.values(podStatus.status).length) {
-    const currentPodStatus = Object.values(podStatus.status)[0];
+  if (podStatus && props.analysisId in podStatus) {
+    const currentPodStatus = podStatus[props.analysisId];
     // If the status is not empty and not FINISHED
     if (currentPodStatus != AnalysisNodeRunStatus.Finished) {
       showToast(
@@ -124,7 +141,7 @@ async function onStartAnalysis() {
   analysisProps.append("analysis_id", props.analysisId!);
   analysisProps.append("project_id", props.projectId!);
 
-  let startPodResp: POResp = (await useNuxtApp()
+  let startPodResp: StatusResponse = (await useNuxtApp()
     .$hubApi("/analysis/initialize", {
       method: "POST",
       body: analysisProps,
@@ -147,10 +164,10 @@ async function onStartAnalysis() {
       } else {
         showToast("error", "Start failure", "Failed to start the analysis");
       }
-    })) as POResp;
+    })) as StatusResponse;
 
-  if (startPodResp && "status" in startPodResp) {
-    const currentRunStatus = startPodResp.status as string;
+  if (startPodResp && props.analysisId in startPodResp) {
+    const currentRunStatus = startPodResp[props.analysisId];
     setButtonStates(currentRunStatus);
     showToast("success", "Start success", "Successfully started the container");
   }
@@ -163,29 +180,28 @@ async function onStopAnalysis() {
   const originalRunStatus = props.analysisRunStatus;
   setButtonStates(AnalysisNodeRunStatus.Stopping);
 
-  const stopResp: POResp = (await useNuxtApp()
-    .$hubApi(`/po/${props.analysisId}/stop`, {
+  const stopResp: StatusResponse = (await useNuxtApp()
+    .$hubApi(`/po/stop/${props.analysisId}`, {
       method: "PUT",
     })
-    .catch(() => null)) as POResp;
-  if (stopResp && "status" in stopResp) {
-    // If req successful, then "status" returned
-    const podStatuses = stopResp.status as object;
-    if (Object.keys(podStatuses).length) {
-      showToast("info", "Stop success", "Successfully stopped the container");
-    } else {
-      // No pod statuses returned from PO
+    .catch(() => {
       showToast(
         "warn",
-        "Status unknown",
-        "Pod was not found, but the stop command was still issued",
+        "Stop failure",
+        "Failed to stop the analysis container",
       );
+      setButtonStates(originalRunStatus);
+    })) as StatusResponse;
+
+  // stopResp is null if error occurred
+  if (stopResp) {
+    if (props.analysisId in stopResp) {
+      showToast("info", "Stop success", "Successfully stopped the container");
+      setButtonStates(stopResp[props.analysisId]);
+    } else {
+      // No pod statuses returned from PO for analysis
+      showStatusUnknownToast();
     }
-    setButtonStates(AnalysisNodeRunStatus.Stopped);
-  } else {
-    // Communication error with PO
-    setButtonStates(originalRunStatus);
-    showToast("error", "Stop failure", "Failed to stop the analysis container");
   }
   loading.value = false;
 }
@@ -195,44 +211,29 @@ async function onDeleteAnalysis() {
   const originalRunStatus = props.analysisRunStatus;
   setButtonStates(AnalysisNodeRunStatus.Stopping);
 
-  await useNuxtApp()
-    .$hubApi(`/kong/analysis/${props.analysisId}`, {
+  const deleteResp: StatusResponse = (await useNuxtApp()
+    .$hubApi(`/analysis/terminate/${props.analysisId}`, {
       method: "DELETE",
     })
     .catch(() => {
       showToast(
         "warn",
-        "Disconnect failure",
-        "Unable to disconnect the data store from the analysis",
+        "Terminate request failure",
+        "Failed to terminate the analysis",
       );
-    });
+      setButtonStates(originalRunStatus);
+    })) as StatusResponse;
 
-  const deleteResp: POResp = (await useNuxtApp()
-    .$hubApi(`/po/${props.analysisId}/delete`, {
-      method: "DELETE",
-    })
-    .catch(() => null)) as POResp;
-
-  if (deleteResp && "status" in deleteResp) {
-    const deletedPods = deleteResp.status as object;
-    setButtonStates("");
-    if (Object.keys(deletedPods).length) {
+  // deleteResp is null if error occurred
+  if (deleteResp) {
+    if (props.analysisId in deleteResp) {
       showToast("info", "Delete success", "Successfully removed the container");
     } else {
-      showToast(
-        "warn",
-        "Status unknown",
-        "Pod was not found, but the delete command was still issued",
-      );
+      showStatusUnknownToast();
     }
-  } else {
-    setButtonStates(originalRunStatus);
-    showToast(
-      "error",
-      "Delete failure",
-      "Failed to delete the analysis container",
-    );
+    setButtonStates("");
   }
+
   loading.value = false;
 }
 
