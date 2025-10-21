@@ -44,10 +44,11 @@ async function onClickUpdate() {
     toast.add({
       severity: "warn",
       summary: "No analysis pod found",
-      detail: "There are no running pods for this analysis on this node.",
-      life: 5000,
+      detail:
+        "There are no running pods for this analysis on this node, " +
+        "the run status shown is the last reported update to the hub.",
+      life: 8000,
     });
-    emit("updatedRunStatus", null);
   }
 
   loading.value = false;

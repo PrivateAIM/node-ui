@@ -16,13 +16,16 @@ import {
 import {
   type AnalysisNode,
   type ListRoutes,
+  PodStatus,
   type Project,
   type Route,
+  type StatusResponse,
 } from "~/services/Api";
 import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
 import { ApprovalStatus } from "~/types/node";
 import ContainerCounter from "~/components/analysis/ContainerCounter.vue";
 import { useNodeType } from "~/composables/useNodeType";
+import type { ModifiedAnalysisNode } from "~/services/modifiedApiInterfaces";
 
 const toast = useToast();
 const nodeType = await useNodeType();
@@ -46,14 +49,6 @@ const kongRoutes = ref<Set<string>>(new Set());
 const runStatuses = Object.values(AnalysisNodeRunStatus);
 const approvalStatuses = Object.values(ApprovalStatus);
 const buildStatuses = Object.values(AnalysisBuildStatus);
-
-export interface ModifiedAnalysisNode extends AnalysisNode {
-  project_name: string | undefined;
-  expand: {
-    [key: string]: string;
-  };
-  datastore: boolean;
-}
 
 const {
   data: analysisNodeResp,
@@ -101,7 +96,28 @@ if (projStatus.value === "success" && projData.value) {
   });
 }
 
-function parseData(respStatus: string, respData: AnalysisNode[] | null) {
+async function updateRunStatusUsingPo() {
+  const podStatuses = (await useNuxtApp()
+    .$hubApi("/po/status", {
+      method: "GET",
+    })
+    .catch(() => {
+      toast.add({
+        severity: "warn",
+        summary: "Missing PO Status Update",
+        detail:
+          "Unable to retrieve pod statuses from the PO, relying on information from the Hub",
+        life: 3000,
+      });
+    })) as StatusResponse;
+  if (podStatuses) {
+    for (const [analysisId, podStatus] of Object.entries(podStatuses)) {
+      updateRunStatus(analysisId, podStatus);
+    }
+  }
+}
+
+async function parseData(respStatus: string, respData: AnalysisNode[] | null) {
   const parsedAnalyses: ModifiedAnalysisNode[] = [];
   if (respStatus === "success") {
     const formattedAnalyses = formatDataRow(
@@ -121,17 +137,18 @@ function parseData(respStatus: string, respData: AnalysisNode[] | null) {
         parsedAnalyses.push(analysisEntry);
       });
       analyses.value = parsedAnalyses;
+      await updateRunStatusUsingPo();
     }
   } else if (error.value?.statusCode === 500) {
     showHubAdapterConnectionErrorToast(toast, "Hub");
   }
 }
 
-parseData(status.value, analysisNodeResp.value);
+await parseData(status.value, analysisNodeResp.value);
 
 async function onTableRefresh() {
   await refresh();
-  parseData(status.value, analysisNodeResp.value);
+  await parseData(status.value, analysisNodeResp.value);
 }
 
 function onPage(event) {
@@ -168,7 +185,7 @@ async function getNextPage() {
       allResultsRetrieved = true;
     }
     currentOffset += queryLimit; // Increment offset value
-    parseData("success", nextSetResults);
+    await parseData("success", nextSetResults);
   } else {
     // No results returned means all were retrieved
     allResultsRetrieved = true;
@@ -199,16 +216,13 @@ const updateFilters = (filterText: string) => {
   filters.value.global.value = filterText;
 };
 
-function updateRunStatus(
-  analysisNodeId: string,
-  newStatus: AnalysisNode["run_status"],
-) {
-  for (let row of analyses.value as AnalysisNode[]) {
-    if (row.id === analysisNodeId) {
-      row.run_status = newStatus;
-      break;
+function updateRunStatus(analysisId: string, newStatus: PodStatus) {
+  analyses.value = analyses.value.map((row) => {
+    if (row.analysis_id === analysisId) {
+      return { ...row, run_status: newStatus };
     }
-  }
+    return row;
+  });
 }
 
 function updateRunStatusFilter(filterText: string) {

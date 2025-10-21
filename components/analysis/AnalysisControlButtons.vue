@@ -74,7 +74,7 @@ function getButtonStatuses(
   updateTable: boolean = true,
 ) {
   if (updateTable) {
-    emit("newRunStatus", props.analysisNodeId, podStatus);
+    emit("newRunStatus", props.analysisId, podStatus);
   }
 
   return {
