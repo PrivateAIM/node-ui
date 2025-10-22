@@ -144,7 +144,10 @@ async function parseData(respStatus: string, respData: AnalysisNode[] | null) {
   }
 }
 
-await parseData(status.value, analysisNodeResp.value);
+onMounted(() => {
+  parseData(status.value, analysisNodeResp.value);
+  setInterval(updateRunStatusUsingPo, 5000); // Poll PO every 5 seconds
+});
 
 async function onTableRefresh() {
   await refresh();
