@@ -4,13 +4,13 @@ export const showHubAdapterConnectionErrorToast = (
   toast: ToastServiceMethods,
   svc: string | null,
 ) => {
-  let msg = "Unable to contact the API";
+  let msg = "The API encountered an error";
   if (svc) {
-    msg = `Unable to contact the ${svc}, please check its logs`;
+    msg = `An error occurred when contacting the ${svc}, please check its logs`;
   }
   toast.add({
     severity: "error",
-    summary: "Connection error",
+    summary: "Service error",
     detail: msg,
     life: 3000,
   });
