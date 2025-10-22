@@ -1,13 +1,14 @@
 import { defineComponent } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
-import { vi, describe, test, expect, beforeAll, beforeEach } from "vitest";
+import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import ContainerLogs from "~/components/analysis/logs/ContainerLogs.vue";
 import { fakeLogs } from "~/test/components/analysis/constants";
 import { getAnalysisLogs } from "~/composables/useAPIFetch";
+import { fakeAnalysisId } from "~/test/mockapi/handlers";
 
 vi.mock("vue-router", () => ({
   useRoute: () => ({
-    params: { id: "85629f5b-da04-4f7c-84fc-097b2db93de5" },
+    params: { id: fakeAnalysisId },
   }),
 }));
 
@@ -34,10 +35,10 @@ describe("ContainerLogs.vue", () => {
   test("Parse returned analysis logs", async () => {
     const mockedResp = {
       analysis: {
-        "analysis-85629f5b-da04-4f7c-84fc-097b2db93de50000": [fakeLogs],
+        [fakeAnalysisId]: [fakeLogs],
       },
       nginx: {
-        "nginx-analysis-85629f5b-da04-4f7c-84fc-097b2db93de50000": [fakeLogs],
+        [fakeAnalysisId]: [fakeLogs],
       },
     };
     vi.mocked(getAnalysisLogs).mockResolvedValue({
@@ -77,7 +78,7 @@ describe("ContainerLogs.vue", () => {
     await flushPromises();
 
     expect(LogTestComponent).toBeTruthy();
-    expect(wrapper.text()).toContain("85629f5b-da04-4f7c-84fc-097b2db93de5");
+    expect(wrapper.text()).toContain(fakeAnalysisId);
     expect(wrapper.text()).toContain("No logs found...");
     expect(wrapper.find("#refreshBtn").attributes("data-p-disabled")).toBe(
       "true",

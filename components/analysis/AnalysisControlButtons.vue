@@ -197,11 +197,11 @@ async function onStopAnalysis() {
   if (stopResp) {
     if (props.analysisId in stopResp) {
       showToast("info", "Stop success", "Successfully stopped the container");
-      setButtonStates(stopResp[props.analysisId]);
     } else {
       // No pod statuses returned from PO for analysis
       showStatusUnknownToast();
     }
+    setButtonStates(AnalysisNodeRunStatus.Stopped);
   }
   loading.value = false;
 }

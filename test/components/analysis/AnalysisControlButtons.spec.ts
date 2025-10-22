@@ -179,7 +179,7 @@ describe("AnalysisControlButtons.vue", () => {
   it("Stop analysis button - PO broken", async () => {
     await basicButtonCheck(
       ".stop-analysis-btn",
-      "error",
+      "warn",
       "Stop failure",
       "Failed to stop the analysis container",
       fakeBrokenAnalysisId,
@@ -215,7 +215,7 @@ describe("AnalysisControlButtons.vue", () => {
       ".delete-analysis-btn",
       "warn",
       "Status unknown",
-      "Pod was not found, but the delete command was still issued",
+      "Pod was not found, but the stop command was still issued",
       fakeMissingAnalysisId,
       false,
       {
@@ -230,9 +230,9 @@ describe("AnalysisControlButtons.vue", () => {
   it("Delete analysis button - PO broken", async () => {
     await basicButtonCheck(
       ".delete-analysis-btn",
-      "error",
-      "Delete failure",
-      "Failed to delete the analysis container",
+      "warn",
+      "Terminate request failure",
+      "Failed to terminate the analysis",
       fakeBrokenAnalysisId,
       true,
       {
