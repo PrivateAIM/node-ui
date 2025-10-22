@@ -219,7 +219,7 @@ const updateFilters = (filterText: string) => {
   filters.value.global.value = filterText;
 };
 
-function updateRunStatus(analysisId: string, newStatus: PodStatus) {
+function updateRunStatus(analysisId: string, newStatus: PodStatus | null) {
   analyses.value = analyses.value.map((row) => {
     if (row.analysis_id === analysisId) {
       return { ...row, run_status: newStatus };
