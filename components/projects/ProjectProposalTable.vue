@@ -111,10 +111,15 @@ const updateFilters = (filterText: string) => {
         >
           <template #empty> No projects found.</template>
           <Column v-if="expandRowEntries.length" expander style="width: 5rem" />
-          <Column :sortable="true" field="project.name">
+          <Column field="project.name" :sortable="true" style="width: 30rem">
             <template #header>
-              <span class="help-text" v-tooltip.top="'Name of the project'">
-                <b>Name</b>
+              <span v-tooltip.top="'Name of the project'" class="help-text">
+                <b>Project Name</b>
+              </span>
+            </template>
+            <template #body="{ data }">
+              <span v-tooltip.right="data.project.id" class="help-text">
+                {{ data.project.name }}
               </span>
             </template>
           </Column>
@@ -226,4 +231,14 @@ const updateFilters = (filterText: string) => {
   </div>
 </template>
 
-<style lang="scss"></style>
+<style lang="scss">
+.p-tooltip {
+  max-width: none !important;
+  white-space: nowrap !important;
+}
+
+.p-tooltip-text {
+  width: auto !important;
+  display: inline-block;
+}
+</style>
