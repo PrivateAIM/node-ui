@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.21](https://github.com/PrivateAIM/node-ui/compare/v0.2.20...v0.2.21) (2025-10-22)
+
+
+### Features
+
+* **analysis:** poll PO for pod status updates ([cd0e78b](https://github.com/PrivateAIM/node-ui/commit/cd0e78bee836a4b2184d050e3c7aa71462903c53))
+* **analysis:** update table with analysis run status from PO ([94122fa](https://github.com/PrivateAIM/node-ui/commit/94122fa2f956445f432c0d7298e90734e33f3b42))
+* **cleanup:** add keycloak cleanup option ([4ee8365](https://github.com/PrivateAIM/node-ui/commit/4ee836548806586295b0c0fb3d7fdc5b8c9dc1f0))
+* **logs:** auto refresh enabled when logs present ([e3385c8](https://github.com/PrivateAIM/node-ui/commit/e3385c8bf319ec5327da6619d1d2941df3c77320))
+
 ## [0.2.20](https://github.com/PrivateAIM/node-ui/compare/v0.2.19...v0.2.20) (2025-10-21)
 
 
