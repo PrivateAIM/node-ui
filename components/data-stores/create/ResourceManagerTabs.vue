@@ -20,7 +20,6 @@ if (projStatus.value === "success") {
       return {
         name: proj.project?.name,
         id: proj.project_id,
-        dropdown: `${proj.project?.name} (${proj.project_id})`,
       };
     });
   }
