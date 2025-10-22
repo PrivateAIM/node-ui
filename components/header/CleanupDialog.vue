@@ -52,6 +52,13 @@ const cleanUpOptions = ref<cleanUpOption[]>([
       message: "The Result Service will be restarted!",
     },
   },
+  {
+    name: "Keycloak",
+    data: {
+      ep: "keycloak",
+      message: "All analyses in Keycloak will be purged!",
+    },
+  },
 ]);
 
 const cleanupVisible = defineModel<boolean>("cleanUpVisible");
@@ -65,32 +72,33 @@ const handleCleanupShow = () => {
 };
 
 async function cleanUpResource(endpoint: string) {
-  let poResp: CleanupPodResponse | null = null;
   loading.value = true;
-  try {
-    poResp = (await useNuxtApp().$hubApi(`/po/cleanup/${endpoint}`, {
+
+  const cleanupResponse: CleanupPodResponse = (await useNuxtApp()
+    .$hubApi(`/po/cleanup/${endpoint}`, {
       method: "DELETE",
+    })
+    .catch(() => {
+      toast.add({
+        severity: "error",
+        summary: "Unable to perform cleanup",
+        detail: "There was an error while deleting or restarting the resource.",
+        life: 5000,
+      });
     })) as CleanupPodResponse;
-  } catch (error) {
-    toast.add({
-      severity: "error",
-      summary: "Unable to perform cleanup",
-      detail: "There was an error while deleting or restarting the resource.",
-      life: 5000,
-    });
-  }
-  if (poResp) {
+
+  if (cleanupResponse) {
     toast.add({
       severity: "info",
       summary: "Cleanup Started",
       detail: "Cleanup request successfully submitted",
       life: 5000,
     });
-    if (poResp.zombies) {
+    if (cleanupResponse.zombies) {
       toast.add({
         severity: "info",
         summary: "Zombie Report",
-        detail: poResp.zombies,
+        detail: cleanupResponse.zombies,
         life: 8000,
       });
     }

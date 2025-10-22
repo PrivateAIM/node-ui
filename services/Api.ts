@@ -22,6 +22,18 @@ export enum ProtocolCode {
   Tcp = "tcp",
 }
 
+/** PodStatus */
+export enum PodStatus {
+  Starting = "starting",
+  Started = "started",
+  Stuck = "stuck",
+  Running = "running",
+  Stopping = "stopping",
+  Stopped = "stopped",
+  Finished = "finished",
+  Failed = "failed",
+}
+
 /**
  * HttpMethodCode
  * HTTP method codes.
@@ -48,12 +60,14 @@ export enum DataStoreType {
   Fhir = "fhir",
 }
 
-/** AnalysisStatus */
-export enum AnalysisStatus {
-  Started = "started",
-  Created = "created",
-  Running = "running",
-  Stopped = "stopped",
+/** CleanUpType */
+export enum CleanUpType {
+  All = "all",
+  Analyzes = "analyzes",
+  Services = "services",
+  Mb = "mb",
+  Rs = "rs",
+  Keycloak = "keycloak",
 }
 
 /**
@@ -235,9 +249,9 @@ export interface AnalysisNode {
   run_status:
     | "starting"
     | "started"
-    | "running"
     | "stopping"
     | "stopped"
+    | "running"
     | "finished"
     | "failed"
     | null;
@@ -435,33 +449,6 @@ export interface BodyGetTokenTokenPost {
   password: string;
 }
 
-/** Body_submit_final_result_to_hub_final_put */
-export interface BodySubmitFinalResultToHubFinalPut {
-  /**
-   * File
-   * @format binary
-   */
-  file: File;
-}
-
-/** Body_submit_intermediate_result_to_hub_intermediate_put */
-export interface BodySubmitIntermediateResultToHubIntermediatePut {
-  /**
-   * File
-   * @format binary
-   */
-  file: File;
-}
-
-/** Body_submit_intermediate_result_to_local_local_put */
-export interface BodySubmitIntermediateResultToLocalLocalPut {
-  /**
-   * File
-   * @format binary
-   */
-  file: File;
-}
-
 /** CleanupPodResponse */
 export interface CleanupPodResponse {
   /** All */
@@ -505,11 +492,6 @@ export interface Consumer {
    * The unique username of the Consumer. You must send either this field or `custom_id` with the request.
    */
   username?: string | null;
-}
-
-/** CreatePodResponse */
-export interface CreatePodResponse {
-  status: AnalysisStatus;
 }
 
 /**
@@ -855,6 +837,14 @@ export interface HealthCheck {
   status?: string;
 }
 
+/** InitializeAnalysis */
+export interface InitializeAnalysis {
+  /** Analysis Id */
+  analysis_id: string;
+  /** Project Id */
+  project_id: string;
+}
+
 /**
  * KeyAuth
  * A Key-auth entity represents a key used to authenticate consumers with the key-auth plugin. The key-auth plugin is used to protect API endpoints by requiring a secret key to be sent with the request.
@@ -951,12 +941,16 @@ export interface ListServices {
   offset?: string | null;
 }
 
+/**
+ * LogReport
+ * Response with dynamic UUID keys and dynamic analysis log keys
+ */
+export type LogReport = Record<any, (string | null)[]>;
+
 /** LogResponse */
 export interface LogResponse {
-  /** Analysis */
-  analysis?: Record<string, any> | null;
-  /** Nginx */
-  nginx?: Record<string, any> | null;
+  analysis?: LogReport | null;
+  nginx?: LogReport | null;
 }
 
 /** MasterImage */
@@ -1049,10 +1043,7 @@ export interface NodeTypeResponse {
 }
 
 /** PodResponse */
-export interface PodResponse {
-  /** Pods */
-  pods?: any[] | null;
-}
+export type PodResponse = Record<any, (string | null)[]>;
 
 /** Project */
 export interface Project {
@@ -1216,15 +1207,6 @@ export interface RegistryProject {
    * @format date-time
    */
   updated_at: string;
-}
-
-/**
- * ResultsUploadResponse
- * Response from uploading a file using the results microservice.
- */
-export interface ResultsUploadResponse {
-  /** Url */
-  url: string;
 }
 
 /**
@@ -1499,11 +1481,8 @@ export interface ServiceRequest {
    * @default 80
    */
   port?: number | null;
-  /**
-   * Path
-   * @default "/somewhere"
-   */
-  path?: string | null;
+  /** Path */
+  path: string;
   /**
    * Connect Timeout
    * The timeout in milliseconds for establishing a connection to the upstream server.
@@ -1544,11 +1523,11 @@ export interface ServiceRequest {
   enabled?: boolean;
 }
 
-/** StatusResponse */
-export interface StatusResponse {
-  /** Status */
-  status?: Record<string, any> | null;
-}
+/**
+ * StatusResponse
+ * Response with dynamic UUID keys and dynamic analysis keys
+ */
+export type StatusResponse = Record<any, PodStatus>;
 
 /**
  * Token
@@ -1850,7 +1829,7 @@ export class Api<
       data: BodyCreateAnalysisPoPost,
       params: RequestParams = {},
     ) =>
-      this.request<CreatePodResponse, void | HTTPValidationError>({
+      this.request<StatusResponse, void | HTTPValidationError>({
         path: `/po`,
         method: "POST",
         body: data,
@@ -1861,20 +1840,38 @@ export class Api<
       }),
 
     /**
-     * @description Get the logs for a specific analysis run.
+     * @description Get all analysis pod logs.
      *
      * @tags PodOrc
-     * @name GetAnalysisLogsPoAnalysisIdLogsGet
+     * @name GetAllAnalysisLogsPoLogsGet
+     * @summary Get All Analysis Logs
+     * @request GET:/po/logs
+     * @secure
+     */
+    getAllAnalysisLogsPoLogsGet: (params: RequestParams = {}) =>
+      this.request<LogResponse, void>({
+        path: `/po/logs`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Get the analysis pod logs.
+     *
+     * @tags PodOrc
+     * @name GetAnalysisLogsPoLogsAnalysisIdGet
      * @summary Get Analysis Logs
-     * @request GET:/po/{analysis_id}/logs
+     * @request GET:/po/logs/{analysis_id}
      * @secure
      */
-    getAnalysisLogsPoAnalysisIdLogsGet: (
-      analysisId: string | null,
+    getAnalysisLogsPoLogsAnalysisIdGet: (
+      analysisId: string,
       params: RequestParams = {},
     ) =>
       this.request<LogResponse, void | HTTPValidationError>({
-        path: `/po/${analysisId}/logs`,
+        path: `/po/logs/${analysisId}`,
         method: "GET",
         secure: true,
         format: "json",
@@ -1882,20 +1879,38 @@ export class Api<
       }),
 
     /**
-     * @description Get the previous logs for a specific analysis.
+     * @description Get all previous analysis pod logs.
      *
      * @tags PodOrc
-     * @name GetAnalysisLogHistoryPoAnalysisIdHistoryGet
+     * @name GetAllAnalysisLogHistoryPoHistoryGet
+     * @summary Get All Analysis Log History
+     * @request GET:/po/history
+     * @secure
+     */
+    getAllAnalysisLogHistoryPoHistoryGet: (params: RequestParams = {}) =>
+      this.request<LogResponse, void>({
+        path: `/po/history`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Get the previous analysis pod logs.
+     *
+     * @tags PodOrc
+     * @name GetAnalysisLogHistoryPoHistoryAnalysisIdGet
      * @summary Get Analysis Log History
-     * @request GET:/po/{analysis_id}/history
+     * @request GET:/po/history/{analysis_id}
      * @secure
      */
-    getAnalysisLogHistoryPoAnalysisIdHistoryGet: (
+    getAnalysisLogHistoryPoHistoryAnalysisIdGet: (
       analysisId: string | null,
       params: RequestParams = {},
     ) =>
       this.request<LogResponse, void | HTTPValidationError>({
-        path: `/po/${analysisId}/history`,
+        path: `/po/history/${analysisId}`,
         method: "GET",
         secure: true,
         format: "json",
@@ -1903,20 +1918,38 @@ export class Api<
       }),
 
     /**
-     * @description Get the status for a specific analysis run.
+     * @description Get all analysis run statuses.
      *
      * @tags PodOrc
-     * @name GetAnalysisStatusPoAnalysisIdStatusGet
-     * @summary Get Analysis Status
-     * @request GET:/po/{analysis_id}/status
+     * @name GetAllAnalysisStatusPoStatusGet
+     * @summary Get All Analysis Status
+     * @request GET:/po/status
      * @secure
      */
-    getAnalysisStatusPoAnalysisIdStatusGet: (
+    getAllAnalysisStatusPoStatusGet: (params: RequestParams = {}) =>
+      this.request<StatusResponse, void>({
+        path: `/po/status`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Get a specific analysis pod run status.
+     *
+     * @tags PodOrc
+     * @name GetAnalysisStatusPoStatusAnalysisIdGet
+     * @summary Get Analysis Status
+     * @request GET:/po/status/{analysis_id}
+     * @secure
+     */
+    getAnalysisStatusPoStatusAnalysisIdGet: (
       analysisId: string | null,
       params: RequestParams = {},
     ) =>
       this.request<StatusResponse, void | HTTPValidationError>({
-        path: `/po/${analysisId}/status`,
+        path: `/po/status/${analysisId}`,
         method: "GET",
         secure: true,
         format: "json",
@@ -1924,21 +1957,57 @@ export class Api<
       }),
 
     /**
-     * @description Get the pods for a specific analysis run.
+     * @description Get all running pods in the k8s cluster.
      *
      * @tags PodOrc
-     * @name GetAnalysisPodsPoAnalysisIdPodsGet
-     * @summary Get Analysis Pods
-     * @request GET:/po/{analysis_id}/pods
+     * @name GetAllAnalysisPodsPoPodsGet
+     * @summary Get All Analysis Pods
+     * @request GET:/po/pods
      * @secure
      */
-    getAnalysisPodsPoAnalysisIdPodsGet: (
+    getAllAnalysisPodsPoPodsGet: (params: RequestParams = {}) =>
+      this.request<PodResponse, void>({
+        path: `/po/pods`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Get information on a specific running analysis pod in the k8s cluster.
+     *
+     * @tags PodOrc
+     * @name GetAnalysisPodsPoPodsAnalysisIdGet
+     * @summary Get Analysis Pods
+     * @request GET:/po/pods/{analysis_id}
+     * @secure
+     */
+    getAnalysisPodsPoPodsAnalysisIdGet: (
       analysisId: string | null,
       params: RequestParams = {},
     ) =>
       this.request<PodResponse, void | HTTPValidationError>({
-        path: `/po/${analysisId}/pods`,
+        path: `/po/pods/${analysisId}`,
         method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Stop all analysis pods.
+     *
+     * @tags PodOrc
+     * @name StopAllAnalysesPoStopPut
+     * @summary Stop All Analyses
+     * @request PUT:/po/stop
+     * @secure
+     */
+    stopAllAnalysesPoStopPut: (params: RequestParams = {}) =>
+      this.request<StatusResponse, void>({
+        path: `/po/stop`,
+        method: "PUT",
         secure: true,
         format: "json",
         ...params,
@@ -1948,18 +2017,36 @@ export class Api<
      * @description Stop a specific analysis run.
      *
      * @tags PodOrc
-     * @name StopAnalysisPoAnalysisIdStopPut
+     * @name StopAnalysisPoStopAnalysisIdPut
      * @summary Stop Analysis
-     * @request PUT:/po/{analysis_id}/stop
+     * @request PUT:/po/stop/{analysis_id}
      * @secure
      */
-    stopAnalysisPoAnalysisIdStopPut: (
+    stopAnalysisPoStopAnalysisIdPut: (
       analysisId: string | null,
       params: RequestParams = {},
     ) =>
       this.request<StatusResponse, void | HTTPValidationError>({
-        path: `/po/${analysisId}/stop`,
+        path: `/po/stop/${analysisId}`,
         method: "PUT",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Delete all analysis pods.
+     *
+     * @tags PodOrc
+     * @name DeleteAllAnalysesPoDeleteDelete
+     * @summary Delete All Analyses
+     * @request DELETE:/po/delete
+     * @secure
+     */
+    deleteAllAnalysesPoDeleteDelete: (params: RequestParams = {}) =>
+      this.request<StatusResponse, void>({
+        path: `/po/delete`,
+        method: "DELETE",
         secure: true,
         format: "json",
         ...params,
@@ -1969,17 +2056,17 @@ export class Api<
      * @description Delete a specific analysis run.
      *
      * @tags PodOrc
-     * @name DeleteAnalysisPoAnalysisIdDeleteDelete
+     * @name DeleteAnalysisPoDeleteAnalysisIdDelete
      * @summary Delete Analysis
-     * @request DELETE:/po/{analysis_id}/delete
+     * @request DELETE:/po/delete/{analysis_id}
      * @secure
      */
-    deleteAnalysisPoAnalysisIdDeleteDelete: (
+    deleteAnalysisPoDeleteAnalysisIdDelete: (
       analysisId: string | null,
       params: RequestParams = {},
     ) =>
       this.request<StatusResponse, void | HTTPValidationError>({
-        path: `/po/${analysisId}/delete`,
+        path: `/po/delete/${analysisId}`,
         method: "DELETE",
         secure: true,
         format: "json",
@@ -1987,7 +2074,7 @@ export class Api<
       }),
 
     /**
-     * @description Delete specific types of resources. Should be a comma separated combination of the following entries: 'all', 'analyzes', 'services', 'mb', 'rs'
+     * @description Delete specific types of resources. Should be a comma separated combination of the following entries: 'all', 'analyzes', 'services', 'mb', 'rs', 'keycloak'
      *
      * @tags PodOrc
      * @name CleanupNodePoCleanupCleanupTypeDelete
@@ -1996,7 +2083,7 @@ export class Api<
      * @secure
      */
     cleanupNodePoCleanupCleanupTypeDelete: (
-      cleanupType: string | null,
+      cleanupType: CleanUpType,
       params: RequestParams = {},
     ) =>
       this.request<CleanupPodResponse, void | HTTPValidationError>({
@@ -2007,116 +2094,71 @@ export class Api<
         ...params,
       }),
   };
-  local = {
+  analysis = {
     /**
-     * @description Get a local result as file from local storage.
+     * @description Perform the required checks to start an analysis and send information to the PO.
      *
-     * @tags Results
-     * @name RetrieveIntermediateResultFromLocalLocalObjectIdGet
-     * @summary Retrieve Intermediate Result From Local
-     * @request GET:/local/{object_id}
+     * @tags Meta
+     * @name InitializeAnalysisAnalysisInitializePost
+     * @summary Initialize Analysis
+     * @request POST:/analysis/initialize
      * @secure
      */
-    retrieveIntermediateResultFromLocalLocalObjectIdGet: (
-      objectId: string,
+    initializeAnalysisAnalysisInitializePost: (
+      data: InitializeAnalysis,
       params: RequestParams = {},
     ) =>
-      this.request<any, void | HTTPValidationError>({
-        path: `/local/${objectId}`,
-        method: "GET",
+      this.request<StatusResponse, void | HTTPValidationError>({
+        path: `/analysis/initialize`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.UrlEncoded,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Perform the required checks to stop an analysis and delete it and its components. This method will first delete the kong consumer and then send the delete command to the PO.
+     *
+     * @tags Meta
+     * @name TerminateAnalysisAnalysisTerminateAnalysisIdDelete
+     * @summary Terminate Analysis
+     * @request DELETE:/analysis/terminate/{analysis_id}
+     * @secure
+     */
+    terminateAnalysisAnalysisTerminateAnalysisIdDelete: (
+      analysisId: string,
+      params: RequestParams = {},
+    ) =>
+      this.request<StatusResponse, void | HTTPValidationError>({
+        path: `/analysis/terminate/${analysisId}`,
+        method: "DELETE",
         secure: true,
         format: "json",
         ...params,
       }),
 
     /**
-     * No description
+     * @description Build an analysis image URL using its metadata from the Hub.
      *
-     * @tags Results
-     * @name SubmitIntermediateResultToLocalLocalPut
-     * @summary Submit Intermediate Result To Local
-     * @request PUT:/local
+     * @tags Hub
+     * @name GetAnalysisImageUrlAnalysisImagePost
+     * @summary Get Analysis Image Url
+     * @request POST:/analysis/image
      * @secure
      */
-    submitIntermediateResultToLocalLocalPut: (
-      data: BodySubmitIntermediateResultToLocalLocalPut,
+    getAnalysisImageUrlAnalysisImagePost: (
+      data: BodyGetAnalysisImageUrlAnalysisImagePost,
       params: RequestParams = {},
     ) =>
-      this.request<ResultsUploadResponse, void | HTTPValidationError>({
-        path: `/local`,
-        method: "PUT",
+      this.request<AnalysisImageUrl, void | HTTPValidationError>({
+        path: `/analysis/image`,
+        method: "POST",
         body: data,
         secure: true,
-        type: ContentType.FormData,
+        type: ContentType.Json,
         format: "json",
-        ...params,
-      }),
-  };
-  intermediate = {
-    /**
-     * @description Get an intermediate result as file from the FLAME Hub.
-     *
-     * @tags Results
-     * @name RetrieveIntermediateResultFromHubIntermediateObjectIdGet
-     * @summary Retrieve Intermediate Result From Hub
-     * @request GET:/intermediate/{object_id}
-     * @secure
-     */
-    retrieveIntermediateResultFromHubIntermediateObjectIdGet: (
-      objectId: string,
-      params: RequestParams = {},
-    ) =>
-      this.request<any, void | HTTPValidationError>({
-        path: `/intermediate/${objectId}`,
-        method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Upload a file as an intermediate result to the FLAME Hub. Returns a 202 on success. This endpoint returns immediately and submits the file in the background.
-     *
-     * @tags Results
-     * @name SubmitIntermediateResultToHubIntermediatePut
-     * @summary Submit Intermediate Result To Hub
-     * @request PUT:/intermediate
-     * @secure
-     */
-    submitIntermediateResultToHubIntermediatePut: (
-      data: BodySubmitIntermediateResultToHubIntermediatePut,
-      params: RequestParams = {},
-    ) =>
-      this.request<ResultsUploadResponse, void | HTTPValidationError>({
-        path: `/intermediate`,
-        method: "PUT",
-        body: data,
-        secure: true,
-        type: ContentType.FormData,
-        format: "json",
-        ...params,
-      }),
-  };
-  final = {
-    /**
-     * @description Upload final results to FLAME Hub
-     *
-     * @tags Results
-     * @name SubmitFinalResultToHubFinalPut
-     * @summary Submit Final Result To Hub
-     * @request PUT:/final
-     * @secure
-     */
-    submitFinalResultToHubFinalPut: (
-      data: BodySubmitFinalResultToHubFinalPut,
-      params: RequestParams = {},
-    ) =>
-      this.request<void, void | HTTPValidationError>({
-        path: `/final`,
-        method: "PUT",
-        body: data,
-        secure: true,
-        type: ContentType.FormData,
         ...params,
       }),
   };
@@ -2449,30 +2491,6 @@ export class Api<
         path: `/registry-projects/${registryProjectId}`,
         method: "GET",
         secure: true,
-        format: "json",
-        ...params,
-      }),
-  };
-  analysis = {
-    /**
-     * @description Build an analysis image URL using its metadata from the Hub.
-     *
-     * @tags Hub
-     * @name GetAnalysisImageUrlAnalysisImagePost
-     * @summary Get Analysis Image Url
-     * @request POST:/analysis/image
-     * @secure
-     */
-    getAnalysisImageUrlAnalysisImagePost: (
-      data: BodyGetAnalysisImageUrlAnalysisImagePost,
-      params: RequestParams = {},
-    ) =>
-      this.request<AnalysisImageUrl, void | HTTPValidationError>({
-        path: `/analysis/image`,
-        method: "POST",
-        body: data,
-        secure: true,
-        type: ContentType.Json,
         format: "json",
         ...params,
       }),

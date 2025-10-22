@@ -5,6 +5,8 @@
  * @param datetimeKeys - unix timestamp keys
  * @param rowExpansionKeys - data keys that will be moved to an expandable subset
  */
+import { useTimeAgo } from "@vueuse/core";
+
 export function formatDataRow(
   rowEntries,
   datetimeKeys: string[],
@@ -41,9 +43,27 @@ export function parseUnixTimestamp(
         } else {
           date = new Date(timestamp);
         }
+
+        const timeAgo = useTimeAgo(date);
+
+        const shortDate = isLessThanOneWeekAgo(date)
+          ? timeAgo
+          : date.toLocaleDateString("de-DE", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            });
+
         dataRow[key] = {
-          short: formatDate(date),
-          long: date.toUTCString(),
+          short: shortDate,
+          long: date.toLocaleString("de-DE", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          }),
           date: date,
           timestamp: date.getTime() / 1000,
         };
@@ -53,13 +73,11 @@ export function parseUnixTimestamp(
   return dataRow;
 }
 
-const formatDate = (value: Date) => {
-  return value.toLocaleDateString("de-DE", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-};
+function isLessThanOneWeekAgo(date: Date): boolean {
+  const now = Date.now();
+  const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
+  return date.getTime() > now - oneWeekMs;
+}
 
 function isUnixTimestamp(value: number): boolean {
   // Unix timestamp should be a number and within reasonable range

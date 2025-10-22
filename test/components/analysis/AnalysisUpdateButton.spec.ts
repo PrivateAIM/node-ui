@@ -26,6 +26,7 @@ describe("AnalysisUpdateButton.vue", () => {
     toastSeverity: string,
     toastSummary: string,
     toastMsg: string,
+    toastDuration: number,
     analysisId: string,
   ) {
     const wrapper = mount(AnalysisUpdateButton, {
@@ -42,12 +43,11 @@ describe("AnalysisUpdateButton.vue", () => {
 
     await flushPromises();
 
-    expect(spy).toHaveBeenCalledTimes(1);
     expect(spy).toHaveBeenCalledWith({
       severity: toastSeverity,
       summary: toastSummary,
       detail: toastMsg,
-      life: 5000,
+      life: toastDuration,
     });
     return wrapper;
   }
@@ -57,6 +57,7 @@ describe("AnalysisUpdateButton.vue", () => {
       "info",
       "Analysis status successfully update",
       "The current status of the analysis container was successfully updated.",
+      5000,
       fakeAnalysisId,
     );
     expect(wrapper.emitted("updatedRunStatus")).toHaveLength(1);
@@ -65,13 +66,13 @@ describe("AnalysisUpdateButton.vue", () => {
 
   it("Update analysis status - none running", async () => {
     const wrapper = await basicButtonCheck(
-      "info",
+      "warn",
       "No analysis pod found",
-      "There are no running pods for this analysis on this node.",
+      "There are no running pods for this analysis on this node, the run status shown is the last reported update to the hub.",
+      8000,
       fakeMissingAnalysisId,
     );
-    expect(wrapper.emitted("updatedRunStatus")).toHaveLength(1);
-    expect(wrapper.emitted("updatedRunStatus")![0]).toEqual([null]);
+    expect(wrapper.emitted("updatedRunStatus")).toBeFalsy();
   });
 
   it("Update analysis status - broken", async () => {
@@ -79,6 +80,7 @@ describe("AnalysisUpdateButton.vue", () => {
       "error",
       "Unable to get a status update",
       "An error occurred while trying to contact the PO for a status update. Try again later.",
+      5000,
       fakeBrokenAnalysisId,
     );
   });

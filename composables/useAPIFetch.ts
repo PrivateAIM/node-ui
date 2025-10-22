@@ -125,7 +125,7 @@ export function deleteAnalysisFromKong(analysisId: string, opts?) {
 
 // PodOrc endpoints
 export function getAnalysisLogs(analysisId: string, opts?) {
-  return useAPIFetch(`/po/${analysisId}/logs`, {
+  return useAPIFetch(`/po/logs/${analysisId}`, {
     ...opts,
     method: "GET",
   });

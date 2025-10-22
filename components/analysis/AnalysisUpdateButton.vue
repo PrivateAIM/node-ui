@@ -2,11 +2,14 @@
 import { useNuxtApp } from "#app";
 import { useToast } from "primevue/usetoast";
 
-const props = defineProps({
-  analysisId: String
-});
+import type { StatusResponse } from "~/services/Api";
 
-type PoStatusResp = { status: object } | null;
+const props = defineProps({
+  analysisId: {
+    type: String,
+    required: true,
+  },
+});
 
 const emit = defineEmits(["updatedRunStatus"]);
 const loading = ref(false);
@@ -14,9 +17,9 @@ const toast = useToast();
 
 async function onClickUpdate() {
   loading.value = true;
-  const poUpdate: PoStatusResp = (await useNuxtApp()
-    .$hubApi(`/po/${props.analysisId}/status`, {
-      method: "GET"
+  const analysisStatusUpdate: StatusResponse = (await useNuxtApp()
+    .$hubApi(`/po/status/${props.analysisId}`, {
+      method: "GET",
     })
     .catch(() => {
       toast.add({
@@ -24,33 +27,28 @@ async function onClickUpdate() {
         summary: "Unable to get a status update",
         detail:
           "An error occurred while trying to contact the PO for a status update. Try again later.",
-        life: 5000
+        life: 5000,
       });
-    })) as PoStatusResp;
-  if (poUpdate) {
-    const poStatuses = poUpdate.status;
-    if (Object.keys(poStatuses).length) {
-      // Resp either returns { status: {} } or status is filled
-      toast.add({
-        severity: "info",
-        summary: "Analysis status successfully update",
-        detail:
-          "The current status of the analysis container was successfully updated.",
-        life: 5000
-      });
-      emit(
-        "updatedRunStatus",
-        Object.values(poStatuses)[0]
-      ); // Return first status
-    } else {
-      toast.add({
-        severity: "info",
-        summary: "No analysis pod found",
-        detail: "There are no running pods for this analysis on this node.",
-        life: 5000
-      });
-      emit("updatedRunStatus", null);
-    }
+    })) as StatusResponse;
+  if (analysisStatusUpdate && props.analysisId in analysisStatusUpdate) {
+    const analysisStatus = analysisStatusUpdate[props.analysisId];
+    toast.add({
+      severity: "info",
+      summary: "Analysis status successfully update",
+      detail:
+        "The current status of the analysis container was successfully updated.",
+      life: 5000,
+    });
+    emit("updatedRunStatus", analysisStatus);
+  } else {
+    toast.add({
+      severity: "warn",
+      summary: "No analysis pod found",
+      detail:
+        "There are no running pods for this analysis on this node, " +
+        "the run status shown is the last reported update to the hub.",
+      life: 8000,
+    });
   }
 
   loading.value = false;
