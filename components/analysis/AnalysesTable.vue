@@ -2,6 +2,7 @@
 import { useFetch, useNuxtApp } from "#app";
 import Badge from "primevue/badge";
 import { useToast } from "primevue/usetoast";
+import ProgressBar from "primevue/progressbar";
 import { getAnalysisNodes } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
 import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
@@ -30,7 +31,7 @@ import type { ModifiedAnalysisNode } from "~/services/modifiedApiInterfaces";
 const toast = useToast();
 const nodeType = await useNodeType();
 
-const analyses = ref<ModifiedAnalysisNode[]>([]);
+const analyses = ref<Map<string, ModifiedAnalysisNode>>(new Map());
 
 const expandRowEntries = [];
 const expandedRows = ref();
@@ -112,13 +113,46 @@ async function updateRunStatusUsingPo() {
     })) as StatusResponse;
   if (podStatuses) {
     for (const [analysisId, podStatus] of Object.entries(podStatuses)) {
-      updateRunStatus(analysisId, podStatus);
+      updateAnalysisRun(analysisId, podStatus);
     }
   }
 }
 
+function setProgress(analysis: ModifiedAnalysisNode): ModifiedAnalysisNode {
+  // For testing: Math.round(Math.random() * 100);
+  analysis.progress = analysis.progress ? analysis.progress : 0;
+
+  const currentRunStatus = analysis.run_status;
+  if (currentRunStatus) {
+    if (currentRunStatus === AnalysisNodeRunStatus.Failed) {
+      analysis.progress = 0;
+    } else if (currentRunStatus === AnalysisNodeRunStatus.Finished) {
+      analysis.progress = 100;
+    }
+  }
+  return analysis;
+}
+
+function determineProgressBarColor(progress: number) {
+  let color: string;
+
+  if (!progress) {
+    color = "#FFFFFF";
+  } else if (progress < 33) {
+    color = "#ef4444";
+  } else if (progress < 66) {
+    color = "#f59e0b";
+  } else {
+    color = "#10b981";
+  }
+
+  return {
+    "--p-progressbar-value-background": color,
+  };
+}
+
 async function parseData(respStatus: string, respData: AnalysisNode[] | null) {
-  const parsedAnalyses: ModifiedAnalysisNode[] = [];
+  const parsedAnalyses = new Map<string, ModifiedAnalysisNode>();
   if (respStatus === "success") {
     const formattedAnalyses = formatDataRow(
       respData,
@@ -134,7 +168,7 @@ async function parseData(respStatus: string, respData: AnalysisNode[] | null) {
             : "";
           analysisEntry.datastore = kongRoutes.value.has(projId);
         }
-        parsedAnalyses.push(analysisEntry);
+        parsedAnalyses[analysisEntry.analysis_id] = setProgress(analysisEntry);
       });
       analyses.value = parsedAnalyses;
       await updateRunStatusUsingPo();
@@ -146,6 +180,7 @@ async function parseData(respStatus: string, respData: AnalysisNode[] | null) {
 
 onMounted(() => {
   parseData(status.value, analysisNodeResp.value);
+  // TODO reactivate after fixing toast spam
   // setInterval(updateRunStatusUsingPo, 5000); // Poll PO every 5 seconds
 });
 
@@ -156,7 +191,7 @@ async function onTableRefresh() {
 
 function onPage(event) {
   const currentPage = event.page + 1;
-  const currentNumberEntries = analyses.value.length;
+  const currentNumberEntries = analyses.value.size;
   const currentMaxPage = Math.ceil(currentNumberEntries / event.rows);
 
   if (!allResultsRetrieved) {
@@ -219,13 +254,12 @@ const updateFilters = (filterText: string) => {
   filters.value.global.value = filterText;
 };
 
-function updateRunStatus(analysisId: string, newStatus: PodStatus | null) {
-  analyses.value = analyses.value.map((row) => {
-    if (row.analysis_id === analysisId) {
-      return { ...row, run_status: newStatus };
-    }
-    return row;
-  });
+function updateAnalysisRun(analysisId: string, newStatus: PodStatus | null) {
+  if (analysisId in analyses.value) {
+    const analysisToUpdate = analyses.value[analysisId];
+    analysisToUpdate.run_status = newStatus;
+    analyses.value[analysisId] = setProgress(analysisToUpdate);
+  }
 }
 
 function updateRunStatusFilter(filterText: string) {
@@ -362,7 +396,7 @@ const onCloseNavToast = () => {
           :rows="10"
           :rowsPerPageOptions="[10, 20, 50]"
           :sortOrder="-1"
-          :value="analyses"
+          :value="Object.values(analyses)"
           dataKey="id"
           filterDisplay="menu"
           paginator
@@ -592,6 +626,28 @@ const onCloseNavToast = () => {
               </p>
             </template>
           </Column>
+          <Column field="progress">
+            <template #header>
+              <span
+                v-tooltip.top="'Self-reported progress of analysis'"
+                class="help-text"
+              >
+                <b>Progress</b>
+              </span>
+            </template>
+            <template #body="{ data }">
+              <ProgressBar
+                :value="data.progress"
+                :style="determineProgressBarColor(data.progress)"
+                :mode="
+                  data.run_status === AnalysisNodeRunStatus.Running &&
+                  !data.progress
+                    ? 'indeterminate'
+                    : 'determinate'
+                "
+              />
+            </template>
+          </Column>
           <Column :exportable="false" field="expand.id" style="min-width: 13em">
             <template #header>
               <span
@@ -614,7 +670,7 @@ const onCloseNavToast = () => {
                   :nodeId="slotProps.data.node_id"
                   :projectId="slotProps.data.analysis.project_id"
                   @missingDataStore="showDataStoreNavToast"
-                  @newRunStatus="updateRunStatus"
+                  @newRunStatus="updateAnalysisRun"
                 />
               </div>
             </template>

@@ -38,4 +38,5 @@ export interface ModifiedAnalysisNode extends Omit<AnalysisNode, "run_status"> {
   };
   datastore: boolean;
   run_status: PodStatus | null;
+  progress: number;
 }
