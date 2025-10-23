@@ -123,6 +123,12 @@ export const handlers = [
     });
   }),
 
+  http.get(`/po/status`, () => {
+    return HttpResponse.json({
+      [fakeAnalysisId]: "running",
+    });
+  }),
+
   // Update Analysis Button - no running analyses TODO remove
   http.get(`/po/status/${fakeMissingAnalysisId}`, () => {
     return HttpResponse.json({});
@@ -135,10 +141,10 @@ export const handlers = [
 
   // Broken analysis controls
   http.put(`/po/stop/${fakeBrokenAnalysisId}`, () => {
-    return HttpResponse.error();
+    return HttpResponse.json({}, { status: 500 });
   }),
   http.delete(`/analysis/terminate/${fakeBrokenAnalysisId}`, () => {
-    return HttpResponse.error();
+    return HttpResponse.json({}, { status: 500 });
   }),
 
   // Missing analysis controls
