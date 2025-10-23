@@ -161,7 +161,11 @@ async function onStartAnalysis() {
         emit("missingDataStore");
       } else if (e.status === CONFLICT_STATUS) {
         checkPodStatus(); // Check to see if the analysis pod already exists, if so, buttons are updated by method
-      } else if ("detail" in e.data && "message" in e.data.detail) {
+      } else if (
+        "data" in e &&
+        "detail" in e.data &&
+        "message" in e.data.detail
+      ) {
         showToast("error", "Start failure", e.data.detail.message);
       } else {
         showToast("error", "Start failure", "Failed to start the analysis");

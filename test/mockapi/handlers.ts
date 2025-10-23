@@ -130,7 +130,7 @@ export const handlers = [
 
   // Update Analysis Button - broken TODO remove
   http.get(`/po/status/${fakeBrokenAnalysisId}`, () => {
-    return HttpResponse.error();
+    return HttpResponse.json({}, { status: 500 });
   }),
 
   // Broken analysis controls
