@@ -3,7 +3,7 @@ import AnalysisUpdateButton from "./AnalysisUpdateButton.vue";
 import { useToast } from "primevue/usetoast";
 import { useNuxtApp } from "#app";
 import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
-import type { StatusResponse } from "~/services/Api";
+import { PodStatus, type StatusResponse } from "~/services/Api";
 
 type ToastSeverity = "success" | "info" | "warn" | "error" | undefined;
 
@@ -20,7 +20,10 @@ const props = defineProps({
     type: [String, null],
     required: true,
   },
-  analysisNodeId: String,
+  analysisNodeId: {
+    type: String,
+    required: true,
+  },
   analysisId: {
     type: String,
     required: true,
@@ -35,7 +38,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["newRunStatus", "missingDataStore"]);
+const emit = defineEmits(["updateAnalysisRow", "missingDataStore"]);
 const toast = useToast();
 const loading = ref(false);
 
@@ -57,7 +60,7 @@ const stopButtonActiveStates: Array<string | null> = [
   AnalysisNodeRunStatus.Stopping,
 ];
 const deleteButtonActiveStates: Array<string | null> = [
-  AnalysisNodeRunStatus.Failed,
+  PodStatus.Failed,
   AnalysisNodeRunStatus.Stopped,
   AnalysisNodeRunStatus.Stopping,
   AnalysisNodeRunStatus.Running,
@@ -66,17 +69,10 @@ const deleteButtonActiveStates: Array<string | null> = [
 ];
 
 const buttonStatuses = ref<ButtonStates>(
-  getButtonStatuses(props.analysisRunStatus, false),
+  getButtonStatuses(props.analysisRunStatus),
 );
 
-function getButtonStatuses(
-  podStatus: string | null,
-  updateTable: boolean = true,
-) {
-  if (updateTable) {
-    emit("newRunStatus", props.analysisId, podStatus);
-  }
-
+function getButtonStatuses(podStatus: string | null) {
   return {
     playActive: playButtonActiveStates.includes(podStatus),
     rerunActive: rerunButtonActiveStates.includes(podStatus),
@@ -87,9 +83,10 @@ function getButtonStatuses(
 
 function setButtonStates(
   podStatus: string | null,
-  updateTable: boolean = true,
+  progressUpdate?: number | null,
 ) {
-  buttonStatuses.value = getButtonStatuses(podStatus, updateTable);
+  buttonStatuses.value = getButtonStatuses(podStatus);
+  emit("updateAnalysisRow", props.analysisId, podStatus, progressUpdate);
 }
 
 const showToast = (severity: ToastSeverity, summary: string, msg: string) => {
@@ -242,10 +239,6 @@ async function onDeleteAnalysis() {
 
   loading.value = false;
 }
-
-function onUpdateAnalysis(updatedPodStatus: string | null) {
-  setButtonStates(updatedPodStatus);
-}
 </script>
 
 <template>
@@ -323,7 +316,8 @@ function onUpdateAnalysis(updatedPodStatus: string | null) {
     </NuxtLink>
     <AnalysisUpdateButton
       :analysisId="props.analysisId"
-      @updatedRunStatus="onUpdateAnalysis"
+      :analysisNodeId="props.analysisNodeId"
+      @updateAnalysisRun="setButtonStates"
     />
   </div>
 </template>
