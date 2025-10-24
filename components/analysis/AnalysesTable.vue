@@ -5,7 +5,10 @@ import { useToast } from "primevue/usetoast";
 import ProgressBar from "primevue/progressbar";
 import { getAnalysisNodes } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
-import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
+import {
+  showConnectionErrorToast,
+  showHubAdapterConnectionErrorToast,
+} from "~/composables/connectionErrorToast";
 import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
 import AnalysisControlButtons from "./AnalysisControlButtons.vue";
@@ -97,13 +100,13 @@ if (projStatus.value === "success" && projData.value) {
   });
 }
 
-async function updateRunStatusUsingPo() {
-  const podStatuses = (await useNuxtApp()
+async function getRunStatusesFromPodOrc(): Promise<StatusResponse | null> {
+  return (await useNuxtApp()
     .$hubApi("/po/status", {
       method: "GET",
     })
     .catch(() => {
-      toast.add({
+      showConnectionErrorToast(toast, {
         severity: "warn",
         summary: "Missing PO Status Update",
         detail:
@@ -111,12 +114,16 @@ async function updateRunStatusUsingPo() {
         life: 3000,
       });
     })) as StatusResponse;
-  if (podStatuses) {
-    for (const [analysisId, podStatus] of Object.entries(podStatuses)) {
-      updateAnalysisRun(analysisId, podStatus);
-    }
-  }
 }
+
+// async function checkForUpdatesFromPodOrc() {
+//   const newStatuses = await getRunStatusesFromPodOrc();
+//   if (newStatuses) {
+//     for (const [analysisId, status] of Object.entries(newStatuses)) {
+//       updateAnalysisRun(analysisId, status);
+//     }
+//   }
+// }
 
 function setProgress(analysis: ModifiedAnalysisNode): ModifiedAnalysisNode {
   // For testing: Math.round(Math.random() * 100);
@@ -151,8 +158,38 @@ function determineProgressBarColor(progress: number) {
   };
 }
 
+function parseAnalysis(
+  analysisEntry: ModifiedAnalysisNode,
+  runStatuses: StatusResponse | null,
+): ModifiedAnalysisNode {
+  const projId = analysisEntry.analysis?.project_id;
+  const analysisId = analysisEntry.analysis_id;
+  if (projId) {
+    analysisEntry.project_name = projMap.has(projId) ? projMap.get(projId) : "";
+    analysisEntry.datastore = kongRoutes.value.has(projId);
+  }
+  // If PodOrc status update returns null -> use hub info since it's all we have
+  // If status from PodOrc -> use it
+  // If no run status reported by PodOrc, and it's not failed/finished -> set to null (wrong hub info)
+  if (runStatuses) {
+    if (analysisId in runStatuses) {
+      analysisEntry.run_status = runStatuses[analysisId];
+    } else {
+      if (
+        analysisEntry.run_status != AnalysisNodeRunStatus.Failed &&
+        analysisEntry.run_status != AnalysisNodeRunStatus.Finished
+      ) {
+        analysisEntry.run_status = null;
+      }
+    }
+  }
+  return setProgress(analysisEntry);
+}
+
 async function parseData(respStatus: string, respData: AnalysisNode[] | null) {
   const parsedAnalyses = new Map<string, ModifiedAnalysisNode>();
+  const currentRunStatuses = await getRunStatusesFromPodOrc();
+
   if (respStatus === "success") {
     const formattedAnalyses = formatDataRow(
       respData,
@@ -161,17 +198,12 @@ async function parseData(respStatus: string, respData: AnalysisNode[] | null) {
     );
     if (projMap.size > 0) {
       formattedAnalyses.forEach((analysisEntry: ModifiedAnalysisNode) => {
-        const projId = analysisEntry.analysis?.project_id;
-        if (projId) {
-          analysisEntry.project_name = projMap.has(projId)
-            ? projMap.get(projId)
-            : "";
-          analysisEntry.datastore = kongRoutes.value.has(projId);
-        }
-        parsedAnalyses[analysisEntry.analysis_id] = setProgress(analysisEntry);
+        parsedAnalyses[analysisEntry.analysis_id] = parseAnalysis(
+          analysisEntry,
+          currentRunStatuses,
+        );
       });
       analyses.value = parsedAnalyses;
-      await updateRunStatusUsingPo();
     }
   } else if (error.value?.statusCode === 500) {
     showHubAdapterConnectionErrorToast(toast, "Hub");
@@ -181,7 +213,7 @@ async function parseData(respStatus: string, respData: AnalysisNode[] | null) {
 onMounted(() => {
   parseData(status.value, analysisNodeResp.value);
   // TODO reactivate after fixing toast spam
-  // setInterval(updateRunStatusUsingPo, 5000); // Poll PO every 5 seconds
+  // setInterval(checkForUpdatesFromPodOrc, 15000); // Poll PO every 15 seconds
 });
 
 async function onTableRefresh() {
@@ -670,7 +702,7 @@ const onCloseNavToast = () => {
                   :nodeId="slotProps.data.node_id"
                   :projectId="slotProps.data.analysis.project_id"
                   @missingDataStore="showDataStoreNavToast"
-                  @newRunStatus="updateAnalysisRun"
+                  @updateAnalysisRow="updateAnalysisRun"
                 />
               </div>
             </template>

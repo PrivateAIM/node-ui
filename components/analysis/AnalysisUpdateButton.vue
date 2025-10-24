@@ -2,7 +2,7 @@
 import { useNuxtApp } from "#app";
 import { useToast } from "primevue/usetoast";
 
-import type { StatusResponse } from "~/services/Api";
+import { PodStatus, type StatusResponse } from "~/services/Api";
 
 const props = defineProps({
   analysisId: {
@@ -11,12 +11,12 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["updatedRunStatus"]);
+const emit = defineEmits(["updateAnalysisRun"]);
 const loading = ref(false);
 const toast = useToast();
 
-async function onClickUpdate() {
-  loading.value = true;
+async function getStatusUpdateFromPodOrc(): Promise<PodStatus | null> {
+  let analysisStatus: PodStatus | null = null;
   const analysisStatusUpdate: StatusResponse = (await useNuxtApp()
     .$hubApi(`/po/status/${props.analysisId}`, {
       method: "GET",
@@ -31,7 +31,7 @@ async function onClickUpdate() {
       });
     })) as StatusResponse;
   if (analysisStatusUpdate && props.analysisId in analysisStatusUpdate) {
-    const analysisStatus = analysisStatusUpdate[props.analysisId];
+    analysisStatus = analysisStatusUpdate[props.analysisId];
     toast.add({
       severity: "info",
       summary: "Analysis status successfully update",
@@ -39,7 +39,6 @@ async function onClickUpdate() {
         "The current status of the analysis container was successfully updated.",
       life: 5000,
     });
-    emit("updatedRunStatus", analysisStatus);
   } else {
     toast.add({
       severity: "warn",
@@ -49,6 +48,16 @@ async function onClickUpdate() {
         "the run status shown is the last reported update to the hub.",
       life: 8000,
     });
+  }
+  return analysisStatus;
+}
+
+async function onClickUpdate() {
+  loading.value = true;
+  const updatedStatus = await getStatusUpdateFromPodOrc();
+  if (updatedStatus) {
+    // TODO replace null with progress update from PO
+    emit("updateAnalysisRun", updatedStatus, null);
   }
 
   loading.value = false;
