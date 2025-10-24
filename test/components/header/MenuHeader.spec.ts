@@ -1,6 +1,6 @@
 import { mount } from "@vue/test-utils";
 import { useRuntimeConfig } from "#app";
-import { vi, describe, it, expect } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import MenuHeader from "~/components/header/MenuHeader.vue";
 
 describe("MenuHeader.vue", () => {
@@ -19,9 +19,10 @@ describe("MenuHeader.vue", () => {
 
     const menuBar = wrapper.find(".menu-bar-header");
 
-    for (const title of menuTitles) {
+    menuTitles.forEach((title, index) => {
       const menuItem = menuBar.find(`li[aria-label="${title}"]`);
-      expect(menuItem.attributes()["aria-level"]).toBe("1"); // Top level menu item
+      console.log(menuItem.attributes());
+      expect(menuItem.attributes()["aria-posinset"]).toBe(`${index + 1}`); // Top level menu item
       const menuLink = menuItem.find(".p-menubar-item-link");
 
       if (!authenticated && title !== "Home") {
@@ -29,7 +30,7 @@ describe("MenuHeader.vue", () => {
       } else {
         expect(menuLink.classes()).toContain("enabled");
       }
-    }
+    });
   }
 
   it("Unauthenticated menu header", async () => {
