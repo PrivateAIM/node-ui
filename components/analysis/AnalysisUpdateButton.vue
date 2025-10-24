@@ -3,13 +3,8 @@ import { useNuxtApp } from "#app";
 import { useToast } from "primevue/usetoast";
 
 import { PodStatus, type StatusResponse } from "~/services/Api";
-import type { ModifiedAnalysisNode } from "~/services/modifiedApiInterfaces";
 
 const props = defineProps({
-  analysisNodeId: {
-    type: String,
-    required: true,
-  },
   analysisId: {
     type: String,
     required: true,
@@ -19,23 +14,6 @@ const props = defineProps({
 const emit = defineEmits(["updateAnalysisRun"]);
 const loading = ref(false);
 const toast = useToast();
-
-async function getProgressUpdateFromHub(): Promise<number | null> {
-  const analysisNode = (await useNuxtApp()
-    .$hubApi(`/analysis-nodes/${props.analysisNodeId}`, {
-      method: "GET",
-    })
-    .catch(() => {
-      toast.add({
-        severity: "warn",
-        summary: "Unable to get a progress update from the Hub",
-        detail:
-          "An error occurred while trying to contact the Hub for a status update. Try again later.",
-        life: 5000,
-      });
-    })) as ModifiedAnalysisNode;
-  return analysisNode.progress ? analysisNode.progress : null;
-}
 
 async function getStatusUpdateFromPodOrc(): Promise<PodStatus | null> {
   let analysisStatus: PodStatus | null = null;
@@ -78,8 +56,8 @@ async function onClickUpdate() {
   loading.value = true;
   const updatedStatus = await getStatusUpdateFromPodOrc();
   if (updatedStatus) {
-    const progressUpdate = await getProgressUpdateFromHub();
-    emit("updateAnalysisRun", updatedStatus, progressUpdate);
+    // TODO replace null with progress update from PO
+    emit("updateAnalysisRun", updatedStatus, null);
   }
 
   loading.value = false;
