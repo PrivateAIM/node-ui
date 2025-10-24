@@ -29,6 +29,9 @@ const {
   error,
 } = await getAnalysisLogs(analysisId);
 
+gatherCurrentLogs();
+await gatherPreviousLogs();
+
 function parseLogs(logResp: LogResponse | null): logEntry[] {
   const analysisLogs = logResp?.analysis;
   const nginxLogs = logResp?.nginx;
@@ -55,7 +58,18 @@ function gatherCurrentLogs() {
   }
 }
 
-gatherCurrentLogs();
+// Previous logs
+async function gatherPreviousLogs() {
+  const prevLogResp: LogResponse = (await useNuxtApp()
+    .$hubApi(`/po/history/${analysisId}`, {
+      method: "GET",
+    })
+    .catch(() => null)) as LogResponse;
+
+  if (prevLogResp) {
+    prevLogs.value = parseLogs(prevLogResp);
+  }
+}
 
 const { pause, resume, isActive } = useIntervalFn(
   () => {
@@ -71,18 +85,8 @@ async function refreshLogs() {
 }
 
 function onRefreshToggle() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   isActive.value ? pause() : resume();
-}
-
-// Previous logs
-const prevLogResp: LogResponse = (await useNuxtApp()
-  .$hubApi(`/po/history/${analysisId}`, {
-    method: "GET",
-  })
-  .catch(() => null)) as LogResponse;
-
-if (prevLogResp) {
-  prevLogs.value = parseLogs(prevLogResp);
 }
 </script>
 
