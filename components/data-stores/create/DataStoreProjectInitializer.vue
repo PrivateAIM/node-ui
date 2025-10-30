@@ -60,12 +60,9 @@ const acceptedProtocols = [
   "wss",
 ];
 
-watch(
-  [selectedProject, selectedDataStoreType],
-  ([newSelectedProject, newSelectedDataStoreType]) => {
-    dataStoreName.value = `${newSelectedProject.id}-${newSelectedDataStoreType.toLowerCase()}`;
-  },
-);
+watch(selectedProject, (newSelectedProject) => {
+  dataStoreName.value = `${newSelectedProject.id}`;
+});
 
 function activateHelp(helpField: HelpTextField) {
   helpActive.value = helpActive.value === helpField ? null : helpField;
