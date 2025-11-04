@@ -136,7 +136,6 @@ async function refreshAccessToken(token: any) {
 }
 
 export default NuxtAuthHandler({
-  // A secret string you define, to ensure correct encryption
   secret: useRuntimeConfig().authSecret,
   callbacks: {
     /* on session retrieval */
@@ -150,7 +149,6 @@ export default NuxtAuthHandler({
     /* on JWT token creation or mutation */
     async jwt({ token, account, user }) {
       if (account && user) {
-        console.log(account);
         return {
           ...token,
           access_token: account.access_token,
