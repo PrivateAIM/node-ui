@@ -61,7 +61,7 @@ const acceptedProtocols = [
 ];
 
 watch(selectedProject, (newSelectedProject) => {
-  dataStoreName.value = newSelectedProject.id;
+  dataStoreName.value = `${newSelectedProject.id}`;
 });
 
 function activateHelp(helpField: HelpTextField) {
@@ -173,14 +173,19 @@ async function onSubmitCreateDataStoreAndProject() {
                 v-model="selectedProject"
                 :options="props.projects"
                 class="project-picker"
-                optionLabel="dropdown"
+                optionLabel="name"
                 placeholder="Select a Project"
               />
             </InputGroup>
             <InputGroup>
               <InputGroupAddon class="data-store-field-name">
                 <i class="pi pi-barcode"></i>
-                <p class="data-store-field-name-box">Data Store</p>
+                <p
+                  v-tooltip.top="'Generated name of the data store'"
+                  class="data-store-field-name-box"
+                >
+                  Data Store
+                </p>
               </InputGroupAddon>
               <InputText v-model="dataStoreName" disabled />
             </InputGroup>

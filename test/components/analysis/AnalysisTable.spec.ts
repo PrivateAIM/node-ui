@@ -6,7 +6,8 @@ import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import AnalysesTable from "~/components/analysis/AnalysesTable.vue";
 import {
   fakeAnalysisNodes,
-  fakeProjects, newFakeAnalysisNode
+  fakeProjects,
+  newFakeAnalysisNode,
 } from "~/test/components/analysis/constants";
 import { getAnalysisNodes } from "~/composables/useAPIFetch";
 import type { AnalysisNode } from "~/services/Api";
@@ -70,7 +71,7 @@ describe("AnalysesTable.vue", () => {
     expect(headerRow.length).toBe(1);
     const headerCols = headerRow[0].findAll("th");
     expect(headerCols[0].text()).toBe("Name"); // First col
-    expect(headerCols[8].text()).toBe("Analysis Controls"); // Last col
+    expect(headerCols[9].text()).toBe("Analysis Controls"); // Last col
 
     // Verify the second row's content
     const secondRowCells = rows[1].findAll("td");
@@ -87,7 +88,7 @@ describe("AnalysesTable.vue", () => {
     expect(rows.length).toBe(3); // Ensure 3 rows exist as defined in fakeAnalysisNodes
 
     // "Updated" response
-    fakeAnalysisNodes.push(newFakeAnalysisNode)  // Add new entry to output
+    fakeAnalysisNodes.push(newFakeAnalysisNode); // Add new entry to output
     vi.mocked(getAnalysisNodes).mockResolvedValue({
       data: ref(fakeAnalysisNodes),
       pending: ref(false),
@@ -101,9 +102,8 @@ describe("AnalysesTable.vue", () => {
     await refreshButton.trigger("click");
     await flushPromises();
 
-    expect(wrapper.findAll("tbody tr").length).toBe(4);  // Should be one entry bigger
-
-  })
+    expect(wrapper.findAll("tbody tr").length).toBe(4); // Should be one entry bigger
+  });
 
   test("No analyses returned", async () => {
     const emptyResp: AnalysisNode[] = [];

@@ -35,7 +35,7 @@ export const handlers = [
 
     if (analysisId === fakeAnalysisId) {
       return HttpResponse.json({
-        status: "started",
+        [fakeAnalysisId]: "started",
       });
     } else if (analysisId === fakeBrokenAnalysisId) {
       return new HttpResponse(null, { status: 500 });
@@ -59,17 +59,31 @@ export const handlers = [
   }),
 
   // Analysis logs
-  http.get("/po/85629f5b-da04-4f7c-84fc-097b2db93de5/history", () => {
+  http.get(`/po/logs/${fakeAnalysisId}`, () => {
     return HttpResponse.json({
       status: 200,
       data: {
         analysis: {
-          "analysis-15518efa-5146-4290-a7cb-95d27f41d9913518": [
-            "Starting FlameCoreSDK",
-          ],
+          [fakeAnalysisId]: ["Starting FlameCoreSDK"],
         },
         nginx: {
-          "nginx-analysis-15518efa-5146-4290-a7cb-95d27f41d9913518": [
+          [fakeAnalysisId]: [
+            "/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty",
+          ],
+        },
+      },
+    });
+  }),
+
+  http.get(`/po/history/${fakeAnalysisId}`, () => {
+    return HttpResponse.json({
+      status: 200,
+      data: {
+        analysis: {
+          [fakeAnalysisId]: ["Starting FlameCoreSDK"],
+        },
+        nginx: {
+          [fakeAnalysisId]: [
             "/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty",
           ],
         },
@@ -83,7 +97,7 @@ export const handlers = [
     const analysisId = body.analysis_id;
     if (analysisId === fakeAnalysisId) {
       return HttpResponse.json({
-        status: "started",
+        [fakeAnalysisId]: "started",
       });
     } else {
       return HttpResponse.json(null, {
@@ -91,75 +105,54 @@ export const handlers = [
       });
     }
   }),
-  http.put(`/po/${fakeAnalysisId}/stop`, () => {
+  http.put(`/po/stop/${fakeAnalysisId}`, () => {
     return HttpResponse.json({
-      status: {
-        "analysis-15518efa-5146-4290-a7cb-95d27f41d9913518": "stopped",
-        "analysis-15518efa-5146-4290-a7cb-95d27f41d9918148": "stopped",
-      },
+      [fakeAnalysisId]: "stopped",
     });
   }),
-  http.delete(`/po/${fakeAnalysisId}/delete`, () => {
+  http.delete(`/analysis/terminate/${fakeAnalysisId}`, () => {
     return HttpResponse.json({
-      status: {
-        "analysis-15518efa-5146-4290-a7cb-95d27f41d9913518": "stopped",
-        "analysis-15518efa-5146-4290-a7cb-95d27f41d9918148": "stopped",
-      },
+      [fakeAnalysisId]: "stopped",
     });
   }),
 
   // Update Analysis Button - running analysis TODO remove
-  http.get(`/po/${fakeAnalysisId}/status`, () => {
+  http.get(`/po/status/${fakeAnalysisId}`, () => {
     return HttpResponse.json({
-      status: {
-        "analysis-15518efa-5146-4290-a7cb-95d27f41d9913518": "running",
-        "analysis-15518efa-5146-4290-a7cb-95d27f41d9918148": "stopped",
-      },
+      [fakeAnalysisId]: "running",
+    });
+  }),
+
+  http.get(`/po/status`, () => {
+    return HttpResponse.json({
+      [fakeAnalysisId]: "running",
     });
   }),
 
   // Update Analysis Button - no running analyses TODO remove
-  http.get(`/po/${fakeMissingAnalysisId}/status`, () => {
-    return HttpResponse.json({
-      status: {},
-    });
+  http.get(`/po/status/${fakeMissingAnalysisId}`, () => {
+    return HttpResponse.json({});
   }),
 
   // Update Analysis Button - broken TODO remove
-  http.get(`/po/${fakeBrokenAnalysisId}/status`, () => {
-    return HttpResponse.error();
+  http.get(`/po/status/${fakeBrokenAnalysisId}`, () => {
+    return HttpResponse.json({}, { status: 500 });
   }),
 
   // Broken analysis controls
-  http.put(`/po/${fakeBrokenAnalysisId}/*`, () => {
-    return HttpResponse.json({
-      detail: {
-        message:
-          "HTTP Request: PUT http://flame-node-po-service:8000/po/15518efa-5146-4290-a7cb-95d27f41d991/stop - HTTP Status: 503 - Service is unavailable. Check the PodOrc service at http://flame-node-po-service:8000",
-        service: "PodOrc",
-      },
-    });
+  http.put(`/po/stop/${fakeBrokenAnalysisId}`, () => {
+    return HttpResponse.json({}, { status: 500 });
   }),
-  http.delete(`/po/${fakeBrokenAnalysisId}/*`, () => {
-    return HttpResponse.json({
-      detail: {
-        message:
-          "HTTP Request: PUT http://flame-node-po-service:8000/po/15518efa-5146-4290-a7cb-95d27f41d991/stop - HTTP Status: 503 - Service is unavailable. Check the PodOrc service at http://flame-node-po-service:8000",
-        service: "PodOrc",
-      },
-    });
+  http.delete(`/analysis/terminate/${fakeBrokenAnalysisId}`, () => {
+    return HttpResponse.json({}, { status: 500 });
   }),
 
   // Missing analysis controls
-  http.put(`/po/${fakeMissingAnalysisId}/stop`, () => {
-    return HttpResponse.json({
-      status: {},
-    });
+  http.put(`/po/stop/${fakeMissingAnalysisId}`, () => {
+    return HttpResponse.json({});
   }),
-  http.delete(`/po/${fakeMissingAnalysisId}/delete`, () => {
-    return HttpResponse.json({
-      status: {},
-    });
+  http.delete(`/analysis/terminate/${fakeMissingAnalysisId}`, () => {
+    return HttpResponse.json({});
   }),
 
   // PO Cleanup Endpoints

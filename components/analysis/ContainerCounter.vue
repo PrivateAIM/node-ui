@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import Badge from "primevue/badge"
+import Badge from "primevue/badge";
 import { countAnalysisContainers } from "~/utils/count-analyses";
-import type { ModifiedAnalysisNode } from "~/components/analysis/AnalysesTable.vue";
+import type { ModifiedAnalysisNode } from "~/services/modifiedApiInterfaces";
 import { AnalysisNodeRunStatus } from "~/types/analysis";
 
 const props = defineProps({
@@ -134,7 +134,12 @@ function onApplyRunStatusFilter(runStatus: string) {
 
 <style lang="scss" scoped>
 .counter-div {
-  width: 65%;
+  display: flex;
+  align-content: flex-end;
+}
+
+.counter-card {
+  width: 30em;
 }
 
 .counter-card {
@@ -166,5 +171,6 @@ function onApplyRunStatusFilter(runStatus: string) {
 
 .counter-id-txt {
   font-size: 0.9em;
+  padding-top: 0.3em;
 }
 </style>

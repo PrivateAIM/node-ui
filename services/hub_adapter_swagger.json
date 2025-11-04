@@ -35,7 +35,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CreatePodResponse"
+                  "$ref": "#/components/schemas/StatusResponse"
                 }
               }
             }
@@ -61,14 +61,44 @@
         ]
       }
     },
-    "/po/{analysis_id}/logs": {
+    "/po/logs": {
+      "get": {
+        "tags": [
+          "PodOrc"
+        ],
+        "summary": "Get All Analysis Logs",
+        "description": "Get all analysis pod logs.",
+        "operationId": "get_all_analysis_logs_po_logs_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/po/logs/{analysis_id}": {
       "get": {
         "tags": [
           "PodOrc"
         ],
         "summary": "Get Analysis Logs",
-        "description": "Get the logs for a specific analysis run.",
-        "operationId": "get_analysis_logs_po__analysis_id__logs_get",
+        "description": "Get the analysis pod logs.",
+        "operationId": "get_analysis_logs_po_logs__analysis_id__get",
         "security": [
           {
             "JWT": []
@@ -80,15 +110,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "format": "uuid"
-                },
-                {
-                  "type": "null"
-                }
-              ],
+              "type": "string",
+              "format": "uuid",
               "description": "UUID of the analysis.",
               "title": "Analysis Id"
             },
@@ -122,14 +145,44 @@
         }
       }
     },
-    "/po/{analysis_id}/history": {
+    "/po/history": {
+      "get": {
+        "tags": [
+          "PodOrc"
+        ],
+        "summary": "Get All Analysis Log History",
+        "description": "Get all previous analysis pod logs.",
+        "operationId": "get_all_analysis_log_history_po_history_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/po/history/{analysis_id}": {
       "get": {
         "tags": [
           "PodOrc"
         ],
         "summary": "Get Analysis Log History",
-        "description": "Get the previous logs for a specific analysis.",
-        "operationId": "get_analysis_log_history_po__analysis_id__history_get",
+        "description": "Get the previous analysis pod logs.",
+        "operationId": "get_analysis_log_history_po_history__analysis_id__get",
         "security": [
           {
             "JWT": []
@@ -183,14 +236,44 @@
         }
       }
     },
-    "/po/{analysis_id}/status": {
+    "/po/status": {
+      "get": {
+        "tags": [
+          "PodOrc"
+        ],
+        "summary": "Get All Analysis Status",
+        "description": "Get all analysis run statuses.",
+        "operationId": "get_all_analysis_status_po_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatusResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/po/status/{analysis_id}": {
       "get": {
         "tags": [
           "PodOrc"
         ],
         "summary": "Get Analysis Status",
-        "description": "Get the status for a specific analysis run.",
-        "operationId": "get_analysis_status_po__analysis_id__status_get",
+        "description": "Get a specific analysis pod run status.",
+        "operationId": "get_analysis_status_po_status__analysis_id__get",
         "security": [
           {
             "JWT": []
@@ -244,14 +327,44 @@
         }
       }
     },
-    "/po/{analysis_id}/pods": {
+    "/po/pods": {
+      "get": {
+        "tags": [
+          "PodOrc"
+        ],
+        "summary": "Get All Analysis Pods",
+        "description": "Get all running pods in the k8s cluster.",
+        "operationId": "get_all_analysis_pods_po_pods_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PodResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/po/pods/{analysis_id}": {
       "get": {
         "tags": [
           "PodOrc"
         ],
         "summary": "Get Analysis Pods",
-        "description": "Get the pods for a specific analysis run.",
-        "operationId": "get_analysis_pods_po__analysis_id__pods_get",
+        "description": "Get information on a specific running analysis pod in the k8s cluster.",
+        "operationId": "get_analysis_pods_po_pods__analysis_id__get",
         "security": [
           {
             "JWT": []
@@ -305,14 +418,44 @@
         }
       }
     },
-    "/po/{analysis_id}/stop": {
+    "/po/stop": {
+      "put": {
+        "tags": [
+          "PodOrc"
+        ],
+        "summary": "Stop All Analyses",
+        "description": "Stop all analysis pods.",
+        "operationId": "stop_all_analyses_po_stop_put",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatusResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/po/stop/{analysis_id}": {
       "put": {
         "tags": [
           "PodOrc"
         ],
         "summary": "Stop Analysis",
         "description": "Stop a specific analysis run.",
-        "operationId": "stop_analysis_po__analysis_id__stop_put",
+        "operationId": "stop_analysis_po_stop__analysis_id__put",
         "security": [
           {
             "JWT": []
@@ -366,14 +509,44 @@
         }
       }
     },
-    "/po/{analysis_id}/delete": {
+    "/po/delete": {
+      "delete": {
+        "tags": [
+          "PodOrc"
+        ],
+        "summary": "Delete All Analyses",
+        "description": "Delete all analysis pods.",
+        "operationId": "delete_all_analyses_po_delete_delete",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatusResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/po/delete/{analysis_id}": {
       "delete": {
         "tags": [
           "PodOrc"
         ],
         "summary": "Delete Analysis",
         "description": "Delete a specific analysis run.",
-        "operationId": "delete_analysis_po__analysis_id__delete_delete",
+        "operationId": "delete_analysis_po_delete__analysis_id__delete",
         "security": [
           {
             "JWT": []
@@ -433,7 +606,7 @@
           "PodOrc"
         ],
         "summary": "Cleanup Node",
-        "description": "Delete specific types of resources.\n\nShould be a comma separated combination of the following entries: 'all', 'analyzes', 'services', 'mb', 'rs'",
+        "description": "Delete specific types of resources.\n\nShould be a comma separated combination of the following entries:\n'all', 'analyzes', 'services', 'mb', 'rs', 'keycloak'",
         "operationId": "cleanup_node_po_cleanup__cleanup_type__delete",
         "security": [
           {
@@ -446,16 +619,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "What type of cleanup.",
-              "title": "Cleanup Type"
+              "$ref": "#/components/schemas/CleanUpType",
+              "description": "What type of cleanup."
             },
             "description": "What type of cleanup."
           }
@@ -487,14 +652,65 @@
         }
       }
     },
-    "/local/{object_id}": {
-      "get": {
+    "/analysis/initialize": {
+      "post": {
         "tags": [
-          "Results"
+          "Meta"
         ],
-        "summary": "Retrieve Intermediate Result From Local",
-        "description": "Get a local result as file from local storage.",
-        "operationId": "retrieve_intermediate_result_from_local_local__object_id__get",
+        "summary": "Initialize Analysis",
+        "description": "Perform the required checks to start an analysis and send information to the PO.",
+        "operationId": "initialize_analysis_analysis_initialize_post",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/InitializeAnalysis",
+                "description": "Required information to start analysis"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatusResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/analysis/terminate/{analysis_id}": {
+      "delete": {
+        "tags": [
+          "Meta"
+        ],
+        "summary": "Terminate Analysis",
+        "description": "Perform the required checks to stop an analysis and delete it and its components.\n\nThis method will first delete the kong consumer and then send the delete command to the PO.",
+        "operationId": "terminate_analysis_analysis_terminate__analysis_id__delete",
         "security": [
           {
             "JWT": []
@@ -502,14 +718,23 @@
         ],
         "parameters": [
           {
-            "name": "object_id",
+            "name": "analysis_id",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid",
-              "title": "Object Id"
-            }
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              ],
+              "description": "Analysis UUID that should be terminated",
+              "title": "Analysis Id"
+            },
+            "description": "Analysis UUID that should be terminated"
           }
         ],
         "responses": {
@@ -517,7 +742,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/StatusResponse"
+                }
               }
             }
           },
@@ -535,198 +762,6 @@
             }
           }
         }
-      }
-    },
-    "/local": {
-      "put": {
-        "tags": [
-          "Results"
-        ],
-        "summary": "Submit Intermediate Result To Local",
-        "operationId": "submit_intermediate_result_to_local_local_put",
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "$ref": "#/components/schemas/Body_submit_intermediate_result_to_local_local_put"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "202": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResultsUploadResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found"
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
-      }
-    },
-    "/intermediate/{object_id}": {
-      "get": {
-        "tags": [
-          "Results"
-        ],
-        "summary": "Retrieve Intermediate Result From Hub",
-        "description": "Get an intermediate result as file from the FLAME Hub.",
-        "operationId": "retrieve_intermediate_result_from_hub_intermediate__object_id__get",
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "object_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "title": "Object Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "404": {
-            "description": "Not found"
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/intermediate": {
-      "put": {
-        "tags": [
-          "Results"
-        ],
-        "summary": "Submit Intermediate Result To Hub",
-        "description": "Upload a file as an intermediate result to the FLAME Hub. Returns a 202 on success.\n\nThis endpoint returns immediately and submits the file in the background.",
-        "operationId": "submit_intermediate_result_to_hub_intermediate_put",
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "$ref": "#/components/schemas/Body_submit_intermediate_result_to_hub_intermediate_put"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "202": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResultsUploadResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found"
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
-      }
-    },
-    "/final": {
-      "put": {
-        "tags": [
-          "Results"
-        ],
-        "summary": "Submit Final Result To Hub",
-        "description": "Upload final results to FLAME Hub",
-        "operationId": "submit_final_result_to_hub_final_put",
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "$ref": "#/components/schemas/Body_submit_final_result_to_hub_final_put"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "204": {
-            "description": "Successful Response"
-          },
-          "404": {
-            "description": "Not found"
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
       }
     },
     "/projects": {
@@ -2097,7 +2132,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Successful Response",
             "content": {
               "application/json": {
@@ -2998,9 +3033,9 @@
                 "enum": [
                   "starting",
                   "started",
-                  "running",
                   "stopping",
                   "stopped",
+                  "running",
                   "finished",
                   "failed"
                 ]
@@ -3087,16 +3122,6 @@
           "node_realm_id"
         ],
         "title": "AnalysisNode"
-      },
-      "AnalysisStatus": {
-        "type": "string",
-        "enum": [
-          "started",
-          "created",
-          "running",
-          "stopped"
-        ],
-        "title": "AnalysisStatus"
       },
       "Body_accept_reject_analysis_node_analysis_nodes__analysis_node_id__post": {
         "properties": {
@@ -3437,47 +3462,17 @@
         ],
         "title": "Body_get_token_token_post"
       },
-      "Body_submit_final_result_to_hub_final_put": {
-        "properties": {
-          "file": {
-            "type": "string",
-            "format": "binary",
-            "title": "File"
-          }
-        },
-        "type": "object",
-        "required": [
-          "file"
+      "CleanUpType": {
+        "type": "string",
+        "enum": [
+          "all",
+          "analyzes",
+          "services",
+          "mb",
+          "rs",
+          "keycloak"
         ],
-        "title": "Body_submit_final_result_to_hub_final_put"
-      },
-      "Body_submit_intermediate_result_to_hub_intermediate_put": {
-        "properties": {
-          "file": {
-            "type": "string",
-            "format": "binary",
-            "title": "File"
-          }
-        },
-        "type": "object",
-        "required": [
-          "file"
-        ],
-        "title": "Body_submit_intermediate_result_to_hub_intermediate_put"
-      },
-      "Body_submit_intermediate_result_to_local_local_put": {
-        "properties": {
-          "file": {
-            "type": "string",
-            "format": "binary",
-            "title": "File"
-          }
-        },
-        "type": "object",
-        "required": [
-          "file"
-        ],
-        "title": "Body_submit_intermediate_result_to_local_local_put"
+        "title": "CleanUpType"
       },
       "CleanupPodResponse": {
         "properties": {
@@ -3619,18 +3614,6 @@
         "type": "object",
         "title": "Consumer",
         "description": "The Consumer object represents a consumer - or a user - of a service. You can either rely on Kong as the primary datastore, or you can map the consumer list with your database to keep consistency between Kong and your existing primary datastore."
-      },
-      "CreatePodResponse": {
-        "properties": {
-          "status": {
-            "$ref": "#/components/schemas/AnalysisStatus"
-          }
-        },
-        "type": "object",
-        "required": [
-          "status"
-        ],
-        "title": "CreatePodResponse"
       },
       "CreateServiceRequestClientCertificate": {
         "properties": {
@@ -4515,6 +4498,40 @@
         "title": "HttpMethodCode",
         "description": "HTTP method codes."
       },
+      "InitializeAnalysis": {
+        "properties": {
+          "analysis_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Analysis Id"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Project Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "analysis_id",
+          "project_id"
+        ],
+        "title": "InitializeAnalysis"
+      },
       "KeyAuth": {
         "properties": {
           "consumer": {
@@ -4739,31 +4756,48 @@
         "title": "ListServices",
         "description": "Custom route list response model."
       },
+      "LogReport": {
+        "additionalProperties": {
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "type": "array"
+        },
+        "propertyNames": {
+          "format": "uuid"
+        },
+        "type": "object",
+        "title": "LogReport",
+        "description": "Response with dynamic UUID keys and dynamic analysis log keys"
+      },
       "LogResponse": {
         "properties": {
           "analysis": {
             "anyOf": [
               {
-                "additionalProperties": true,
-                "type": "object"
+                "$ref": "#/components/schemas/LogReport"
               },
               {
                 "type": "null"
               }
-            ],
-            "title": "Analysis"
+            ]
           },
           "nginx": {
             "anyOf": [
               {
-                "additionalProperties": true,
-                "type": "object"
+                "$ref": "#/components/schemas/LogReport"
               },
               {
                 "type": "null"
               }
-            ],
-            "title": "Nginx"
+            ]
           }
         },
         "type": "object",
@@ -5049,22 +5083,38 @@
         "title": "NodeTypeResponse"
       },
       "PodResponse": {
-        "properties": {
-          "pods": {
+        "additionalProperties": {
+          "items": {
             "anyOf": [
               {
-                "items": {},
-                "type": "array"
+                "type": "string"
               },
               {
                 "type": "null"
               }
-            ],
-            "title": "Pods"
-          }
+            ]
+          },
+          "type": "array"
+        },
+        "propertyNames": {
+          "format": "uuid"
         },
         "type": "object",
         "title": "PodResponse"
+      },
+      "PodStatus": {
+        "type": "string",
+        "enum": [
+          "starting",
+          "started",
+          "stuck",
+          "running",
+          "stopping",
+          "stopped",
+          "finished",
+          "failed"
+        ],
+        "title": "PodStatus"
       },
       "Project": {
         "properties": {
@@ -5466,20 +5516,6 @@
           "updated_at"
         ],
         "title": "RegistryProject"
-      },
-      "ResultsUploadResponse": {
-        "properties": {
-          "url": {
-            "type": "string",
-            "title": "Url"
-          }
-        },
-        "type": "object",
-        "required": [
-          "url"
-        ],
-        "title": "ResultsUploadResponse",
-        "description": "Response from uploading a file using the results microservice."
       },
       "Route": {
         "properties": {
@@ -6123,16 +6159,8 @@
             "default": 80
           },
           "path": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Path",
-            "default": "/somewhere"
+            "type": "string",
+            "title": "Path"
           },
           "connect_timeout": {
             "anyOf": [
@@ -6243,7 +6271,8 @@
         },
         "type": "object",
         "required": [
-          "host"
+          "host",
+          "path"
         ],
         "title": "ServiceRequest",
         "description": "Improved version of the CreateServiceRequest with better defaults.",
@@ -6266,22 +6295,15 @@
         ]
       },
       "StatusResponse": {
-        "properties": {
-          "status": {
-            "anyOf": [
-              {
-                "additionalProperties": true,
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Status"
-          }
+        "additionalProperties": {
+          "$ref": "#/components/schemas/PodStatus"
+        },
+        "propertyNames": {
+          "format": "uuid"
         },
         "type": "object",
-        "title": "StatusResponse"
+        "title": "StatusResponse",
+        "description": "Response with dynamic UUID keys and dynamic analysis keys"
       },
       "Token": {
         "properties": {
@@ -6377,12 +6399,16 @@
       "description": "Endpoints for authorization specific tasks."
     },
     {
+      "name": "Meta",
+      "description": "Custom Hub Adapter endpoints which combine endpoints from other APIs."
+    },
+    {
       "name": "Health",
       "description": "Endpoints for checking the health of this API and the downstream services."
     },
     {
       "name": "Hub",
-      "description": "Endpoints for the central Hub service."
+      "description": "Gateway endpoints for the central Hub service."
     },
     {
       "name": "Kong",
@@ -6390,11 +6416,7 @@
     },
     {
       "name": "PodOrc",
-      "description": "Endpoints for the Pod Orchestration service."
-    },
-    {
-      "name": "Results",
-      "description": "Endpoints for the Results service."
+      "description": "Gateway endpoints for the Pod Orchestration service."
     }
   ]
 }

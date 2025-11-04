@@ -53,7 +53,7 @@ describe("ProjectProposalTable.vue", () => {
     const headerRow = wrapper.findAll("thead tr");
     expect(headerRow.length).toBe(1);
     const headerCols = headerRow[0].findAll("th");
-    expect(headerCols[0].text()).toBe("Name"); // First col
+    expect(headerCols[0].text()).toBe("Project Name"); // First col
     expect(headerCols[2].text()).toBe("Approval Status"); // Last col
 
     // Verify the second row's content

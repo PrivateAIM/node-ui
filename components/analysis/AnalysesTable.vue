@@ -2,9 +2,13 @@
 import { useFetch, useNuxtApp } from "#app";
 import Badge from "primevue/badge";
 import { useToast } from "primevue/usetoast";
+import ProgressBar from "primevue/progressbar";
 import { getAnalysisNodes } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
-import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
+import {
+  showConnectionErrorToast,
+  showHubAdapterConnectionErrorToast,
+} from "~/composables/connectionErrorToast";
 import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
 import AnalysisControlButtons from "./AnalysisControlButtons.vue";
@@ -16,18 +20,21 @@ import {
 import {
   type AnalysisNode,
   type ListRoutes,
+  PodStatus,
   type Project,
   type Route,
+  type StatusResponse,
 } from "~/services/Api";
 import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
 import { ApprovalStatus } from "~/types/node";
 import ContainerCounter from "~/components/analysis/ContainerCounter.vue";
 import { useNodeType } from "~/composables/useNodeType";
+import type { ModifiedAnalysisNode } from "~/services/modifiedApiInterfaces";
 
 const toast = useToast();
 const nodeType = await useNodeType();
 
-const analyses = ref<ModifiedAnalysisNode[]>([]);
+const analyses = ref<Map<string, ModifiedAnalysisNode>>(new Map());
 
 const expandRowEntries = [];
 const expandedRows = ref();
@@ -46,14 +53,6 @@ const kongRoutes = ref<Set<string>>(new Set());
 const runStatuses = Object.values(AnalysisNodeRunStatus);
 const approvalStatuses = Object.values(ApprovalStatus);
 const buildStatuses = Object.values(AnalysisBuildStatus);
-
-export interface ModifiedAnalysisNode extends AnalysisNode {
-  project_name: string | undefined;
-  expand: {
-    [key: string]: string;
-  };
-  datastore: boolean;
-}
 
 const {
   data: analysisNodeResp,
@@ -101,8 +100,96 @@ if (projStatus.value === "success" && projData.value) {
   });
 }
 
-function parseData(respStatus: string, respData: AnalysisNode[] | null) {
-  const parsedAnalyses: ModifiedAnalysisNode[] = [];
+async function getRunStatusesFromPodOrc(): Promise<StatusResponse | null> {
+  return (await useNuxtApp()
+    .$hubApi("/po/status", {
+      method: "GET",
+    })
+    .catch(() => {
+      showConnectionErrorToast(toast, {
+        severity: "warn",
+        summary: "Missing PO Status Update",
+        detail:
+          "Unable to retrieve pod statuses from the PO, relying on information from the Hub",
+        life: 3000,
+      });
+    })) as StatusResponse;
+}
+
+// async function checkForUpdatesFromPodOrc() {
+//   const newStatuses = await getRunStatusesFromPodOrc();
+//   if (newStatuses) {
+//     for (const [analysisId, status] of Object.entries(newStatuses)) {
+//       updateAnalysisRun(analysisId, status);
+//     }
+//   }
+// }
+
+function setProgress(analysis: ModifiedAnalysisNode): ModifiedAnalysisNode {
+  // For testing: Math.round(Math.random() * 100);
+  analysis.progress = analysis.progress ? analysis.progress : 0;
+
+  const currentRunStatus = analysis.run_status;
+  if (currentRunStatus) {
+    if (currentRunStatus === AnalysisNodeRunStatus.Failed) {
+      analysis.progress = 0;
+    } else if (currentRunStatus === AnalysisNodeRunStatus.Finished) {
+      analysis.progress = 100;
+    }
+  }
+  return analysis;
+}
+
+function determineProgressBarColor(progress: number) {
+  let color: string;
+
+  if (!progress) {
+    color = "#FFFFFF";
+  } else if (progress < 33) {
+    color = "#ef4444";
+  } else if (progress < 66) {
+    color = "#f59e0b";
+  } else {
+    color = "#10b981";
+  }
+
+  return {
+    "--p-progressbar-value-background": color,
+  };
+}
+
+function parseAnalysis(
+  analysisEntry: ModifiedAnalysisNode,
+  runStatuses: StatusResponse | null,
+): ModifiedAnalysisNode {
+  const projId = analysisEntry.analysis?.project_id;
+  const analysisId = analysisEntry.analysis_id;
+  if (projId) {
+    analysisEntry.project_name = projMap.has(projId) ? projMap.get(projId) : "";
+    analysisEntry.datastore = kongRoutes.value.has(projId);
+  }
+  // If PodOrc status update returns null -> use hub info since it's all we have
+  // If status from PodOrc -> use it
+  // If no run status reported by PodOrc, and it's not failed/finished -> set to null (wrong hub info)
+  if (runStatuses) {
+    if (analysisId in runStatuses) {
+      analysisEntry.run_status = runStatuses[analysisId];
+    } else {
+      if (
+        analysisEntry.run_status != AnalysisNodeRunStatus.Failed &&
+        analysisEntry.run_status != AnalysisNodeRunStatus.Finished
+      ) {
+        analysisEntry.run_status = null;
+      }
+    }
+  }
+  return setProgress(analysisEntry);
+}
+
+async function parseData(respStatus: string, respData: AnalysisNode[] | null) {
+  const parsedAnalyses = new Map<string, ModifiedAnalysisNode>();
+  const currentRunStatuses = await getRunStatusesFromPodOrc();
+
   if (respStatus === "success") {
     const formattedAnalyses = formatDataRow(
       respData,
@@ -111,14 +198,10 @@ function parseData(respStatus: string, respData: AnalysisNode[] | null) {
     );
     if (projMap.size > 0) {
       formattedAnalyses.forEach((analysisEntry: ModifiedAnalysisNode) => {
-        const projId = analysisEntry.analysis?.project_id;
-        if (projId) {
-          analysisEntry.project_name = projMap.has(projId)
-            ? projMap.get(projId)
-            : "";
-          analysisEntry.datastore = kongRoutes.value.has(projId);
-        }
-        parsedAnalyses.push(analysisEntry);
+        parsedAnalyses[analysisEntry.analysis_id] = parseAnalysis(
+          analysisEntry,
+          currentRunStatuses,
+        );
       });
       analyses.value = parsedAnalyses;
     }
@@ -127,16 +210,20 @@ function parseData(respStatus: string, respData: AnalysisNode[] | null) {
   }
 }
 
-parseData(status.value, analysisNodeResp.value);
+onMounted(() => {
+  parseData(status.value, analysisNodeResp.value);
+  // TODO reactivate after fixing toast spam
+  // setInterval(checkForUpdatesFromPodOrc, 15000); // Poll PO every 15 seconds
+});
 
 async function onTableRefresh() {
   await refresh();
-  parseData(status.value, analysisNodeResp.value);
+  await parseData(status.value, analysisNodeResp.value);
 }
 
 function onPage(event) {
   const currentPage = event.page + 1;
-  const currentNumberEntries = analyses.value.length;
+  const currentNumberEntries = analyses.value.size;
   const currentMaxPage = Math.ceil(currentNumberEntries / event.rows);
 
   if (!allResultsRetrieved) {
@@ -168,7 +255,7 @@ async function getNextPage() {
       allResultsRetrieved = true;
     }
     currentOffset += queryLimit; // Increment offset value
-    parseData("success", nextSetResults);
+    await parseData("success", nextSetResults);
   } else {
     // No results returned means all were retrieved
     allResultsRetrieved = true;
@@ -199,15 +286,11 @@ const updateFilters = (filterText: string) => {
   filters.value.global.value = filterText;
 };
 
-function updateRunStatus(
-  analysisNodeId: string,
-  newStatus: AnalysisNode["run_status"],
-) {
-  for (let row of analyses.value as AnalysisNode[]) {
-    if (row.id === analysisNodeId) {
-      row.run_status = newStatus;
-      break;
-    }
+function updateAnalysisRun(analysisId: string, newStatus: PodStatus | null) {
+  if (analysisId in analyses.value) {
+    const analysisToUpdate = analyses.value[analysisId];
+    analysisToUpdate.run_status = newStatus;
+    analyses.value[analysisId] = setProgress(analysisToUpdate);
   }
 }
 
@@ -296,7 +379,7 @@ const onCloseNavToast = () => {
               icon="pi pi-exclamation-triangle"
               severity="warn"
             >
-              Some controls may be disabled!
+              Controls may be disabled!
             </Message>
             <p>
               If the image for the analysis is not yet
@@ -305,8 +388,8 @@ const onCloseNavToast = () => {
                 :value="'finished'"
                 style="margin-left: 0.5em; margin-right: 0.5em"
               />
-              (see Build Status), a container for the analysis cannot be
-              started.
+              (see Build Status) or if a data store does not exist for the
+              associated project, then the analysis cannot be started
             </p>
           </div>
           <div class="analysis-container-counter">
@@ -345,7 +428,7 @@ const onCloseNavToast = () => {
           :rows="10"
           :rowsPerPageOptions="[10, 20, 50]"
           :sortOrder="-1"
-          :value="analyses"
+          :value="Object.values(analyses)"
           dataKey="id"
           filterDisplay="menu"
           paginator
@@ -359,6 +442,11 @@ const onCloseNavToast = () => {
             <template #header>
               <span v-tooltip.top="'Name of the analysis'" class="help-text">
                 <b>Name</b>
+              </span>
+            </template>
+            <template #body="{ data }">
+              <span v-tooltip.right="data.analysis_id" class="help-text">
+                {{ data.analysis.name }}
               </span>
             </template>
           </Column>
@@ -403,20 +491,6 @@ const onCloseNavToast = () => {
               </Select>
             </template>
           </Column>
-          <!--          <Column-->
-          <!--            field="id"-->
-          <!--            header="Set Approval"-->
-          <!--            style="min-width: 10em"-->
-          <!--            :exportable="false"-->
-          <!--          >-->
-          <!--            <template #body="slotProps">-->
-          <!--              <ApproveRejectButtons-->
-          <!--                :objectId="slotProps.data.id"-->
-          <!--                :objectClass="'analysis'"-->
-          <!--                @updatedRow="updateTable"-->
-          <!--              />-->
-          <!--            </template>-->
-          <!--          </Column>-->
           <Column
             :showAddButton="false"
             :showApplyButton="false"
@@ -511,10 +585,15 @@ const onCloseNavToast = () => {
           <Column :sortable="true" field="project_name">
             <template #header>
               <span
-                v-tooltip.top="'Date the analysis image was created'"
+                v-tooltip.top="'Name of the associated project'"
                 class="help-text"
               >
                 <b>Project</b>
+              </span>
+            </template>
+            <template #body="{ data }">
+              <span v-tooltip.top="data.analysis.project_id" class="help-text">
+                {{ data.project_name }}
               </span>
             </template>
           </Column>
@@ -579,6 +658,28 @@ const onCloseNavToast = () => {
               </p>
             </template>
           </Column>
+          <Column field="progress">
+            <template #header>
+              <span
+                v-tooltip.top="'Self-reported progress of analysis'"
+                class="help-text"
+              >
+                <b>Progress</b>
+              </span>
+            </template>
+            <template #body="{ data }">
+              <ProgressBar
+                :value="data.progress"
+                :style="determineProgressBarColor(data.progress)"
+                :mode="
+                  data.run_status === AnalysisNodeRunStatus.Running &&
+                  !data.progress
+                    ? 'indeterminate'
+                    : 'determinate'
+                "
+              />
+            </template>
+          </Column>
           <Column :exportable="false" field="expand.id" style="min-width: 13em">
             <template #header>
               <span
@@ -600,8 +701,9 @@ const onCloseNavToast = () => {
                   :analysisRunStatus="slotProps.data.run_status"
                   :nodeId="slotProps.data.node_id"
                   :projectId="slotProps.data.analysis.project_id"
+                  :datastore="slotProps.data.datastore"
                   @missingDataStore="showDataStoreNavToast"
-                  @newRunStatus="updateRunStatus"
+                  @updateAnalysisRow="updateAnalysisRun"
                 />
               </div>
             </template>
@@ -618,6 +720,16 @@ const onCloseNavToast = () => {
   display: inline-flex;
   justify-content: center;
   border: 1px solid #eab308;
+}
+
+.p-tooltip {
+  max-width: none !important;
+  white-space: nowrap !important;
+}
+
+.p-tooltip-text {
+  width: auto !important;
+  display: inline-block;
 }
 
 .nav-btn {

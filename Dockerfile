@@ -1,4 +1,4 @@
-FROM node:20-alpine AS base
+FROM node:23-alpine AS base
 LABEL maintainer="bruce.schultz@uk-koeln.de"
 
 RUN adduser -u 10000 -D nodeui
