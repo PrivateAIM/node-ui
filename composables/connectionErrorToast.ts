@@ -4,7 +4,7 @@ const activeToasts = new Set();
 
 export function showConnectionErrorToast(
   toast: ToastServiceMethods,
-  { severity, summary, detail, life },
+  { severity, summary, detail, life = 5000 },
 ) {
   const toastKey = `${severity}-${summary}-${detail}`;
 
@@ -32,7 +32,6 @@ export const showHubAdapterConnectionErrorToast = (
     severity: "error",
     summary: "Service error",
     detail: msg,
-    life: 300,
   });
 };
 
@@ -44,7 +43,6 @@ export const showDownstreamConnectionErrorToast = (
     severity: "error",
     summary: "Service unavailable error",
     detail: `Unable to contact the ${service} service.`,
-    life: 500,
   });
   console.warn(`The ${service} service is unreachable`);
 };
@@ -56,7 +54,6 @@ export const showKongConnectionErrorToast = (toast: ToastServiceMethods) => {
     severity: "error",
     summary: "Connection error",
     detail: "Unable to contact the Kong gateway service.",
-    life: 500,
   });
   console.warn("Kong service unreachable");
 };
@@ -66,7 +63,6 @@ export const showKongDuplicateErrorToast = (toast: ToastServiceMethods) => {
     severity: "error",
     summary: "Duplicate entry error",
     detail: "A data store for this project and server type already exists!",
-    life: 500,
   });
 };
 
@@ -78,7 +74,7 @@ export const showKongConnectionTestErrorToast = (
     severity: "error",
     summary: "Connection test failed",
     detail: "The following error occurred when testing the connection: " + msg,
-    life: 800,
+    life: 8000,
   });
   console.error(msg);
 };
@@ -91,7 +87,6 @@ export const showKongMissingHealthConsumerErrorToast = (
     severity: "error",
     summary: "Missing health endpoint",
     detail: msg,
-    life: 500,
   });
 };
 
@@ -103,7 +98,6 @@ export const showKongS3BucketErrorToast = (
     severity: "error",
     summary: "S3 bucket error",
     detail: msg,
-    life: 500,
   });
 };
 
@@ -115,7 +109,6 @@ export const showKongGatewayErrorToast = (
     severity: "error",
     summary: "Gateway error",
     detail: msg,
-    life: 500,
   });
 };
 
@@ -127,7 +120,6 @@ export const showKongFhirErrorToast = (
     severity: "error",
     summary: "FHIR connection error",
     detail: msg,
-    life: 500,
   });
 };
 
@@ -142,7 +134,6 @@ export const showInvalidRobotCredentialsToast = (
     detail:
       "The robot credentials provided during deployment are not valid. Please verify the correct robot ID and " +
       "secret were used, then upgrade your installation",
-    life: 100,
   });
   console.warn("Invalid robot credentials");
 };
@@ -155,7 +146,6 @@ export const showMissingRegistryRobotCredentialsToast = (
     summary: "Missing Registry Credentials",
     detail:
       "Unable to retrieve the credentials for accessing the registry so the analysis could not be started",
-    life: 500,
   });
   console.warn("Missing registry credentials");
 };
@@ -166,7 +156,6 @@ export const showWrongRobotIdToast = (toast: ToastServiceMethods) => {
     summary: "Invalid Robot ID",
     detail:
       "The robot ID is not a valid UUID. Please verify the robot ID was used during deployment and not the name.",
-    life: 500,
   });
   console.warn("Invalid robot ID");
 };
@@ -176,7 +165,6 @@ export const showHubConnectionError = (toast: ToastServiceMethods) => {
     severity: "error",
     summary: "Connection error",
     detail: "Unable to contact the Hub.",
-    life: 400,
   });
   console.warn("Hub is currently unreachable");
 };
@@ -189,7 +177,6 @@ export const showHubSpecificErrorMessage = (
     severity: "error",
     summary: "Connection error",
     detail: msg,
-    life: 500,
   });
   console.warn(msg);
 };
