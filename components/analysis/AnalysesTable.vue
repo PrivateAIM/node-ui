@@ -379,7 +379,7 @@ const onCloseNavToast = () => {
               icon="pi pi-exclamation-triangle"
               severity="warn"
             >
-              Some controls may be disabled!
+              Controls may be disabled!
             </Message>
             <p>
               If the image for the analysis is not yet
@@ -388,8 +388,8 @@ const onCloseNavToast = () => {
                 :value="'finished'"
                 style="margin-left: 0.5em; margin-right: 0.5em"
               />
-              (see Build Status), a container for the analysis cannot be
-              started.
+              (see Build Status) or if a data store does not exist for the
+              associated project, then the analysis cannot be started
             </p>
           </div>
           <div class="analysis-container-counter">
@@ -701,6 +701,7 @@ const onCloseNavToast = () => {
                   :analysisRunStatus="slotProps.data.run_status"
                   :nodeId="slotProps.data.node_id"
                   :projectId="slotProps.data.analysis.project_id"
+                  :datastore="slotProps.data.datastore"
                   @missingDataStore="showDataStoreNavToast"
                   @updateAnalysisRow="updateAnalysisRun"
                 />

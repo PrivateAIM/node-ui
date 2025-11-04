@@ -36,6 +36,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  datastore: {
+    type: Boolean,
+    required: true,
+  },
 });
 
 const emit = defineEmits(["updateAnalysisRow", "missingDataStore"]);
@@ -248,7 +252,8 @@ async function onDeleteAnalysis() {
       v-tooltip.top="'Start the analysis'"
       :disabled="
         !buttonStatuses.playActive ||
-        !(props.analysisBuildStatus === AnalysisBuildStatus.Finished)
+        !(props.analysisBuildStatus === AnalysisBuildStatus.Finished) ||
+        !props.datastore
       "
       :loading="loading"
       aria-label="Start"
@@ -262,7 +267,8 @@ async function onDeleteAnalysis() {
       v-tooltip.top="'Rerun the analysis'"
       :disabled="
         !buttonStatuses.rerunActive ||
-        !(props.analysisBuildStatus === AnalysisBuildStatus.Finished)
+        !(props.analysisBuildStatus === AnalysisBuildStatus.Finished) ||
+        !props.datastore
       "
       :loading="loading"
       aria-label="Rerun"
@@ -275,7 +281,8 @@ async function onDeleteAnalysis() {
       v-tooltip.top="'Stop the analysis'"
       :disabled="
         !buttonStatuses.stopActive ||
-        !(props.analysisBuildStatus === AnalysisBuildStatus.Finished)
+        !(props.analysisBuildStatus === AnalysisBuildStatus.Finished) ||
+        !props.datastore
       "
       :loading="loading"
       aria-label="Stop"
@@ -288,7 +295,8 @@ async function onDeleteAnalysis() {
       v-tooltip.top="'Delete the analysis container'"
       :disabled="
         !buttonStatuses.deleteActive ||
-        !(props.analysisBuildStatus === AnalysisBuildStatus.Finished)
+        !(props.analysisBuildStatus === AnalysisBuildStatus.Finished) ||
+        !props.datastore
       "
       :loading="loading"
       aria-label="Delete"
