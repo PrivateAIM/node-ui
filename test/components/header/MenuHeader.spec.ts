@@ -21,7 +21,7 @@ describe("MenuHeader.vue", () => {
 
     menuTitles.forEach((title, index) => {
       const menuItem = menuBar.find(`li[aria-label="${title}"]`);
-      console.log(menuItem.attributes());
+
       expect(menuItem.attributes()["aria-posinset"]).toBe(`${index + 1}`); // Top level menu item
       const menuLink = menuItem.find(".p-menubar-item-link");
 

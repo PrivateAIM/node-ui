@@ -68,5 +68,5 @@ export default defineNuxtConfig({
     "@/assets/css/table.css",
   ],
 
-  compatibilityDate: "2024-09-30",
+  compatibilityDate: "2025-11-05",
 });
