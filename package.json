@@ -16,7 +16,7 @@
     "postinstall": "nuxt prepare",
     "prod": "node .output/server/index.mjs",
     "test": "vitest",
-    "test:ci": "CI=true pnpm -r --reporter-hide-prefix --stream --sequential run test"
+    "test:ci": "CI=true pnpm --reporter-hide-prefix --stream --sequential run test"
   },
   "dependencies": {
     "@nuxtjs/tailwindcss": "^6.14.0",
