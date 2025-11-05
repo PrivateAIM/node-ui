@@ -2,6 +2,7 @@
 import { ref, watch } from "vue";
 import { navigateTo, useNuxtApp } from "#app";
 import InputText from "primevue/inputtext";
+import RadioButton from "primevue/radiobutton";
 import Select from "primevue/select";
 import InputNumber from "primevue/inputnumber";
 import InputGroupAddon from "primevue/inputgroupaddon";
@@ -299,7 +300,7 @@ async function onSubmitCreateDataStoreAndProject() {
                   <div
                     class="flex flex-wrap gap-4 bucket-access-policy-radio"
                     v-tooltip.top="
-                      'Only public is currently supported, support for Private buckets will be added soon'
+                      'Selection disabled, support for Private buckets will be added soon'
                     "
                   >
                     <div class="flex items-center gap-2">
@@ -310,6 +311,7 @@ async function onSubmitCreateDataStoreAndProject() {
                         name="accessPolicy"
                         value="Public"
                         size="small"
+                        class="bucket-access-policy-radio-btn"
                       />
                       <label for="public">Public</label>
                     </div>
@@ -321,6 +323,7 @@ async function onSubmitCreateDataStoreAndProject() {
                         name="accessPolicy"
                         value="Private"
                         size="small"
+                        class="bucket-access-policy-radio-btn"
                       />
                       <label for="private">Private</label>
                     </div>

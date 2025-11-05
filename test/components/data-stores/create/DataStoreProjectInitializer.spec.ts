@@ -147,7 +147,7 @@ describe("DataStoreProjectInitializer.vue", () => {
     expect(serverWrapper.find(".p-inputtext").attributes("value")).toBe(server);
 
     // Set data path
-    const pathWrapper = wrapper.find(".data-store-path-input");
+    const pathWrapper = wrapper.find(".data-store-path-input-fhir");
     await pathWrapper.find('input[type="text"]').setValue(path);
     expect(pathWrapper.find(".p-inputtext").attributes("value")).toBe(path);
 
@@ -222,5 +222,26 @@ describe("DataStoreProjectInitializer.vue", () => {
       "fake/path",
       "S3", // Triggers an error (only during testing)
     );
+  });
+
+  it("Check S3 fields", async () => {
+    expect(
+      wrapper.findComponent(".bucket-access-policy-radio").exists(),
+    ).toBeFalsy(); // Starts on FHIR so should not be in view
+    const select = wrapper.findComponent(".data-store-type-picker");
+    await select.vm.$emit("update:modelValue", "S3"); // Simulate the S3 option being clicked
+    await wrapper.vm.$nextTick();
+    expect(wrapper.find(".bucket-access-policy-radio").exists()).toBe(true); // Check radio options exist now
+
+    // Private fields
+    expect(
+      wrapper.findComponent(".data-store-path-input-s3-private").exists(),
+    ).toBeFalsy(); // Starts on public, private fields should not exist
+
+    wrapper.vm.selectedBucketAccessPolicy = "Private"; // Simulate private being selected
+    await wrapper.vm.$nextTick();
+    expect(
+      wrapper.findComponent(".data-store-path-input-s3-private").exists(),
+    ).toBeTruthy();
   });
 });

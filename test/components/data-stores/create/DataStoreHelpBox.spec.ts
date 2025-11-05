@@ -30,12 +30,16 @@ describe("DataStoreHelpBox.vue", () => {
     checkHelpBox(HelpTextField.Methods, "Allowed Methods", "request methods");
   });
 
-  it("Render data path help box", () => {
+  it("Render data path (FHIR) help box", () => {
     checkHelpBox(
-      HelpTextField.Path,
+      HelpTextField.FHIR,
       "Data Path",
       "admin must provide the absolute",
     );
+  });
+
+  it("Render S3 help box", () => {
+    checkHelpBox(HelpTextField.S3, "Bucket Name", "name of the S3 bucket");
   });
 
   it("Render server port help box", () => {
