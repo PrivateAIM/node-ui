@@ -112,13 +112,14 @@ export const showKongGatewayErrorToast = (
   });
 };
 
-export const showKongFhirErrorToast = (
+export const showKongConsumerConnectionErrorToast = (
   toast: ToastServiceMethods,
+  svc: string,
   msg: string,
 ) => {
   showConnectionErrorToast(toast, {
     severity: "error",
-    summary: "FHIR connection error",
+    summary: `${svc} connection error`,
     detail: msg,
   });
 };
