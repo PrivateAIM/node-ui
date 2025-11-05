@@ -49,6 +49,7 @@ describe("AnalysisControlButtons.vue", () => {
         analysisId: analysisId,
         projectId: "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483",
         nodeId: "e3b89572-327f-4936-8cf0-fbfbcc6336b7",
+        datastore: true,
       },
     });
 
@@ -253,6 +254,7 @@ describe("AnalysisControlButtons.vue", () => {
         analysisId: fakeAnalysisId,
         projectId: "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483",
         nodeId: "e3b89572-327f-4936-8cf0-fbfbcc6336b7",
+        datastore: true,
       },
     });
 
