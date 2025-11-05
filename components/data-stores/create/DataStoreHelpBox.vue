@@ -48,7 +48,7 @@ const closeHelp = () => {
     </div>
     <div
       class="methods-help-text"
-      v-else-if="props.helpField === HelpTextField.Path"
+      v-else-if="props.helpField === HelpTextField.FHIR"
     >
       <Panel header="Data Path">
         <p>
@@ -62,6 +62,23 @@ const closeHelp = () => {
           slash "/", while a Windows OS will use a drive letter with a colon and
           2 back slashes (e.g. H:\\).
         </p>
+        <template #icons>
+          <Button
+            class="p-panel-header-icon p-link mr-2 help-box-close-btn"
+            icon="pi pi-times"
+            @click="closeHelp"
+            severity="contrast"
+            v-tooltip.top="'Close help box'"
+          />
+        </template>
+      </Panel>
+    </div>
+    <div
+      class="methods-help-text"
+      v-else-if="props.helpField === HelpTextField.S3"
+    >
+      <Panel header="Bucket Name">
+        <p>Enter the name of the S3 bucket which contains the data.</p>
         <template #icons>
           <Button
             class="p-panel-header-icon p-link mr-2 help-box-close-btn"
