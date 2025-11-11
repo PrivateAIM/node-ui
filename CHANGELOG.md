@@ -1,5 +1,40 @@
 # Changelog
 
+## [0.3.0](https://github.com/PrivateAIM/node-ui/compare/v0.2.21...v0.3.0) (2025-11-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* add token refresh routine
+
+### Features
+
+* add token refresh routine ([12ae26a](https://github.com/PrivateAIM/node-ui/commit/12ae26a0663d9f789236a85bd7f50c3c9bca2996))
+* **analysis:** add progress bar for analyses ([cd70822](https://github.com/PrivateAIM/node-ui/commit/cd708221feea79031c17785c18f937b48c7c6252))
+* **analysis:** progress and run status now updated from sources on update button click ([fc01080](https://github.com/PrivateAIM/node-ui/commit/fc010809b4c8d40b724f3d3a70ad71216c0bb4ee))
+* **ds:** add dynamic options for S3 data stores ([12e96f4](https://github.com/PrivateAIM/node-ui/commit/12e96f4ae786ee865716bea30421ee8ce298e017))
+* **logs:** add download and copy buttons ([8bb26ad](https://github.com/PrivateAIM/node-ui/commit/8bb26ad60aedd9ea00204e904691e1b02a6705e9))
+
+
+### Bug Fixes
+
+* **analysis:** buttons remain disabled if missing data store ([4b4f70d](https://github.com/PrivateAIM/node-ui/commit/4b4f70d191793f131d18aecaa25e2e2cf4c956b7))
+* **ds:** have connection error toast show correct server name ([e177033](https://github.com/PrivateAIM/node-ui/commit/e17703349dc32d1b9c33fde88c05d1aea5453065))
+* **ds:** send correct datastore name upon creation ([27a1536](https://github.com/PrivateAIM/node-ui/commit/27a1536f9797d9e38d5e2fc06f5cfa93780c9836))
+* **toast:** prevent connection error toast spamming ([8bf14b3](https://github.com/PrivateAIM/node-ui/commit/8bf14b36cf0f7059fe0fe299cf16db3fe601f454))
+
+
+### Performance Improvements
+
+* **analysis:** better PO response parsing ([cd7ca02](https://github.com/PrivateAIM/node-ui/commit/cd7ca020259662d949e7f2121d53430b45db1460))
+
+
+### Reverts
+
+* **cleanup:** add zombies back to cleanup options ([0b73695](https://github.com/PrivateAIM/node-ui/commit/0b73695e65972b40e50b2bc824b6953ad0c92268))
+* **logs:** no longer gatherLogs using onMounted to prevent RefreshSwitch bug ([f9a2fc5](https://github.com/PrivateAIM/node-ui/commit/f9a2fc581d7176cc85194213d5ecbd6110d42749))
+* **update:** remove hub call for updat ([2370f89](https://github.com/PrivateAIM/node-ui/commit/2370f8979b33ae714119bd73ae67d429dff02204))
+
 ## [0.2.21](https://github.com/PrivateAIM/node-ui/compare/v0.2.20...v0.2.21) (2025-10-22)
 
 
