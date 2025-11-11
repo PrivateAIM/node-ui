@@ -6,8 +6,8 @@ import {
   showInvalidRobotCredentialsToast,
   showKongConnectionErrorToast,
   showKongConnectionTestErrorToast,
+  showKongConsumerConnectionErrorToast,
   showKongDuplicateErrorToast,
-  showKongFhirErrorToast,
   showKongGatewayErrorToast,
   showKongMissingHealthConsumerErrorToast,
   showKongS3BucketErrorToast,
@@ -77,7 +77,7 @@ export default defineNuxtPlugin(() => {
 
           case 503:
             if (errMsg && (errSvc == "FHIR" || errSvc == "S3")) {
-              showKongFhirErrorToast(toast, errMsg);
+              showKongConsumerConnectionErrorToast(toast, errSvc, errMsg);
             } else {
               showKongConnectionErrorToast(toast);
             }

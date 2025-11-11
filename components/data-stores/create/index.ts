@@ -1,6 +1,7 @@
 export enum HelpTextField {
   Methods = "methods",
-  Path = "path",
+  FHIR = "FHIR",
+  S3 = "S3",
   Port = "port",
   Protocol = "protocol",
   Server = "server",

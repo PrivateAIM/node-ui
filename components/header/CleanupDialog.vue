@@ -59,6 +59,13 @@ const cleanUpOptions = ref<cleanUpOption[]>([
       message: "All analyses in Keycloak will be purged!",
     },
   },
+  {
+    name: "Zombies",
+    data: {
+      ep: "zombies",
+      message: "All dangling analysis resources will be deleted!",
+    },
+  },
 ]);
 
 const cleanupVisible = defineModel<boolean>("cleanUpVisible");

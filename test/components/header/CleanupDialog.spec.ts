@@ -38,7 +38,7 @@ describe("CleanupDialog.vue", () => {
     expect(submitButton.attributes("data-p-disabled")).toBe("true");
 
     const option = cleanupBox.find(`[aria-label="${ariaLabel}"]`);
-    console.log(option.text());
+
     await option.trigger("click");
     expect(submitButton.attributes("data-p-disabled")).toBe("false");
     expect(option.attributes("aria-selected")).toBe("true");
