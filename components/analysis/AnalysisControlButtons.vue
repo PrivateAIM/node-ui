@@ -4,6 +4,7 @@ import { useToast } from "primevue/usetoast";
 import { useNuxtApp } from "#app";
 import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
 import { PodStatus, type StatusResponse } from "~/services/Api";
+import { useNodeType } from "~/composables/useNodeType";
 
 type ToastSeverity = "success" | "info" | "warn" | "error" | undefined;
 
@@ -45,6 +46,8 @@ const props = defineProps({
 const emit = defineEmits(["updateAnalysisRow", "missingDataStore"]);
 const toast = useToast();
 const loading = ref(false);
+
+const nodeType = await useNodeType();
 
 // API Constants
 const NOT_FOUND_STATUS = 404;
@@ -253,7 +256,7 @@ async function onDeleteAnalysis() {
       :disabled="
         !buttonStatuses.playActive ||
         !(props.analysisBuildStatus === AnalysisBuildStatus.Finished) ||
-        !props.datastore
+        (!props.datastore && nodeType != 'aggregator')
       "
       :loading="loading"
       aria-label="Start"
@@ -268,7 +271,7 @@ async function onDeleteAnalysis() {
       :disabled="
         !buttonStatuses.rerunActive ||
         !(props.analysisBuildStatus === AnalysisBuildStatus.Finished) ||
-        !props.datastore
+        (!props.datastore && nodeType != 'aggregator')
       "
       :loading="loading"
       aria-label="Rerun"
@@ -282,7 +285,7 @@ async function onDeleteAnalysis() {
       :disabled="
         !buttonStatuses.stopActive ||
         !(props.analysisBuildStatus === AnalysisBuildStatus.Finished) ||
-        !props.datastore
+        (!props.datastore && nodeType != 'aggregator')
       "
       :loading="loading"
       aria-label="Stop"
@@ -296,7 +299,7 @@ async function onDeleteAnalysis() {
       :disabled="
         !buttonStatuses.deleteActive ||
         !(props.analysisBuildStatus === AnalysisBuildStatus.Finished) ||
-        !props.datastore
+        (!props.datastore && nodeType != 'aggregator')
       "
       :loading="loading"
       aria-label="Delete"
