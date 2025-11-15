@@ -702,6 +702,7 @@ const onCloseNavToast = () => {
                   :nodeId="slotProps.data.node_id"
                   :projectId="slotProps.data.analysis.project_id"
                   :datastore="slotProps.data.datastore"
+                  :nodeType="nodeType!"
                   @missingDataStore="showDataStoreNavToast"
                   @updateAnalysisRow="updateAnalysisRun"
                 />
