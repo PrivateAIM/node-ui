@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.1](https://github.com/PrivateAIM/node-ui/compare/v0.3.0...v0.3.1) (2025-11-15)
+
+
+### Bug Fixes
+
+* **analysis:** enable buttons if no datastore but node is aggregator ([6c0cd17](https://github.com/PrivateAIM/node-ui/commit/6c0cd17a1e12fb242a8a29daf9b4a36bc671cd62))
+* **analysis:** enable buttons if no datastore but node is aggregator ([3b840bf](https://github.com/PrivateAIM/node-ui/commit/3b840bf31b6fce0b34c7693ebe4b5f7bfb4b77d6))
+
 ## [0.3.0](https://github.com/PrivateAIM/node-ui/compare/v0.2.21...v0.3.0) (2025-11-11)
 
 
