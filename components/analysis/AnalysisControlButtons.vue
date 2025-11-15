@@ -40,6 +40,10 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
+  nodeType: {
+    type: String,
+    required: true,
+  },
 });
 
 const emit = defineEmits(["updateAnalysisRow", "missingDataStore"]);
@@ -253,7 +257,7 @@ async function onDeleteAnalysis() {
       :disabled="
         !buttonStatuses.playActive ||
         !(props.analysisBuildStatus === AnalysisBuildStatus.Finished) ||
-        !props.datastore
+        (!props.datastore && props.nodeType != 'aggregator')
       "
       :loading="loading"
       aria-label="Start"
@@ -268,7 +272,7 @@ async function onDeleteAnalysis() {
       :disabled="
         !buttonStatuses.rerunActive ||
         !(props.analysisBuildStatus === AnalysisBuildStatus.Finished) ||
-        !props.datastore
+        (!props.datastore && props.nodeType != 'aggregator')
       "
       :loading="loading"
       aria-label="Rerun"
@@ -282,7 +286,7 @@ async function onDeleteAnalysis() {
       :disabled="
         !buttonStatuses.stopActive ||
         !(props.analysisBuildStatus === AnalysisBuildStatus.Finished) ||
-        !props.datastore
+        (!props.datastore && props.nodeType != 'aggregator')
       "
       :loading="loading"
       aria-label="Stop"
@@ -296,7 +300,7 @@ async function onDeleteAnalysis() {
       :disabled="
         !buttonStatuses.deleteActive ||
         !(props.analysisBuildStatus === AnalysisBuildStatus.Finished) ||
-        !props.datastore
+        (!props.datastore && props.nodeType != 'aggregator')
       "
       :loading="loading"
       aria-label="Delete"
