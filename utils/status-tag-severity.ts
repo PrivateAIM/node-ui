@@ -1,5 +1,6 @@
 import { ApprovalStatus } from "~/types/node";
-import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
+import { ProcessStatus } from "~/types/analysis";
+import { PodStatus } from "~/services/Api";
 
 export const getApprovalStatusSeverity = (status: string) => {
   switch (status) {
@@ -13,47 +14,47 @@ export const getApprovalStatusSeverity = (status: string) => {
 
 export const getBuildStatusSeverity = (status: string) => {
   switch (status) {
-    case AnalysisBuildStatus.Starting:
+    case ProcessStatus.Starting:
       return "info";
 
-    case AnalysisBuildStatus.Started:
+    case ProcessStatus.Started:
       return "info";
 
-    case AnalysisBuildStatus.Stopping:
+    case ProcessStatus.Stopping:
       return "warning";
 
-    case AnalysisBuildStatus.Stopped:
+    case ProcessStatus.Stopped:
       return "warning";
 
-    case AnalysisBuildStatus.Failed:
+    case ProcessStatus.Failed:
       return "danger";
 
-    case AnalysisBuildStatus.Finished:
+    case ProcessStatus.Finished:
       return "success";
   }
 };
 
 export const getRunStatusSeverity = (status: string) => {
   switch (status) {
-    case AnalysisNodeRunStatus.Starting:
+    case PodStatus.Starting:
       return "info";
 
-    case AnalysisNodeRunStatus.Started:
+    case PodStatus.Started:
       return "info";
 
-    case AnalysisNodeRunStatus.Running:
+    case PodStatus.Running:
       return "contrast";
 
-    case AnalysisNodeRunStatus.Stopping:
+    case PodStatus.Stopping:
       return "warning";
 
-    case AnalysisNodeRunStatus.Stopped:
+    case PodStatus.Stopped:
       return "warning";
 
-    case AnalysisNodeRunStatus.Failed:
+    case PodStatus.Failed:
       return "danger";
 
-    case AnalysisNodeRunStatus.Finished:
+    case PodStatus.Finished:
       return "success";
   }
 };

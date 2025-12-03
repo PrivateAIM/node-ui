@@ -25,7 +25,7 @@ import {
   type Route,
   type StatusResponse,
 } from "~/services/Api";
-import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
+import { ProcessStatus } from "~/types/analysis";
 import { ApprovalStatus } from "~/types/node";
 import ContainerCounter from "~/components/analysis/ContainerCounter.vue";
 import { useNodeType } from "~/composables/useNodeType";
@@ -50,9 +50,9 @@ let currentOffset = 50; // Start with query limit and will increment by same amo
 const kongRoutes = ref<Set<string>>(new Set());
 
 // Imported values
-const runStatuses = Object.values(AnalysisNodeRunStatus);
+const runStatuses = Object.values(PodStatus);
 const approvalStatuses = Object.values(ApprovalStatus);
-const buildStatuses = Object.values(AnalysisBuildStatus);
+const buildStatuses = Object.values(ProcessStatus);
 
 const {
   data: analysisNodeResp,
@@ -129,11 +129,11 @@ function setProgress(analysis: ModifiedAnalysisNode): ModifiedAnalysisNode {
   // For testing: Math.round(Math.random() * 100);
   analysis.progress = analysis.progress ? analysis.progress : 0;
 
-  const currentRunStatus = analysis.run_status;
+  const currentRunStatus = analysis.execution_status;
   if (currentRunStatus) {
-    if (currentRunStatus === AnalysisNodeRunStatus.Failed) {
+    if (currentRunStatus === PodStatus.Failed) {
       analysis.progress = 0;
-    } else if (currentRunStatus === AnalysisNodeRunStatus.Finished) {
+    } else if (currentRunStatus === PodStatus.Finished) {
       analysis.progress = 100;
     }
   }
@@ -173,13 +173,13 @@ function parseAnalysis(
   // If no run status reported by PodOrc, and it's not failed/finished -> set to null (wrong hub info)
   if (runStatuses) {
     if (analysisId in runStatuses) {
-      analysisEntry.run_status = runStatuses[analysisId];
+      analysisEntry.execution_status = runStatuses[analysisId];
     } else {
       if (
-        analysisEntry.run_status != AnalysisNodeRunStatus.Failed &&
-        analysisEntry.run_status != AnalysisNodeRunStatus.Finished
+        analysisEntry.execution_status != PodStatus.Failed &&
+        analysisEntry.execution_status != PodStatus.Finished
       ) {
-        analysisEntry.run_status = null;
+        analysisEntry.execution_status = null;
       }
     }
   }
@@ -267,7 +267,7 @@ const defaultFilters = {
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   approval_status: { value: null, matchMode: FilterMatchMode.EQUALS },
   "analysis.build_status": { value: null, matchMode: FilterMatchMode.IN },
-  run_status: { value: null, matchMode: FilterMatchMode.IN },
+  execution_status: { value: null, matchMode: FilterMatchMode.IN },
 };
 filters.value = defaultFilters;
 
@@ -289,16 +289,16 @@ const updateFilters = (filterText: string) => {
 function updateAnalysisRun(analysisId: string, newStatus: PodStatus | null) {
   if (analysisId in analyses.value) {
     const analysisToUpdate = analyses.value[analysisId];
-    analysisToUpdate.run_status = newStatus;
+    analysisToUpdate.execution_status = newStatus;
     analyses.value[analysisId] = setProgress(analysisToUpdate);
   }
 }
 
 function updateRunStatusFilter(filterText: string) {
-  const currentRunStatusFilters = filters.value.run_status.value;
+  const currentRunStatusFilters = filters.value.execution_status.value;
   if (!currentRunStatusFilters) {
     // If value is null then initialize with filter in array
-    filters.value.run_status.value = [filterText];
+    filters.value.execution_status.value = [filterText];
   } else {
     // Already run status filters present
     if (currentRunStatusFilters.includes(filterText)) {
@@ -308,13 +308,13 @@ function updateRunStatusFilter(filterText: string) {
       );
       if (filteredStatuses.length == 0) {
         // If empty array after filtering then set to null
-        filters.value.run_status.value = null;
+        filters.value.execution_status.value = null;
       } else {
-        filters.value.run_status.value = filteredStatuses;
+        filters.value.execution_status.value = filteredStatuses;
       }
     } else {
       // Apply filter since it isn't present
-      filters.value.run_status.value.push(filterText);
+      filters.value.execution_status.value.push(filterText);
     }
   }
 }
@@ -543,8 +543,8 @@ const onCloseNavToast = () => {
             :showClearButton="false"
             :showFilterMatchModes="false"
             :showFilterOperator="false"
-            field="run_status"
-            filterField="run_status"
+            field="execution_status"
+            filterField="execution_status"
           >
             <template #header>
               <span
@@ -556,9 +556,9 @@ const onCloseNavToast = () => {
             </template>
             <template #body="{ data }">
               <Tag
-                v-if="data.run_status"
-                :severity="getRunStatusSeverity(data.run_status)"
-                :value="data.run_status"
+                v-if="data.execution_status"
+                :severity="getRunStatusSeverity(data.execution_status)"
+                :value="data.execution_status"
               />
             </template>
             <template #filter="{ filterModel, filterCallback }">
@@ -669,14 +669,13 @@ const onCloseNavToast = () => {
             </template>
             <template #body="{ data }">
               <ProgressBar
-                :value="data.progress"
-                :style="determineProgressBarColor(data.progress)"
                 :mode="
-                  data.run_status === AnalysisNodeRunStatus.Running &&
-                  !data.progress
+                  data.execution_status === PodStatus.Running && !data.progress
                     ? 'indeterminate'
                     : 'determinate'
                 "
+                :style="determineProgressBarColor(data.progress)"
+                :value="data.progress"
               />
             </template>
           </Column>
@@ -698,11 +697,11 @@ const onCloseNavToast = () => {
                   :analysisBuildStatus="slotProps.data.analysis.build_status"
                   :analysisId="slotProps.data.analysis_id"
                   :analysisNodeId="slotProps.data.id"
-                  :analysisRunStatus="slotProps.data.run_status"
-                  :nodeId="slotProps.data.node_id"
-                  :projectId="slotProps.data.analysis.project_id"
+                  :analysisRunStatus="slotProps.data.execution_status"
                   :datastore="slotProps.data.datastore"
+                  :nodeId="slotProps.data.node_id"
                   :nodeType="nodeType!"
+                  :projectId="slotProps.data.analysis.project_id"
                   @missingDataStore="showDataStoreNavToast"
                   @updateAnalysisRow="updateAnalysisRun"
                 />

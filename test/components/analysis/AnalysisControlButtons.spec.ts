@@ -2,12 +2,13 @@ import { useToast } from "primevue/usetoast";
 import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import AnalysisControlButtons from "~/components/analysis/AnalysisControlButtons.vue";
-import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
+import { ProcessStatus } from "~/types/analysis";
 import {
   fakeAnalysisId,
   fakeBrokenAnalysisId,
   fakeMissingAnalysisId,
 } from "~/test/mockapi/handlers";
+import { PodStatus } from "~/services/Api";
 
 interface ButtonStates {
   playActive: boolean;
@@ -38,18 +39,19 @@ describe("AnalysisControlButtons.vue", () => {
     analysisId: string,
     expectError: boolean = false,
     expectedButtonStates: ButtonStates,
-    initialRunStatus: string = AnalysisNodeRunStatus.Running,
+    initialRunStatus: string = PodStatus.Running,
     expectedToastCalls: number = 1,
   ) {
     const wrapper = mount(AnalysisControlButtons, {
       props: {
-        analysisBuildStatus: AnalysisBuildStatus.Finished,
+        analysisBuildStatus: ProcessStatus.Finished,
         analysisRunStatus: initialRunStatus,
         analysisNodeId: "8003eefe-e39b-4bd4-aec4-78046c63b39b",
         analysisId: analysisId,
         projectId: "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483",
         nodeId: "e3b89572-327f-4936-8cf0-fbfbcc6336b7",
         datastore: true,
+        nodeType: "default",
       },
     });
 
@@ -248,13 +250,14 @@ describe("AnalysisControlButtons.vue", () => {
   it("Log btn check", async () => {
     const wrapper = mount(AnalysisControlButtons, {
       props: {
-        analysisBuildStatus: AnalysisBuildStatus.Finished,
+        analysisBuildStatus: ProcessStatus.Finished,
         analysisRunStatus: null,
         analysisNodeId: "8003eefe-e39b-4bd4-aec4-78046c63b39b",
         analysisId: fakeAnalysisId,
         projectId: "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483",
         nodeId: "e3b89572-327f-4936-8cf0-fbfbcc6336b7",
         datastore: true,
+        nodeType: "default",
       },
     });
 
@@ -265,22 +268,22 @@ describe("AnalysisControlButtons.vue", () => {
     expect(logBtn.attributes("data-p-disabled")).toBe("true");
 
     // @ts-expect-error Accessing a known method
-    wrapper.vm.setButtonStates(AnalysisNodeRunStatus.Started);
+    wrapper.vm.setButtonStates(PodStatus.Started);
     await wrapper.vm.$nextTick();
     expect(logBtn.attributes("data-p-disabled")).toBe("false");
 
     // @ts-expect-error Accessing a known method
-    wrapper.vm.setButtonStates(AnalysisNodeRunStatus.Running);
+    wrapper.vm.setButtonStates(PodStatus.Running);
     await wrapper.vm.$nextTick();
     expect(logBtn.attributes("data-p-disabled")).toBe("false");
 
     // @ts-expect-error Accessing a known method
-    wrapper.vm.setButtonStates(AnalysisNodeRunStatus.Failed);
+    wrapper.vm.setButtonStates(PodStatus.Failed);
     await wrapper.vm.$nextTick();
     expect(logBtn.attributes("data-p-disabled")).toBe("false");
 
     // @ts-expect-error Accessing a known method
-    wrapper.vm.setButtonStates(AnalysisNodeRunStatus.Finished);
+    wrapper.vm.setButtonStates(PodStatus.Finished);
     await wrapper.vm.$nextTick();
     expect(logBtn.attributes("data-p-disabled")).toBe("false");
 

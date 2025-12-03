@@ -22,7 +22,10 @@ export enum ProtocolCode {
   Tcp = "tcp",
 }
 
-/** PodStatus */
+/**
+ * PodStatus
+ * Custom PO run statuses.
+ */
 export enum PodStatus {
   Starting = "starting",
   Started = "started",
@@ -60,7 +63,10 @@ export enum DataStoreType {
   Fhir = "fhir",
 }
 
-/** CleanUpType */
+/**
+ * CleanUpType
+ * Canned strings for cleanup endpoint
+ */
 export enum CleanUpType {
   All = "all",
   Analyzes = "analyzes",
@@ -68,6 +74,7 @@ export enum CleanUpType {
   Mb = "mb",
   Rs = "rs",
   Keycloak = "keycloak",
+  Zombies = "zombies",
 }
 
 /**
@@ -126,10 +133,20 @@ export interface Analysis {
    * @format uuid
    */
   id: string;
-  /** Configuration Locked */
-  configuration_locked: boolean;
   /** Nodes */
   nodes: number;
+  /** Configuration Locked */
+  configuration_locked: boolean;
+  /** Configuration Entrypoint Valid */
+  configuration_entrypoint_valid: boolean;
+  /** Configuration Image Valid */
+  configuration_image_valid: boolean;
+  /** Configuration Node Aggregator Valid */
+  configuration_node_aggregator_valid: boolean;
+  /** Configuration Node Default Valid */
+  configuration_node_default_valid: boolean;
+  /** Configuration Nodes Valid */
+  configuration_nodes_valid: boolean;
   /** Build Status */
   build_status:
     | "starting"
@@ -139,16 +156,26 @@ export interface Analysis {
     | "finished"
     | "failed"
     | null;
-  /** Run Status */
-  run_status:
+  /** Execution Status */
+  execution_status:
     | "starting"
     | "started"
-    | "running"
     | "stopping"
     | "stopped"
     | "finished"
     | "failed"
     | null;
+  /** Distribution Status */
+  distribution_status:
+    | "starting"
+    | "started"
+    | "stopping"
+    | "stopped"
+    | "finished"
+    | "failed"
+    | null;
+  /** Execution Progress */
+  execution_progress: number | null;
   /**
    * Created At
    * @format date-time
@@ -245,16 +272,17 @@ export interface AnalysisNode {
   id: string;
   /** Approval Status */
   approval_status: "rejected" | "approved" | null;
-  /** Run Status */
-  run_status:
+  /** Execution Status */
+  execution_status:
     | "starting"
     | "started"
     | "stopping"
     | "stopped"
-    | "running"
     | "finished"
     | "failed"
     | null;
+  /** Execution Progress */
+  execution_progress: number | null;
   /** Comment */
   comment: string | null;
   /** Artifact Tag */
@@ -449,7 +477,10 @@ export interface BodyGetTokenTokenPost {
   password: string;
 }
 
-/** CleanupPodResponse */
+/**
+ * CleanupPodResponse
+ * Response model for cleanup endpoint
+ */
 export interface CleanupPodResponse {
   /** All */
   all?: string | null;
@@ -538,10 +569,20 @@ export interface DetailedAnalysis {
    * @format uuid
    */
   id: string;
-  /** Configuration Locked */
-  configuration_locked: boolean;
   /** Nodes */
   nodes: number;
+  /** Configuration Locked */
+  configuration_locked: boolean;
+  /** Configuration Entrypoint Valid */
+  configuration_entrypoint_valid: boolean;
+  /** Configuration Image Valid */
+  configuration_image_valid: boolean;
+  /** Configuration Node Aggregator Valid */
+  configuration_node_aggregator_valid: boolean;
+  /** Configuration Node Default Valid */
+  configuration_node_default_valid: boolean;
+  /** Configuration Nodes Valid */
+  configuration_nodes_valid: boolean;
   /** Build Status */
   build_status:
     | "starting"
@@ -551,16 +592,26 @@ export interface DetailedAnalysis {
     | "finished"
     | "failed"
     | null;
-  /** Run Status */
-  run_status:
+  /** Execution Status */
+  execution_status:
     | "starting"
     | "started"
-    | "running"
     | "stopping"
     | "stopped"
     | "finished"
     | "failed"
     | null;
+  /** Distribution Status */
+  distribution_status:
+    | "starting"
+    | "started"
+    | "stopping"
+    | "stopped"
+    | "finished"
+    | "failed"
+    | null;
+  /** Execution Progress */
+  execution_progress: number | null;
   /**
    * Created At
    * @format date-time
@@ -947,7 +998,10 @@ export interface ListServices {
  */
 export type LogReport = Record<any, (string | null)[]>;
 
-/** LogResponse */
+/**
+ * LogResponse
+ * Response for log endpoint
+ */
 export interface LogResponse {
   analysis?: LogReport | null;
   nginx?: LogReport | null;
@@ -2215,10 +2269,10 @@ export class Api<
     listProjectProposalsProjectNodesGet: (
       query?: {
         /**
-         * Debug
+         * Force Refresh
          * @default false
          */
-        debug?: boolean;
+        force_refresh?: boolean;
       },
       params: RequestParams = {},
     ) =>
@@ -2289,10 +2343,10 @@ export class Api<
     listAnalysisNodesAnalysisNodesGet: (
       query?: {
         /**
-         * Debug
+         * Force Refresh
          * @default false
          */
-        debug?: boolean;
+        force_refresh?: boolean;
       },
       params: RequestParams = {},
     ) =>
@@ -2577,6 +2631,35 @@ export class Api<
         ...params,
       }),
   };
+  local = {
+    /**
+     * @description Delete all objects in MinIO and all Postgres database entries related to the specified project. Returns a 200 on success, a 400 if the project is still available on the Hub and a 403 if it is not the Hub Adapter client that sends the request. In both error cases nothing is deleted at all.
+     *
+     * @tags Results
+     * @name DeleteLocalResultsLocalDelete
+     * @summary Delete Local Results
+     * @request DELETE:/local
+     * @secure
+     */
+    deleteLocalResultsLocalDelete: (
+      query: {
+        /**
+         * Project Id
+         * UUID of the associated project.
+         */
+        project_id: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<any, void | HTTPValidationError>({
+        path: `/local`,
+        method: "DELETE",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+  };
   kong = {
     /**
      * @description List all available data stores (referred to as services by kong).
@@ -2631,7 +2714,7 @@ export class Api<
       }),
 
     /**
-     * @description List all available data stores (referred to as services by kong). Will be composed of the Project UUID and the datastore type (fhir/s3) i.e. {project_id}-{ds_type}. This is found via the tags.
+     * @description Retrieve a specific data store using the project UUID
      *
      * @tags Kong
      * @name ListSpecificDataStoreKongDatastoreProjectIdGet
@@ -2640,7 +2723,7 @@ export class Api<
      * @secure
      */
     listSpecificDataStoreKongDatastoreProjectIdGet: (
-      projectId: string | null,
+      projectId: string,
       query?: {
         /**
          * Detailed
@@ -2682,7 +2765,7 @@ export class Api<
       }),
 
     /**
-     * @description List all projects (referred to as routes by kong) available, can be filtered by project_id. Set "detailed" to True to include detailed information on the linked data stores.
+     * @description List all projects (referred to as routes by kong) available, can be filtered by project_id. Set "detailed" to True to include detailed information on the linked kong service.
      *
      * @tags Kong
      * @name ListProjectsKongProjectGet
@@ -2693,13 +2776,8 @@ export class Api<
     listProjectsKongProjectGet: (
       query?: {
         /**
-         * Project Id
-         * UUID of project.
-         */
-        project_id?: string | null;
-        /**
          * Detailed
-         * Whether to include detailed information on data stores
+         * Whether to include detailed information on the connected kong service
          * @default false
          */
         detailed?: boolean;
@@ -2734,6 +2812,36 @@ export class Api<
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description List a specific projects (referred to as routes by kong) using the project UUID. Set "detailed" to True to include detailed information on the linked kong service.
+     *
+     * @tags Kong
+     * @name ListSpecificProjectKongProjectProjectIdGet
+     * @summary List Specific Project
+     * @request GET:/kong/project/{project_id}
+     * @secure
+     */
+    listSpecificProjectKongProjectProjectIdGet: (
+      projectId: string,
+      query?: {
+        /**
+         * Detailed
+         * Whether to include detailed information on the connected kong service
+         * @default false
+         */
+        detailed?: boolean;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ListRoutes, void | HTTPValidationError>({
+        path: `/kong/project/${projectId}`,
+        method: "GET",
+        query: query,
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -2783,24 +2891,19 @@ export class Api<
       }),
 
     /**
-     * @description List all analyses (referred to as consumers by kong) available, can be filtered by analysis_id.
+     * @description List all analyses (referred to as consumers by kong) available. Can be filtered by project UUID using tag.
      *
      * @tags Kong
-     * @name GetAnalysesKongAnalysisGet
-     * @summary Get Analyses
+     * @name ListAnalysesKongAnalysisGet
+     * @summary List Analyses
      * @request GET:/kong/analysis
      * @secure
      */
-    getAnalysesKongAnalysisGet: (
+    listAnalysesKongAnalysisGet: (
       query?: {
         /**
-         * Analysis Id
-         * UUID of the analysis.
-         */
-        analysis_id?: string | null;
-        /**
          * Tag
-         * Tag to filter by e.g. project ID
+         * Filter consumers by project using the project UUID
          */
         tag?: string | null;
       },
@@ -2839,22 +2942,29 @@ export class Api<
       }),
 
     /**
-     * @description Test whether Kong can read the requested data source. Because we use the key-auth plugin, a consumer is required for pinging the data service.
+     * @description List all analyses (referred to as consumers by kong) available.
      *
      * @tags Kong
-     * @name TestConnectionKongProjectProjectIdDsTypeHealthGet
-     * @summary Test Connection
-     * @request GET:/kong/project/{project_id}/{ds_type}/health
+     * @name ListSpecificAnalysisKongAnalysisAnalysisIdGet
+     * @summary List Specific Analysis
+     * @request GET:/kong/analysis/{analysis_id}
      * @secure
      */
-    testConnectionKongProjectProjectIdDsTypeHealthGet: (
-      projectId: string,
-      dsType: DataStoreType,
+    listSpecificAnalysisKongAnalysisAnalysisIdGet: (
+      analysisId: string | null,
+      query?: {
+        /**
+         * Tag
+         * Filter consumers by project using the project UUID
+         */
+        tag?: string | null;
+      },
       params: RequestParams = {},
     ) =>
-      this.request<any, void | HTTPValidationError>({
-        path: `/kong/project/${projectId}/${dsType}/health`,
+      this.request<ListConsumers, void | HTTPValidationError>({
+        path: `/kong/analysis/${analysisId}`,
         method: "GET",
+        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -2876,6 +2986,28 @@ export class Api<
       this.request<any, void | HTTPValidationError>({
         path: `/kong/analysis/${analysisId}`,
         method: "DELETE",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Test whether Kong can read the requested data source. Because we use the key-auth plugin, a consumer is required for pinging the data service.
+     *
+     * @tags Kong
+     * @name ProbeConnectionKongProjectProjectIdDsTypeHealthGet
+     * @summary Probe Connection
+     * @request GET:/kong/project/{project_id}/{ds_type}/health
+     * @secure
+     */
+    probeConnectionKongProjectProjectIdDsTypeHealthGet: (
+      projectId: string,
+      dsType: DataStoreType,
+      params: RequestParams = {},
+    ) =>
+      this.request<any, void | HTTPValidationError>({
+        path: `/kong/project/${projectId}/${dsType}/health`,
+        method: "GET",
         secure: true,
         format: "json",
         ...params,

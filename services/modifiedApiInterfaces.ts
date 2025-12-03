@@ -31,12 +31,13 @@ export interface ModifiedRoute
   updated_at: modifiedTimestamp;
 }
 
-export interface ModifiedAnalysisNode extends Omit<AnalysisNode, "run_status"> {
+export interface ModifiedAnalysisNode
+  extends Omit<AnalysisNode, "execution_status"> {
   project_name: string | undefined;
   expand: {
     [key: string]: string;
   };
   datastore: boolean;
-  run_status: PodStatus | null;
+  execution_status: PodStatus | null;
   progress: number;
 }

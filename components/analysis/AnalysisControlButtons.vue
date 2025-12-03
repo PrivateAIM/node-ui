@@ -2,7 +2,7 @@
 import AnalysisUpdateButton from "./AnalysisUpdateButton.vue";
 import { useToast } from "primevue/usetoast";
 import { useNuxtApp } from "#app";
-import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
+import { ProcessStatus } from "~/types/analysis";
 import { PodStatus, type StatusResponse } from "~/services/Api";
 
 type ToastSeverity = "success" | "info" | "warn" | "error" | undefined;
@@ -56,24 +56,24 @@ const CONFLICT_STATUS = 409;
 
 const playButtonActiveStates = [null, ""];
 const rerunButtonActiveStates: Array<string | null> = [
-  AnalysisNodeRunStatus.Failed,
-  AnalysisNodeRunStatus.Finished,
-  AnalysisNodeRunStatus.Stopped,
-  AnalysisNodeRunStatus.Stopping,
+  PodStatus.Failed,
+  PodStatus.Finished,
+  PodStatus.Stopped,
+  PodStatus.Stopping,
 ];
 const stopButtonActiveStates: Array<string | null> = [
-  AnalysisNodeRunStatus.Running,
-  AnalysisNodeRunStatus.Starting,
-  AnalysisNodeRunStatus.Started,
-  AnalysisNodeRunStatus.Stopping,
+  PodStatus.Running,
+  PodStatus.Starting,
+  PodStatus.Started,
+  PodStatus.Stopping,
 ];
 const deleteButtonActiveStates: Array<string | null> = [
   PodStatus.Failed,
-  AnalysisNodeRunStatus.Stopped,
-  AnalysisNodeRunStatus.Stopping,
-  AnalysisNodeRunStatus.Running,
-  AnalysisNodeRunStatus.Starting,
-  AnalysisNodeRunStatus.Started,
+  PodStatus.Stopped,
+  PodStatus.Stopping,
+  PodStatus.Running,
+  PodStatus.Starting,
+  PodStatus.Started,
 ];
 
 const buttonStatuses = ref<ButtonStates>(
@@ -125,7 +125,7 @@ async function checkPodStatus(): Promise<boolean> {
   if (podStatus && props.analysisId in podStatus) {
     const currentPodStatus = podStatus[props.analysisId];
     // If the status is not empty and not FINISHED
-    if (currentPodStatus != AnalysisNodeRunStatus.Finished) {
+    if (currentPodStatus != PodStatus.Finished) {
       showToast(
         "warn",
         "Analysis already running",
@@ -140,7 +140,7 @@ async function checkPodStatus(): Promise<boolean> {
 
 async function onStartAnalysis() {
   loading.value = true;
-  setButtonStates(AnalysisNodeRunStatus.Starting);
+  setButtonStates(PodStatus.Starting);
   let analysisProps = new FormData();
 
   analysisProps.append("analysis_id", props.analysisId!);
@@ -155,7 +155,7 @@ async function onStartAnalysis() {
       setButtonStates(null);
       if (e.status == 408) {
         // Timed out waiting for image to pull
-        setButtonStates(AnalysisNodeRunStatus.Started);
+        setButtonStates(PodStatus.Started);
         showToast(
           "info",
           "Analysis submitted",
@@ -189,7 +189,7 @@ async function onStartAnalysis() {
 async function onStopAnalysis() {
   loading.value = true;
   const originalRunStatus = props.analysisRunStatus;
-  setButtonStates(AnalysisNodeRunStatus.Stopping);
+  setButtonStates(PodStatus.Stopping);
 
   const stopResp: StatusResponse = (await useNuxtApp()
     .$hubApi(`/po/stop/${props.analysisId}`, {
@@ -212,7 +212,7 @@ async function onStopAnalysis() {
       // No pod statuses returned from PO for analysis
       showStatusUnknownToast();
     }
-    setButtonStates(AnalysisNodeRunStatus.Stopped);
+    setButtonStates(PodStatus.Stopped);
   }
   loading.value = false;
 }
@@ -220,7 +220,7 @@ async function onStopAnalysis() {
 async function onDeleteAnalysis() {
   loading.value = true;
   const originalRunStatus = props.analysisRunStatus;
-  setButtonStates(AnalysisNodeRunStatus.Stopping);
+  setButtonStates(PodStatus.Stopping);
 
   const deleteResp: StatusResponse = (await useNuxtApp()
     .$hubApi(`/analysis/terminate/${props.analysisId}`, {
@@ -256,7 +256,7 @@ async function onDeleteAnalysis() {
       v-tooltip.top="'Start the analysis'"
       :disabled="
         !buttonStatuses.playActive ||
-        !(props.analysisBuildStatus === AnalysisBuildStatus.Finished) ||
+        !(props.analysisBuildStatus === ProcessStatus.Finished) ||
         (!props.datastore && props.nodeType != 'aggregator')
       "
       :loading="loading"
@@ -271,7 +271,7 @@ async function onDeleteAnalysis() {
       v-tooltip.top="'Rerun the analysis'"
       :disabled="
         !buttonStatuses.rerunActive ||
-        !(props.analysisBuildStatus === AnalysisBuildStatus.Finished) ||
+        !(props.analysisBuildStatus === ProcessStatus.Finished) ||
         (!props.datastore && props.nodeType != 'aggregator')
       "
       :loading="loading"
@@ -285,7 +285,7 @@ async function onDeleteAnalysis() {
       v-tooltip.top="'Stop the analysis'"
       :disabled="
         !buttonStatuses.stopActive ||
-        !(props.analysisBuildStatus === AnalysisBuildStatus.Finished) ||
+        !(props.analysisBuildStatus === ProcessStatus.Finished) ||
         (!props.datastore && props.nodeType != 'aggregator')
       "
       :loading="loading"
@@ -299,7 +299,7 @@ async function onDeleteAnalysis() {
       v-tooltip.top="'Delete the analysis container'"
       :disabled="
         !buttonStatuses.deleteActive ||
-        !(props.analysisBuildStatus === AnalysisBuildStatus.Finished) ||
+        !(props.analysisBuildStatus === ProcessStatus.Finished) ||
         (!props.datastore && props.nodeType != 'aggregator')
       "
       :loading="loading"

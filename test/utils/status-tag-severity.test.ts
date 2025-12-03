@@ -5,8 +5,9 @@ import {
   getDataStoreTypeSeverity,
   getRunStatusSeverity,
 } from "~/utils/status-tag-severity";
-import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
+import { ProcessStatus } from "~/types/analysis";
 import { ApprovalStatus } from "~/types/node";
+import { PodStatus } from "~/services/Api";
 
 test("Approval status severity tag", () => {
   const expectations = {
@@ -29,7 +30,7 @@ test("Build status severity tag", () => {
     finished: "success",
     failed: "danger",
   };
-  for (const buildStatus of Object.values(AnalysisBuildStatus)) {
+  for (const buildStatus of Object.values(ProcessStatus)) {
     expect(getBuildStatusSeverity(buildStatus)).toStrictEqual(
       expectations[buildStatus],
     );
@@ -47,7 +48,7 @@ test("Analysis run status severity tag", () => {
     failed: "danger",
   };
 
-  for (const runStatus of Object.values(AnalysisNodeRunStatus)) {
+  for (const runStatus of Object.values(PodStatus)) {
     expect(getRunStatusSeverity(runStatus)).toStrictEqual(
       expectations[runStatus],
     );

@@ -215,7 +215,7 @@ export const fakeAnalysisResp: Analysis[] = [
     name: "T004",
     nodes: 2,
     build_status: "finished",
-    run_status: null,
+    execution_status: null,
     registry_id: "bab3aa4f-9144-444c-8ec7-6ebbbe8e300f",
     realm_id: "ab1fbc92-3dc8-4bdd-9d51-3b571c2d7aaa",
     user_id: "5ec456e2-e30c-4a29-96de-6425fe5b9355",

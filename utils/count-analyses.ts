@@ -1,4 +1,4 @@
-import { AnalysisNodeRunStatus } from "~/types/analysis";
+import { PodStatus } from "~/types/analysis";
 import type { ModifiedAnalysisNode } from "~/components/analysis/AnalysesTable.vue";
 
 export interface containerCount {
@@ -20,28 +20,28 @@ export function countAnalysisContainers(
     stopped: 0,
   };
   for (const analysis of currentAnalyses) {
-    const runStatus = analysis.run_status;
+    const runStatus = analysis.execution_status;
     if (runStatus) {
       switch (runStatus) {
-        case AnalysisNodeRunStatus.Started:
-        case AnalysisNodeRunStatus.Starting:
+        case PodStatus.Started:
+        case PodStatus.Starting:
           counts.started++;
           break;
 
-        case AnalysisNodeRunStatus.Running:
+        case PodStatus.Running:
           counts.running++;
           break;
 
-        case AnalysisNodeRunStatus.Stopping:
-        case AnalysisNodeRunStatus.Stopped:
+        case PodStatus.Stopping:
+        case PodStatus.Stopped:
           counts.stopped++;
           break;
 
-        case AnalysisNodeRunStatus.Failed:
+        case PodStatus.Failed:
           counts.failed++;
           break;
 
-        case AnalysisNodeRunStatus.Finished:
+        case PodStatus.Finished:
           counts.finished++;
           break;
 
