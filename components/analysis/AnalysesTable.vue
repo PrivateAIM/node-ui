@@ -6,6 +6,7 @@ import ProgressBar from "primevue/progressbar";
 import { getAnalysisNodes } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
 import {
+  showCacheWarningToast,
   showConnectionErrorToast,
   showHubAdapterConnectionErrorToast,
 } from "~/composables/connectionErrorToast";
@@ -53,6 +54,8 @@ const kongRoutes = ref<Set<string>>(new Set());
 const runStatuses = Object.values(AnalysisNodeRunStatus);
 const approvalStatuses = Object.values(ApprovalStatus);
 const buildStatuses = Object.values(AnalysisBuildStatus);
+
+let analysisCache: AnalysisNode[] | null = null;
 
 const {
   data: analysisNodeResp,
@@ -190,23 +193,30 @@ async function parseData(respStatus: string, respData: AnalysisNode[] | null) {
   const parsedAnalyses = new Map<string, ModifiedAnalysisNode>();
   const currentRunStatuses = await getRunStatusesFromPodOrc();
 
+  let analysisData: AnalysisNode[] | null = null;
   if (respStatus === "success") {
-    const formattedAnalyses = formatDataRow(
-      respData,
-      ["created_at", "updated_at"],
-      expandRowEntries,
-    );
-    if (projMap.size > 0) {
-      formattedAnalyses.forEach((analysisEntry: ModifiedAnalysisNode) => {
-        parsedAnalyses[analysisEntry.analysis_id] = parseAnalysis(
-          analysisEntry,
-          currentRunStatuses,
-        );
-      });
-      analyses.value = parsedAnalyses;
-    }
+    analysisCache = respData;
+    analysisData = respData;
   } else if (error.value?.statusCode === 500) {
     showHubAdapterConnectionErrorToast(toast, "Hub");
+    showCacheWarningToast(toast);
+    analysisData = respData;
+  }
+  console.log(analysisData);
+
+  const formattedAnalyses = formatDataRow(
+      analysisData,
+      ["created_at", "updated_at"],
+      expandRowEntries,
+  );
+  if (projMap.size > 0) {
+    formattedAnalyses.forEach((analysisEntry: ModifiedAnalysisNode) => {
+      parsedAnalyses[analysisEntry.analysis_id] = parseAnalysis(
+          analysisEntry,
+          currentRunStatuses,
+      );
+    });
+    analyses.value = parsedAnalyses;
   }
 }
 
@@ -669,14 +679,14 @@ const onCloseNavToast = () => {
             </template>
             <template #body="{ data }">
               <ProgressBar
-                :value="data.progress"
-                :style="determineProgressBarColor(data.progress)"
                 :mode="
                   data.run_status === AnalysisNodeRunStatus.Running &&
                   !data.progress
                     ? 'indeterminate'
                     : 'determinate'
                 "
+                :style="determineProgressBarColor(data.progress)"
+                :value="data.progress"
               />
             </template>
           </Column>
@@ -699,10 +709,10 @@ const onCloseNavToast = () => {
                   :analysisId="slotProps.data.analysis_id"
                   :analysisNodeId="slotProps.data.id"
                   :analysisRunStatus="slotProps.data.run_status"
-                  :nodeId="slotProps.data.node_id"
-                  :projectId="slotProps.data.analysis.project_id"
                   :datastore="slotProps.data.datastore"
+                  :nodeId="slotProps.data.node_id"
                   :nodeType="nodeType!"
+                  :projectId="slotProps.data.analysis.project_id"
                   @missingDataStore="showDataStoreNavToast"
                   @updateAnalysisRow="updateAnalysisRun"
                 />
