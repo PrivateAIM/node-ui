@@ -55,7 +55,7 @@ const runStatuses = Object.values(AnalysisNodeRunStatus);
 const approvalStatuses = Object.values(ApprovalStatus);
 const buildStatuses = Object.values(AnalysisBuildStatus);
 
-let analysisCache: AnalysisNode[] | null = null;
+const analysisCache = ref<AnalysisNode[] | null>(null);
 
 const {
   data: analysisNodeResp,
@@ -195,14 +195,13 @@ async function parseData(respStatus: string, respData: AnalysisNode[] | null) {
 
   let analysisData: AnalysisNode[] | null = null;
   if (respStatus === "success") {
-    analysisCache = respData;
+    analysisCache.value = respData;
     analysisData = respData;
   } else if (error.value?.statusCode === 500) {
     showHubAdapterConnectionErrorToast(toast, "Hub");
     showCacheWarningToast(toast);
-    analysisData = respData;
+    analysisData = analysisCache.value;
   }
-  console.log(analysisData);
 
   const formattedAnalyses = formatDataRow(
       analysisData,
