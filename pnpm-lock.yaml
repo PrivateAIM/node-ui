@@ -604,6 +604,7 @@ packages:
   '@koa/router@12.0.2':
     resolution: {integrity: sha512-sYcHglGKTxGF+hQ6x67xDfkE9o+NhVlRHBqq6gLywaMc6CojK/5vFZByphdonKinYlMLkEkacm+HEse9HzwgTA==}
     engines: {node: '>= 12'}
+    deprecated: Please upgrade to v15 or higher. All reported bugs in this version are fixed in newer releases, dependencies have been updated, and security has been improved.
 
   '@kwsites/file-exists@1.1.1':
     resolution: {integrity: sha512-m9/5YGR18lIwxSFDwfE3oA7bWuq9kdau6ugN4H2rJeyhFQZcG9AgSHkQtSD15a8WvTgfz9aikZMrKPHvbpqFiw==}
@@ -631,8 +632,8 @@ packages:
     resolution: {integrity: sha512-5XUvZuffe3KetyhbWwd4n2ktd7wraocCYw10tlM+/u/95iAz29GjNiuNxbCD1T6Bn1MyGc4QLVNKOWhzJkVFAw==}
     engines: {node: ^14.16.0 || >=16.0.0}
 
-  '@netlify/open-api@2.43.1':
-    resolution: {integrity: sha512-MPhzLfVVTzQCs9iIjxxgIoXv6/tE2FVHTFT2gi4leChj5o4DQ9an/6gc1q7QPRXeIuPIb+P6AaYi3TGHf8vsBA==}
+  '@netlify/open-api@2.45.0':
+    resolution: {integrity: sha512-kLysr2N8HQi0qoEq04vpRvrE/fSnZaXJYf1bVxKre2lLaM1RSm05hqDswKTgxM601pZf9h1i1Ea3L4DZNgHb5w==}
     engines: {node: '>=14.8.0'}
 
   '@netlify/runtime-utils@1.3.1':
@@ -2014,8 +2015,8 @@ packages:
   caniuse-lite@1.0.30001751:
     resolution: {integrity: sha512-A0QJhug0Ly64Ii3eIqHu5X51ebln3k4yTUkY1j8drqpWHVreg/VLijN48cZ1bYPiqOQuqpkIKnzr/Ul8V+p6Cw==}
 
-  caniuse-lite@1.0.30001754:
-    resolution: {integrity: sha512-x6OeBXueoAceOmotzx3PO4Zpt4rzpeIFsSr6AAePTZxSkXiYDUmpypEl7e2+8NCd9bD7bXjqyef8CJYPC1jfxg==}
+  caniuse-lite@1.0.30001760:
+    resolution: {integrity: sha512-7AAMPcueWELt1p3mi13HR/LHH0TJLT11cnwDJEs3xA4+CK/PLKeO9Kl1oru24htkyUKtkGCvAx4ohB0Ttry8Dw==}
 
   chai@5.3.3:
     resolution: {integrity: sha512-4zNhdJD/iOjSH0A05ea+Ke6MU5mmpQcbQsSOkgdaUMJ9zTlDTD/GYlwohmIE2u0gaxHYiVHEn1Fw9mZ/ktJWgw==}
@@ -5852,7 +5853,7 @@ snapshots:
       write-file-atomic: 6.0.0
     optional: true
 
-  '@netlify/open-api@2.43.1':
+  '@netlify/open-api@2.45.0':
     optional: true
 
   '@netlify/runtime-utils@1.3.1':
@@ -7410,7 +7411,7 @@ snapshots:
 
   caniuse-lite@1.0.30001751: {}
 
-  caniuse-lite@1.0.30001754: {}
+  caniuse-lite@1.0.30001760: {}
 
   chai@5.3.3:
     dependencies:
@@ -8898,7 +8899,7 @@ snapshots:
 
   netlify@13.3.5:
     dependencies:
-      '@netlify/open-api': 2.43.1
+      '@netlify/open-api': 2.45.0
       lodash-es: 4.17.21
       micro-api-client: 3.3.0
       node-fetch: 3.3.2
@@ -8928,7 +8929,7 @@ snapshots:
       '@next/env': 13.5.11
       '@swc/helpers': 0.5.2
       busboy: 1.6.0
-      caniuse-lite: 1.0.30001754
+      caniuse-lite: 1.0.30001760
       postcss: 8.4.31
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
