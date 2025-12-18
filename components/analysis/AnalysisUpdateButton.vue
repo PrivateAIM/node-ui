@@ -3,6 +3,7 @@ import { useNuxtApp } from "#app";
 import { useToast } from "primevue/usetoast";
 
 import { PodStatus, type StatusResponse } from "~/services/Api";
+import { FetchError } from "ofetch";
 
 const props = defineProps({
   analysisId: {
@@ -17,38 +18,48 @@ const toast = useToast();
 
 async function getStatusUpdateFromPodOrc(): Promise<PodStatus | null> {
   let analysisStatus: PodStatus | null = null;
-  const analysisStatusUpdate: StatusResponse = (await useNuxtApp()
-    .$hubApi(`/po/status/${props.analysisId}`, {
-      method: "GET",
-    })
-    .catch(() => {
+
+  try {
+    const analysisStatusUpdate: StatusResponse = await useNuxtApp().$hubApi(
+      `/po/status/${props.analysisId}`,
+      {
+        method: "GET",
+      },
+    );
+
+    if (analysisStatusUpdate && props.analysisId in analysisStatusUpdate) {
+      analysisStatus = analysisStatusUpdate[props.analysisId];
       toast.add({
-        severity: "error",
-        summary: "Unable to get a status update",
+        severity: "info",
+        summary: "Analysis status successfully update",
         detail:
-          "An error occurred while trying to contact the PO for a status update. Try again later.",
+          "The current status of the analysis container was successfully updated.",
         life: 5000,
       });
-    })) as StatusResponse;
-  if (analysisStatusUpdate && props.analysisId in analysisStatusUpdate) {
-    analysisStatus = analysisStatusUpdate[props.analysisId];
+    } else {
+      toast.add({
+        severity: "warn",
+        summary: "No analysis pod found",
+        detail:
+          "There are no running pods for this analysis on this node, " +
+          "the run status shown is the last reported update to the hub.",
+        life: 8000,
+      });
+    }
+  } catch (err) {
+    const fetchError = err as FetchError;
+    if (fetchError.status === 403) {
+      return null; // Exit early on 403 to not overdo toasts
+    }
     toast.add({
-      severity: "info",
-      summary: "Analysis status successfully update",
+      severity: "error",
+      summary: "Unable to get a status update",
       detail:
-        "The current status of the analysis container was successfully updated.",
+        "An error occurred while trying to contact the PO for a status update. Try again later.",
       life: 5000,
     });
-  } else {
-    toast.add({
-      severity: "warn",
-      summary: "No analysis pod found",
-      detail:
-        "There are no running pods for this analysis on this node, " +
-        "the run status shown is the last reported update to the hub.",
-      life: 8000,
-    });
   }
+
   return analysisStatus;
 }
 

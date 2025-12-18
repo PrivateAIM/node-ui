@@ -161,6 +161,17 @@ export const showWrongRobotIdToast = (toast: ToastServiceMethods) => {
   console.warn("Invalid robot ID");
 };
 
+export const showRbacPermissionError = (
+  toast: ToastServiceMethods,
+  msg: string,
+) => {
+  showConnectionErrorToast(toast, {
+    severity: "error",
+    summary: "Unauthorized Error",
+    detail: msg,
+  });
+};
+
 export const showHubConnectionError = (toast: ToastServiceMethods) => {
   showConnectionErrorToast(toast, {
     severity: "error",
