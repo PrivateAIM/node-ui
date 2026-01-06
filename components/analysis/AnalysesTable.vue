@@ -34,7 +34,8 @@ import type { ModifiedAnalysisNode } from "~/services/modifiedApiInterfaces";
 const toast = useToast();
 const nodeType = await useNodeType();
 
-const analyses = ref<Map<string, ModifiedAnalysisNode>>(new Map());
+const analysesMap = ref<Map<string, ModifiedAnalysisNode>>(new Map());
+const analyses = computed(() => Array.from(analysesMap.value.values()));
 const projMap = new Map<string, string>();
 
 const expandRowEntries = [];
@@ -223,9 +224,8 @@ async function parseData(respStatus: string, respData: AnalysisNode[] | null) {
         parseAnalysis(analysisEntry, currentRunStatuses),
       );
     });
-    analyses.value = parsedAnalyses;
+    analysesMap.value = parsedAnalyses;
   }
-  console.log(analyses.value);
 }
 
 onMounted(() => {
@@ -242,7 +242,7 @@ async function onTableRefresh() {
 
 function onPage(event) {
   const currentPage = event.page + 1;
-  const currentNumberEntries = analyses.value.size;
+  const currentNumberEntries = analysesMap.value.size;
   const currentMaxPage = Math.ceil(currentNumberEntries / event.rows);
 
   if (!allResultsRetrieved) {
@@ -306,10 +306,10 @@ const updateFilters = (filterText: string) => {
 };
 
 function updateAnalysisRun(analysisId: string, newStatus: PodStatus | null) {
-  if (analysisId in analyses.value) {
-    const analysisToUpdate = analyses.value[analysisId];
+  if (analysisId in analysesMap.value) {
+    const analysisToUpdate = analysesMap.value[analysisId];
     analysisToUpdate.run_status = newStatus;
-    analyses.value[analysisId] = setProgress(analysisToUpdate);
+    analysesMap.value[analysisId] = setProgress(analysisToUpdate);
   }
 }
 
@@ -414,7 +414,7 @@ const onCloseNavToast = () => {
           <div class="analysis-container-counter">
             <ContainerCounter
               :activeFilters="filters"
-              :analyses="analyses"
+              :analyses="analysesMap"
               @applyRunStatusFilter="updateRunStatusFilter"
             />
           </div>
@@ -447,7 +447,7 @@ const onCloseNavToast = () => {
           :rows="10"
           :rowsPerPageOptions="[10, 20, 50]"
           :sortOrder="-1"
-          :value="Object.values(analyses)"
+          :value="analyses"
           dataKey="id"
           filterDisplay="menu"
           paginator
