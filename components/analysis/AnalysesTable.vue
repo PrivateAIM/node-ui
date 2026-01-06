@@ -8,7 +8,6 @@ import { formatDataRow } from "~/utils/format-data-row";
 import {
   showCacheWarningToast,
   showConnectionErrorToast,
-  showHubAdapterConnectionErrorToast,
 } from "~/composables/connectionErrorToast";
 import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
@@ -36,12 +35,20 @@ const toast = useToast();
 const nodeType = await useNodeType();
 
 const analyses = ref<Map<string, ModifiedAnalysisNode>>(new Map());
+const projMap = new Map<string, string>();
 
 const expandRowEntries = [];
 const expandedRows = ref();
 
 // Filter settings
 const filters = ref();
+
+// Cache
+const analysisCache = useState<AnalysisNode[] | null>(
+  "analysisCache",
+  () => null,
+);
+const projectCache = useState<Project[] | null>("projectCache", () => null);
 
 // Paginated table
 let allResultsRetrieved = false;
@@ -55,15 +62,8 @@ const runStatuses = Object.values(AnalysisNodeRunStatus);
 const approvalStatuses = Object.values(ApprovalStatus);
 const buildStatuses = Object.values(AnalysisBuildStatus);
 
-const analysisCache = ref<AnalysisNode[] | null>(null);
-
-const {
-  data: analysisNodeResp,
-  status,
-  error,
-  refresh,
-} = await getAnalysisNodes(); // Get the first batch of 50
-const { data: projData, status: projStatus } = await useFetch<Project[]>(
+const { data: analysisNodeResp, status, refresh } = await getAnalysisNodes(); // Get the first batch of 50
+const { data: projResp, status: projStatus } = await useFetch<Project[] | null>(
   "/projects",
   {
     $fetch: useNuxtApp().$hubApi,
@@ -94,13 +94,22 @@ if (kongProjectsResp && kongProjectsResp.data) {
 }
 
 // Iterate through projects and populate map with proj UUID: name
-const projMap = new Map<string, string>();
-if (projStatus.value === "success" && projData.value) {
-  projData.value.forEach((proj: Project) => {
-    if (proj.name) {
-      projMap.set(proj.id!, proj.name);
-    }
-  });
+function parseProjects() {
+  let projData: Project[] | null;
+  if (projStatus.value === "success" && projResp.value) {
+    projectCache.value = projResp.value;
+    projData = projResp.value;
+  } else {
+    // No need to show cache warning here since it is already called during analysis parsing
+    projData = projectCache.value;
+  }
+  if (projData) {
+    projData.forEach((proj: Project) => {
+      if (proj.name) {
+        projMap.set(proj.id!, proj.name);
+      }
+    });
+  }
 }
 
 async function getRunStatusesFromPodOrc(): Promise<StatusResponse | null> {
@@ -193,33 +202,34 @@ async function parseData(respStatus: string, respData: AnalysisNode[] | null) {
   const parsedAnalyses = new Map<string, ModifiedAnalysisNode>();
   const currentRunStatuses = await getRunStatusesFromPodOrc();
 
-  let analysisData: AnalysisNode[] | null = null;
+  let analysisData: AnalysisNode[] | null;
   if (respStatus === "success") {
     analysisCache.value = respData;
     analysisData = respData;
-  } else if (error.value?.statusCode === 500) {
-    showHubAdapterConnectionErrorToast(toast, "Hub");
+  } else {
     showCacheWarningToast(toast);
     analysisData = analysisCache.value;
   }
 
   const formattedAnalyses = formatDataRow(
-      analysisData,
-      ["created_at", "updated_at"],
-      expandRowEntries,
+    analysisData,
+    ["created_at", "updated_at"],
+    expandRowEntries,
   );
   if (projMap.size > 0) {
     formattedAnalyses.forEach((analysisEntry: ModifiedAnalysisNode) => {
-      parsedAnalyses[analysisEntry.analysis_id] = parseAnalysis(
-          analysisEntry,
-          currentRunStatuses,
+      parsedAnalyses.set(
+        analysisEntry.analysis_id,
+        parseAnalysis(analysisEntry, currentRunStatuses),
       );
     });
     analyses.value = parsedAnalyses;
   }
+  console.log(analyses.value);
 }
 
 onMounted(() => {
+  parseProjects();
   parseData(status.value, analysisNodeResp.value);
   // TODO reactivate after fixing toast spam
   // setInterval(checkForUpdatesFromPodOrc, 15000); // Poll PO every 15 seconds

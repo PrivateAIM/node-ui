@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@nuxtjs/tailwindcss": "^6.14.0",
+    "@pinia/nuxt": "0.11.3",
     "@primeuix/themes": "^1.2.5",
     "@primevue/core": "^4.4.1",
     "@primevue/forms": "^4.4.1",
