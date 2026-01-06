@@ -1,8 +1,8 @@
-import { useFetch, useNuxtApp } from "#app";
+import {type AsyncDataRequestStatus, useFetch, useNuxtApp} from "#app";
 import { useToast } from "primevue/usetoast";
 import { defineComponent } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
-import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
+import {afterEach, beforeAll, beforeEach, describe, expect, test, vi} from "vitest";
 import AnalysesTable from "~/components/analysis/AnalysesTable.vue";
 import {
   fakeAnalysisNodes,
@@ -10,19 +10,37 @@ import {
   newFakeAnalysisNode,
 } from "~/test/components/analysis/constants";
 import { getAnalysisNodes } from "~/composables/useAPIFetch";
+import { useNodeType } from "~/composables/useNodeType";
 import type { AnalysisNode } from "~/services/Api";
+import {FetchError} from "ofetch";
 
 vi.mock("~/composables/useAPIFetch", () => ({
   getAnalysisNodes: vi.fn(),
 }));
 
+vi.mock('~/composables/useNodeType', () => ({
+    useNodeType: vi.fn()
+}));
+
 describe("AnalysesTable.vue", () => {
-  let mockToast;
+    let spy;
+    let mockToast;
   let AnalysisTableTestComponent;
 
+    // Render the component with the fake params
+    beforeAll(async () => {
+        AnalysisTableTestComponent = defineComponent({
+            components: { AnalysesTable },
+            template: "<Suspense><AnalysesTable/></Suspense>",
+        });
+    });
+
   beforeEach(() => {
-    vi.mocked(useToast).mockReturnValue(mockToast);
-    vi.restoreAllMocks(); // Reset mocks before each test
+      mockToast = { add: vi.fn() };
+      vi.mocked(useToast).mockReturnValue(mockToast);
+      spy = vi.spyOn(mockToast, "add");
+
+      vi.mocked(useNodeType).mockResolvedValue(ref("default"));
 
     // The basic response
     vi.mocked(getAnalysisNodes).mockResolvedValue({
@@ -47,13 +65,9 @@ describe("AnalysesTable.vue", () => {
     vi.mocked(useNuxtApp);
   });
 
-  // Render the component with the fake params
-  beforeAll(async () => {
-    AnalysisTableTestComponent = defineComponent({
-      components: { AnalysesTable },
-      template: "<Suspense><AnalysesTable/></Suspense>",
+    afterEach(() => {
+        spy.mockReset();
     });
-  });
 
   test("Return analysis node data", async () => {
     const wrapper = mount(AnalysisTableTestComponent);
@@ -79,6 +93,53 @@ describe("AnalysesTable.vue", () => {
     expect(secondRowCells[1].text()).toBe("approved"); // Approval status
     expect(secondRowCells[7].text()).toBe("14.03.2025"); // Last Updated
   });
+
+    test("Cached results used", async () => {
+        spy.mockClear();
+
+        const dataRef = ref(fakeAnalysisNodes);
+        const errorRef = ref<FetchError | null>(null);
+        const statusRef = ref<AsyncDataRequestStatus>("success");
+        const mockRefresh = vi.fn();
+
+        // Return results so they are cached
+        vi.mocked(getAnalysisNodes).mockResolvedValueOnce({
+            data: dataRef,
+            pending: ref(false),
+            error: errorRef,
+            status: statusRef,
+            refresh: mockRefresh,
+            execute: vi.fn(),
+            clear: vi.fn(),
+        });
+
+        const wrapper = mount(AnalysisTableTestComponent);
+        await flushPromises();
+
+        const rows = wrapper.findAll("tbody tr");
+        expect(rows.length).toBe(3); // Ensure 3 rows exist as defined in fakeAnalysisNodes
+
+        // Return empty but expect cached results
+        // Simulate refresh returning an error
+        mockRefresh.mockImplementation(async () => {
+            errorRef.value = { statusCode: 500, name: "Hub", message: "" };
+            statusRef.value = "error";
+            dataRef.value = fakeAnalysisNodes; // Keep cached data
+        });
+
+        await wrapper.find(".table-refresh-btn").trigger("click");
+        await flushPromises();
+
+        const cachedRows = wrapper.findAll("tbody tr");
+        expect(cachedRows.length).toBe(3); // Ensure 3 rows exist as defined in fakeAnalysisNode
+
+        expect(spy).toHaveBeenCalledWith({
+            severity: "warn",
+            summary: "Unable to refresh the table",
+            detail: "The Hub is unreachable and the table could not be updated",
+            life: 5000
+        });
+    });
 
   test("Refresh table", async () => {
     const wrapper = mount(AnalysisTableTestComponent);

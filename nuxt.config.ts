@@ -9,6 +9,7 @@ export default defineNuxtConfig({
     "@primevue/nuxt-module",
     "@sidebase/nuxt-auth",
     "@nuxtjs/tailwindcss",
+    "@pinia/nuxt",
   ],
 
   runtimeConfig: {
