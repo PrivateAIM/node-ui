@@ -35,6 +35,16 @@ export const showHubAdapterConnectionErrorToast = (
   });
 };
 
+export const showCacheWarningToast = (
+    toast: ToastServiceMethods,
+) => {
+    showConnectionErrorToast(toast, {
+        severity: "warn",
+        summary: "Unable to refresh the table",
+        detail: "The Hub is unreachable and the table could not be updated",
+    });
+};
+
 export const showDownstreamConnectionErrorToast = (
   toast: ToastServiceMethods,
   service: string,

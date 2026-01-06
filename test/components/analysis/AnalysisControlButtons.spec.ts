@@ -147,7 +147,7 @@ describe("AnalysisControlButtons.vue", () => {
   it("Stop analysis button - working", async () => {
     await basicButtonCheck(
       ".stop-analysis-btn",
-      "success",
+      "info",
       "Stop success",
       "Successfully stopped the container",
       fakeAnalysisId,
@@ -181,7 +181,7 @@ describe("AnalysisControlButtons.vue", () => {
   it("Stop analysis button - PO broken", async () => {
     await basicButtonCheck(
       ".stop-analysis-btn",
-      "error",
+      "warn",
       "Stop failure",
       "Failed to stop the analysis container",
       fakeBrokenAnalysisId,
@@ -198,7 +198,7 @@ describe("AnalysisControlButtons.vue", () => {
   it("Delete analysis button - working", async () => {
     await basicButtonCheck(
       ".delete-analysis-btn",
-      "success",
+      "info",
       "Delete success",
       "Successfully removed the container",
       fakeAnalysisId,
@@ -232,7 +232,7 @@ describe("AnalysisControlButtons.vue", () => {
   it("Delete analysis button - PO broken", async () => {
     await basicButtonCheck(
       ".delete-analysis-btn",
-      "error",
+      "warn",
       "Terminate request failure",
       "Failed to terminate the analysis",
       fakeBrokenAnalysisId,
@@ -256,7 +256,7 @@ describe("AnalysisControlButtons.vue", () => {
         projectId: "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483",
         nodeId: "e3b89572-327f-4936-8cf0-fbfbcc6336b7",
         datastore: true,
-        nodeType: "default",
+        nodeType: "default"
       },
     });
 
