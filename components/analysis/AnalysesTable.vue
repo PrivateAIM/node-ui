@@ -306,14 +306,10 @@ const updateFilters = (filterText: string) => {
 };
 
 function updateAnalysisRun(analysisId: string, newStatus: PodStatus | null) {
-  const analysisIndex = analyses.value.findIndex(
-    (a) => a.analysis_id === analysisId,
-  );
-  if (analysisIndex !== -1) {
-    // -1 means it the analysis ID was not found
-    const analysisToUpdate = { ...analyses.value[analysisIndex] };
+  if (analysesMap.value.has(analysisId)) {
+    const analysisToUpdate = analysesMap.value.get(analysisId)!; // Tell typescript we are sure there is a value
     analysisToUpdate.run_status = newStatus;
-    analyses.value[analysisIndex] = setProgress(analysisToUpdate);
+    analysesMap.value.set(analysisId, setProgress(analysisToUpdate));
   }
 }
 
