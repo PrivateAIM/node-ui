@@ -1,5 +1,5 @@
 import { AnalysisNodeRunStatus } from "~/types/analysis";
-import type { ModifiedAnalysisNode } from "~/components/analysis/AnalysesTable.vue";
+import type { ModifiedAnalysisNode } from "~/services/modifiedApiInterfaces";
 
 export interface containerCount {
   started: number;
