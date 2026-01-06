@@ -414,7 +414,7 @@ const onCloseNavToast = () => {
           <div class="analysis-container-counter">
             <ContainerCounter
               :activeFilters="filters"
-              :analyses="analysesMap"
+              :analyses="analyses"
               @applyRunStatusFilter="updateRunStatusFilter"
             />
           </div>
