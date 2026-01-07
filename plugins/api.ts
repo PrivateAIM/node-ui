@@ -11,6 +11,7 @@ import {
   showKongGatewayErrorToast,
   showKongMissingHealthConsumerErrorToast,
   showKongS3BucketErrorToast,
+  showRbacPermissionError,
   showWrongRobotIdToast,
 } from "~/composables/connectionErrorToast";
 import type { SessionData } from "h3";
@@ -56,8 +57,14 @@ export default defineNuxtPlugin(() => {
       //   await signIn(idpProvider);
       // }
       console.error(response);
+
+      // Catch RBAC permission error
+      if (errSvc && errSvc === "Auth" && response.status === 403) {
+        showRbacPermissionError(toast, errMsg);
+      }
+
       // Kong connection test errors
-      if (typeof request === "string" && request.includes("kong")) {
+      else if (typeof request === "string" && request.includes("kong")) {
         switch (response.status) {
           case 403:
             showKongS3BucketErrorToast(toast, errMsg);

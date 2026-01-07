@@ -140,6 +140,7 @@ async function checkPodStatus(): Promise<boolean> {
 
 async function onStartAnalysis() {
   loading.value = true;
+  const originalRunStatus = props.analysisRunStatus;
   setButtonStates(AnalysisNodeRunStatus.Starting);
   let analysisProps = new FormData();
 
@@ -181,6 +182,8 @@ async function onStartAnalysis() {
     const currentRunStatus = startPodResp[props.analysisId];
     setButtonStates(currentRunStatus);
     showToast("success", "Start success", "Successfully started the container");
+  } else {
+    setButtonStates(originalRunStatus);
   }
 
   loading.value = false;
@@ -197,22 +200,27 @@ async function onStopAnalysis() {
     })
     .catch(() => {
       showToast(
-        "warn",
+        "error",
         "Stop failure",
         "Failed to stop the analysis container",
       );
-      setButtonStates(originalRunStatus);
     })) as StatusResponse;
 
   // stopResp is null if error occurred
   if (stopResp) {
     if (props.analysisId in stopResp) {
-      showToast("info", "Stop success", "Successfully stopped the container");
+      showToast(
+        "success",
+        "Stop success",
+        "Successfully stopped the container",
+      );
     } else {
       // No pod statuses returned from PO for analysis
       showStatusUnknownToast();
     }
     setButtonStates(AnalysisNodeRunStatus.Stopped);
+  } else {
+    setButtonStates(originalRunStatus);
   }
   loading.value = false;
 }
@@ -228,21 +236,26 @@ async function onDeleteAnalysis() {
     })
     .catch(() => {
       showToast(
-        "warn",
+        "error",
         "Terminate request failure",
         "Failed to terminate the analysis",
       );
-      setButtonStates(originalRunStatus);
     })) as StatusResponse;
 
   // deleteResp is null if error occurred
   if (deleteResp) {
     if (props.analysisId in deleteResp) {
-      showToast("info", "Delete success", "Successfully removed the container");
+      showToast(
+        "success",
+        "Delete success",
+        "Successfully removed the container",
+      );
     } else {
       showStatusUnknownToast();
     }
     setButtonStates("");
+  } else {
+    setButtonStates(originalRunStatus);
   }
 
   loading.value = false;

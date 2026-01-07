@@ -19,7 +19,12 @@ const analysisId = route.params.id as string;
 const currentLogs = ref([] as logEntry[]);
 const prevLogs = ref([] as logEntry[]);
 
-const { data: response, refresh, status } = await getAnalysisLogs(analysisId);
+const {
+  data: response,
+  refresh,
+  status,
+  error,
+} = await getAnalysisLogs(analysisId);
 
 gatherCurrentLogs();
 await gatherPreviousLogs();
@@ -45,6 +50,8 @@ function parseLogs(logResp: LogResponse | null): logEntry[] {
 function gatherCurrentLogs() {
   if (status.value === "success") {
     currentLogs.value = parseLogs(response.value as LogResponse);
+  } else if (status.value === "error" && error.value?.statusCode === 403) {
+    navigateTo("/error/403");
   }
 }
 
