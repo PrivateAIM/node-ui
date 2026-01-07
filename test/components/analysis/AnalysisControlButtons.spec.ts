@@ -6,6 +6,7 @@ import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
 import {
   fakeAnalysisId,
   fakeBrokenAnalysisId,
+  fakeInvalidRoleAnalysisId,
   fakeMissingAnalysisId,
 } from "~/test/mockapi/handlers";
 
@@ -70,7 +71,7 @@ describe("AnalysisControlButtons.vue", () => {
     }
 
     if (expectedToastCalls > 0) {
-      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledTimes(expectedToastCalls);
       expect(spy).toHaveBeenCalledWith({
         severity: toastSeverity,
         summary: toastSummary,
@@ -147,7 +148,7 @@ describe("AnalysisControlButtons.vue", () => {
   it("Stop analysis button - working", async () => {
     await basicButtonCheck(
       ".stop-analysis-btn",
-      "info",
+      "success",
       "Stop success",
       "Successfully stopped the container",
       fakeAnalysisId,
@@ -181,7 +182,7 @@ describe("AnalysisControlButtons.vue", () => {
   it("Stop analysis button - PO broken", async () => {
     await basicButtonCheck(
       ".stop-analysis-btn",
-      "warn",
+      "error",
       "Stop failure",
       "Failed to stop the analysis container",
       fakeBrokenAnalysisId,
@@ -198,7 +199,7 @@ describe("AnalysisControlButtons.vue", () => {
   it("Delete analysis button - working", async () => {
     await basicButtonCheck(
       ".delete-analysis-btn",
-      "info",
+      "success",
       "Delete success",
       "Successfully removed the container",
       fakeAnalysisId,
@@ -232,7 +233,7 @@ describe("AnalysisControlButtons.vue", () => {
   it("Delete analysis button - PO broken", async () => {
     await basicButtonCheck(
       ".delete-analysis-btn",
-      "warn",
+      "error",
       "Terminate request failure",
       "Failed to terminate the analysis",
       fakeBrokenAnalysisId,
@@ -246,6 +247,24 @@ describe("AnalysisControlButtons.vue", () => {
     );
   });
 
+  it("Start analysis button - invalid role", async () => {
+    await basicButtonCheck(
+      ".start-analysis-btn",
+      "error",
+      "Start failure",
+      "Failed to start the analysis",
+      fakeInvalidRoleAnalysisId,
+      true,
+      {
+        playActive: true,
+        rerunActive: false,
+        stopActive: false,
+        deleteActive: false,
+      },
+      "",
+    );
+  });
+
   it("Log btn check", async () => {
     const wrapper = mount(AnalysisControlButtons, {
       props: {
@@ -256,7 +275,7 @@ describe("AnalysisControlButtons.vue", () => {
         projectId: "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483",
         nodeId: "e3b89572-327f-4936-8cf0-fbfbcc6336b7",
         datastore: true,
-        nodeType: "default"
+        nodeType: "default",
       },
     });
 
