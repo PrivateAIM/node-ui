@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.3.2](https://github.com/PrivateAIM/node-ui/compare/v0.3.1...v0.3.2) (2026-01-07)
+
+
+### Features
+
+* **analysis:** add analysis result cache ([fb1f74a](https://github.com/PrivateAIM/node-ui/commit/fb1f74a85141c69d31c4107589d390fa6ad655b2))
+* **auth:** add toasts for RBAC permission errors ([c7d5e8f](https://github.com/PrivateAIM/node-ui/commit/c7d5e8f34d3abfa45f1f8390f0f5d3f4a7e58579))
+* **rbac:** redirect to 403 page if invalid users attempts analysis log access ([f1c539b](https://github.com/PrivateAIM/node-ui/commit/f1c539b4b05795918664719cbfe200dd636c3b0e))
+
+
+### Bug Fixes
+
+* **analysis:** modify updateAnalysisRun to work with array ([ad407d6](https://github.com/PrivateAIM/node-ui/commit/ad407d6505d7770605caf8ad9bd6a8f2a7f7ce59))
+* **analysis:** rerun button now deletes analysis before starting again ([4235141](https://github.com/PrivateAIM/node-ui/commit/4235141b1718e41367f79469ff3310bd2828f0d5))
+* **analysis:** rerun button now deletes analysis before starting again ([4156f47](https://github.com/PrivateAIM/node-ui/commit/4156f47855f9f46649032ad66909eb716b88120c))
+* **counter:** provided correct variable to counter ([f4b2074](https://github.com/PrivateAIM/node-ui/commit/f4b2074890a70a1f1709ab04e8c11655c81f273a))
+
+
+### Performance Improvements
+
+* better parsing of dynamic analyses ([8e508b3](https://github.com/PrivateAIM/node-ui/commit/8e508b38a23789f56d386ffa6d0f9d20eab0f74e))
+* consolidate toasts ([415ed85](https://github.com/PrivateAIM/node-ui/commit/415ed859c865c81179518ce16787633330718180))
+
+
+### Reverts
+
+* **analysis:** update analysis btn works again ([f0b193d](https://github.com/PrivateAIM/node-ui/commit/f0b193da9395881b72073178eb90ce2ef12b8c13))
+
 ## [0.3.1](https://github.com/PrivateAIM/node-ui/compare/v0.3.0...v0.3.1) (2025-11-15)
 
 
