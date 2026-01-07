@@ -138,6 +138,11 @@ async function checkPodStatus(): Promise<boolean> {
   return false;
 }
 
+async function onRerunAnalysis() {
+  await onDeleteAnalysis();
+  await onStartAnalysis();
+}
+
 async function onStartAnalysis() {
   loading.value = true;
   const originalRunStatus = props.analysisRunStatus;
@@ -292,7 +297,7 @@ async function onDeleteAnalysis() {
       class="rerun-analysis-btn"
       icon="pi pi-replay"
       severity="success"
-      @click="onStartAnalysis()"
+      @click="onRerunAnalysis()"
     />
     <Button
       v-tooltip.top="'Stop the analysis'"
