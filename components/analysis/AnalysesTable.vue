@@ -50,6 +50,7 @@ const analysisCache = useState<AnalysisNode[] | null>(
   () => null,
 );
 const projectCache = useState<Project[] | null>("projectCache", () => null);
+const podOrcUnreacheable = ref(false);
 
 // Paginated table
 let allResultsRetrieved = false;
@@ -114,7 +115,7 @@ function parseProjects() {
 }
 
 async function getRunStatusesFromPodOrc(): Promise<StatusResponse | null> {
-  return (await useNuxtApp()
+  const podOrcResponse = (await useNuxtApp()
     .$hubApi("/po/status", {
       method: "GET",
     })
@@ -127,16 +128,20 @@ async function getRunStatusesFromPodOrc(): Promise<StatusResponse | null> {
         life: 3000,
       });
     })) as StatusResponse;
+  podOrcUnreacheable.value = !podOrcResponse;
+  return podOrcResponse;
 }
 
-// async function checkForUpdatesFromPodOrc() {
-//   const newStatuses = await getRunStatusesFromPodOrc();
-//   if (newStatuses) {
-//     for (const [analysisId, status] of Object.entries(newStatuses)) {
-//       updateAnalysisRun(analysisId, status);
-//     }
-//   }
-// }
+async function checkForUpdatesFromPodOrc() {
+  if (!podOrcUnreacheable.value) {
+    const newStatuses = await getRunStatusesFromPodOrc();
+    if (newStatuses) {
+      for (const [analysisId, status] of Object.entries(newStatuses)) {
+        updateAnalysisRun(analysisId, status);
+      }
+    }
+  }
+}
 
 function setProgress(analysis: ModifiedAnalysisNode): ModifiedAnalysisNode {
   // For testing: Math.round(Math.random() * 100);
@@ -231,8 +236,7 @@ async function parseData(respStatus: string, respData: AnalysisNode[] | null) {
 onMounted(() => {
   parseProjects();
   parseData(status.value, analysisNodeResp.value);
-  // TODO reactivate after fixing toast spam
-  // setInterval(checkForUpdatesFromPodOrc, 15000); // Poll PO every 15 seconds
+  setInterval(checkForUpdatesFromPodOrc, 1000); // Poll PO every 15 seconds
 });
 
 async function onTableRefresh() {
