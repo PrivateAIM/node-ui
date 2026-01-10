@@ -22,11 +22,13 @@ definePageMeta({
           maintaining full control of who has access to your data.
         </p>
       </div>
-      <div class="landing-btns"><LandingButtons /></div>
+      <div class="landing-btns">
+        <LandingButtons />
+      </div>
     </div>
     <div class="col-6 landing-img">
       <img
-        src="@/assets/img/hospital_network.jpg"
+        src="@/assets/img/node_network.png"
         alt="Hospital Network"
         class="pimg networkImg"
       />
