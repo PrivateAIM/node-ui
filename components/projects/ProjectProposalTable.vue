@@ -102,6 +102,7 @@ const updateFilters = (filterText: string) => {
           filterDisplay="menu"
           paginator
           tableStyle="min-width: 50rem"
+          class="rounded-table"
         >
           <template #empty> No projects found.</template>
           <Column v-if="expandRowEntries.length" expander style="width: 5rem" />

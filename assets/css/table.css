@@ -21,3 +21,8 @@
 .help-text {
     cursor: help;
 }
+
+.rounded-table {
+    border-radius: 12px;
+    overflow: hidden;
+}

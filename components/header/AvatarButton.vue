@@ -63,7 +63,7 @@ const toggle = (event) => {
       <Button
         aria-controls="overlay_menu"
         aria-haspopup="true"
-        class="avatar-btn"
+        class="avatar-btn avatar-btn-logged-in"
         icon="pi pi-user"
         rounded
         severity="contrast"
@@ -75,7 +75,7 @@ const toggle = (event) => {
       <Button
         aria-controls="overlay_menu"
         aria-haspopup="true"
-        class="avatar-btn"
+        class="avatar-btn avatar-btn-logged-out"
         icon="pi pi-question"
         rounded
         severity="contrast"
@@ -109,10 +109,6 @@ const toggle = (event) => {
 <style lang="scss" scoped>
 .avatar-container {
   display: flex;
-}
-
-.menu-item-label {
-  margin-left: 10px;
 }
 
 .avatar-container {
