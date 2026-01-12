@@ -458,6 +458,7 @@ const onCloseNavToast = () => {
           sortField="updated_at.timestamp"
           tableStyle="min-width: 50rem"
           @page="onPage"
+          class="rounded-table"
         >
           <template #empty> No analyses found.</template>
           <Column v-if="expandRowEntries.length" expander style="width: 5rem" />
