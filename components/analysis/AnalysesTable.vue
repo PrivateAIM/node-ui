@@ -236,7 +236,7 @@ async function parseData(respStatus: string, respData: AnalysisNode[] | null) {
 onMounted(() => {
   parseProjects();
   parseData(status.value, analysisNodeResp.value);
-  setInterval(checkForUpdatesFromPodOrc, 1000); // Poll PO every 15 seconds
+  setInterval(checkForUpdatesFromPodOrc, 15000); // Poll PO every 15 seconds
 });
 
 async function onTableRefresh() {
