@@ -23,6 +23,11 @@ const items = ref([
     route: "/analyses",
   },
   {
+    label: "Events",
+    icon: "pi pi-list",
+    route: "/events",
+  },
+  {
     label: "Data Stores",
     icon: "pi pi-warehouse",
     items: [
@@ -37,11 +42,6 @@ const items = ref([
         route: "/data-stores",
       },
     ],
-  },
-  {
-    label: "Events",
-    icon: "pi pi-list",
-    route: "/events",
   },
 ]);
 </script>
