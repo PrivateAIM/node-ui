@@ -38,6 +38,11 @@ const items = ref([
       },
     ],
   },
+  {
+    label: "Events",
+    icon: "pi pi-list",
+    route: "/events",
+  },
 ]);
 </script>
 

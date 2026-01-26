@@ -1,10 +1,11 @@
 import type {
   AnalysisNode,
-  BodyCreateRouteToDatastoreKongProjectPost,
   DeleteProject,
   DetailedAnalysis,
+  EventLogResponse,
   LinkDataStoreProject,
   ListConsumers,
+  ListRoutes,
   ListServices,
   Project,
   ProjectNode,
@@ -20,6 +21,18 @@ export function useAPIFetch<T>(
   return useFetch(request, {
     ...options,
     $fetch: useNuxtApp().$hubApi,
+  });
+}
+
+// Hub endpoints
+export function getEvents(opts?) {
+  return useAPIFetch<EventLogResponse[]>("/events", {
+    ...opts,
+    method: "GET",
+    query: {
+      limit: 50,
+      offset: 0,
+    },
   });
 }
 
@@ -91,10 +104,7 @@ export function deleteDataStore(dataStoreName: string, opts?) {
   });
 }
 
-export function createProject(
-  routeProps: BodyCreateRouteToDatastoreKongProjectPost,
-  opts?,
-) {
+export function createProject(routeProps: ListRoutes, opts?) {
   return useAPIFetch<{ data: LinkDataStoreProject }>(`/kong/project`, {
     ...opts,
     method: "POST",
