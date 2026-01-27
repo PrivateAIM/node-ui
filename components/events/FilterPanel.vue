@@ -61,8 +61,8 @@ function clearFilters() {
           </div>
         </div>
       </template>
-      <div class="flex justify-center">
-        <PanelMenu :model="tagFilterMenuItems" multiple class="w-full md:w-80">
+      <div class="flex justify-center event-viewer-panel-content">
+        <PanelMenu :model="tagFilterMenuItems" class="w-full md:w-80" multiple>
           <template #item="{ item, active, hasSubmenu }">
             <div
               v-if="!hasSubmenu"
@@ -99,6 +99,17 @@ function clearFilters() {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+:deep(.p-panel-content-container .p-panel-content) {
+  padding: 0;
+  border-start-end-radius: 0;
+  border-start-start-radius: 0;
+}
+
+:deep(.p-panelmenu-panel) {
+  border-start-end-radius: 0;
+  border-start-start-radius: 0;
 }
 
 .event-viewer-filter-panel-header-component {
