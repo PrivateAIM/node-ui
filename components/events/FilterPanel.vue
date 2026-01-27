@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {
   EventLogLevelTag,
-  EventMiscTag,
   EventServiceTag,
   type EventTag,
 } from "~/types/eventTag";
@@ -47,23 +46,6 @@ const modelValue = defineModel<EventTag[]>({ default: [] });
               <Checkbox
                 v-model="modelValue"
                 :inputId="`loglevel-${index}`"
-                :value="tagName"
-              />
-              <label :for="index">{{ tagName }}</label>
-            </div>
-          </AccordionContent>
-        </AccordionPanel>
-        <AccordionPanel value="2">
-          <AccordionHeader>Miscellaneous</AccordionHeader>
-          <AccordionContent>
-            <div
-              v-for="(tagName, index) in EventMiscTag"
-              :key="index"
-              class="flex items-center gap-2"
-            >
-              <Checkbox
-                v-model="modelValue"
-                :inputId="`misc-${index}`"
                 :value="tagName"
               />
               <label :for="index">{{ tagName }}</label>

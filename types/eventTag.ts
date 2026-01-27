@@ -14,13 +14,8 @@ export const EventLogLevelTag = {
   Error: "Error",
 };
 
-export const EventMiscTag = {
-  UserAuth: "User Authentication Required",
-};
-
 export type EventServiceTag =
   (typeof EventServiceTag)[keyof typeof EventServiceTag];
 export type EventLogLevelTag =
   (typeof EventLogLevelTag)[keyof typeof EventLogLevelTag];
-export type EventMiscTag = (typeof EventMiscTag)[keyof typeof EventMiscTag];
-export type EventTag = EventServiceTag | EventLogLevelTag | EventMiscTag;
+export type EventTag = EventServiceTag | EventLogLevelTag;

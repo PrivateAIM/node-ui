@@ -4,7 +4,6 @@ import { FilterMatchMode, FilterService } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
 import {
   EventLogLevelTag,
-  EventMiscTag,
   EventServiceTag,
   type EventTag,
 } from "~/types/eventTag";
@@ -35,13 +34,10 @@ onMounted(() => {
 function formatTag(tagName: EventTag) {
   const isService = Object.values(EventServiceTag).includes(tagName);
   const isLogLevel = Object.values(EventLogLevelTag).includes(tagName);
-  const isMisc = Object.values(EventMiscTag).includes(tagName);
   if (isService) {
     return { background: "#14b8a6", color: "#ffffff" };
   } else if (isLogLevel) {
-    return { background: "#ec4899", color: "#ffffff" };
-  } else if (isMisc) {
-    return { backgroundColor: "#f59e0b", color: "#ffffff" };
+    return { background: getLogLevelColor([tagName]), color: "#ffffff" };
   } else {
     return { backgroundColor: "#8b5cf6", color: "#ffffff" };
   }
@@ -58,6 +54,23 @@ function formatTimestamp(timestamp: string): string {
   const [dateString, timeString] = formattedDateTime.split(", ");
 
   return `${dateString}<br><b>${timeString}</b>`;
+}
+
+function getLogLevelColor(tags: string[]): string {
+  if (!tags || tags.length === 0) {
+    return "transparent";
+  }
+
+  // Check for log level tags and go in order of severity
+  if (tags.includes(EventLogLevelTag.Error)) {
+    return "#ef4444"; // red
+  } else if (tags.includes(EventLogLevelTag.Warning)) {
+    return "#eab308"; // yellow
+  } else if (tags.includes(EventLogLevelTag.Info)) {
+    return "#3b82f6"; // blue
+  }
+
+  return "transparent";
 }
 
 // Table filters
@@ -180,7 +193,13 @@ watch(
                 header="DateTime"
               >
                 <template #body="{ data }">
-                  <div class="event-entry-datetime">
+                  <div
+                    class="event-entry-datetime"
+                    :style="{
+                      borderLeft: `4px solid ${getLogLevelColor(data.attributes.tags)}`,
+                      paddingLeft: '0.75rem',
+                    }"
+                  >
                     <span v-html="formatTimestamp(data.timestamp)" />
                   </div>
                 </template>
@@ -241,6 +260,10 @@ watch(
 
 .table-header-row-filter-chips-container-counter {
   margin-right: 0.5rem;
+}
+
+.event-entry-datetime {
+  transition: border-color 0.2s ease;
 }
 
 .event-entry-title {
