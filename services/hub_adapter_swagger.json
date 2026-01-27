@@ -10,11 +10,6 @@
     },
     "version": "0.1.0"
   },
-  "servers": [
-    {
-      "url": "/api"
-    }
-  ],
   "paths": {
     "/po": {
       "post": {
@@ -2711,6 +2706,7 @@
                 }
               ],
               "description": "Number of events to offset by",
+              "default": 0,
               "title": "Offset"
             },
             "description": "Number of events to offset by"
@@ -2814,11 +2810,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/EventLogResponse"
-                  },
-                  "title": "Response Events Get Events Get"
+                  "$ref": "#/components/schemas/EventLogResponse"
                 }
               }
             }
@@ -3261,9 +3253,9 @@
                 "enum": [
                   "starting",
                   "started",
-                  "running",
                   "stopping",
                   "stopped",
+                  "running",
                   "finished",
                   "failed"
                 ]
@@ -4636,7 +4628,7 @@
         "title": "DownstreamHealthCheck",
         "description": "Response model for downstream health checks."
       },
-      "EventLogResponse": {
+      "EventLog": {
         "properties": {
           "id": {
             "type": "integer",
@@ -4674,6 +4666,24 @@
           "body",
           "attributes"
         ],
+        "title": "EventLog",
+        "description": "Event log response model."
+      },
+      "EventLogResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/EventLog"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "type": "object",
+        "required": ["data", "meta"],
         "title": "EventLogResponse",
         "description": "Event log response model."
       },
@@ -5116,6 +5126,30 @@
         "type": "object",
         "required": ["value", "position"],
         "title": "MasterImageCommandArgument"
+      },
+      "Meta": {
+        "properties": {
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "type": "object",
+        "required": ["count", "total", "limit", "offset"],
+        "title": "Meta",
+        "description": "Event log metadata model."
       },
       "Node": {
         "properties": {

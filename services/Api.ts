@@ -256,9 +256,9 @@ export interface AnalysisNode {
   run_status:
     | "starting"
     | "started"
-    | "running"
     | "stopping"
     | "stopped"
+    | "running"
     | "finished"
     | "failed"
     | null;
@@ -830,10 +830,10 @@ export interface DownstreamHealthCheck {
 }
 
 /**
- * EventLogResponse
+ * EventLog
  * Event log response model.
  */
-export interface EventLogResponse {
+export interface EventLog {
   /** Id */
   id: number;
   /** Event Name */
@@ -849,6 +849,17 @@ export interface EventLogResponse {
   body: string;
   /** Attributes */
   attributes: Record<string, any>;
+}
+
+/**
+ * EventLogResponse
+ * Event log response model.
+ */
+export interface EventLogResponse {
+  /** Data */
+  data: EventLog[];
+  /** Event log metadata model. */
+  meta: Meta;
 }
 
 /** HTTPValidationError */
@@ -1025,6 +1036,21 @@ export interface MasterImageCommandArgument {
   value: string;
   /** Position */
   position: "before" | "after" | null;
+}
+
+/**
+ * Meta
+ * Event log metadata model.
+ */
+export interface Meta {
+  /** Count */
+  count: number;
+  /** Total */
+  total: number;
+  /** Limit */
+  limit: number;
+  /** Offset */
+  offset: number;
 }
 
 /** Node */
@@ -1644,7 +1670,7 @@ export enum ContentType {
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public baseUrl: string = "/api";
+  public baseUrl: string = "";
   private securityData: SecurityDataType | null = null;
   private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
   private abortControllers = new Map<CancelToken, AbortController>();
@@ -1850,7 +1876,6 @@ export class HttpClient<SecurityDataType = unknown> {
  * @title FLAME API
  * @version 0.1.0
  * @license Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0.html)
- * @baseUrl /api
  *
  * FLAME project API for interacting with various microservices within the node for the UI.
  */
@@ -3075,6 +3100,7 @@ export class Api<
         /**
          * Offset
          * Number of events to offset by
+         * @default 0
          */
         offset?: number | null;
         /**
@@ -3105,7 +3131,7 @@ export class Api<
       },
       params: RequestParams = {},
     ) =>
-      this.request<EventLogResponse[], void | HTTPValidationError>({
+      this.request<EventLogResponse, void | HTTPValidationError>({
         path: `/events`,
         method: "GET",
         query: query,
