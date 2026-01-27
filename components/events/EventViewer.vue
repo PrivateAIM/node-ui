@@ -98,7 +98,7 @@ const updateFilters = (filterText: string) => {
   filters.value.global.value = filterText;
 };
 
-function resetFilters() {
+function resetTextFilters() {
   const clearedFilters = {};
   for (const filterKey in defaultFilters) {
     clearedFilters[filterKey] = {
@@ -159,14 +159,21 @@ watch(
           <div class="table-header-row-searchbar">
             <SearchBar
               :searchTerm="defaultFilters.global.value"
-              @clearFilters="resetFilters"
+              @clearFilters="resetTextFilters"
               @updateSearch="updateFilters"
             />
           </div>
         </div>
         <div class="event-viewer-components">
           <div class="event-viewer-component-filter-panel">
-            <FilterPanel v-model="appliedFilters" />
+            <FilterPanel
+              v-model="appliedFilters"
+              @clearTagFilter="
+                () => {
+                  appliedFilters = [];
+                }
+              "
+            />
           </div>
           <div class="event-viewer-component-event-table">
             <DataTable

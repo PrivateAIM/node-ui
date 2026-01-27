@@ -12,11 +12,37 @@ import AccordionHeader from "primevue/accordionheader";
 import AccordionContent from "primevue/accordioncontent";
 
 const modelValue = defineModel<EventTag[]>({ default: [] });
+const emit = defineEmits(["clearTagFilter"]);
+
+function clearFilters() {
+  emit("clearTagFilter");
+}
 </script>
 
 <template>
   <div class="event-viewer-filter-container">
     <Panel header="Filters" toggleable>
+      <template #header>
+        <div class="event-viewer-filter-panel-header">
+          <div class="event-viewer-filter-panel-header-title">
+            <span>
+              <b>Filters</b>
+            </span>
+          </div>
+          <div class="event-viewer-filter-panel-header-clear-btn">
+            <Button
+              icon="pi pi-filter-slash"
+              @click="clearFilters()"
+              size="small"
+              variant="outlined"
+              severity="contrast"
+              v-tooltip.top="'Clear the applied filters'"
+              raised
+              rounded
+            />
+          </div>
+        </div>
+      </template>
       <Accordion :value="['0']" multiple>
         <AccordionPanel value="0">
           <AccordionHeader>Services</AccordionHeader>
@@ -57,4 +83,14 @@ const modelValue = defineModel<EventTag[]>({ default: [] });
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.event-viewer-filter-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.event-viewer-filter-panel-header-title {
+  margin-right: 0.8rem;
+}
+</style>
