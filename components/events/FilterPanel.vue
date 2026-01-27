@@ -12,13 +12,7 @@ import AccordionPanel from "primevue/accordionpanel";
 import AccordionHeader from "primevue/accordionheader";
 import AccordionContent from "primevue/accordioncontent";
 
-export interface AppliedEventFilter {
-  filterType: EventTag;
-  name: string;
-}
-
-// const appliedFilters = ref<AppliedEventFilter[] | null>(null);
-const selectedFilters = ref([]);
+const modelValue = defineModel<EventTag[]>({ default: [] });
 </script>
 
 <template>
@@ -34,8 +28,8 @@ const selectedFilters = ref([]);
               class="flex items-center gap-2"
             >
               <Checkbox
-                v-model="selectedFilters"
-                :inputId="index"
+                v-model="modelValue"
+                :inputId="`service-${index}`"
                 :value="tagName"
               />
               <label :for="index">{{ tagName }}</label>
@@ -51,8 +45,8 @@ const selectedFilters = ref([]);
               class="flex items-center gap-2"
             >
               <Checkbox
-                v-model="selectedFilters"
-                :inputId="index"
+                v-model="modelValue"
+                :inputId="`loglevel-${index}`"
                 :value="tagName"
               />
               <label :for="index">{{ tagName }}</label>
@@ -68,8 +62,8 @@ const selectedFilters = ref([]);
               class="flex items-center gap-2"
             >
               <Checkbox
-                v-model="selectedFilters"
-                :inputId="index"
+                v-model="modelValue"
+                :inputId="`misc-${index}`"
                 :value="tagName"
               />
               <label :for="index">{{ tagName }}</label>

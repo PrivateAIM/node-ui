@@ -1,44 +1,36 @@
 <script setup lang="ts">
 import { getEvents } from "~/composables/useAPIFetch";
-import type { EventLogResponse } from "~/services/Api";
-import { FilterMatchMode } from "@primevue/core/api";
+import { FilterMatchMode, FilterService } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
 import {
   EventLogLevelTag,
   EventMiscTag,
   EventServiceTag,
-  type EventTag
+  type EventTag,
 } from "~/types/eventTag";
 import FilterPanel from "~/components/events/FilterPanel.vue";
+import type { EventLog } from "~/services/Api";
 
-const events = ref<EventLogResponse[] | null>(null);
+const events = ref<EventLog[] | null>(null);
+const filters = ref();
+const appliedFilters = ref<EventTag[]>([]);
 
 const dateTimeFormat = new Intl.DateTimeFormat(undefined, {
   dateStyle: "short",
-  timeStyle: "long"
+  timeStyle: "long",
 });
-const filters = ref();
 
 const { data: response, status } = await getEvents();
 
 function parseData() {
-  if (status.value === "success") {
-    events.value = response.value;
+  if (status.value === "success" && response.value) {
+    events.value = response.value.data;
   }
 }
 
 onMounted(() => {
   parseData();
 });
-
-// function updateTable(newData: ProjectNode) {
-//   for (let row of proposals.value) {
-//     if (row.id === newData.id) {
-//       row.approval_status = newData.approval_status;
-//       return;
-//     }
-//   }
-// }
 
 function formatTag(tagName: EventTag) {
   const isService = Object.values(EventServiceTag).includes(tagName);
@@ -69,27 +61,58 @@ function formatTimestamp(timestamp: string): string {
 }
 
 // Table filters
+FilterService.register("tagsContainsAny", (value, filter) => {
+  if (!filter || filter.length === 0) {
+    return true;
+  }
+
+  if (!value || value.length === 0) {
+    return false;
+  }
+
+  // Check if any element in the filter array exists in the value array
+  return filter.some((filterItem: EventTag) => value.includes(filterItem));
+});
+
 const defaultFilters = {
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  approval_status: { value: null, matchMode: FilterMatchMode.EQUALS }
+  "attributes.tags": { value: null, matchMode: "tagsContainsAny" },
 };
 
 filters.value = defaultFilters;
+
+const updateFilters = (filterText: string) => {
+  filters.value.global.value = filterText;
+};
 
 function resetFilters() {
   const clearedFilters = {};
   for (const filterKey in defaultFilters) {
     clearedFilters[filterKey] = {
-      ...defaultFilters[filterKey]
+      ...defaultFilters[filterKey],
     };
     clearedFilters[filterKey].value = null;
   }
   filters.value = clearedFilters;
 }
 
-const updateFilters = (filterText: string) => {
-  filters.value.global.value = filterText;
-};
+function handleRemoveFilterTag(tag: EventTag) {
+  appliedFilters.value = appliedFilters.value.filter(
+    (filter) => filter !== tag,
+  );
+}
+
+watch(
+  appliedFilters,
+  (newFilters) => {
+    if (newFilters.length > 0) {
+      filters.value["attributes.tags"].value = newFilters;
+    } else {
+      filters.value["attributes.tags"].value = null;
+    }
+  },
+  { deep: true },
+);
 </script>
 
 <template>
@@ -103,8 +126,22 @@ const updateFilters = (filterText: string) => {
           </div>
         </div>
         <div class="table-header-row">
-          <div class="table-header-row-filter-chips">
-            <Chip label="Thriller" removable />
+          <div class="table-header-row-filter-chips-container">
+            <div class="table-header-row-filter-chips-container-counter">
+              <span
+                ><b>FILTERS: ({{ appliedFilters.length }})</b></span
+              >
+            </div>
+            <div class="table-header-row-filter-chips flex flex-wrap gap-2">
+              <Chip
+                v-for="appliedFilter in appliedFilters"
+                :key="appliedFilter"
+                :value="appliedFilter"
+                :label="appliedFilter"
+                removable
+                @remove="handleRemoveFilterTag(appliedFilter)"
+              />
+            </div>
           </div>
           <div class="table-header-row-searchbar">
             <SearchBar
@@ -116,7 +153,7 @@ const updateFilters = (filterText: string) => {
         </div>
         <div class="event-viewer-components">
           <div class="event-viewer-component-filter-panel">
-            <FilterPanel />
+            <FilterPanel v-model="appliedFilters" />
           </div>
           <div class="event-viewer-component-event-table">
             <DataTable
@@ -163,7 +200,6 @@ const updateFilters = (filterText: string) => {
                         "
                       >
                         <Tag
-                          v-bind="data.tags"
                           v-for="(tag, index) in data.attributes.tags"
                           :key="index"
                           :severity="'success'"
@@ -196,6 +232,15 @@ const updateFilters = (filterText: string) => {
 
 .event-viewer-component-event-table {
   flex: 1;
+}
+
+.table-header-row-filter-chips-container {
+  display: flex;
+  align-items: center;
+}
+
+.table-header-row-filter-chips-container-counter {
+  margin-right: 0.5rem;
 }
 
 .event-entry-title {

@@ -26,7 +26,7 @@ export function useAPIFetch<T>(
 
 // Hub endpoints
 export function getEvents(opts?) {
-  return useAPIFetch<EventLogResponse[]>("/events", {
+  return useAPIFetch<EventLogResponse>("/events", {
     ...opts,
     method: "GET",
     query: {
