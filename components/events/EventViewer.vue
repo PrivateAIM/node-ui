@@ -198,6 +198,7 @@ watch(
                 :sortable="true"
                 dataType="date"
                 header="DateTime"
+                style="width: 15em"
               >
                 <template #body="{ data }">
                   <div
