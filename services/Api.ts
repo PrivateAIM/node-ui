@@ -371,6 +371,8 @@ export interface BodyKongDatastoreCreateKongDatastorePost {
   datastore: ServiceRequest;
   /** Data store type. Either 's3' or 'fhir' */
   ds_type: DataStoreType;
+  /** Minio configuration */
+  minio_config?: MinioConfig | null;
 }
 
 /** Body_kong_initialize_kong_initialize_post */
@@ -399,6 +401,8 @@ export interface BodyKongInitializeKongInitializePost {
    * Required information for creating a new data store.
    */
   datastore: ServiceRequest;
+  /** Minio configuration */
+  minio_config?: MinioConfig | null;
 }
 
 /** Body_kong_project_create_kong_project_post */
@@ -1051,6 +1055,31 @@ export interface Meta {
   limit: number;
   /** Offset */
   offset: number;
+}
+
+/**
+ * MinioConfig
+ * Credentials for accessing a private S3 bucket hosted on MinIO.
+ */
+export interface MinioConfig {
+  /** Minio Access Key */
+  minio_access_key: string;
+  /** Minio Secret Key */
+  minio_secret_key: string;
+  /**
+   * Minio Region
+   * @default "us-east-1"
+   */
+  minio_region?: string;
+  /** Bucket Name */
+  bucket_name?: string | null;
+  /**
+   * Timeout
+   * @default 100000
+   */
+  timeout?: number;
+  /** Strip Path Pattern */
+  strip_path_pattern?: string | null;
 }
 
 /** Node */
@@ -3135,6 +3164,42 @@ export class Api<
         path: `/events`,
         method: "GET",
         query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Create a log event that a user signed in. Username is extracted from the JWT required to call this endpoint.
+     *
+     * @tags Events
+     * @name AuthUserSigninEventsSigninPost
+     * @summary Auth.User.Signin
+     * @request POST:/events/signin
+     * @secure
+     */
+    authUserSigninEventsSigninPost: (params: RequestParams = {}) =>
+      this.request<any, void>({
+        path: `/events/signin`,
+        method: "POST",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Create a log event that a user signed out. Username is extracted from the JWT required to call this endpoint.
+     *
+     * @tags Events
+     * @name AuthUserSignoutEventsSignoutPost
+     * @summary Auth.User.Signout
+     * @request POST:/events/signout
+     * @secure
+     */
+    authUserSignoutEventsSignoutPost: (params: RequestParams = {}) =>
+      this.request<any, void>({
+        path: `/events/signout`,
+        method: "POST",
         secure: true,
         format: "json",
         ...params,

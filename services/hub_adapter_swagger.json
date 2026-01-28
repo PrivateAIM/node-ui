@@ -2830,6 +2830,58 @@
           }
         }
       }
+    },
+    "/events/signin": {
+      "post": {
+        "tags": ["Events"],
+        "summary": "Auth.User.Signin",
+        "description": "Create a log event that a user signed in. Username is extracted from the JWT required to call this endpoint.",
+        "operationId": "auth_user_signin_events_signin_post",
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/events/signout": {
+      "post": {
+        "tags": ["Events"],
+        "summary": "Auth.User.Signout",
+        "description": "Create a log event that a user signed out. Username is extracted from the JWT required to call this endpoint.",
+        "operationId": "auth_user_signout_events_signout_post",
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -3480,6 +3532,17 @@
           "ds_type": {
             "$ref": "#/components/schemas/DataStoreType",
             "description": "Data store type. Either 's3' or 'fhir'"
+          },
+          "minio_config": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MinioConfig"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Minio configuration"
           }
         },
         "type": "object",
@@ -3527,6 +3590,17 @@
             "$ref": "#/components/schemas/ServiceRequest",
             "title": "Data store metadata.",
             "description": "Required information for creating a new data store."
+          },
+          "minio_config": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MinioConfig"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Minio configuration"
           }
         },
         "type": "object",
@@ -5151,6 +5225,54 @@
         "title": "Meta",
         "description": "Event log metadata model."
       },
+      "MinioConfig": {
+        "properties": {
+          "minio_access_key": {
+            "type": "string",
+            "title": "Minio Access Key"
+          },
+          "minio_secret_key": {
+            "type": "string",
+            "title": "Minio Secret Key"
+          },
+          "minio_region": {
+            "type": "string",
+            "title": "Minio Region",
+            "default": "us-east-1"
+          },
+          "bucket_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bucket Name"
+          },
+          "timeout": {
+            "type": "integer",
+            "title": "Timeout",
+            "default": 100000
+          },
+          "strip_path_pattern": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Strip Path Pattern"
+          }
+        },
+        "type": "object",
+        "required": ["minio_access_key", "minio_secret_key"],
+        "title": "MinioConfig",
+        "description": "Credentials for accessing a private S3 bucket hosted on MinIO."
+      },
       "Node": {
         "properties": {
           "external_name": {
@@ -6610,7 +6732,7 @@
     },
     {
       "name": "Events",
-      "description": "Gateway endpoints for retrieving logged events."
+      "description": "Gateway endpoints for interacting with logged events."
     },
     {
       "name": "Meta",
