@@ -55,8 +55,8 @@ const dataStoreSettingsMap: Map<string, string> = new Map([
   ["path", "Data path or bucket name"],
   ["port", "Port"],
   ["protocol", "Connection protocol"],
-  ["accessKey", "Bucket access key"],
-  ["secretKey", "S3 secret key"],
+  ["minio_access_key", "MinIO access key"],
+  ["minio_secret_key", "MinIO secret key"],
 ]);
 
 // Datastore settings
@@ -114,17 +114,19 @@ function verifyValuesFilled(settings: object): boolean {
 }
 
 async function onSubmitCreateDataStoreAndProject() {
+  const validatedPath = validatePath(path.value); // Adds "/" to name if missing
   const datastoreSettings = {
     name: dataStoreName.value,
     host: host.value,
-    path: validatePath(path.value),
+    path: validatedPath,
     port: port.value,
     protocol: protocol.value,
-    s3: {
-      bucketAccess: selectedBucketAccessPolicy.value || "Public",
-      accessKey: bucketAccessKey.value || "",
-      secretKey: bucketSecretKey.value || "",
-    },
+  };
+
+  const minioSettings = {
+    minio_access_key: bucketAccessKey.value || "",
+    minio_secret_key: bucketSecretKey.value || "",
+    // bucket_name: validatedPath, // .replace(/^\//, ""), // Removing leading "/" if present
   };
 
   // Check settings are filled in
@@ -134,8 +136,7 @@ async function onSubmitCreateDataStoreAndProject() {
     selectedDataStoreType.value == "S3" &&
     selectedBucketAccessPolicy.value == "Private"
   ) {
-    settingsValidated =
-      settingsValidated && verifyValuesFilled(datastoreSettings.s3);
+    settingsValidated = settingsValidated && verifyValuesFilled(minioSettings);
   }
 
   if (settingsValidated) {
@@ -146,6 +147,10 @@ async function onSubmitCreateDataStoreAndProject() {
       methods: ["GET"], // Hardcode to GET only to prevent abuse/security issues
       ds_type: selectedDataStoreType.value.toLowerCase() as string,
     };
+
+    if (selectedBucketAccessPolicy.value == "Private") {
+      configSettings["minio_config"] = minioSettings;
+    }
 
     loading.value = true;
     const creationResp = await useNuxtApp()
