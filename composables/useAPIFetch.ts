@@ -24,7 +24,7 @@ export function useAPIFetch<T>(
   });
 }
 
-// Hub endpoints
+// Event endpoints
 export function getEvents(opts?) {
   return useAPIFetch<EventLogResponse>("/events", {
     ...opts,

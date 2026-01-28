@@ -137,6 +137,26 @@ async function refreshAccessToken(token: any) {
 
 export default NuxtAuthHandler({
   secret: useRuntimeConfig().authSecret,
+  events: {
+    async signIn({ account }) {
+      // After successful sign in
+      const hubAdapterApi = process.env.NUXT_PUBLIC_HUB_ADAPTER_URL as string;
+      const signInEndpoint = `${hubAdapterApi.replace(/\/$/, "")}/events/signin`;
+      await fetch(signInEndpoint, {
+        headers: { Authorization: `Bearer ${account!.access_token}` },
+        method: "POST",
+      });
+    },
+    async signOut({ token }) {
+      // After successful sign in
+      const hubAdapterApi = process.env.NUXT_PUBLIC_HUB_ADAPTER_URL as string;
+      const signOutEndpoint = `${hubAdapterApi.replace(/\/$/, "")}/events/signout`;
+      await fetch(signOutEndpoint, {
+        headers: { Authorization: `Bearer ${token.access_token}` },
+        method: "POST",
+      });
+    },
+  },
   callbacks: {
     /* on session retrieval */
     async session({ session, token }) {
