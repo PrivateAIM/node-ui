@@ -297,16 +297,10 @@ async function onSubmitCreateDataStoreAndProject() {
                   </div>
                 </InputGroupAddon>
                 <InputGroupAddon class="data-store-field-value">
-                  <div
-                    class="flex flex-wrap gap-4 bucket-access-policy-radio"
-                    v-tooltip.top="
-                      'Selection disabled, support for Private buckets will be added soon'
-                    "
-                  >
+                  <div class="flex flex-wrap gap-4 bucket-access-policy-radio">
                     <div class="flex items-center gap-2">
                       <RadioButton
                         v-model="selectedBucketAccessPolicy"
-                        :disabled="true"
                         inputId="public"
                         name="accessPolicy"
                         value="Public"
@@ -319,7 +313,6 @@ async function onSubmitCreateDataStoreAndProject() {
                       <RadioButton
                         v-model="selectedBucketAccessPolicy"
                         inputId="private"
-                        :disabled="true"
                         name="accessPolicy"
                         value="Private"
                         size="small"
@@ -345,7 +338,7 @@ async function onSubmitCreateDataStoreAndProject() {
                 <InputText
                   v-model="bucketAccessKey"
                   :invalid="bucketAccessKey === ''"
-                  placeholder="Bucket access key"
+                  placeholder="Access key"
                 />
               </InputGroup>
               <InputGroup
@@ -363,7 +356,7 @@ async function onSubmitCreateDataStoreAndProject() {
                 <InputText
                   v-model="bucketSecretKey"
                   :invalid="bucketSecretKey === ''"
-                  placeholder="S3 secret key"
+                  placeholder="Secret key"
                 />
               </InputGroup>
             </div>
