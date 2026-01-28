@@ -7,8 +7,9 @@ import {
   EventServiceTag,
   type EventTag,
 } from "~/types/eventTag";
-import FilterPanel from "~/components/events/FilterPanel.vue";
-import type { EventLog } from "~/services/Api";
+import TagFilterSidePanel from "~/components/events/TagFilterSidePanel.vue";
+import type { EventLog, EventLogResponse } from "~/services/Api";
+import CustomFilterWidget from "~/components/events/CustomFilterWidget.vue";
 
 const events = ref<EventLog[] | null>(null);
 const filters = ref();
@@ -115,6 +116,10 @@ function handleRemoveFilterTag(tag: EventTag) {
   );
 }
 
+function handleShowRequestEvents(requestedEvents: EventLogResponse) {
+  events.value = requestedEvents.data;
+}
+
 watch(
   appliedFilters,
   (newFilters) => {
@@ -133,10 +138,8 @@ watch(
     <Card class="content-card event-viewer-card">
       <template #title>Node Events</template>
       <template #content>
-        <div class="event-viewer-description-box">
-          <div class="event-viewer-description">
-            <p>This page displays a collection of logged events.</p>
-          </div>
+        <div class="event-viewer-filter-panel-box">
+          <CustomFilterWidget @showRequestedEvents="handleShowRequestEvents" />
         </div>
         <div class="table-header-row">
           <div class="table-header-row-filter-chips-container">
@@ -166,7 +169,7 @@ watch(
         </div>
         <div class="event-viewer-components">
           <div class="event-viewer-component-filter-panel">
-            <FilterPanel
+            <TagFilterSidePanel
               v-model="appliedFilters"
               @clearTagFilter="
                 () => {
