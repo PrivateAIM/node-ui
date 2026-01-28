@@ -55,8 +55,8 @@ const dataStoreSettingsMap: Map<string, string> = new Map([
   ["path", "Data path or bucket name"],
   ["port", "Port"],
   ["protocol", "Connection protocol"],
-  ["accessKey", "Bucket access key"],
-  ["secretKey", "S3 secret key"],
+  ["minio_access_key", "MinIO access key"],
+  ["minio_secret_key", "MinIO secret key"],
 ]);
 
 // Datastore settings
@@ -114,17 +114,19 @@ function verifyValuesFilled(settings: object): boolean {
 }
 
 async function onSubmitCreateDataStoreAndProject() {
+  const validatedPath = validatePath(path.value); // Adds "/" to name if missing
   const datastoreSettings = {
     name: dataStoreName.value,
     host: host.value,
-    path: validatePath(path.value),
+    path: validatedPath,
     port: port.value,
     protocol: protocol.value,
-    s3: {
-      bucketAccess: selectedBucketAccessPolicy.value || "Public",
-      accessKey: bucketAccessKey.value || "",
-      secretKey: bucketSecretKey.value || "",
-    },
+  };
+
+  const minioSettings = {
+    minio_access_key: bucketAccessKey.value || "",
+    minio_secret_key: bucketSecretKey.value || "",
+    // bucket_name: validatedPath, // .replace(/^\//, ""), // Removing leading "/" if present
   };
 
   // Check settings are filled in
@@ -134,8 +136,7 @@ async function onSubmitCreateDataStoreAndProject() {
     selectedDataStoreType.value == "S3" &&
     selectedBucketAccessPolicy.value == "Private"
   ) {
-    settingsValidated =
-      settingsValidated && verifyValuesFilled(datastoreSettings.s3);
+    settingsValidated = settingsValidated && verifyValuesFilled(minioSettings);
   }
 
   if (settingsValidated) {
@@ -146,6 +147,10 @@ async function onSubmitCreateDataStoreAndProject() {
       methods: ["GET"], // Hardcode to GET only to prevent abuse/security issues
       ds_type: selectedDataStoreType.value.toLowerCase() as string,
     };
+
+    if (selectedBucketAccessPolicy.value == "Private") {
+      configSettings["minio_config"] = minioSettings;
+    }
 
     loading.value = true;
     const creationResp = await useNuxtApp()
@@ -297,16 +302,10 @@ async function onSubmitCreateDataStoreAndProject() {
                   </div>
                 </InputGroupAddon>
                 <InputGroupAddon class="data-store-field-value">
-                  <div
-                    class="flex flex-wrap gap-4 bucket-access-policy-radio"
-                    v-tooltip.top="
-                      'Selection disabled, support for Private buckets will be added soon'
-                    "
-                  >
+                  <div class="flex flex-wrap gap-4 bucket-access-policy-radio">
                     <div class="flex items-center gap-2">
                       <RadioButton
                         v-model="selectedBucketAccessPolicy"
-                        :disabled="true"
                         inputId="public"
                         name="accessPolicy"
                         value="Public"
@@ -319,7 +318,6 @@ async function onSubmitCreateDataStoreAndProject() {
                       <RadioButton
                         v-model="selectedBucketAccessPolicy"
                         inputId="private"
-                        :disabled="true"
                         name="accessPolicy"
                         value="Private"
                         size="small"
@@ -345,7 +343,7 @@ async function onSubmitCreateDataStoreAndProject() {
                 <InputText
                   v-model="bucketAccessKey"
                   :invalid="bucketAccessKey === ''"
-                  placeholder="Bucket access key"
+                  placeholder="Access key"
                 />
               </InputGroup>
               <InputGroup
@@ -363,7 +361,7 @@ async function onSubmitCreateDataStoreAndProject() {
                 <InputText
                   v-model="bucketSecretKey"
                   :invalid="bucketSecretKey === ''"
-                  placeholder="S3 secret key"
+                  placeholder="Secret key"
                 />
               </InputGroup>
             </div>
