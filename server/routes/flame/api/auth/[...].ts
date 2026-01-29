@@ -140,21 +140,31 @@ export default NuxtAuthHandler({
   events: {
     async signIn({ account }) {
       // After successful sign in
-      const hubAdapterApi = process.env.NUXT_PUBLIC_HUB_ADAPTER_URL as string;
-      const signInEndpoint = `${hubAdapterApi.replace(/\/$/, "")}/events/signin`;
-      await fetch(signInEndpoint, {
-        headers: { Authorization: `Bearer ${account!.access_token}` },
-        method: "POST",
-      });
+      const hubAdapterApi = process.env.NUXT_PUBLIC_HUB_ADAPTER_URL;
+      if (!hubAdapterApi || !account?.access_token) return;
+      const signOutEndpoint = `${hubAdapterApi.replace(/\/$/, "")}/events/signin`;
+      try {
+        await fetch(signOutEndpoint, {
+          headers: { Authorization: `Bearer ${account.access_token}` },
+          method: "POST",
+        });
+      } catch (error) {
+        console.error("Failed to log sign-in event:", error);
+      }
     },
     async signOut({ token }) {
-      // After successful sign in
-      const hubAdapterApi = process.env.NUXT_PUBLIC_HUB_ADAPTER_URL as string;
+      // After successful sign out
+      const hubAdapterApi = process.env.NUXT_PUBLIC_HUB_ADAPTER_URL;
+      if (!hubAdapterApi || !token?.access_token) return;
       const signOutEndpoint = `${hubAdapterApi.replace(/\/$/, "")}/events/signout`;
-      await fetch(signOutEndpoint, {
-        headers: { Authorization: `Bearer ${token.access_token}` },
-        method: "POST",
-      });
+      try {
+        await fetch(signOutEndpoint, {
+          headers: { Authorization: `Bearer ${token.access_token}` },
+          method: "POST",
+        });
+      } catch (error) {
+        console.error("Failed to log sign-out event:", error);
+      }
     },
   },
   callbacks: {

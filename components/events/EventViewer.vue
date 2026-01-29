@@ -78,7 +78,7 @@ function formatTag(tagName: EventTag) {
   } else if (isLogLevel) {
     return { background: getLogLevelColor([tagName]), color: "#ffffff" };
   } else {
-    return { backgroundColor: "#8b5cf6", color: "#ffffff" };
+    return { background: "#8b5cf6", color: "#ffffff" };
   }
 }
 

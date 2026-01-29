@@ -22,13 +22,13 @@ function formatDate(date: Date | null): string | null {
   if (!date) {
     return null;
   } else {
-    return date.toISOString().toLocaleString().slice(0, 16); // cut off unnecessary stuff
+    return date.toISOString().slice(0, 16); // cut off unnecessary stuff
   }
 }
 
 async function requestEvents() {
   loading.value = true;
-  const eventResp: EventLogResponse = (await useNuxtApp()
+  const eventResp = await useNuxtApp()
     .$hubApi("/events", {
       method: "GET",
       query: {
@@ -43,9 +43,12 @@ async function requestEvents() {
         detail: "Unable to fetch events from database",
         life: 5000,
       });
-    })) as EventLogResponse;
+      return null;
+    });
   loading.value = false;
-  emit("showRequestedEvents", eventResp);
+  if (eventResp) {
+    emit("showRequestedEvents", eventResp as EventLogResponse);
+  }
 }
 </script>
 

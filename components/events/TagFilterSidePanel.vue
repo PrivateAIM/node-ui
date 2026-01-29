@@ -75,7 +75,7 @@ function clearFilters() {
                 :value="item.label"
               />
               <label
-                for="item.label"
+                :for="`loglevel-${item.label}`"
                 class="event-viewer-filter-container-filter-item-label"
                 >{{ item.label }}</label
               >
