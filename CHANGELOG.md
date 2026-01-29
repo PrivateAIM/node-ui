@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.4.0](https://github.com/PrivateAIM/node-ui/compare/v0.3.2...v0.4.0) (2026-01-29)
+
+
+### ⚠ BREAKING CHANGES
+
+* finished event viewer with metrics
+
+### Features
+
+* **analysis:** enable periodic analysis status updates from podorc ([422b790](https://github.com/PrivateAIM/node-ui/commit/422b79053842dc6bd7bb71f32a38176ce0238258))
+* **auth:** notify hub adapter on successful sign in and sign out ([6e404dd](https://github.com/PrivateAIM/node-ui/commit/6e404dde1aec4c47d982be7e8e07b80924fa64c1))
+* **events:** add clear filter button to event tag filter ([d621199](https://github.com/PrivateAIM/node-ui/commit/d6211992af3a6fe24b326802f33a2f44bfeea3b0))
+* **events:** working filters on events ([6639ffe](https://github.com/PrivateAIM/node-ui/commit/6639ffe9c7682c0e30850ba63b1e254a6147bc91))
+* finished event viewer with metrics ([1d33a74](https://github.com/PrivateAIM/node-ui/commit/1d33a74c21bba6df1fb9d8ff510efd0729799bc0))
+* **s3:** add minio config to data store request ([7ebae6d](https://github.com/PrivateAIM/node-ui/commit/7ebae6dff1c2f6f2c4fb578ea2e88345ec5c5594))
+* **s3:** enable private bucket fields ([b551f4a](https://github.com/PrivateAIM/node-ui/commit/b551f4a353628fc816a1f7938285e5108520faa3))
+
+
+### Reverts
+
+* set pod orc status update interval to 15s ([847f683](https://github.com/PrivateAIM/node-ui/commit/847f6835ce248b95599f35f25e5daacae5f7d070))
+
 ## [0.3.2](https://github.com/PrivateAIM/node-ui/compare/v0.3.1...v0.3.2) (2026-01-07)
 
 
