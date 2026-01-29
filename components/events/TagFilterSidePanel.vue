@@ -55,7 +55,7 @@ function clearFilters() {
               size="small"
               variant="text"
               severity="contrast"
-              v-tooltip.top="'Clear the applied filters'"
+              v-tooltip.top="'Clear the tag filters'"
               rounded
             />
           </div>

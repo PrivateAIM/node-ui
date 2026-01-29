@@ -5,19 +5,37 @@ import SearchBar from "~/components/table/SearchBar.vue";
 import {
   EventLogLevelTag,
   EventServiceTag,
-  type EventTag,
+  type EventTag
 } from "~/types/eventTag";
 import TagFilterSidePanel from "~/components/events/TagFilterSidePanel.vue";
 import type { EventLog, EventLogResponse } from "~/services/Api";
-import CustomFilterWidget from "~/components/events/CustomFilterWidget.vue";
+import DateFilterGraph from "~/components/events/DateFilterGraph.vue";
+import type { DataTableFilterEvent } from "primevue";
 
-const events = ref<EventLog[] | null>(null);
-const filters = ref();
+const events = ref<EventLog[]>([]);
+const eventCount = ref<number>(0);
+const filteredEventCount = ref<number>(0); // Track filtered count separately since its temporary
+
 const appliedFilters = ref<EventTag[]>([]);
+
+const logLevelColorMap = new Map([
+  [EventLogLevelTag.Error, "#ef4444"],
+  [EventLogLevelTag.Warning, "#eab308"],
+  [EventLogLevelTag.Info, "#3b82f6"]
+]);
+const logLevelDistributions = ref(
+  Array.from(logLevelColorMap, ([label, color]) => ({
+    label,
+    color,
+    value: 0
+  }))
+);
+
+const filters = ref();
 
 const dateTimeFormat = new Intl.DateTimeFormat(undefined, {
   dateStyle: "short",
-  timeStyle: "long",
+  timeStyle: "long"
 });
 
 const { data: response, status } = await getEvents();
@@ -25,12 +43,32 @@ const { data: response, status } = await getEvents();
 function parseData() {
   if (status.value === "success" && response.value) {
     events.value = response.value.data;
+    eventCount.value = response.value.meta.count;
+    updateLogLevelCounts();
   }
 }
 
 onMounted(() => {
   parseData();
 });
+
+function updateLogLevelCounts() {
+  // Reset counts
+  logLevelDistributions.value.forEach((dist) => (dist.value = 0));
+
+  // Count occurrences
+  if (events.value) {
+    events.value.forEach((event) => {
+      const tags = event.attributes?.tags || [];
+
+      logLevelDistributions.value.forEach((dist) => {
+        if (tags.includes(dist.label)) {
+          dist.value++;
+        }
+      });
+    });
+  }
+}
 
 function formatTag(tagName: EventTag) {
   const isService = Object.values(EventServiceTag).includes(tagName);
@@ -50,27 +88,26 @@ function formatEventName(eventName: string): string {
 }
 
 function formatTimestamp(timestamp: string): string {
-  const date = new Date(timestamp);
+  const date = new Date(timestamp + "Z"); // Python does not return timestamp with standard "Z"
   const formattedDateTime = dateTimeFormat.format(date);
   const [dateString, timeString] = formattedDateTime.split(", ");
 
   return `${dateString}<br><b>${timeString}</b>`;
 }
 
-function getLogLevelColor(tags: string[]): string {
-  if (!tags || tags.length === 0) {
-    return "transparent";
+function getLogLevelColor(tags: string[]): string | undefined {
+  if (tags && tags.length > 0) {
+    // Check for log level tags and go in order of severity
+    for (const tag of [
+      EventLogLevelTag.Error,
+      EventLogLevelTag.Warning,
+      EventLogLevelTag.Info
+    ]) {
+      if (tags.includes(tag)) {
+        return logLevelColorMap.get(tag);
+      }
+    }
   }
-
-  // Check for log level tags and go in order of severity
-  if (tags.includes(EventLogLevelTag.Error)) {
-    return "#ef4444"; // red
-  } else if (tags.includes(EventLogLevelTag.Warning)) {
-    return "#eab308"; // yellow
-  } else if (tags.includes(EventLogLevelTag.Info)) {
-    return "#3b82f6"; // blue
-  }
-
   return "transparent";
 }
 
@@ -90,7 +127,7 @@ FilterService.register("tagsContainsAny", (value, filter) => {
 
 const defaultFilters = {
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  "attributes.tags": { value: null, matchMode: "tagsContainsAny" },
+  "attributes.tags": { value: null, matchMode: "tagsContainsAny" }
 };
 
 filters.value = defaultFilters;
@@ -99,25 +136,34 @@ const updateFilters = (filterText: string) => {
   filters.value.global.value = filterText;
 };
 
-function resetTextFilters() {
+function clearAllFilters() {
   const clearedFilters = {};
   for (const filterKey in defaultFilters) {
     clearedFilters[filterKey] = {
-      ...defaultFilters[filterKey],
+      ...defaultFilters[filterKey]
     };
     clearedFilters[filterKey].value = null;
   }
   filters.value = clearedFilters;
+  appliedFilters.value = [];
 }
 
 function handleRemoveFilterTag(tag: EventTag) {
   appliedFilters.value = appliedFilters.value.filter(
-    (filter) => filter !== tag,
+    (filter) => filter !== tag
   );
 }
 
 function handleShowRequestEvents(requestedEvents: EventLogResponse) {
   events.value = requestedEvents.data;
+  eventCount.value = requestedEvents.meta.count;
+  updateLogLevelCounts();
+}
+
+function handleFilter(event: DataTableFilterEvent) {
+  filteredEventCount.value = event.filteredValue
+    ? event.filteredValue.length
+    : 0;
 }
 
 watch(
@@ -129,23 +175,28 @@ watch(
       filters.value["attributes.tags"].value = null;
     }
   },
-  { deep: true },
+  { deep: true }
 );
 </script>
 
 <template>
   <div class="event-viewer-container">
     <Card class="content-card event-viewer-card">
-      <template #title>Node Events</template>
       <template #content>
         <div class="event-viewer-filter-panel-box">
-          <CustomFilterWidget @showRequestedEvents="handleShowRequestEvents" />
+          <DateFilterGraph
+            :eventCount="filteredEventCount || eventCount"
+            @showRequestedEvents="handleShowRequestEvents"
+          />
+        </div>
+        <div class="log-distribution-meter">
+          <MeterGroup :value="logLevelDistributions" :max="events.length" />
         </div>
         <div class="table-header-row">
           <div class="table-header-row-filter-chips-container">
             <div class="table-header-row-filter-chips-container-counter">
               <span
-                ><b>FILTERS: ({{ appliedFilters.length }})</b></span
+              ><b>FILTERS: ({{ appliedFilters.length }})</b></span
               >
             </div>
             <div class="table-header-row-filter-chips flex flex-wrap gap-2">
@@ -162,7 +213,7 @@ watch(
           <div class="table-header-row-searchbar">
             <SearchBar
               :searchTerm="defaultFilters.global.value"
-              @clearFilters="resetTextFilters"
+              @clearFilters="clearAllFilters"
               @updateSearch="updateFilters"
             />
           </div>
@@ -181,6 +232,7 @@ watch(
           <div class="event-viewer-component-event-table">
             <DataTable
               v-model:filters="filters"
+              @filter="handleFilter"
               :globalFilterFields="['event_name', 'service_name', 'body']"
               :rows="10"
               :rowsPerPageOptions="[10, 20, 50]"
@@ -258,6 +310,10 @@ watch(
 .event-viewer-components {
   display: flex;
   gap: 1rem;
+}
+
+.log-distribution-meter {
+  margin-top: 1rem;
 }
 
 .event-viewer-component-event-table {
