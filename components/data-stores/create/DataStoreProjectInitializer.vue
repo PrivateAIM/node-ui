@@ -40,7 +40,7 @@ const selectedDataStoreType = ref<allowedDataStoreTypes>("FHIR");
 
 // S3 settings
 type allowedBucketAccessPolicies = "Public" | "Private";
-const selectedBucketAccessPolicy = ref<allowedBucketAccessPolicies>("Public");
+const selectedBucketAccessPolicy = ref<allowedBucketAccessPolicies>("Private");
 
 const bucketAccessKey = ref<string>("");
 const bucketSecretKey = ref<string>("");
