@@ -306,17 +306,6 @@ async function onSubmitCreateDataStoreAndProject() {
                     <div class="flex items-center gap-2">
                       <RadioButton
                         v-model="selectedBucketAccessPolicy"
-                        inputId="public"
-                        name="accessPolicy"
-                        value="Public"
-                        size="small"
-                        class="bucket-access-policy-radio-btn"
-                      />
-                      <label for="public">Public</label>
-                    </div>
-                    <div class="flex items-center gap-2">
-                      <RadioButton
-                        v-model="selectedBucketAccessPolicy"
                         inputId="private"
                         name="accessPolicy"
                         value="Private"
@@ -324,6 +313,17 @@ async function onSubmitCreateDataStoreAndProject() {
                         class="bucket-access-policy-radio-btn"
                       />
                       <label for="private">Private</label>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <RadioButton
+                        v-model="selectedBucketAccessPolicy"
+                        inputId="public"
+                        name="accessPolicy"
+                        value="Public"
+                        size="small"
+                        class="bucket-access-policy-radio-btn"
+                      />
+                      <label for="public">Public</label>
                     </div>
                   </div>
                 </InputGroupAddon>
