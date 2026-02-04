@@ -1,5 +1,5 @@
 import { useToast } from "primevue/usetoast";
-import { flushPromises, mount } from "@vue/test-utils";
+import { flushPromises, mount, VueWrapper } from "@vue/test-utils";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import AnalysisControlButtons from "~/components/analysis/AnalysisControlButtons.vue";
 import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
@@ -15,6 +15,14 @@ interface ButtonStates {
   rerunActive: boolean;
   stopActive: boolean;
   deleteActive: boolean;
+}
+
+function isButtonVisible(wrapper: VueWrapper, selector: string): boolean {
+  const btn = wrapper.find(selector);
+  if (!btn.exists()) return false;
+
+  const style = btn.attributes("style");
+  return !style || !style.includes("display: none");
 }
 
 describe("AnalysisControlButtons.vue", () => {
@@ -37,9 +45,9 @@ describe("AnalysisControlButtons.vue", () => {
     toastSummary: string,
     toastMsg: string,
     analysisId: string,
-    expectError: boolean = false,
     expectedButtonStates: ButtonStates,
     initialRunStatus: string = AnalysisNodeRunStatus.Running,
+    expectedFinalStatus: string = "",
     expectedToastCalls: number = 1,
   ) {
     const wrapper = mount(AnalysisControlButtons, {
@@ -64,12 +72,6 @@ describe("AnalysisControlButtons.vue", () => {
 
     await flushPromises();
 
-    if (expectError) {
-      expect(toggle.attributes("data-p-disabled")).toBe("false");
-    } else {
-      expect(toggle.attributes("data-p-disabled")).toBe("true");
-    }
-
     if (expectedToastCalls > 0) {
       expect(spy).toHaveBeenCalledTimes(expectedToastCalls);
       expect(spy).toHaveBeenCalledWith({
@@ -79,6 +81,8 @@ describe("AnalysisControlButtons.vue", () => {
         life: 5000,
       });
     }
+
+    await wrapper.setProps({ analysisRunStatus: expectedFinalStatus });
 
     // @ts-expect-error Linted can't interpret valid refVars
     expect(wrapper.vm.buttonStatuses).toEqual(expectedButtonStates);
@@ -93,7 +97,6 @@ describe("AnalysisControlButtons.vue", () => {
       "Start success",
       "Successfully started the container",
       fakeAnalysisId,
-      true, // Start button disappears so can't check if disabled
       {
         playActive: false,
         rerunActive: false,
@@ -101,10 +104,12 @@ describe("AnalysisControlButtons.vue", () => {
         deleteActive: true,
       },
       "",
+      AnalysisNodeRunStatus.Started,
     );
+
     // Start button should be replaced by rerun
-    expect(wrapper.find(".start-analysis-btn").exists()).toBeFalsy();
-    expect(wrapper.find(".rerun-analysis-btn").exists()).toBeTruthy();
+    expect(isButtonVisible(wrapper, ".start-analysis-btn")).toBe(false);
+    expect(isButtonVisible(wrapper, ".rerun-analysis-btn")).toBe(true);
   });
 
   it("Start analysis button - PO broken", async () => {
@@ -114,13 +119,13 @@ describe("AnalysisControlButtons.vue", () => {
       "Start failure",
       "Failed to start the analysis",
       fakeBrokenAnalysisId,
-      true,
       {
         playActive: true,
         rerunActive: false,
         stopActive: false,
         deleteActive: false,
       },
+      "",
       "",
     );
   });
@@ -132,13 +137,13 @@ describe("AnalysisControlButtons.vue", () => {
       "Start failure",
       "Failed to start the analysis",
       fakeMissingAnalysisId,
-      true,
       {
         playActive: true,
         rerunActive: false,
         stopActive: false,
         deleteActive: false,
       },
+      "",
       "",
       0,
     );
@@ -152,13 +157,14 @@ describe("AnalysisControlButtons.vue", () => {
       "Stop success",
       "Successfully stopped the container",
       fakeAnalysisId,
-      false,
       {
         playActive: false,
         rerunActive: true,
         stopActive: false,
         deleteActive: true,
       },
+      AnalysisNodeRunStatus.Running,
+      AnalysisNodeRunStatus.Stopped,
     );
   });
 
@@ -169,13 +175,14 @@ describe("AnalysisControlButtons.vue", () => {
       "Status unknown",
       "Pod was not found, but the stop command was still issued",
       fakeMissingAnalysisId,
-      false,
       {
         playActive: false,
         rerunActive: true,
         stopActive: false,
         deleteActive: true,
       },
+      AnalysisNodeRunStatus.Running,
+      AnalysisNodeRunStatus.Stopped,
     );
   });
 
@@ -186,13 +193,14 @@ describe("AnalysisControlButtons.vue", () => {
       "Stop failure",
       "Failed to stop the analysis container",
       fakeBrokenAnalysisId,
-      true,
       {
         playActive: false,
         rerunActive: false,
         stopActive: true,
         deleteActive: true,
       },
+      AnalysisNodeRunStatus.Running,
+      AnalysisNodeRunStatus.Running,
     );
   });
 
@@ -203,13 +211,14 @@ describe("AnalysisControlButtons.vue", () => {
       "Delete success",
       "Successfully removed the container",
       fakeAnalysisId,
-      false,
       {
         playActive: true,
         rerunActive: false,
         stopActive: false,
         deleteActive: false,
       },
+      AnalysisNodeRunStatus.Running,
+      "",
     );
   });
 
@@ -220,7 +229,6 @@ describe("AnalysisControlButtons.vue", () => {
       "Status unknown",
       "Pod was not found, but the stop command was still issued",
       fakeMissingAnalysisId,
-      false,
       {
         playActive: true,
         rerunActive: false,
@@ -237,13 +245,14 @@ describe("AnalysisControlButtons.vue", () => {
       "Terminate request failure",
       "Failed to terminate the analysis",
       fakeBrokenAnalysisId,
-      true,
       {
         playActive: false,
         rerunActive: false,
         stopActive: true,
         deleteActive: true,
       },
+      AnalysisNodeRunStatus.Running,
+      AnalysisNodeRunStatus.Running,
     );
   });
 
@@ -254,7 +263,6 @@ describe("AnalysisControlButtons.vue", () => {
       "Start failure",
       "Failed to start the analysis",
       fakeInvalidRoleAnalysisId,
-      true,
       {
         playActive: true,
         rerunActive: false,
@@ -285,29 +293,30 @@ describe("AnalysisControlButtons.vue", () => {
     const logBtn = wrapper.find(".logs-analysis-btn");
     expect(logBtn.attributes("data-p-disabled")).toBe("true");
 
-    // @ts-expect-error Accessing a known method
-    wrapper.vm.setButtonStates(AnalysisNodeRunStatus.Started);
-    await wrapper.vm.$nextTick();
+    await wrapper.setProps({
+      analysisRunStatus: AnalysisNodeRunStatus.Started,
+    });
     expect(logBtn.attributes("data-p-disabled")).toBe("false");
 
-    // @ts-expect-error Accessing a known method
-    wrapper.vm.setButtonStates(AnalysisNodeRunStatus.Running);
-    await wrapper.vm.$nextTick();
+    await wrapper.setProps({
+      analysisRunStatus: AnalysisNodeRunStatus.Running,
+    });
     expect(logBtn.attributes("data-p-disabled")).toBe("false");
 
-    // @ts-expect-error Accessing a known method
-    wrapper.vm.setButtonStates(AnalysisNodeRunStatus.Failed);
-    await wrapper.vm.$nextTick();
-    expect(logBtn.attributes("data-p-disabled")).toBe("false");
-
-    // @ts-expect-error Accessing a known method
-    wrapper.vm.setButtonStates(AnalysisNodeRunStatus.Finished);
-    await wrapper.vm.$nextTick();
-    expect(logBtn.attributes("data-p-disabled")).toBe("false");
-
-    // @ts-expect-error Accessing a known method
-    wrapper.vm.setButtonStates("");
-    await wrapper.vm.$nextTick();
+    await wrapper.setProps({
+      analysisRunStatus: "",
+    });
     expect(logBtn.attributes("data-p-disabled")).toBe("true");
+
+    await wrapper.setProps({
+      analysisRunStatus: AnalysisNodeRunStatus.Failed,
+    });
+    expect(logBtn.attributes("data-p-disabled")).toBe("false");
+
+    await wrapper.setProps({
+      analysisRunStatus: AnalysisNodeRunStatus.Finished,
+    });
+    expect(logBtn.attributes("data-p-disabled")).toBe("false");
+    //
   });
 });

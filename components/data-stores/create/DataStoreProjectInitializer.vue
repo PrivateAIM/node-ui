@@ -310,7 +310,7 @@ async function onSubmitCreateDataStoreAndProject() {
                         name="accessPolicy"
                         value="Private"
                         size="small"
-                        class="bucket-access-policy-radio-btn"
+                        class="bucket-access-policy-radio-btn-private"
                       />
                       <label for="private">Private</label>
                     </div>
@@ -321,7 +321,7 @@ async function onSubmitCreateDataStoreAndProject() {
                         name="accessPolicy"
                         value="Public"
                         size="small"
-                        class="bucket-access-policy-radio-btn"
+                        class="bucket-access-policy-radio-btn-public"
                       />
                       <label for="public">Public</label>
                     </div>
