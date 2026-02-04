@@ -82,9 +82,7 @@ describe("AnalysisControlButtons.vue", () => {
       });
     }
 
-    if (expectedFinalStatus !== undefined) {
-      await wrapper.setProps({ analysisRunStatus: expectedFinalStatus });
-    }
+    await wrapper.setProps({ analysisRunStatus: expectedFinalStatus });
 
     // @ts-expect-error Linted can't interpret valid refVars
     expect(wrapper.vm.buttonStatuses).toEqual(expectedButtonStates);
