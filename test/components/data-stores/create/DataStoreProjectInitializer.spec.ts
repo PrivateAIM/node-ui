@@ -225,12 +225,12 @@ describe("DataStoreProjectInitializer.vue", () => {
     // Private fields
     expect(
       wrapper.findComponent(".data-store-path-input-s3-private").exists(),
-    ).toBeTruthy(); // Starts on public, private fields should not exist
+    ).toBeTruthy();
 
-    wrapper.vm.selectedBucketAccessPolicy = "Private"; // Simulate private being selected
+    wrapper.vm.selectedBucketAccessPolicy = "Public"; // Simulate private being selected
     await wrapper.vm.$nextTick();
     expect(
       wrapper.findComponent(".data-store-path-input-s3-private").exists(),
-    ).toBeTruthy();
+    ).toBeFalsy();
   });
 });
