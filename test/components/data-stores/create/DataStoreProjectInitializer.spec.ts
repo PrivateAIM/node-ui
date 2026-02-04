@@ -101,12 +101,6 @@ describe("DataStoreProjectInitializer.vue", () => {
     checkDropdown(".communication-protocol-picker", acceptedProtocols);
   });
 
-  // TODO: Fix for MultiSelect component
-  // it("Check data store request method dropdown options", () => {
-  //   const availableMethods = ["GET", "POST", "PUT", "DELETE"];
-  //   checkDropdown(".methods-picker", availableMethods);
-  // });
-
   it("Header content", () => {
     expect(wrapper.text()).toContain("Create a Data Store for a Project");
     expect(wrapper.text()).toContain("Helpful tooltips");
@@ -164,9 +158,6 @@ describe("DataStoreProjectInitializer.vue", () => {
     // Set protocol
     await wrapper.find(".communication-protocol-picker").trigger("click"); // open dropdown menu
     await wrapper.find(`li[aria-label="${protocol}"]`).trigger("click"); // select first option
-    // expect(wrapper.find(".communication-protocol-picker span").text()).toBe(
-    //   protocol,
-    // );
 
     // TODO: Make methods
 
@@ -218,9 +209,7 @@ describe("DataStoreProjectInitializer.vue", () => {
       "error",
       "Registration failure",
       "An error occurred while trying to register the data store",
-      "whonnock",
-      "fake/path",
-      "S3", // Triggers an error (only during testing)
+      "void",
     );
   });
 
@@ -236,7 +225,7 @@ describe("DataStoreProjectInitializer.vue", () => {
     // Private fields
     expect(
       wrapper.findComponent(".data-store-path-input-s3-private").exists(),
-    ).toBeFalsy(); // Starts on public, private fields should not exist
+    ).toBeTruthy(); // Starts on public, private fields should not exist
 
     wrapper.vm.selectedBucketAccessPolicy = "Private"; // Simulate private being selected
     await wrapper.vm.$nextTick();

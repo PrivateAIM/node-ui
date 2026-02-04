@@ -1,7 +1,7 @@
 // For spoofing requests not made using the useFetch
 import { http, HttpResponse } from "msw";
 import {
-  type BodyCreateAnalysisPoPost,
+  type BodyPodorcPodsCreatePoPost,
   type CleanupPodResponse,
 } from "~/services/Api";
 import {
@@ -106,7 +106,7 @@ export const handlers = [
 
   // Working analysis controls
   http.post(`/po`, async ({ request }) => {
-    const body = (await request.json()) as BodyCreateAnalysisPoPost;
+    const body = (await request.json()) as BodyPodorcPodsCreatePoPost;
     const analysisId = body.analysis_id;
     if (analysisId === fakeAnalysisId) {
       return HttpResponse.json({
@@ -292,13 +292,13 @@ export const handlers = [
   http.post(`/kong/initialize`, async ({ request }) => {
     const body = (await request.json()) as kongBody;
     const projectId = body.project_id;
-    const dsType = body.ds_type;
+    const hostname = body.datastore["host"];
 
     const validProjectId = fakeParsedProjects[0].id;
     const duplicateProjectId = fakeParsedProjects[1].id;
 
-    if (dsType === "s3") {
-      // s3 is my trigger for an error
+    if (hostname === "void") {
+      // Trigger for an error
       return new HttpResponse(null, { status: 500 });
     } else if (projectId === validProjectId) {
       return HttpResponse.json(fakeDataStoreInitSuccess);
