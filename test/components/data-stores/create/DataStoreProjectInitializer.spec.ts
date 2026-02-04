@@ -222,12 +222,11 @@ describe("DataStoreProjectInitializer.vue", () => {
     await wrapper.vm.$nextTick();
     expect(wrapper.find(".bucket-access-policy-radio").exists()).toBe(true); // Check radio options exist now
 
-    // Private fields
     expect(
       wrapper.findComponent(".data-store-path-input-s3-private").exists(),
     ).toBeTruthy();
 
-    wrapper.vm.selectedBucketAccessPolicy = "Public"; // Simulate private being selected
+    wrapper.vm.selectedBucketAccessPolicy = "Public"; // Simulate public being selected
     await wrapper.vm.$nextTick();
     expect(
       wrapper.findComponent(".data-store-path-input-s3-private").exists(),

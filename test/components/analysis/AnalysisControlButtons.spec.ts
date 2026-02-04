@@ -248,7 +248,7 @@ describe("AnalysisControlButtons.vue", () => {
       "Failed to terminate the analysis",
       fakeBrokenAnalysisId,
       {
-        playActive: true,
+        playActive: false,
         rerunActive: false,
         stopActive: true,
         deleteActive: true,
