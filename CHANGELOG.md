@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.1](https://github.com/PrivateAIM/node-ui/compare/v0.4.0...v0.4.1) (2026-02-05)
+
+
+### Bug Fixes
+
+* **analysis:** control buttons now update on status update from PO ([a90f599](https://github.com/PrivateAIM/node-ui/commit/a90f599f4650ab9930adf5a22ea02ac14b182a23))
+
+
+### Reverts
+
+* correct tests ([7d0699e](https://github.com/PrivateAIM/node-ui/commit/7d0699e30def173e95350830b5b5f60a74c4b9f7))
+
 ## [0.4.0](https://github.com/PrivateAIM/node-ui/compare/v0.3.2...v0.4.0) (2026-01-29)
 
 
