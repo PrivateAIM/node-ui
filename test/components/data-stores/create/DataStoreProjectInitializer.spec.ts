@@ -12,6 +12,7 @@ import {
 import DataStoreProjectInitializer from "~/components/data-stores/create/DataStoreProjectInitializer.vue";
 import { fakeParsedProjects } from "~/test/components/data-stores/constants";
 import type { availableProject } from "~/components/data-stores/create/ResourceManagerTabs.vue";
+import { DataStoreType } from "~/services/Api";
 
 describe("DataStoreProjectInitializer.vue", () => {
   let spy;
@@ -114,7 +115,7 @@ describe("DataStoreProjectInitializer.vue", () => {
     toastDetail: string,
     server: string = "whonnock",
     path: string = "/fake/path",
-    storeType: string = "FHIR",
+    storeType: DataStoreType = DataStoreType.Fhir,
     port: string = "80",
     protocol: string = "http",
     // methods?: string[],
@@ -148,7 +149,9 @@ describe("DataStoreProjectInitializer.vue", () => {
     // Set data store type
     wrapper.vm.selectedDataStoreType = storeType;
     await wrapper.vm.$nextTick();
-    expect(wrapper.find(".data-store-type-input span").text()).toBe(storeType);
+    expect(
+      wrapper.find(".data-store-type-input span").text().toLowerCase(),
+    ).toBe(storeType);
 
     // Set port
     const portWrapper = wrapper.find(".data-store-port-input");
@@ -218,7 +221,7 @@ describe("DataStoreProjectInitializer.vue", () => {
       wrapper.findComponent(".bucket-access-policy-radio").exists(),
     ).toBeFalsy(); // Starts on FHIR so should not be in view
     const select = wrapper.findComponent(".data-store-type-picker");
-    await select.vm.$emit("update:modelValue", "S3"); // Simulate the S3 option being clicked
+    await select.vm.$emit("update:modelValue", DataStoreType.S3); // Simulate the S3 option being clicked
     await wrapper.vm.$nextTick();
     expect(wrapper.find(".bucket-access-policy-radio").exists()).toBe(true); // Check radio options exist now
 
