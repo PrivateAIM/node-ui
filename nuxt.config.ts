@@ -16,6 +16,9 @@ export default defineNuxtConfig({
     authSecret: process.env.NUXT_AUTH_SECRET,
     public: {
       baseUrl: process.env.NUXT_PUBLIC_BASE_URL || "http://localhost:3000",
+      origin:
+        process.env.NUXT_PUBLIC_ORIGIN ||
+        "http://localhost:3000/flame/api/auth",
       hubAdapterUrl:
         process.env.NUXT_PUBLIC_HUB_ADAPTER_URL || "http://localhost:5000",
       version: process.env.npm_package_version,
@@ -27,7 +30,9 @@ export default defineNuxtConfig({
 
   auth: {
     isEnabled: true,
-    baseURL: `${(process.env.NUXT_PUBLIC_BASE_URL ?? "http://localhost:3000").replace(/\/$/, "")}/flame/api/auth`,
+    originEnvKey: "NUXT_PUBLIC_ORIGIN",
+    baseURL:
+      process.env.NUXT_PUBLIC_ORIGIN || "http://localhost:3000/flame/api/auth",
     disableServerSideAuth: false,
     globalAppMiddleware: true,
     provider: {
@@ -64,5 +69,5 @@ export default defineNuxtConfig({
     "@/assets/css/table.css",
   ],
 
-  compatibilityDate: "2026-02-04",
+  compatibilityDate: "2026-02-05",
 });
