@@ -30,6 +30,12 @@ const connMsgColor = computed(() =>
 const toast = useToast();
 
 // Project settings
+const dataStoreTypeOptions = computed(() =>
+  Object.values(DataStoreType).map((type) => ({
+    label: type.toUpperCase(),
+    value: type,
+  })),
+);
 const selectedDataStoreType = ref<DataStoreType>(DataStoreType.Fhir);
 
 // S3 settings
@@ -248,7 +254,9 @@ async function onSubmitCreateDataStoreAndProject() {
               </InputGroupAddon>
               <Select
                 v-model="selectedDataStoreType"
-                :options="Object.values(DataStoreType)"
+                :options="dataStoreTypeOptions"
+                optionLabel="label"
+                optionValue="value"
                 class="data-store-type-picker"
               />
             </InputGroup>
