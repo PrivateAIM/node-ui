@@ -10,17 +10,14 @@ import InputGroup from "primevue/inputgroup";
 import DataStoreHelpBox from "~/components/data-stores/create/DataStoreHelpBox.vue";
 import { HelpTextField } from "~/components/data-stores/create/index";
 import { useToast } from "primevue/usetoast";
+import {
+  type BodyKongInitializeKongInitializePost,
+  DataStoreType,
+} from "~/services/Api";
 
 const props = defineProps({
   projects: Array,
 });
-
-export interface kongBody {
-  datastore: object;
-  project_id: string;
-  methods: string[];
-  ds_type: string;
-}
 
 const loading = ref(false);
 const helpActive = ref();
@@ -33,10 +30,7 @@ const connMsgColor = computed(() =>
 const toast = useToast();
 
 // Project settings
-// const availableMethods = ["GET", "POST", "PUT", "DELETE"];
-const dataStoreTypes = ["FHIR", "S3"];
-type allowedDataStoreTypes = (typeof dataStoreTypes)[number];
-const selectedDataStoreType = ref<allowedDataStoreTypes>("FHIR");
+const selectedDataStoreType = ref<DataStoreType>(DataStoreType.Fhir);
 
 // S3 settings
 type allowedBucketAccessPolicies = "Public" | "Private";
@@ -46,8 +40,6 @@ const bucketAccessKey = ref<string>("");
 const bucketSecretKey = ref<string>("");
 
 const selectedProject = ref();
-
-// const selectedAllowedMethods = ref(["GET"]);
 
 const dataStoreSettingsMap: Map<string, string> = new Map([
   ["name", "Project"],
@@ -123,6 +115,12 @@ async function onSubmitCreateDataStoreAndProject() {
     protocol: protocol.value,
   };
 
+  const configSettings: BodyKongInitializeKongInitializePost = {
+    datastore: datastoreSettings,
+    project_id: selectedProject.value.id,
+    ds_type: selectedDataStoreType.value,
+  };
+
   const minioSettings = {
     minio_access_key: bucketAccessKey.value || "",
     minio_secret_key: bucketSecretKey.value || "",
@@ -132,26 +130,16 @@ async function onSubmitCreateDataStoreAndProject() {
   // Check settings are filled in
   let settingsValidated: boolean;
   settingsValidated = verifyValuesFilled(datastoreSettings);
+
   if (
-    selectedDataStoreType.value == "S3" &&
+    selectedDataStoreType.value == DataStoreType.S3 &&
     selectedBucketAccessPolicy.value == "Private"
   ) {
+    configSettings.minio_config = minioSettings;
     settingsValidated = settingsValidated && verifyValuesFilled(minioSettings);
   }
 
   if (settingsValidated) {
-    const configSettings: kongBody = {
-      datastore: datastoreSettings,
-      project_id: selectedProject.value.id,
-      // methods: selectedAllowedMethods.value,
-      methods: ["GET"], // Hardcode to GET only to prevent abuse/security issues
-      ds_type: selectedDataStoreType.value.toLowerCase() as string,
-    };
-
-    if (selectedBucketAccessPolicy.value == "Private") {
-      configSettings["minio_config"] = minioSettings;
-    }
-
     loading.value = true;
     const creationResp = await useNuxtApp()
       .$hubApi("/kong/initialize", {
@@ -260,11 +248,14 @@ async function onSubmitCreateDataStoreAndProject() {
               </InputGroupAddon>
               <Select
                 v-model="selectedDataStoreType"
-                :options="dataStoreTypes"
+                :options="Object.values(DataStoreType)"
                 class="data-store-type-picker"
               />
             </InputGroup>
-            <div v-if="selectedDataStoreType == 'S3'" class="s3-name-fields">
+            <div
+              v-if="selectedDataStoreType == DataStoreType.S3"
+              class="s3-name-fields"
+            >
               <InputGroup class="data-store-path-input-s3">
                 <InputGroupAddon class="data-store-field-name">
                   <i class="pi pi-inbox"></i>
