@@ -29,11 +29,11 @@ export enum ProtocolCode {
 export enum PodStatus {
   Starting = "starting",
   Started = "started",
-  Stuck = "stuck",
-  Running = "running",
   Stopping = "stopping",
   Stopped = "stopped",
-  Finished = "finished",
+  Executing = "executing",
+  Executed = "executed",
+  Stuck = "stuck",
   Failed = "failed",
 }
 
@@ -75,6 +75,13 @@ export enum CleanUpType {
   Rs = "rs",
   Keycloak = "keycloak",
   Zombies = "zombies",
+}
+
+/** AnalysisBucketType */
+export enum AnalysisBucketType {
+  CODE = "CODE",
+  RESULT = "RESULT",
+  TEMP = "TEMP",
 }
 
 /**
@@ -133,29 +140,66 @@ export interface Analysis {
    * @format uuid
    */
   id: string;
-  /** Configuration Locked */
-  configuration_locked: boolean;
   /** Nodes */
   nodes: number;
+  /** Nodes Approved */
+  nodes_approved: number;
+  /** Configuration Locked */
+  configuration_locked: boolean;
+  /** Configuration Entrypoint Valid */
+  configuration_entrypoint_valid: boolean;
+  /** Configuration Image Valid */
+  configuration_image_valid: boolean;
+  /** Configuration Node Aggregator Valid */
+  configuration_node_aggregator_valid: boolean;
+  /** Configuration Node Default Valid */
+  configuration_node_default_valid: boolean;
+  /** Configuration Nodes Valid */
+  configuration_nodes_valid: boolean;
   /** Build Status */
   build_status:
     | "starting"
     | "started"
     | "stopping"
     | "stopped"
-    | "finished"
+    | "executing"
+    | "executed"
     | "failed"
     | null;
-  /** Run Status */
-  run_status:
+  /** Build Nodes Valid */
+  build_nodes_valid: boolean;
+  /** Build Progress */
+  build_progress: number | null;
+  /** Build Hash */
+  build_hash: string | null;
+  /** Build Os */
+  build_os: string | null;
+  /** Build Size */
+  build_size: number | null;
+  /** Distribution Status */
+  distribution_status:
     | "starting"
     | "started"
-    | "running"
     | "stopping"
     | "stopped"
-    | "finished"
+    | "executing"
+    | "executed"
     | "failed"
     | null;
+  /** Distribution Progress */
+  distribution_progress: number | null;
+  /** Execution Status */
+  execution_status:
+    | "starting"
+    | "started"
+    | "stopping"
+    | "stopped"
+    | "executing"
+    | "executed"
+    | "failed"
+    | null;
+  /** Execution Progress */
+  execution_progress: number | null;
   /**
    * Created At
    * @format date-time
@@ -183,15 +227,22 @@ export interface Analysis {
 
 /** AnalysisBucket */
 export interface AnalysisBucket {
+  type: AnalysisBucketType;
+  /**
+   * Bucket Id
+   * @format uuid
+   */
+  bucket_id: string;
+  /**
+   * Analysis Id
+   * @format uuid
+   */
+  analysis_id: string;
   /**
    * Id
    * @format uuid
    */
   id: string;
-  /** Type */
-  type: "CODE" | "RESULT" | "TEMP";
-  /** External Id */
-  external_id: string | null;
   /**
    * Created At
    * @format date-time
@@ -202,11 +253,6 @@ export interface AnalysisBucket {
    * @format date-time
    */
   updated_at: string;
-  /**
-   * Analysis Id
-   * @format uuid
-   */
-  analysis_id: string;
   analysis?: Analysis;
   /**
    * Realm Id
@@ -252,16 +298,18 @@ export interface AnalysisNode {
   id: string;
   /** Approval Status */
   approval_status: "rejected" | "approved" | null;
-  /** Run Status */
-  run_status:
+  /** Execution Status */
+  execution_status:
     | "starting"
     | "started"
     | "stopping"
     | "stopped"
-    | "running"
-    | "finished"
+    | "executing"
+    | "executed"
     | "failed"
     | null;
+  /** Execution Progress */
+  execution_progress: number | null;
   /** Comment */
   comment: string | null;
   /** Artifact Tag */
@@ -382,12 +430,6 @@ export interface BodyKongInitializeKongInitializePost {
    * UUID of the project
    */
   project_id: string;
-  /**
-   * Methods
-   * List of acceptable HTTP methods
-   * @default ["GET"]
-   */
-  methods?: HttpMethodCode[];
   /**
    * Protocols
    * List of acceptable transfer protocols. A combo of 'http', 'grpc', 'grpcs', 'tls', 'tcp'
@@ -552,29 +594,66 @@ export interface DetailedAnalysis {
    * @format uuid
    */
   id: string;
-  /** Configuration Locked */
-  configuration_locked: boolean;
   /** Nodes */
   nodes: number;
+  /** Nodes Approved */
+  nodes_approved: number;
+  /** Configuration Locked */
+  configuration_locked: boolean;
+  /** Configuration Entrypoint Valid */
+  configuration_entrypoint_valid: boolean;
+  /** Configuration Image Valid */
+  configuration_image_valid: boolean;
+  /** Configuration Node Aggregator Valid */
+  configuration_node_aggregator_valid: boolean;
+  /** Configuration Node Default Valid */
+  configuration_node_default_valid: boolean;
+  /** Configuration Nodes Valid */
+  configuration_nodes_valid: boolean;
   /** Build Status */
   build_status:
     | "starting"
     | "started"
     | "stopping"
     | "stopped"
-    | "finished"
+    | "executing"
+    | "executed"
     | "failed"
     | null;
-  /** Run Status */
-  run_status:
+  /** Build Nodes Valid */
+  build_nodes_valid: boolean;
+  /** Build Progress */
+  build_progress: number | null;
+  /** Build Hash */
+  build_hash: string | null;
+  /** Build Os */
+  build_os: string | null;
+  /** Build Size */
+  build_size: number | null;
+  /** Distribution Status */
+  distribution_status:
     | "starting"
     | "started"
-    | "running"
     | "stopping"
     | "stopped"
-    | "finished"
+    | "executing"
+    | "executed"
     | "failed"
     | null;
+  /** Distribution Progress */
+  distribution_progress: number | null;
+  /** Execution Status */
+  execution_status:
+    | "starting"
+    | "started"
+    | "stopping"
+    | "stopped"
+    | "executing"
+    | "executed"
+    | "failed"
+    | null;
+  /** Execution Progress */
+  execution_progress: number | null;
   /**
    * Created At
    * @format date-time
@@ -826,11 +905,11 @@ export interface DetailedService {
  */
 export interface DownstreamHealthCheck {
   /** Po */
-  po: Record<string, any> | string;
-  /** Results */
-  results: Record<string, any> | string;
+  po: HealthCheck | string;
+  /** Storage */
+  storage: HealthCheck | string;
   /** Kong */
-  kong: Record<string, any> | string;
+  kong: HealthCheck | string;
 }
 
 /**
@@ -1016,6 +1095,18 @@ export interface MasterImage {
   virtual_path: string;
   /** Group Virtual Path */
   group_virtual_path: string;
+  /** Build Status */
+  build_status:
+    | "starting"
+    | "started"
+    | "stopping"
+    | "stopped"
+    | "executing"
+    | "executed"
+    | "failed"
+    | null;
+  /** Build Progress */
+  build_progress: number | null;
   /** Name */
   name: string;
   /** Command */
@@ -1062,9 +1153,15 @@ export interface Meta {
  * Credentials for accessing a private S3 bucket hosted on MinIO.
  */
 export interface MinioConfig {
-  /** Minio Access Key */
+  /**
+   * Minio Access Key
+   * @format password
+   */
   minio_access_key: string;
-  /** Minio Secret Key */
+  /**
+   * Minio Secret Key
+   * @format password
+   */
   minio_secret_key: string;
   /**
    * Minio Region
@@ -1109,11 +1206,10 @@ export interface Node {
   /** Registry Project Id */
   registry_project_id: string | null;
   registry_project?: RegistryProject | null;
-  /**
-   * Robot Id
-   * @format uuid
-   */
-  robot_id: string;
+  /** Robot Id */
+  robot_id: string | null;
+  /** Client Id */
+  client_id: string | null;
   /**
    * Created At
    * @format date-time
@@ -2674,10 +2770,10 @@ export class Api<
     /**
      * @description Delete all objects in MinIO and all Postgres database entries related to the specified project. Returns a 200 on success, a 400 if the project is still available on the Hub and a 403 if it is not the Hub Adapter client that sends the request. In both error cases nothing is deleted at all.
      *
-     * @tags Results
+     * @tags Storage
      * @name StorageLocalDeleteLocalDelete
      * @summary Storage.Local.Delete
-     * @request DELETE:/local
+     * @request DELETE:/local/
      * @secure
      */
     storageLocalDeleteLocalDelete: (
@@ -2691,7 +2787,7 @@ export class Api<
       params: RequestParams = {},
     ) =>
       this.request<any, void | HTTPValidationError>({
-        path: `/local`,
+        path: `/local/`,
         method: "DELETE",
         query: query,
         secure: true,
@@ -3123,7 +3219,7 @@ export class Api<
         /**
          * Limit
          * Maximum number of events to return
-         * @default 50
+         * @default 100
          */
         limit?: number | null;
         /**
@@ -3133,10 +3229,10 @@ export class Api<
          */
         offset?: number | null;
         /**
-         * Service Name
-         * Filter events by service name
+         * Service Tag
+         * Filter events by service tag
          */
-        service_name?: string | null;
+        service_tag?: string | null;
         /**
          * Event Name
          * Filter events by event name

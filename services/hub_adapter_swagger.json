@@ -1737,12 +1737,12 @@
         }
       }
     },
-    "/local": {
+    "/local/": {
       "delete": {
-        "tags": ["Results"],
+        "tags": ["Storage"],
         "summary": "Storage.Local.Delete",
         "description": "Delete all objects in MinIO and all Postgres database entries related to the specified project.\n\nReturns a 200 on success, a 400 if the project is still available on the Hub and a 403 if it is not the\nHub Adapter client that sends the request. In both error cases nothing is deleted at all.",
-        "operationId": "storage_local_delete_local_delete",
+        "operationId": "storage_local_delete_local__delete",
         "security": [
           {
             "JWT": []
@@ -2687,7 +2687,7 @@
                 }
               ],
               "description": "Maximum number of events to return",
-              "default": 50,
+              "default": 100,
               "title": "Limit"
             },
             "description": "Maximum number of events to return"
@@ -2712,7 +2712,7 @@
             "description": "Number of events to offset by"
           },
           {
-            "name": "service_name",
+            "name": "service_tag",
             "in": "query",
             "required": false,
             "schema": {
@@ -2724,10 +2724,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Filter events by service name",
-              "title": "Service Name"
+              "description": "Filter events by service tag",
+              "title": "Service Tag"
             },
-            "description": "Filter events by service name"
+            "description": "Filter events by service tag"
           },
           {
             "name": "event_name",
@@ -3036,13 +3036,37 @@
             "format": "uuid",
             "title": "Id"
           },
+          "nodes": {
+            "type": "integer",
+            "title": "Nodes"
+          },
+          "nodes_approved": {
+            "type": "integer",
+            "title": "Nodes Approved"
+          },
           "configuration_locked": {
             "type": "boolean",
             "title": "Configuration Locked"
           },
-          "nodes": {
-            "type": "integer",
-            "title": "Nodes"
+          "configuration_entrypoint_valid": {
+            "type": "boolean",
+            "title": "Configuration Entrypoint Valid"
+          },
+          "configuration_image_valid": {
+            "type": "boolean",
+            "title": "Configuration Image Valid"
+          },
+          "configuration_node_aggregator_valid": {
+            "type": "boolean",
+            "title": "Configuration Node Aggregator Valid"
+          },
+          "configuration_node_default_valid": {
+            "type": "boolean",
+            "title": "Configuration Node Default Valid"
+          },
+          "configuration_nodes_valid": {
+            "type": "boolean",
+            "title": "Configuration Nodes Valid"
           },
           "build_status": {
             "anyOf": [
@@ -3053,7 +3077,8 @@
                   "started",
                   "stopping",
                   "stopped",
-                  "finished",
+                  "executing",
+                  "executed",
                   "failed"
                 ]
               },
@@ -3063,17 +3088,65 @@
             ],
             "title": "Build Status"
           },
-          "run_status": {
+          "build_nodes_valid": {
+            "type": "boolean",
+            "title": "Build Nodes Valid"
+          },
+          "build_progress": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Build Progress"
+          },
+          "build_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Build Hash"
+          },
+          "build_os": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Build Os"
+          },
+          "build_size": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Build Size"
+          },
+          "distribution_status": {
             "anyOf": [
               {
                 "type": "string",
                 "enum": [
                   "starting",
                   "started",
-                  "running",
                   "stopping",
                   "stopped",
-                  "finished",
+                  "executing",
+                  "executed",
                   "failed"
                 ]
               },
@@ -3081,7 +3154,49 @@
                 "type": "null"
               }
             ],
-            "title": "Run Status"
+            "title": "Distribution Status"
+          },
+          "distribution_progress": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distribution Progress"
+          },
+          "execution_status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "starting",
+                  "started",
+                  "stopping",
+                  "stopped",
+                  "executing",
+                  "executed",
+                  "failed"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Execution Status"
+          },
+          "execution_progress": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Execution Progress"
           },
           "created_at": {
             "type": "string",
@@ -3135,10 +3250,24 @@
           "master_image_id",
           "registry_id",
           "id",
-          "configuration_locked",
           "nodes",
+          "nodes_approved",
+          "configuration_locked",
+          "configuration_entrypoint_valid",
+          "configuration_image_valid",
+          "configuration_node_aggregator_valid",
+          "configuration_node_default_valid",
+          "configuration_nodes_valid",
           "build_status",
-          "run_status",
+          "build_nodes_valid",
+          "build_progress",
+          "build_hash",
+          "build_os",
+          "build_size",
+          "distribution_status",
+          "distribution_progress",
+          "execution_status",
+          "execution_progress",
           "created_at",
           "updated_at",
           "realm_id",
@@ -3148,27 +3277,23 @@
       },
       "AnalysisBucket": {
         "properties": {
+          "type": {
+            "$ref": "#/components/schemas/AnalysisBucketType"
+          },
+          "bucket_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Bucket Id"
+          },
+          "analysis_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Analysis Id"
+          },
           "id": {
             "type": "string",
             "format": "uuid",
             "title": "Id"
-          },
-          "type": {
-            "type": "string",
-            "enum": ["CODE", "RESULT", "TEMP"],
-            "title": "Type"
-          },
-          "external_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "External Id"
           },
           "created_at": {
             "type": "string",
@@ -3179,11 +3304,6 @@
             "type": "string",
             "format": "date-time",
             "title": "Updated At"
-          },
-          "analysis_id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Analysis Id"
           },
           "analysis": {
             "$ref": "#/components/schemas/Analysis"
@@ -3196,15 +3316,20 @@
         },
         "type": "object",
         "required": [
-          "id",
           "type",
-          "external_id",
+          "bucket_id",
+          "analysis_id",
+          "id",
           "created_at",
           "updated_at",
-          "analysis_id",
           "realm_id"
         ],
         "title": "AnalysisBucket"
+      },
+      "AnalysisBucketType": {
+        "type": "string",
+        "enum": ["CODE", "RESULT", "TEMP"],
+        "title": "AnalysisBucketType"
       },
       "AnalysisImageUrl": {
         "properties": {
@@ -3298,7 +3423,7 @@
             ],
             "title": "Approval Status"
           },
-          "run_status": {
+          "execution_status": {
             "anyOf": [
               {
                 "type": "string",
@@ -3307,8 +3432,8 @@
                   "started",
                   "stopping",
                   "stopped",
-                  "running",
-                  "finished",
+                  "executing",
+                  "executed",
                   "failed"
                 ]
               },
@@ -3316,7 +3441,18 @@
                 "type": "null"
               }
             ],
-            "title": "Run Status"
+            "title": "Execution Status"
+          },
+          "execution_progress": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Execution Progress"
           },
           "comment": {
             "anyOf": [
@@ -3384,7 +3520,8 @@
           "node_id",
           "id",
           "approval_status",
-          "run_status",
+          "execution_status",
+          "execution_progress",
           "comment",
           "artifact_tag",
           "artifact_digest",
@@ -3563,15 +3700,6 @@
             ],
             "title": "Project Id",
             "description": "UUID of the project"
-          },
-          "methods": {
-            "items": {
-              "$ref": "#/components/schemas/HttpMethodCode"
-            },
-            "type": "array",
-            "title": "Methods",
-            "description": "List of acceptable HTTP methods",
-            "default": ["GET"]
           },
           "protocols": {
             "items": {
@@ -3988,13 +4116,37 @@
             "format": "uuid",
             "title": "Id"
           },
+          "nodes": {
+            "type": "integer",
+            "title": "Nodes"
+          },
+          "nodes_approved": {
+            "type": "integer",
+            "title": "Nodes Approved"
+          },
           "configuration_locked": {
             "type": "boolean",
             "title": "Configuration Locked"
           },
-          "nodes": {
-            "type": "integer",
-            "title": "Nodes"
+          "configuration_entrypoint_valid": {
+            "type": "boolean",
+            "title": "Configuration Entrypoint Valid"
+          },
+          "configuration_image_valid": {
+            "type": "boolean",
+            "title": "Configuration Image Valid"
+          },
+          "configuration_node_aggregator_valid": {
+            "type": "boolean",
+            "title": "Configuration Node Aggregator Valid"
+          },
+          "configuration_node_default_valid": {
+            "type": "boolean",
+            "title": "Configuration Node Default Valid"
+          },
+          "configuration_nodes_valid": {
+            "type": "boolean",
+            "title": "Configuration Nodes Valid"
           },
           "build_status": {
             "anyOf": [
@@ -4005,7 +4157,8 @@
                   "started",
                   "stopping",
                   "stopped",
-                  "finished",
+                  "executing",
+                  "executed",
                   "failed"
                 ]
               },
@@ -4015,17 +4168,65 @@
             ],
             "title": "Build Status"
           },
-          "run_status": {
+          "build_nodes_valid": {
+            "type": "boolean",
+            "title": "Build Nodes Valid"
+          },
+          "build_progress": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Build Progress"
+          },
+          "build_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Build Hash"
+          },
+          "build_os": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Build Os"
+          },
+          "build_size": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Build Size"
+          },
+          "distribution_status": {
             "anyOf": [
               {
                 "type": "string",
                 "enum": [
                   "starting",
                   "started",
-                  "running",
                   "stopping",
                   "stopped",
-                  "finished",
+                  "executing",
+                  "executed",
                   "failed"
                 ]
               },
@@ -4033,7 +4234,49 @@
                 "type": "null"
               }
             ],
-            "title": "Run Status"
+            "title": "Distribution Status"
+          },
+          "distribution_progress": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distribution Progress"
+          },
+          "execution_status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "starting",
+                  "started",
+                  "stopping",
+                  "stopped",
+                  "executing",
+                  "executed",
+                  "failed"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Execution Status"
+          },
+          "execution_progress": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Execution Progress"
           },
           "created_at": {
             "type": "string",
@@ -4094,10 +4337,24 @@
           "master_image_id",
           "registry_id",
           "id",
-          "configuration_locked",
           "nodes",
+          "nodes_approved",
+          "configuration_locked",
+          "configuration_entrypoint_valid",
+          "configuration_image_valid",
+          "configuration_node_aggregator_valid",
+          "configuration_node_default_valid",
+          "configuration_nodes_valid",
           "build_status",
-          "run_status",
+          "build_nodes_valid",
+          "build_progress",
+          "build_hash",
+          "build_os",
+          "build_size",
+          "distribution_status",
+          "distribution_progress",
+          "execution_status",
+          "execution_progress",
           "created_at",
           "updated_at",
           "realm_id",
@@ -4663,8 +4920,7 @@
           "po": {
             "anyOf": [
               {
-                "additionalProperties": true,
-                "type": "object"
+                "$ref": "#/components/schemas/HealthCheck"
               },
               {
                 "type": "string"
@@ -4672,23 +4928,21 @@
             ],
             "title": "Po"
           },
-          "results": {
+          "storage": {
             "anyOf": [
               {
-                "additionalProperties": true,
-                "type": "object"
+                "$ref": "#/components/schemas/HealthCheck"
               },
               {
                 "type": "string"
               }
             ],
-            "title": "Results"
+            "title": "Storage"
           },
           "kong": {
             "anyOf": [
               {
-                "additionalProperties": true,
-                "type": "object"
+                "$ref": "#/components/schemas/HealthCheck"
               },
               {
                 "type": "string"
@@ -4698,7 +4952,7 @@
           }
         },
         "type": "object",
-        "required": ["po", "results", "kong"],
+        "required": ["po", "storage", "kong"],
         "title": "DownstreamHealthCheck",
         "description": "Response model for downstream health checks."
       },
@@ -5124,6 +5378,37 @@
             "type": "string",
             "title": "Group Virtual Path"
           },
+          "build_status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "starting",
+                  "started",
+                  "stopping",
+                  "stopped",
+                  "executing",
+                  "executed",
+                  "failed"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Build Status"
+          },
+          "build_progress": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Build Progress"
+          },
           "name": {
             "type": "string",
             "title": "Name"
@@ -5170,6 +5455,8 @@
           "path",
           "virtual_path",
           "group_virtual_path",
+          "build_status",
+          "build_progress",
           "name",
           "command",
           "command_arguments",
@@ -5229,11 +5516,15 @@
         "properties": {
           "minio_access_key": {
             "type": "string",
-            "title": "Minio Access Key"
+            "format": "password",
+            "title": "Minio Access Key",
+            "writeOnly": true
           },
           "minio_secret_key": {
             "type": "string",
-            "title": "Minio Secret Key"
+            "format": "password",
+            "title": "Minio Secret Key",
+            "writeOnly": true
           },
           "minio_region": {
             "type": "string",
@@ -5390,9 +5681,28 @@
             ]
           },
           "robot_id": {
-            "type": "string",
-            "format": "uuid",
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Robot Id"
+          },
+          "client_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Id"
           },
           "created_at": {
             "type": "string",
@@ -5418,6 +5728,7 @@
           "online",
           "registry_project_id",
           "robot_id",
+          "client_id",
           "created_at",
           "updated_at"
         ],
@@ -5460,11 +5771,11 @@
         "enum": [
           "starting",
           "started",
-          "stuck",
-          "running",
           "stopping",
           "stopped",
-          "finished",
+          "executing",
+          "executed",
+          "stuck",
           "failed"
         ],
         "title": "PodStatus",
