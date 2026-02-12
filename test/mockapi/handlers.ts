@@ -1,6 +1,7 @@
 // For spoofing requests not made using the useFetch
 import { http, HttpResponse } from "msw";
 import {
+  type BodyKongInitializeKongInitializePost,
   type BodyPodorcPodsCreatePoPost,
   type CleanupPodResponse,
 } from "~/services/Api";
@@ -8,7 +9,6 @@ import {
   fakeDataStoreInitSuccess,
   fakeParsedProjects,
 } from "~/test/components/data-stores/constants";
-import type { kongBody } from "~/components/data-stores/create/DataStoreProjectInitializer.vue";
 import { fakeProposalsResp } from "~/test/components/projects/constants";
 
 export const fakeValidProposalId = "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483";
@@ -132,13 +132,13 @@ export const handlers = [
   // Update Analysis Button - running analysis TODO remove
   http.get(`/po/status/${fakeAnalysisId}`, () => {
     return HttpResponse.json({
-      [fakeAnalysisId]: "running",
+      [fakeAnalysisId]: "executing",
     });
   }),
 
   http.get(`/po/status`, () => {
     return HttpResponse.json({
-      [fakeAnalysisId]: "running",
+      [fakeAnalysisId]: "executing",
     });
   }),
 
@@ -290,7 +290,7 @@ export const handlers = [
     });
   }),
   http.post(`/kong/initialize`, async ({ request }) => {
-    const body = (await request.json()) as kongBody;
+    const body = (await request.json()) as BodyKongInitializeKongInitializePost;
     const projectId = body.project_id;
     const hostname = body.datastore["host"];
 

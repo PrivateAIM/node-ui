@@ -1,8 +1,10 @@
 export enum ProcessStatus {
+  // As defined by the Hub
   Starting = "starting",
   Started = "started",
   Stopping = "stopping",
   Stopped = "stopped",
-  Finished = "finished",
+  Executing = "executing",
+  Executed = "executed",
   Failed = "failed",
 }
