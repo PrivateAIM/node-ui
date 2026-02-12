@@ -1,9 +1,10 @@
 {
   "name": "node-ui",
   "private": true,
-  "version": "0.3.1",
+  "version": "0.4.1",
+  "license": "Apache-2.0",
   "description": "User interface for the FLAME Node software.",
-  "packageManager": "pnpm@10.17.1",
+  "packageManager": "pnpm@10.28.2",
   "type": "module",
   "scripts": {
     "start": "nuxt start",
@@ -20,6 +21,7 @@
   },
   "dependencies": {
     "@nuxtjs/tailwindcss": "^6.14.0",
+    "@pinia/nuxt": "0.11.3",
     "@primeuix/themes": "^1.2.5",
     "@primevue/core": "^4.4.1",
     "@primevue/forms": "^4.4.1",
@@ -27,6 +29,7 @@
     "@sidebase/nuxt-auth": "1.1.0",
     "@types/uuid": "^9.0.8",
     "@vueuse/core": "^11.3.0",
+    "chart.js": "^4.5.1",
     "globals": "^15.15.0",
     "next-auth": "~4.21.1",
     "nuxt": "^3.19.3",
@@ -53,7 +56,7 @@
     "@vitejs/plugin-vue": "^6.0.1",
     "@vitest/coverage-v8": "^3.2.4",
     "@vue/test-utils": "^2.4.6",
-    "eslint": "~9.18.0",
+    "eslint": "~9.26.0",
     "eslint-config-prettier": "^9.1.2",
     "eslint-plugin-vue": "^9.33.0",
     "happy-dom": "^20.0.8",

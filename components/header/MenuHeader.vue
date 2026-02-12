@@ -23,6 +23,11 @@ const items = ref([
     route: "/analyses",
   },
   {
+    label: "Events",
+    icon: "pi pi-list",
+    route: "/events",
+  },
+  {
     label: "Data Stores",
     icon: "pi pi-warehouse",
     items: [
@@ -101,8 +106,13 @@ const items = ref([
   margin-left: 0.1rem;
 }
 
-.menu-bar-item {
+.menu-bar-header {
+  border-radius: 0;
+}
+
+.menu-bar-header .menu-bar-item {
   border-radius: inherit;
+  font-weight: 600;
 }
 
 .header-end {

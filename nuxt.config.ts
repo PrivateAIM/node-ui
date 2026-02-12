@@ -9,6 +9,7 @@ export default defineNuxtConfig({
     "@primevue/nuxt-module",
     "@sidebase/nuxt-auth",
     "@nuxtjs/tailwindcss",
+    "@pinia/nuxt",
   ],
 
   runtimeConfig: {
@@ -41,7 +42,7 @@ export default defineNuxtConfig({
       addDefaultCallbackUrl: true,
     },
     sessionRefresh: {
-      enablePeriodically: 10000, // Check every 10 seconds
+      enablePeriodically: 60000, // Check every 60 seconds
       enableOnWindowFocus: true,
     },
   },
@@ -68,5 +69,5 @@ export default defineNuxtConfig({
     "@/assets/css/table.css",
   ],
 
-  compatibilityDate: "2025-11-05",
+  compatibilityDate: "2026-02-05",
 });

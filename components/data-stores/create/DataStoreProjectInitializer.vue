@@ -10,17 +10,14 @@ import InputGroup from "primevue/inputgroup";
 import DataStoreHelpBox from "~/components/data-stores/create/DataStoreHelpBox.vue";
 import { HelpTextField } from "~/components/data-stores/create/index";
 import { useToast } from "primevue/usetoast";
+import {
+  type BodyKongInitializeKongInitializePost,
+  DataStoreType,
+} from "~/services/Api";
 
 const props = defineProps({
   projects: Array,
 });
-
-export interface kongBody {
-  datastore: object;
-  project_id: string;
-  methods: string[];
-  ds_type: string;
-}
 
 const loading = ref(false);
 const helpActive = ref();
@@ -33,21 +30,22 @@ const connMsgColor = computed(() =>
 const toast = useToast();
 
 // Project settings
-// const availableMethods = ["GET", "POST", "PUT", "DELETE"];
-const dataStoreTypes = ["FHIR", "S3"];
-type allowedDataStoreTypes = (typeof dataStoreTypes)[number];
-const selectedDataStoreType = ref<allowedDataStoreTypes>("FHIR");
+const dataStoreTypeOptions = computed(() =>
+  Object.values(DataStoreType).map((type) => ({
+    label: type.toUpperCase(),
+    value: type,
+  })),
+);
+const selectedDataStoreType = ref<DataStoreType>(DataStoreType.Fhir);
 
 // S3 settings
 type allowedBucketAccessPolicies = "Public" | "Private";
-const selectedBucketAccessPolicy = ref<allowedBucketAccessPolicies>("Public");
+const selectedBucketAccessPolicy = ref<allowedBucketAccessPolicies>("Private");
 
 const bucketAccessKey = ref<string>("");
 const bucketSecretKey = ref<string>("");
 
 const selectedProject = ref();
-
-// const selectedAllowedMethods = ref(["GET"]);
 
 const dataStoreSettingsMap: Map<string, string> = new Map([
   ["name", "Project"],
@@ -55,8 +53,8 @@ const dataStoreSettingsMap: Map<string, string> = new Map([
   ["path", "Data path or bucket name"],
   ["port", "Port"],
   ["protocol", "Connection protocol"],
-  ["accessKey", "Bucket access key"],
-  ["secretKey", "S3 secret key"],
+  ["minio_access_key", "MinIO access key"],
+  ["minio_secret_key", "MinIO secret key"],
 ]);
 
 // Datastore settings
@@ -114,39 +112,40 @@ function verifyValuesFilled(settings: object): boolean {
 }
 
 async function onSubmitCreateDataStoreAndProject() {
+  const validatedPath = validatePath(path.value); // Adds "/" to name if missing
   const datastoreSettings = {
     name: dataStoreName.value,
     host: host.value,
-    path: validatePath(path.value),
+    path: validatedPath,
     port: port.value,
     protocol: protocol.value,
-    s3: {
-      bucketAccess: selectedBucketAccessPolicy.value || "Public",
-      accessKey: bucketAccessKey.value || "",
-      secretKey: bucketSecretKey.value || "",
-    },
+  };
+
+  const configSettings: BodyKongInitializeKongInitializePost = {
+    datastore: datastoreSettings,
+    project_id: selectedProject.value.id,
+    ds_type: selectedDataStoreType.value,
+  };
+
+  const minioSettings = {
+    minio_access_key: bucketAccessKey.value || "",
+    minio_secret_key: bucketSecretKey.value || "",
+    // bucket_name: validatedPath, // .replace(/^\//, ""), // Removing leading "/" if present
   };
 
   // Check settings are filled in
   let settingsValidated: boolean;
   settingsValidated = verifyValuesFilled(datastoreSettings);
+
   if (
-    selectedDataStoreType.value == "S3" &&
+    selectedDataStoreType.value == DataStoreType.S3 &&
     selectedBucketAccessPolicy.value == "Private"
   ) {
-    settingsValidated =
-      settingsValidated && verifyValuesFilled(datastoreSettings.s3);
+    configSettings.minio_config = minioSettings;
+    settingsValidated = settingsValidated && verifyValuesFilled(minioSettings);
   }
 
   if (settingsValidated) {
-    const configSettings: kongBody = {
-      datastore: datastoreSettings,
-      project_id: selectedProject.value.id,
-      // methods: selectedAllowedMethods.value,
-      methods: ["GET"], // Hardcode to GET only to prevent abuse/security issues
-      ds_type: selectedDataStoreType.value.toLowerCase() as string,
-    };
-
     loading.value = true;
     const creationResp = await useNuxtApp()
       .$hubApi("/kong/initialize", {
@@ -255,11 +254,16 @@ async function onSubmitCreateDataStoreAndProject() {
               </InputGroupAddon>
               <Select
                 v-model="selectedDataStoreType"
-                :options="dataStoreTypes"
+                :options="dataStoreTypeOptions"
+                optionLabel="label"
+                optionValue="value"
                 class="data-store-type-picker"
               />
             </InputGroup>
-            <div v-if="selectedDataStoreType == 'S3'" class="s3-name-fields">
+            <div
+              v-if="selectedDataStoreType == DataStoreType.S3"
+              class="s3-name-fields"
+            >
               <InputGroup class="data-store-path-input-s3">
                 <InputGroupAddon class="data-store-field-name">
                   <i class="pi pi-inbox"></i>
@@ -297,35 +301,28 @@ async function onSubmitCreateDataStoreAndProject() {
                   </div>
                 </InputGroupAddon>
                 <InputGroupAddon class="data-store-field-value">
-                  <div
-                    class="flex flex-wrap gap-4 bucket-access-policy-radio"
-                    v-tooltip.top="
-                      'Selection disabled, support for Private buckets will be added soon'
-                    "
-                  >
-                    <div class="flex items-center gap-2">
-                      <RadioButton
-                        v-model="selectedBucketAccessPolicy"
-                        :disabled="true"
-                        inputId="public"
-                        name="accessPolicy"
-                        value="Public"
-                        size="small"
-                        class="bucket-access-policy-radio-btn"
-                      />
-                      <label for="public">Public</label>
-                    </div>
+                  <div class="flex flex-wrap gap-4 bucket-access-policy-radio">
                     <div class="flex items-center gap-2">
                       <RadioButton
                         v-model="selectedBucketAccessPolicy"
                         inputId="private"
-                        :disabled="true"
                         name="accessPolicy"
                         value="Private"
                         size="small"
-                        class="bucket-access-policy-radio-btn"
+                        class="bucket-access-policy-radio-btn-private"
                       />
                       <label for="private">Private</label>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <RadioButton
+                        v-model="selectedBucketAccessPolicy"
+                        inputId="public"
+                        name="accessPolicy"
+                        value="Public"
+                        size="small"
+                        class="bucket-access-policy-radio-btn-public"
+                      />
+                      <label for="public">Public</label>
                     </div>
                   </div>
                 </InputGroupAddon>
@@ -345,7 +342,7 @@ async function onSubmitCreateDataStoreAndProject() {
                 <InputText
                   v-model="bucketAccessKey"
                   :invalid="bucketAccessKey === ''"
-                  placeholder="Bucket access key"
+                  placeholder="Access key"
                 />
               </InputGroup>
               <InputGroup
@@ -363,7 +360,7 @@ async function onSubmitCreateDataStoreAndProject() {
                 <InputText
                   v-model="bucketSecretKey"
                   :invalid="bucketSecretKey === ''"
-                  placeholder="S3 secret key"
+                  placeholder="Secret key"
                 />
               </InputGroup>
             </div>

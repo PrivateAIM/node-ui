@@ -1,5 +1,67 @@
 # Changelog
 
+## [0.4.1](https://github.com/PrivateAIM/node-ui/compare/v0.4.0...v0.4.1) (2026-02-05)
+
+
+### Bug Fixes
+
+* **analysis:** control buttons now update on status update from PO ([a90f599](https://github.com/PrivateAIM/node-ui/commit/a90f599f4650ab9930adf5a22ea02ac14b182a23))
+
+
+### Reverts
+
+* correct tests ([7d0699e](https://github.com/PrivateAIM/node-ui/commit/7d0699e30def173e95350830b5b5f60a74c4b9f7))
+
+## [0.4.0](https://github.com/PrivateAIM/node-ui/compare/v0.3.2...v0.4.0) (2026-01-29)
+
+
+### ⚠ BREAKING CHANGES
+
+* finished event viewer with metrics
+
+### Features
+
+* **analysis:** enable periodic analysis status updates from podorc ([422b790](https://github.com/PrivateAIM/node-ui/commit/422b79053842dc6bd7bb71f32a38176ce0238258))
+* **auth:** notify hub adapter on successful sign in and sign out ([6e404dd](https://github.com/PrivateAIM/node-ui/commit/6e404dde1aec4c47d982be7e8e07b80924fa64c1))
+* **events:** add clear filter button to event tag filter ([d621199](https://github.com/PrivateAIM/node-ui/commit/d6211992af3a6fe24b326802f33a2f44bfeea3b0))
+* **events:** working filters on events ([6639ffe](https://github.com/PrivateAIM/node-ui/commit/6639ffe9c7682c0e30850ba63b1e254a6147bc91))
+* finished event viewer with metrics ([1d33a74](https://github.com/PrivateAIM/node-ui/commit/1d33a74c21bba6df1fb9d8ff510efd0729799bc0))
+* **s3:** add minio config to data store request ([7ebae6d](https://github.com/PrivateAIM/node-ui/commit/7ebae6dff1c2f6f2c4fb578ea2e88345ec5c5594))
+* **s3:** enable private bucket fields ([b551f4a](https://github.com/PrivateAIM/node-ui/commit/b551f4a353628fc816a1f7938285e5108520faa3))
+
+
+### Reverts
+
+* set pod orc status update interval to 15s ([847f683](https://github.com/PrivateAIM/node-ui/commit/847f6835ce248b95599f35f25e5daacae5f7d070))
+
+## [0.3.2](https://github.com/PrivateAIM/node-ui/compare/v0.3.1...v0.3.2) (2026-01-07)
+
+
+### Features
+
+* **analysis:** add analysis result cache ([fb1f74a](https://github.com/PrivateAIM/node-ui/commit/fb1f74a85141c69d31c4107589d390fa6ad655b2))
+* **auth:** add toasts for RBAC permission errors ([c7d5e8f](https://github.com/PrivateAIM/node-ui/commit/c7d5e8f34d3abfa45f1f8390f0f5d3f4a7e58579))
+* **rbac:** redirect to 403 page if invalid users attempts analysis log access ([f1c539b](https://github.com/PrivateAIM/node-ui/commit/f1c539b4b05795918664719cbfe200dd636c3b0e))
+
+
+### Bug Fixes
+
+* **analysis:** modify updateAnalysisRun to work with array ([ad407d6](https://github.com/PrivateAIM/node-ui/commit/ad407d6505d7770605caf8ad9bd6a8f2a7f7ce59))
+* **analysis:** rerun button now deletes analysis before starting again ([4235141](https://github.com/PrivateAIM/node-ui/commit/4235141b1718e41367f79469ff3310bd2828f0d5))
+* **analysis:** rerun button now deletes analysis before starting again ([4156f47](https://github.com/PrivateAIM/node-ui/commit/4156f47855f9f46649032ad66909eb716b88120c))
+* **counter:** provided correct variable to counter ([f4b2074](https://github.com/PrivateAIM/node-ui/commit/f4b2074890a70a1f1709ab04e8c11655c81f273a))
+
+
+### Performance Improvements
+
+* better parsing of dynamic analyses ([8e508b3](https://github.com/PrivateAIM/node-ui/commit/8e508b38a23789f56d386ffa6d0f9d20eab0f74e))
+* consolidate toasts ([415ed85](https://github.com/PrivateAIM/node-ui/commit/415ed859c865c81179518ce16787633330718180))
+
+
+### Reverts
+
+* **analysis:** update analysis btn works again ([f0b193d](https://github.com/PrivateAIM/node-ui/commit/f0b193da9395881b72073178eb90ce2ef12b8c13))
+
 ## [0.3.1](https://github.com/PrivateAIM/node-ui/compare/v0.3.0...v0.3.1) (2025-11-15)
 
 

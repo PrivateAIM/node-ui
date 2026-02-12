@@ -8,7 +8,13 @@ describe("MenuHeader.vue", () => {
 
   async function menuHeaderChecks(authenticated: boolean) {
     const status = authenticated ? "authenticated" : "unauthenticated";
-    const menuTitles = ["Home", "Projects", "Analyses", "Data Stores"];
+    const menuTitles = [
+      "Home",
+      "Projects",
+      "Analyses",
+      "Events",
+      "Data Stores",
+    ];
 
     vi.stubGlobal("useAuth", () => ({
       status: ref(status),

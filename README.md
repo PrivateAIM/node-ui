@@ -15,7 +15,7 @@ named and explicitly defined in order to overwrite the default configuration dur
 ```dotenv
 NUXT_PUBLIC_BASE_URL="http://localhost:3000"  # URL of the website
 NUXT_PUBLIC_HUB_ADAPTER_URL="http://urlForHubAdapterApi.de"  # URL for hub adapter API
-NUXT_PUBLIC_ORIGIN="$NUXT_PUBLIC_BASE_URL/api/auth"  # Relative path to sign page (you likely should not modify this)
+NUXT_PUBLIC_ORIGIN=$NUXT_PUBLIC_BASE_URL/api/auth  # NO QUOTES! Relative path to sign page (you likely should not modify this)
 
 NUXT_IDP_CLIENT_ID=node-ui  # Client ID defined in the IDP provided in NUXT_PUBLIC_IDP_ISSUER
 NUXT_IDP_CLIENT_SECRET=xxx
@@ -33,12 +33,11 @@ NUXT_AUTH_SECRET=xxx  # Unique key for encrypting JWT
 | NUXT_PUBLIC_BASE_URL              | URL of the website                                                                                                          |                                |    x     |
 | NUXT_PUBLIC_HUB_ADAPTER_URL       | URL for hub adapter API                                                                                                     |                                |    x     |
 | NUXT_PUBLIC_ORIGIN                | Relative path to sign page (you likely should not modify this)                                                              | $NUXT_PUBLIC_BASE_URL/api/auth |          |
-| NUXT_IDP_CLIENT_ID                | Client ID defined in the IDP provided in NUXT_PUBLIC_IDP_ISSUER                                                             | node-ui                        |          |
 | NUXT_IDP_CLIENT_SECRET            | Client secret defined in the IDP provided in NUXT_PUBLIC_IDP_ISSUER                                                         |                                |    x     |
 | NUXT_PUBLIC_IDP_PROVIDER          | Can be either 'keycloak', 'auth0', 'authentik', 'onelogin', 'okta', or 'zitadel'                                            | keycloak                       |          |
 | NUXT_PUBLIC_IDP_ISSUER            | URI for the IDP used to identify itself using OpenID Connect (OIDC) protocol                                                |                                |    x     |
 | NUXT_PUBLIC_INTERNAL_KEYCLOAK_URL | If not using the same keycloak instance as the other FLAME Node services for user authentication, then this needs to be set |                                |          |
-| NUXT_AUTH_SECRET                  | Unique key for encrypting JWT, see Setting a Secret below                                                                   |                                |    x     |
+| NUXT_AUTH_SECRET                  | Unique key for encrypting JWT, see [Setting a Secret below](#setting-a-secret)                                              |                                |    x     |
 
 ## Setting a Secret
 

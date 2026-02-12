@@ -14,7 +14,7 @@ const pkgVersion = config.public.version;
           >
         </div>
         <div class="copyright">
-          © 2025
+          © 2026
           <a href="https://privateaim.de/" style="padding-left: 5px"
             >PrivateAim</a
           >

@@ -3,11 +3,9 @@ import { useRoute } from "#vue-router";
 import { Card, Fieldset } from "primevue";
 import { useIntervalFn } from "@vueuse/core";
 import { getAnalysisLogs } from "~/composables/useAPIFetch";
-import { showHubAdapterConnectionErrorToast } from "~/composables/connectionErrorToast";
 import RefreshSwitch from "~/components/analysis/logs/RefreshSwitch.vue";
 import AnalysisLogCardContent from "~/components/analysis/logs/AnalysisLogCardContent.vue";
 import { useNuxtApp } from "#app";
-import { useToast } from "primevue/usetoast";
 import type { LogResponse } from "~/services/Api";
 
 interface logEntry {
@@ -17,7 +15,6 @@ interface logEntry {
 }
 
 const route = useRoute();
-const toast = useToast();
 const analysisId = route.params.id as string;
 const currentLogs = ref([] as logEntry[]);
 const prevLogs = ref([] as logEntry[]);
@@ -53,8 +50,8 @@ function parseLogs(logResp: LogResponse | null): logEntry[] {
 function gatherCurrentLogs() {
   if (status.value === "success") {
     currentLogs.value = parseLogs(response.value as LogResponse);
-  } else if (error.value?.statusCode === 500) {
-    showHubAdapterConnectionErrorToast(toast, "PO");
+  } else if (status.value === "error" && error.value?.statusCode === 403) {
+    navigateTo("/error/403");
   }
 }
 

@@ -1,13 +1,13 @@
 <script lang="ts" setup>
-import { useFetch, useNuxtApp } from "#app";
+import { useFetch, useNuxtApp, useState } from "#app";
 import Badge from "primevue/badge";
 import { useToast } from "primevue/usetoast";
 import ProgressBar from "primevue/progressbar";
 import { getAnalysisNodes } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
 import {
+  showCacheWarningToast,
   showConnectionErrorToast,
-  showHubAdapterConnectionErrorToast,
 } from "~/composables/connectionErrorToast";
 import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
@@ -34,13 +34,23 @@ import type { ModifiedAnalysisNode } from "~/services/modifiedApiInterfaces";
 const toast = useToast();
 const nodeType = await useNodeType();
 
-const analyses = ref<Map<string, ModifiedAnalysisNode>>(new Map());
+const analysesMap = ref<Map<string, ModifiedAnalysisNode>>(new Map());
+const analyses = computed(() => Array.from(analysesMap.value.values()));
+const projMap = new Map<string, string>();
 
 const expandRowEntries = [];
 const expandedRows = ref();
 
 // Filter settings
 const filters = ref();
+
+// Cache
+const analysisCache = useState<AnalysisNode[] | null>(
+  "analysisCache",
+  () => null,
+);
+const projectCache = useState<Project[] | null>("projectCache", () => null);
+const podOrcUnreacheable = ref(false);
 
 // Paginated table
 let allResultsRetrieved = false;
@@ -54,13 +64,8 @@ const runStatuses = Object.values(PodStatus);
 const approvalStatuses = Object.values(ApprovalStatus);
 const buildStatuses = Object.values(ProcessStatus);
 
-const {
-  data: analysisNodeResp,
-  status,
-  error,
-  refresh,
-} = await getAnalysisNodes(); // Get the first batch of 50
-const { data: projData, status: projStatus } = await useFetch<Project[]>(
+const { data: analysisNodeResp, status, refresh } = await getAnalysisNodes(); // Get the first batch of 50
+const { data: projResp, status: projStatus } = await useFetch<Project[] | null>(
   "/projects",
   {
     $fetch: useNuxtApp().$hubApi,
@@ -91,17 +96,26 @@ if (kongProjectsResp && kongProjectsResp.data) {
 }
 
 // Iterate through projects and populate map with proj UUID: name
-const projMap = new Map<string, string>();
-if (projStatus.value === "success" && projData.value) {
-  projData.value.forEach((proj: Project) => {
-    if (proj.name) {
-      projMap.set(proj.id!, proj.name);
-    }
-  });
+function parseProjects() {
+  let projData: Project[] | null;
+  if (projStatus.value === "success" && projResp.value) {
+    projectCache.value = projResp.value;
+    projData = projResp.value;
+  } else {
+    // No need to show cache warning here since it is already called during analysis parsing
+    projData = projectCache.value;
+  }
+  if (projData) {
+    projData.forEach((proj: Project) => {
+      if (proj.name) {
+        projMap.set(proj.id!, proj.name);
+      }
+    });
+  }
 }
 
 async function getRunStatusesFromPodOrc(): Promise<StatusResponse | null> {
-  return (await useNuxtApp()
+  const podOrcResponse = (await useNuxtApp()
     .$hubApi("/po/status", {
       method: "GET",
     })
@@ -114,16 +128,20 @@ async function getRunStatusesFromPodOrc(): Promise<StatusResponse | null> {
         life: 3000,
       });
     })) as StatusResponse;
+  podOrcUnreacheable.value = !podOrcResponse;
+  return podOrcResponse;
 }
 
-// async function checkForUpdatesFromPodOrc() {
-//   const newStatuses = await getRunStatusesFromPodOrc();
-//   if (newStatuses) {
-//     for (const [analysisId, status] of Object.entries(newStatuses)) {
-//       updateAnalysisRun(analysisId, status);
-//     }
-//   }
-// }
+async function checkForUpdatesFromPodOrc() {
+  if (!podOrcUnreacheable.value) {
+    const newStatuses = await getRunStatusesFromPodOrc();
+    if (newStatuses) {
+      for (const [analysisId, status] of Object.entries(newStatuses)) {
+        updateAnalysisRun(analysisId, status);
+      }
+    }
+  }
+}
 
 function setProgress(analysis: ModifiedAnalysisNode): ModifiedAnalysisNode {
   // For testing: Math.round(Math.random() * 100);
@@ -190,30 +208,35 @@ async function parseData(respStatus: string, respData: AnalysisNode[] | null) {
   const parsedAnalyses = new Map<string, ModifiedAnalysisNode>();
   const currentRunStatuses = await getRunStatusesFromPodOrc();
 
+  let analysisData: AnalysisNode[] | null;
   if (respStatus === "success") {
-    const formattedAnalyses = formatDataRow(
-      respData,
-      ["created_at", "updated_at"],
-      expandRowEntries,
-    );
-    if (projMap.size > 0) {
-      formattedAnalyses.forEach((analysisEntry: ModifiedAnalysisNode) => {
-        parsedAnalyses[analysisEntry.analysis_id] = parseAnalysis(
-          analysisEntry,
-          currentRunStatuses,
-        );
-      });
-      analyses.value = parsedAnalyses;
-    }
-  } else if (error.value?.statusCode === 500) {
-    showHubAdapterConnectionErrorToast(toast, "Hub");
+    analysisCache.value = respData;
+    analysisData = respData;
+  } else {
+    showCacheWarningToast(toast);
+    analysisData = analysisCache.value;
+  }
+
+  const formattedAnalyses = formatDataRow(
+    analysisData,
+    ["created_at", "updated_at"],
+    expandRowEntries,
+  );
+  if (projMap.size > 0) {
+    formattedAnalyses.forEach((analysisEntry: ModifiedAnalysisNode) => {
+      parsedAnalyses.set(
+        analysisEntry.analysis_id,
+        parseAnalysis(analysisEntry, currentRunStatuses),
+      );
+    });
+    analysesMap.value = parsedAnalyses;
   }
 }
 
 onMounted(() => {
+  parseProjects();
   parseData(status.value, analysisNodeResp.value);
-  // TODO reactivate after fixing toast spam
-  // setInterval(checkForUpdatesFromPodOrc, 15000); // Poll PO every 15 seconds
+  setInterval(checkForUpdatesFromPodOrc, 15000); // Poll PO every 15 seconds
 });
 
 async function onTableRefresh() {
@@ -223,7 +246,7 @@ async function onTableRefresh() {
 
 function onPage(event) {
   const currentPage = event.page + 1;
-  const currentNumberEntries = analyses.value.size;
+  const currentNumberEntries = analysesMap.value.size;
   const currentMaxPage = Math.ceil(currentNumberEntries / event.rows);
 
   if (!allResultsRetrieved) {
@@ -287,10 +310,10 @@ const updateFilters = (filterText: string) => {
 };
 
 function updateAnalysisRun(analysisId: string, newStatus: PodStatus | null) {
-  if (analysisId in analyses.value) {
-    const analysisToUpdate = analyses.value[analysisId];
+  if (analysesMap.value.has(analysisId)) {
+    const analysisToUpdate = analysesMap.value.get(analysisId)!; // Tell typescript we are sure there is a value
     analysisToUpdate.execution_status = newStatus;
-    analyses.value[analysisId] = setProgress(analysisToUpdate);
+    analysesMap.value.set(analysisId, setProgress(analysisToUpdate));
   }
 }
 
@@ -428,13 +451,14 @@ const onCloseNavToast = () => {
           :rows="10"
           :rowsPerPageOptions="[10, 20, 50]"
           :sortOrder="-1"
-          :value="Object.values(analyses)"
+          :value="analyses"
           dataKey="id"
           filterDisplay="menu"
           paginator
           sortField="updated_at.timestamp"
           tableStyle="min-width: 50rem"
           @page="onPage"
+          class="rounded-table"
         >
           <template #empty> No analyses found.</template>
           <Column v-if="expandRowEntries.length" expander style="width: 5rem" />

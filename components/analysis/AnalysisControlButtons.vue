@@ -76,10 +76,6 @@ const deleteButtonActiveStates: Array<string | null> = [
   PodStatus.Started,
 ];
 
-const buttonStatuses = ref<ButtonStates>(
-  getButtonStatuses(props.analysisRunStatus),
-);
-
 function getButtonStatuses(podStatus: string | null) {
   return {
     playActive: playButtonActiveStates.includes(podStatus),
@@ -89,11 +85,14 @@ function getButtonStatuses(podStatus: string | null) {
   };
 }
 
-function setButtonStates(
+const buttonStatuses = computed<ButtonStates>(
+  () => getButtonStatuses(props.analysisRunStatus), // Changes buttons when new status update comes in
+);
+
+function updatePodStatus(
   podStatus: string | null,
   progressUpdate?: number | null,
 ) {
-  buttonStatuses.value = getButtonStatuses(podStatus);
   emit("updateAnalysisRow", props.analysisId, podStatus, progressUpdate);
 }
 
@@ -131,16 +130,22 @@ async function checkPodStatus(): Promise<boolean> {
         "Analysis already running",
         "The analysis is already running on this node, the controls have been updated",
       );
-      setButtonStates(currentPodStatus); // Grab the first status update
+      updatePodStatus(currentPodStatus); // Grab the first status update
       return true;
     }
   }
   return false;
 }
 
+async function onRerunAnalysis() {
+  await onDeleteAnalysis();
+  await onStartAnalysis();
+}
+
 async function onStartAnalysis() {
   loading.value = true;
-  setButtonStates(PodStatus.Starting);
+  const originalRunStatus = props.analysisRunStatus;
+  updatePodStatus(AnalysisNodeRunStatus.Starting);
   let analysisProps = new FormData();
 
   analysisProps.append("analysis_id", props.analysisId!);
@@ -152,10 +157,10 @@ async function onStartAnalysis() {
       body: analysisProps,
     })
     .catch((e) => {
-      setButtonStates(null);
+      updatePodStatus(null);
       if (e.status == 408) {
         // Timed out waiting for image to pull
-        setButtonStates(PodStatus.Started);
+        updatePodStatus(AnalysisNodeRunStatus.Started);
         showToast(
           "info",
           "Analysis submitted",
@@ -179,8 +184,10 @@ async function onStartAnalysis() {
 
   if (startPodResp && props.analysisId in startPodResp) {
     const currentRunStatus = startPodResp[props.analysisId];
-    setButtonStates(currentRunStatus);
+    updatePodStatus(currentRunStatus);
     showToast("success", "Start success", "Successfully started the container");
+  } else {
+    updatePodStatus(originalRunStatus);
   }
 
   loading.value = false;
@@ -189,7 +196,7 @@ async function onStartAnalysis() {
 async function onStopAnalysis() {
   loading.value = true;
   const originalRunStatus = props.analysisRunStatus;
-  setButtonStates(PodStatus.Stopping);
+  updatePodStatus(AnalysisNodeRunStatus.Stopping);
 
   const stopResp: StatusResponse = (await useNuxtApp()
     .$hubApi(`/po/stop/${props.analysisId}`, {
@@ -197,22 +204,27 @@ async function onStopAnalysis() {
     })
     .catch(() => {
       showToast(
-        "warn",
+        "error",
         "Stop failure",
         "Failed to stop the analysis container",
       );
-      setButtonStates(originalRunStatus);
     })) as StatusResponse;
 
   // stopResp is null if error occurred
   if (stopResp) {
     if (props.analysisId in stopResp) {
-      showToast("info", "Stop success", "Successfully stopped the container");
+      showToast(
+        "success",
+        "Stop success",
+        "Successfully stopped the container",
+      );
     } else {
       // No pod statuses returned from PO for analysis
       showStatusUnknownToast();
     }
-    setButtonStates(PodStatus.Stopped);
+    updatePodStatus(AnalysisNodeRunStatus.Stopped);
+  } else {
+    updatePodStatus(originalRunStatus);
   }
   loading.value = false;
 }
@@ -220,7 +232,7 @@ async function onStopAnalysis() {
 async function onDeleteAnalysis() {
   loading.value = true;
   const originalRunStatus = props.analysisRunStatus;
-  setButtonStates(PodStatus.Stopping);
+  updatePodStatus(AnalysisNodeRunStatus.Stopping);
 
   const deleteResp: StatusResponse = (await useNuxtApp()
     .$hubApi(`/analysis/terminate/${props.analysisId}`, {
@@ -228,21 +240,26 @@ async function onDeleteAnalysis() {
     })
     .catch(() => {
       showToast(
-        "warn",
+        "error",
         "Terminate request failure",
         "Failed to terminate the analysis",
       );
-      setButtonStates(originalRunStatus);
     })) as StatusResponse;
 
   // deleteResp is null if error occurred
   if (deleteResp) {
     if (props.analysisId in deleteResp) {
-      showToast("info", "Delete success", "Successfully removed the container");
+      showToast(
+        "success",
+        "Delete success",
+        "Successfully removed the container",
+      );
     } else {
       showStatusUnknownToast();
     }
-    setButtonStates("");
+    updatePodStatus("");
+  } else {
+    updatePodStatus(originalRunStatus);
   }
 
   loading.value = false;
@@ -252,7 +269,7 @@ async function onDeleteAnalysis() {
 <template>
   <div class="analysis-buttons">
     <Button
-      v-if="buttonStatuses.playActive"
+      v-show="buttonStatuses.playActive"
       v-tooltip.top="'Start the analysis'"
       :disabled="
         !buttonStatuses.playActive ||
@@ -267,7 +284,7 @@ async function onDeleteAnalysis() {
       @click="onStartAnalysis()"
     />
     <Button
-      v-else
+      v-show="!buttonStatuses.playActive"
       v-tooltip.top="'Rerun the analysis'"
       :disabled="
         !buttonStatuses.rerunActive ||
@@ -279,7 +296,7 @@ async function onDeleteAnalysis() {
       class="rerun-analysis-btn"
       icon="pi pi-replay"
       severity="success"
-      @click="onStartAnalysis()"
+      @click="onRerunAnalysis()"
     />
     <Button
       v-tooltip.top="'Stop the analysis'"
@@ -319,7 +336,6 @@ async function onDeleteAnalysis() {
       <Button
         v-tooltip.top="'View the logs'"
         :disabled="buttonStatuses.playActive"
-        :loading="loading"
         aria-label="Logs"
         class="logs-analysis-btn"
         icon="pi pi-bars"
@@ -328,7 +344,7 @@ async function onDeleteAnalysis() {
     </NuxtLink>
     <AnalysisUpdateButton
       :analysisId="props.analysisId"
-      @updateAnalysisRun="setButtonStates"
+      @updateAnalysisRun="updatePodStatus"
     />
   </div>
 </template>
