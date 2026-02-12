@@ -2,7 +2,6 @@ import { useToast } from "primevue/usetoast";
 import { flushPromises, mount, VueWrapper } from "@vue/test-utils";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import AnalysisControlButtons from "~/components/analysis/AnalysisControlButtons.vue";
-import { ProcessStatus } from "~/types/analysis";
 import {
   fakeAnalysisId,
   fakeBrokenAnalysisId,
@@ -10,6 +9,7 @@ import {
   fakeMissingAnalysisId,
 } from "~/test/mockapi/handlers";
 import { PodStatus } from "~/services/Api";
+import { ProcessStatus } from "~/types/analysis";
 
 interface ButtonStates {
   playActive: boolean;
@@ -47,14 +47,14 @@ describe("AnalysisControlButtons.vue", () => {
     toastMsg: string,
     analysisId: string,
     expectedButtonStates: ButtonStates,
-    initialRunStatus: string = PodStatus.Running,
+    initialExecutionStatus: string = PodStatus.Executing,
     expectedFinalStatus: string = "",
     expectedToastCalls: number = 1,
   ) {
     const wrapper = mount(AnalysisControlButtons, {
       props: {
-        analysisBuildStatus: ProcessStatus.Finished,
-        analysisRunStatus: initialRunStatus,
+        analysisBuildStatus: ProcessStatus.Executed,
+        analysisExecutionStatus: initialExecutionStatus,
         analysisNodeId: "8003eefe-e39b-4bd4-aec4-78046c63b39b",
         analysisId: analysisId,
         projectId: "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483",
@@ -83,7 +83,7 @@ describe("AnalysisControlButtons.vue", () => {
       });
     }
 
-    await wrapper.setProps({ analysisRunStatus: expectedFinalStatus });
+    await wrapper.setProps({ analysisExecutionStatus: expectedFinalStatus });
 
     // @ts-expect-error Linted can't interpret valid refVars
     expect(wrapper.vm.buttonStatuses).toEqual(expectedButtonStates);
@@ -105,7 +105,7 @@ describe("AnalysisControlButtons.vue", () => {
         deleteActive: true,
       },
       "",
-      AnalysisNodeRunStatus.Started,
+      PodStatus.Started,
     );
 
     // Start button should be replaced by rerun
@@ -164,8 +164,8 @@ describe("AnalysisControlButtons.vue", () => {
         stopActive: false,
         deleteActive: true,
       },
-      AnalysisNodeRunStatus.Running,
-      AnalysisNodeRunStatus.Stopped,
+      PodStatus.Executing,
+      PodStatus.Stopped,
     );
   });
 
@@ -182,8 +182,8 @@ describe("AnalysisControlButtons.vue", () => {
         stopActive: false,
         deleteActive: true,
       },
-      AnalysisNodeRunStatus.Running,
-      AnalysisNodeRunStatus.Stopped,
+      PodStatus.Executing,
+      PodStatus.Stopped,
     );
   });
 
@@ -200,8 +200,8 @@ describe("AnalysisControlButtons.vue", () => {
         stopActive: true,
         deleteActive: true,
       },
-      AnalysisNodeRunStatus.Running,
-      AnalysisNodeRunStatus.Running,
+      PodStatus.Executing,
+      PodStatus.Executing,
     );
   });
 
@@ -218,7 +218,7 @@ describe("AnalysisControlButtons.vue", () => {
         stopActive: false,
         deleteActive: false,
       },
-      AnalysisNodeRunStatus.Running,
+      PodStatus.Executing,
       "",
     );
   });
@@ -252,8 +252,8 @@ describe("AnalysisControlButtons.vue", () => {
         stopActive: true,
         deleteActive: true,
       },
-      AnalysisNodeRunStatus.Running,
-      AnalysisNodeRunStatus.Running,
+      PodStatus.Executing,
+      PodStatus.Executing,
     );
   });
 
@@ -277,8 +277,8 @@ describe("AnalysisControlButtons.vue", () => {
   it("Log btn check", async () => {
     const wrapper = mount(AnalysisControlButtons, {
       props: {
-        analysisBuildStatus: ProcessStatus.Finished,
-        analysisRunStatus: null,
+        analysisBuildStatus: ProcessStatus.Executed,
+        analysisExecutionStatus: null,
         analysisNodeId: "8003eefe-e39b-4bd4-aec4-78046c63b39b",
         analysisId: fakeAnalysisId,
         projectId: "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483",
@@ -295,27 +295,27 @@ describe("AnalysisControlButtons.vue", () => {
     expect(logBtn.attributes("data-p-disabled")).toBe("true");
 
     await wrapper.setProps({
-      analysisRunStatus: AnalysisNodeRunStatus.Started,
+      analysisExecutionStatus: PodStatus.Started,
     });
     expect(logBtn.attributes("data-p-disabled")).toBe("false");
 
     await wrapper.setProps({
-      analysisRunStatus: AnalysisNodeRunStatus.Running,
+      analysisExecutionStatus: PodStatus.Executing,
     });
     expect(logBtn.attributes("data-p-disabled")).toBe("false");
 
     await wrapper.setProps({
-      analysisRunStatus: "",
+      analysisExecutionStatus: "",
     });
     expect(logBtn.attributes("data-p-disabled")).toBe("true");
 
     await wrapper.setProps({
-      analysisRunStatus: AnalysisNodeRunStatus.Failed,
+      analysisExecutionStatus: PodStatus.Failed,
     });
     expect(logBtn.attributes("data-p-disabled")).toBe("false");
 
     await wrapper.setProps({
-      analysisRunStatus: AnalysisNodeRunStatus.Finished,
+      analysisExecutionStatus: PodStatus.Executed,
     });
     expect(logBtn.attributes("data-p-disabled")).toBe("false");
     //
