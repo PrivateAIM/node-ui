@@ -110,7 +110,10 @@ async function refreshAccessToken(token: any) {
   const clientIssuer =
     process.env.NUXT_PUBLIC_IDP_ISSUER ?? "http://localhost:8080/realms/flame";
 
-  const tokenEndpoint = `${clientIssuer}/protocol/openid-connect/token`; // Assumes OIDC
+  const internalEndpoint =
+    process.env.NUXT_PUBLIC_INTERNAL_KEYCLOAK_URL ?? clientIssuer;
+
+  const tokenEndpoint = `${internalEndpoint}/protocol/openid-connect/token`; // Assumes OIDC
 
   const response = await fetch(tokenEndpoint, {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -142,9 +145,9 @@ export default NuxtAuthHandler({
       // After successful sign in
       const hubAdapterApi = process.env.NUXT_PUBLIC_HUB_ADAPTER_URL;
       if (!hubAdapterApi || !account?.access_token) return;
-      const signOutEndpoint = `${hubAdapterApi.replace(/\/$/, "")}/events/signin`;
+      const signInEndpoint = `${hubAdapterApi.replace(/\/$/, "")}/events/signin`;
       try {
-        await fetch(signOutEndpoint, {
+        await fetch(signInEndpoint, {
           headers: { Authorization: `Bearer ${account.access_token}` },
           method: "POST",
         });
