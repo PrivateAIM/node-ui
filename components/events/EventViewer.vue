@@ -87,7 +87,7 @@ function formatEventName(eventName: string): string {
   return eventChunks.join("-");
 }
 
-function formatTimestamp(timestamp: string): string {
+function formatTimestamp(timestamp: string): string | undefined {
   try {
     const date = new Date(timestamp); // Python does not return timestamp with standard "Z"
     const formattedDateTime = dateTimeFormat.format(date);
