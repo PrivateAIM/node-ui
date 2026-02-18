@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import Menubar from "primevue/menubar";
-import AvatarButton from "~/components/header/AvatarButton.vue";
+import AvatarButton from "~/components/header/AvatarButton/AvatarButton.vue";
 import DarkModeToggle from "~/components/header/DarkModeToggle.vue";
 import { RouterLink } from "#vue-router";
+import DataRequirementToggle from "~/components/header/AvatarButton/DataRequirementToggle.vue";
 
 const { status } = useAuth();
 
@@ -91,6 +92,7 @@ const items = ref([
       </template>
       <template #end>
         <div class="header-end">
+          <DataRequirementToggle />
           <DarkModeToggle />
           <div class="flex align-items-center gap-2 avatar-button">
             <AvatarButton />

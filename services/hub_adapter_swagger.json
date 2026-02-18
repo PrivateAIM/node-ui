@@ -732,6 +732,81 @@
         }
       }
     },
+    "/node/settings": {
+      "get": {
+        "tags": ["Node"],
+        "summary": "Node.Settings.Get",
+        "description": "Get the node configuration settings",
+        "operationId": "node_settings_get_node_settings_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NodeSettings"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "post": {
+        "tags": ["Node"],
+        "summary": "Node.Settings.Update",
+        "description": "Update the node configuration settings.",
+        "operationId": "node_settings_update_node_settings_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NodeSettings",
+                "description": "Required information to start analysis"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NodeSettings"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/projects": {
       "get": {
         "tags": ["Hub"],
@@ -1737,12 +1812,12 @@
         }
       }
     },
-    "/local": {
+    "/local/": {
       "delete": {
-        "tags": ["Results"],
+        "tags": ["Storage"],
         "summary": "Storage.Local.Delete",
         "description": "Delete all objects in MinIO and all Postgres database entries related to the specified project.\n\nReturns a 200 on success, a 400 if the project is still available on the Hub and a 403 if it is not the\nHub Adapter client that sends the request. In both error cases nothing is deleted at all.",
-        "operationId": "storage_local_delete_local_delete",
+        "operationId": "storage_local_delete_local__delete",
         "security": [
           {
             "JWT": []
@@ -2687,7 +2762,7 @@
                 }
               ],
               "description": "Maximum number of events to return",
-              "default": 50,
+              "default": 100,
               "title": "Limit"
             },
             "description": "Maximum number of events to return"
@@ -2712,7 +2787,7 @@
             "description": "Number of events to offset by"
           },
           {
-            "name": "service_name",
+            "name": "service_tag",
             "in": "query",
             "required": false,
             "schema": {
@@ -2724,10 +2799,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Filter events by service name",
-              "title": "Service Name"
+              "description": "Filter events by service tag",
+              "title": "Service Tag"
             },
-            "description": "Filter events by service name"
+            "description": "Filter events by service tag"
           },
           {
             "name": "event_name",
@@ -3563,15 +3638,6 @@
             ],
             "title": "Project Id",
             "description": "UUID of the project"
-          },
-          "methods": {
-            "items": {
-              "$ref": "#/components/schemas/HttpMethodCode"
-            },
-            "type": "array",
-            "title": "Methods",
-            "description": "List of acceptable HTTP methods",
-            "default": ["GET"]
           },
           "protocols": {
             "items": {
@@ -4663,8 +4729,7 @@
           "po": {
             "anyOf": [
               {
-                "additionalProperties": true,
-                "type": "object"
+                "$ref": "#/components/schemas/HealthCheck"
               },
               {
                 "type": "string"
@@ -4672,23 +4737,21 @@
             ],
             "title": "Po"
           },
-          "results": {
+          "storage": {
             "anyOf": [
               {
-                "additionalProperties": true,
-                "type": "object"
+                "$ref": "#/components/schemas/HealthCheck"
               },
               {
                 "type": "string"
               }
             ],
-            "title": "Results"
+            "title": "Storage"
           },
           "kong": {
             "anyOf": [
               {
-                "additionalProperties": true,
-                "type": "object"
+                "$ref": "#/components/schemas/HealthCheck"
               },
               {
                 "type": "string"
@@ -4698,7 +4761,7 @@
           }
         },
         "type": "object",
-        "required": ["po", "results", "kong"],
+        "required": ["po", "storage", "kong"],
         "title": "DownstreamHealthCheck",
         "description": "Response model for downstream health checks."
       },
@@ -5229,11 +5292,15 @@
         "properties": {
           "minio_access_key": {
             "type": "string",
-            "title": "Minio Access Key"
+            "format": "password",
+            "title": "Minio Access Key",
+            "writeOnly": true
           },
           "minio_secret_key": {
             "type": "string",
-            "title": "Minio Secret Key"
+            "format": "password",
+            "title": "Minio Secret Key",
+            "writeOnly": true
           },
           "minio_region": {
             "type": "string",
@@ -5422,6 +5489,24 @@
           "updated_at"
         ],
         "title": "Node"
+      },
+      "NodeSettings": {
+        "properties": {
+          "data_required": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Required",
+            "default": true
+          }
+        },
+        "type": "object",
+        "title": "NodeSettings"
       },
       "NodeTypeResponse": {
         "properties": {
@@ -6735,16 +6820,20 @@
       "description": "Gateway endpoints for interacting with logged events."
     },
     {
-      "name": "Meta",
-      "description": "Custom Hub Adapter endpoints which combine endpoints from other APIs."
+      "name": "Hub",
+      "description": "Gateway endpoints for the central Hub service."
     },
     {
       "name": "Health",
       "description": "Endpoints for checking the health of this API and the downstream services."
     },
     {
-      "name": "Hub",
-      "description": "Gateway endpoints for the central Hub service."
+      "name": "Meta",
+      "description": "Custom Hub Adapter endpoints which combine endpoints from other APIs."
+    },
+    {
+      "name": "Node",
+      "description": "Endpoints for setting and getting node settings and configuration options."
     },
     {
       "name": "Kong",

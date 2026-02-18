@@ -383,12 +383,6 @@ export interface BodyKongInitializeKongInitializePost {
    */
   project_id: string;
   /**
-   * Methods
-   * List of acceptable HTTP methods
-   * @default ["GET"]
-   */
-  methods?: HttpMethodCode[];
-  /**
    * Protocols
    * List of acceptable transfer protocols. A combo of 'http', 'grpc', 'grpcs', 'tls', 'tcp'
    * @default ["http"]
@@ -826,11 +820,11 @@ export interface DetailedService {
  */
 export interface DownstreamHealthCheck {
   /** Po */
-  po: Record<string, any> | string;
-  /** Results */
-  results: Record<string, any> | string;
+  po: HealthCheck | string;
+  /** Storage */
+  storage: HealthCheck | string;
   /** Kong */
-  kong: Record<string, any> | string;
+  kong: HealthCheck | string;
 }
 
 /**
@@ -1062,9 +1056,15 @@ export interface Meta {
  * Credentials for accessing a private S3 bucket hosted on MinIO.
  */
 export interface MinioConfig {
-  /** Minio Access Key */
+  /**
+   * Minio Access Key
+   * @format password
+   */
   minio_access_key: string;
-  /** Minio Secret Key */
+  /**
+   * Minio Secret Key
+   * @format password
+   */
   minio_secret_key: string;
   /**
    * Minio Region
@@ -1124,6 +1124,15 @@ export interface Node {
    * @format date-time
    */
   updated_at: string;
+}
+
+/** NodeSettings */
+export interface NodeSettings {
+  /**
+   * Data Required
+   * @default true
+   */
+  data_required?: boolean | null;
 }
 
 /** NodeTypeResponse */
@@ -2258,6 +2267,48 @@ export class Api<
         ...params,
       }),
   };
+  node = {
+    /**
+     * @description Get the node configuration settings
+     *
+     * @tags Node
+     * @name NodeSettingsGetNodeSettingsGet
+     * @summary Node.Settings.Get
+     * @request GET:/node/settings
+     * @secure
+     */
+    nodeSettingsGetNodeSettingsGet: (params: RequestParams = {}) =>
+      this.request<NodeSettings, void>({
+        path: `/node/settings`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Update the node configuration settings.
+     *
+     * @tags Node
+     * @name NodeSettingsUpdateNodeSettingsPost
+     * @summary Node.Settings.Update
+     * @request POST:/node/settings
+     * @secure
+     */
+    nodeSettingsUpdateNodeSettingsPost: (
+      data: NodeSettings,
+      params: RequestParams = {},
+    ) =>
+      this.request<NodeSettings, void | HTTPValidationError>({
+        path: `/node/settings`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+  };
   projects = {
     /**
      * @description List all projects.
@@ -2674,10 +2725,10 @@ export class Api<
     /**
      * @description Delete all objects in MinIO and all Postgres database entries related to the specified project. Returns a 200 on success, a 400 if the project is still available on the Hub and a 403 if it is not the Hub Adapter client that sends the request. In both error cases nothing is deleted at all.
      *
-     * @tags Results
+     * @tags Storage
      * @name StorageLocalDeleteLocalDelete
      * @summary Storage.Local.Delete
-     * @request DELETE:/local
+     * @request DELETE:/local/
      * @secure
      */
     storageLocalDeleteLocalDelete: (
@@ -2691,7 +2742,7 @@ export class Api<
       params: RequestParams = {},
     ) =>
       this.request<any, void | HTTPValidationError>({
-        path: `/local`,
+        path: `/local/`,
         method: "DELETE",
         query: query,
         secure: true,
@@ -3123,7 +3174,7 @@ export class Api<
         /**
          * Limit
          * Maximum number of events to return
-         * @default 50
+         * @default 100
          */
         limit?: number | null;
         /**
@@ -3133,10 +3184,10 @@ export class Api<
          */
         offset?: number | null;
         /**
-         * Service Name
-         * Filter events by service name
+         * Service Tag
+         * Filter events by service tag
          */
-        service_name?: string | null;
+        service_tag?: string | null;
         /**
          * Event Name
          * Filter events by event name

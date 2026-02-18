@@ -40,8 +40,8 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
-  nodeType: {
-    type: String,
+  requireDatastore: {
+    type: Boolean,
     required: true,
   },
 });
@@ -274,7 +274,7 @@ async function onDeleteAnalysis() {
       :disabled="
         !buttonStatuses.playActive ||
         !(props.analysisBuildStatus === AnalysisBuildStatus.Finished) ||
-        (!props.datastore && props.nodeType != 'aggregator')
+        (!props.datastore && props.requireDatastore)
       "
       :loading="loading"
       aria-label="Start"
@@ -289,7 +289,7 @@ async function onDeleteAnalysis() {
       :disabled="
         !buttonStatuses.rerunActive ||
         !(props.analysisBuildStatus === AnalysisBuildStatus.Finished) ||
-        (!props.datastore && props.nodeType != 'aggregator')
+        (!props.datastore && props.requireDatastore)
       "
       :loading="loading"
       aria-label="Rerun"
@@ -303,7 +303,7 @@ async function onDeleteAnalysis() {
       :disabled="
         !buttonStatuses.stopActive ||
         !(props.analysisBuildStatus === AnalysisBuildStatus.Finished) ||
-        (!props.datastore && props.nodeType != 'aggregator')
+        (!props.datastore && props.requireDatastore)
       "
       :loading="loading"
       aria-label="Stop"
@@ -317,7 +317,7 @@ async function onDeleteAnalysis() {
       :disabled="
         !buttonStatuses.deleteActive ||
         !(props.analysisBuildStatus === AnalysisBuildStatus.Finished) ||
-        (!props.datastore && props.nodeType != 'aggregator')
+        (!props.datastore && props.requireDatastore)
       "
       :loading="loading"
       aria-label="Delete"
