@@ -1,7 +1,7 @@
 import { mount } from "@vue/test-utils";
 import { useRuntimeConfig } from "#app";
 import { describe, expect, it, vi } from "vitest";
-import AvatarButton from "~/components/header/AvatarButton/AvatarButton.vue";
+import AvatarButton from "~/components/header/AvatarButton.vue";
 
 describe("AvatarButton.vue", () => {
   const testUser = "Johnny Storm";

@@ -1,6 +1,5 @@
 import { type NodeTypeResponse } from "~/services/Api";
 import { useNuxtApp, useState } from "#app";
-import { getNodeConfiguration } from "~/composables/useAPIFetch";
 
 interface DatastoreState {
   datastoreRequired: boolean | null;
@@ -17,9 +16,11 @@ export async function useDatastoreRequirement() {
 
   // Get node configuration settings
   if (!datastoreState.value.datastoreRequired) {
-    const { data: nodeConfig } = await getNodeConfiguration();
-    if (nodeConfig.value) {
-      dataRequired = Boolean(nodeConfig.value.data_required);
+    const nodeConfigResp = (await useNuxtApp()
+      .$hubApi("/node/settings", { method: "GET" })
+      .catch(() => null)) as NodeSettings;
+    if (nodeConfigResp) {
+      dataRequired = Boolean(nodeConfigResp.data_required);
     }
   }
 
@@ -37,11 +38,20 @@ export async function useDatastoreRequirement() {
     }
   }
 
-  function setDatastoreRequired(value: boolean) {
-    datastoreState.value = {
-      ...datastoreState.value,
-      datastoreRequired: value,
-    };
+  async function setDatastoreRequired(updatedRequirement: boolean) {
+    const nodeConfigResp = (await useNuxtApp()
+      .$hubApi("/node/settings", {
+        method: "POST",
+        body: { data_required: updatedRequirement },
+      })
+      .catch(() => null)) as NodeSettings;
+
+    if (nodeConfigResp) {
+      datastoreState.value = {
+        ...datastoreState.value,
+        datastoreRequired: nodeConfigResp.data_required,
+      };
+    }
   }
 
   return { datastoreState, setDatastoreRequired };
