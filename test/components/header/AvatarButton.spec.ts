@@ -1,12 +1,36 @@
-import { mount } from "@vue/test-utils";
+import { defineComponent, ref } from "vue";
+import { flushPromises, mount } from "@vue/test-utils"; // add flushPromises
 import { useRuntimeConfig } from "#app";
-import { describe, expect, it, vi } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import AvatarButton from "~/components/header/AvatarButton.vue";
+import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
+
+vi.mock("~/composables/useDatastoreRequirement", () => ({
+  useDatastoreRequirement: vi.fn(),
+}));
 
 describe("AvatarButton.vue", () => {
   const testUser = "Johnny Storm";
+  let AvatarButtonTestComponent: typeof AvatarButton;
 
   vi.mocked(useRuntimeConfig);
+
+  beforeAll(async () => {
+    AvatarButtonTestComponent = defineComponent({
+      components: { AvatarButton },
+      template: "<Suspense><AvatarButton/></Suspense>",
+    });
+  });
+
+  beforeEach(() => {
+    vi.mocked(useDatastoreRequirement).mockResolvedValue({
+      datastoreState: ref({
+        datastoreRequired: true,
+        nodeType: "analysis",
+      }),
+      setDatastoreRequired: vi.fn(),
+    });
+  });
 
   async function avatarMenuChecks(authenticated: boolean) {
     const status = authenticated ? "authenticated" : "unauthenticated";
@@ -21,13 +45,19 @@ describe("AvatarButton.vue", () => {
       data: ref(userData),
     }));
 
-    const wrapper = mount(AvatarButton, {
+    const wrapper = mount(AvatarButtonTestComponent, {
       global: {
         stubs: {
-          teleport: true, // Now dropdowns are included/teleported in root element
+          teleport: true,
+          CleanupDialog: true,
+          ToggleSwitch: true,
         },
       },
     });
+
+    // flushPromises resolves all pending promises including the async setup
+    await flushPromises();
+
     expect(wrapper).toBeTruthy();
 
     const avatarBtn = wrapper.find(".avatar-btn");
@@ -42,6 +72,7 @@ describe("AvatarButton.vue", () => {
     }
 
     await avatarBtn.trigger("click");
+    await flushPromises(); // use flushPromises here too for consistency
 
     const menu = wrapper.find(".avatar-menu");
     expect(menu.text()).toContain("Keycloak");

@@ -7,6 +7,7 @@ import type {
   ListConsumers,
   ListRoutes,
   ListServices,
+  NodeSettings,
   Project,
   ProjectNode,
   Service,
@@ -27,6 +28,14 @@ export function useAPIFetch<T>(
 // Event endpoints
 export function getEvents(opts?) {
   return useAPIFetch<EventLogResponse>("/events", {
+    ...opts,
+    method: "GET",
+  });
+}
+
+// Node endpoints
+export function getNodeConfiguration(opts?) {
+  return useAPIFetch<NodeSettings>("/node/settings", {
     ...opts,
     method: "GET",
   });

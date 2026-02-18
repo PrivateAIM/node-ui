@@ -5,7 +5,7 @@ import SearchBar from "~/components/table/SearchBar.vue";
 import {
   EventLogLevelTag,
   EventServiceTag,
-  type EventTag
+  type EventTag,
 } from "~/types/eventTag";
 import TagFilterSidePanel from "~/components/events/TagFilterSidePanel.vue";
 import type { EventLog, EventLogResponse } from "~/services/Api";
@@ -21,21 +21,21 @@ const appliedFilters = ref<EventTag[]>([]);
 const logLevelColorMap = new Map([
   [EventLogLevelTag.Error, "#ef4444"],
   [EventLogLevelTag.Warning, "#eab308"],
-  [EventLogLevelTag.Info, "#3b82f6"]
+  [EventLogLevelTag.Info, "#3b82f6"],
 ]);
 const logLevelDistributions = ref(
   Array.from(logLevelColorMap, ([label, color]) => ({
     label,
     color,
-    value: 0
-  }))
+    value: 0,
+  })),
 );
 
 const filters = ref();
 
 const dateTimeFormat = new Intl.DateTimeFormat(undefined, {
   dateStyle: "short",
-  timeStyle: "long"
+  timeStyle: "long",
 });
 
 const { data: response, status } = await getEvents();
@@ -87,12 +87,16 @@ function formatEventName(eventName: string): string {
   return eventChunks.join("-");
 }
 
-function formatTimestamp(timestamp: string): string {
-  const date = new Date(timestamp + "Z"); // Python does not return timestamp with standard "Z"
-  const formattedDateTime = dateTimeFormat.format(date);
-  const [dateString, timeString] = formattedDateTime.split(", ");
+function formatTimestamp(timestamp: string): string | undefined {
+  try {
+    const date = new Date(timestamp); // Python does not return timestamp with standard "Z"
+    const formattedDateTime = dateTimeFormat.format(date);
+    const [dateString, timeString] = formattedDateTime.split(", ");
 
-  return `${dateString}<br><b>${timeString}</b>`;
+    return `${dateString}<br><b>${timeString}</b>`;
+  } catch (error) {
+    console.error(`Timestamp: ${timestamp}; Error: ${error}`);
+  }
 }
 
 function getLogLevelColor(tags: string[]): string | undefined {
@@ -101,7 +105,7 @@ function getLogLevelColor(tags: string[]): string | undefined {
     for (const tag of [
       EventLogLevelTag.Error,
       EventLogLevelTag.Warning,
-      EventLogLevelTag.Info
+      EventLogLevelTag.Info,
     ]) {
       if (tags.includes(tag)) {
         return logLevelColorMap.get(tag);
@@ -127,7 +131,7 @@ FilterService.register("tagsContainsAny", (value, filter) => {
 
 const defaultFilters = {
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  "attributes.tags": { value: null, matchMode: "tagsContainsAny" }
+  "attributes.tags": { value: null, matchMode: "tagsContainsAny" },
 };
 
 filters.value = defaultFilters;
@@ -140,7 +144,7 @@ function clearAllFilters() {
   const clearedFilters = {};
   for (const filterKey in defaultFilters) {
     clearedFilters[filterKey] = {
-      ...defaultFilters[filterKey]
+      ...defaultFilters[filterKey],
     };
     clearedFilters[filterKey].value = null;
   }
@@ -150,7 +154,7 @@ function clearAllFilters() {
 
 function handleRemoveFilterTag(tag: EventTag) {
   appliedFilters.value = appliedFilters.value.filter(
-    (filter) => filter !== tag
+    (filter) => filter !== tag,
   );
 }
 
@@ -175,7 +179,7 @@ watch(
       filters.value["attributes.tags"].value = null;
     }
   },
-  { deep: true }
+  { deep: true },
 );
 </script>
 
@@ -196,7 +200,7 @@ watch(
           <div class="table-header-row-filter-chips-container">
             <div class="table-header-row-filter-chips-container-counter">
               <span
-              ><b>FILTERS: ({{ appliedFilters.length }})</b></span
+                ><b>FILTERS: ({{ appliedFilters.length }})</b></span
               >
             </div>
             <div class="table-header-row-filter-chips flex flex-wrap gap-2">
