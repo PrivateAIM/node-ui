@@ -1,8 +1,8 @@
-import { type NodeTypeResponse } from "~/services/Api";
+import { type NodeSettings, type NodeTypeResponse } from "~/services/Api";
 import { useNuxtApp, useState } from "#app";
 
 interface DatastoreState {
-  datastoreRequired: boolean | null;
+  datastoreRequired: boolean | null | undefined;
   nodeType: string | null;
 }
 
