@@ -27,6 +27,7 @@ test("Build status severity tag", () => {
     started: "info",
     stopping: "warning",
     stopped: "warning",
+    executing: "contrast",
     executed: "success",
     failed: "danger",
   };

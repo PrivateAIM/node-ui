@@ -1,8 +1,9 @@
 import { ApprovalStatus } from "~/types/node";
 import { PodStatus } from "~/services/Api";
 import { ProcessStatus } from "~/types/analysis";
+import type { TagSeverity } from "~/types/statusTag";
 
-export const getApprovalStatusSeverity = (status: string) => {
+export const getApprovalStatusSeverity = (status: ApprovalStatus) => {
   switch (status) {
     case ApprovalStatus.Approved:
       return "success";
@@ -12,7 +13,7 @@ export const getApprovalStatusSeverity = (status: string) => {
   }
 };
 
-export const getBuildStatusSeverity = (status: string) => {
+export const getBuildStatusSeverity = (status: ProcessStatus): TagSeverity => {
   switch (status) {
     case ProcessStatus.Starting:
       return "info";
@@ -29,12 +30,15 @@ export const getBuildStatusSeverity = (status: string) => {
     case ProcessStatus.Failed:
       return "danger";
 
+    case ProcessStatus.Executing:
+      return "contrast";
+
     case ProcessStatus.Executed:
       return "success";
   }
 };
 
-export const getExecutionStatusSeverity = (status: string) => {
+export const getExecutionStatusSeverity = (status: PodStatus): TagSeverity => {
   switch (status) {
     case PodStatus.Starting:
       return "info";
@@ -59,7 +63,9 @@ export const getExecutionStatusSeverity = (status: string) => {
   }
 };
 
-export const getDataStoreTypeSeverity = (status: string) => {
+export const getDataStoreTypeSeverity = (
+  status: string,
+): "info" | "warn" | undefined => {
   switch (status) {
     case "s3":
       return "info";

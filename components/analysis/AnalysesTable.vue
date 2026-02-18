@@ -114,6 +114,22 @@ function parseProjects() {
   }
 }
 
+/**
+ * Changes to "executing" to "running" and "executed" to "finished" which is simpler language.
+ * @param status
+ */
+function useCommonLanguage(
+  status: PodStatus,
+): PodStatus | "running" | "finished" {
+  if (status === PodStatus.Executing) {
+    return "running";
+  } else if (status === PodStatus.Executed) {
+    return "finished";
+  } else {
+    return status;
+  }
+}
+
 async function getExecutionStatusesFromPodOrc(): Promise<StatusResponse | null> {
   const podOrcResponse = (await useNuxtApp()
     .$hubApi("/po/status", {
@@ -536,7 +552,7 @@ const onCloseNavToast = () => {
               <Tag
                 v-if="data.analysis.build_status"
                 :severity="getBuildStatusSeverity(data.analysis.build_status)"
-                :value="data.analysis.build_status"
+                :value="useCommonLanguage(data.analysis.build_status)"
               />
             </template>
             <template #filter="{ filterModel, filterCallback }">
@@ -582,7 +598,7 @@ const onCloseNavToast = () => {
               <Tag
                 v-if="data.execution_status"
                 :severity="getExecutionStatusSeverity(data.execution_status)"
-                :value="data.execution_status"
+                :value="useCommonLanguage(data.execution_status)"
               />
             </template>
             <template #filter="{ filterModel, filterCallback }">

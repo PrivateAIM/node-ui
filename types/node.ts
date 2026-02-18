@@ -1,4 +1,4 @@
-export const ApprovalStatus = {
-  Approved: "approved",
-  Rejected: "rejected",
-};
+export enum ApprovalStatus {
+  Approved = "approved",
+  Rejected = "rejected",
+}

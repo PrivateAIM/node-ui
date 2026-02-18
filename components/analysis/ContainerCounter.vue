@@ -69,7 +69,7 @@ function onApplyExecutionStatusFilter(executionStatus: string) {
               size="xlarge"
               @click="onApplyExecutionStatusFilter(PodStatus.Executing)"
             />
-            <span class="counter-id-txt">Executing</span>
+            <span class="counter-id-txt">Running</span>
           </div>
           <div
             :class="{
@@ -122,7 +122,7 @@ function onApplyExecutionStatusFilter(executionStatus: string) {
               size="xlarge"
               @click="onApplyExecutionStatusFilter(PodStatus.Executed)"
             />
-            <span class="counter-id-txt">Executed</span>
+            <span class="counter-id-txt">Finished</span>
           </div>
         </div>
       </template>
