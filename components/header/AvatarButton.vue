@@ -3,6 +3,7 @@ import Menu from "primevue/menu";
 import Button from "primevue/button";
 import { useRuntimeConfig } from "#app";
 import CleanupDialog from "~/components/header/CleanupDialog.vue";
+import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
 
 const { signIn, signOut, status, data } = useAuth();
 
