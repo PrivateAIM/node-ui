@@ -2,6 +2,8 @@
 import { getEvents } from "~/composables/useAPIFetch";
 import { FilterMatchMode, FilterService } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
+import MeterGroup from "primevue/metergroup";
+import Chip from "primevue/chip";
 import {
   EventLogLevelTag,
   EventServiceTag,
