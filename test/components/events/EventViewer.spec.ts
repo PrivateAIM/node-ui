@@ -53,7 +53,7 @@ describe("EventViewer.vue", () => {
     expect(rows.length).toBe(1);
 
     const rowCells = rows[0].findAll("td");
-    expect(rowCells[0].text()).toBe("2/19/268:50:14 AM GMT+1"); // Datetime
+    expect(rowCells[0].text()).toContain("2/19/26"); // Datetime, limit to date due to TZ issues in runner
     expect(rowCells[1].text()).toBe(
       "NODE-SETTINGS-GET-SUCCESSHub AdapterNodeInfoA user fetched the node's configurations settings",
     );
