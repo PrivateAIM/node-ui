@@ -30,6 +30,16 @@ export const handlers = [
     });
   }),
 
+  // Node settings (used by various components during setup)
+  http.get("/node/settings", () => {
+    return HttpResponse.json({
+      status: 200,
+      data: {
+        data_required: false,
+      },
+    });
+  }),
+
   http.post("/analysis/initialize", async ({ request }) => {
     const formData = await request.formData();
     const analysisId = formData.get("analysis_id");

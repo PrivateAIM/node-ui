@@ -18,7 +18,7 @@ import {
   newFakeAnalysisNode,
 } from "~/test/components/analysis/constants";
 import { getAnalysisNodes } from "~/composables/useAPIFetch";
-import { useNodeType } from "~/composables/useNodeType";
+import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
 import type { AnalysisNode } from "~/services/Api";
 import { FetchError } from "ofetch";
 
@@ -28,6 +28,10 @@ vi.mock("~/composables/useAPIFetch", () => ({
 
 vi.mock("~/composables/useNodeType", () => ({
   useNodeType: vi.fn(),
+}));
+
+vi.mock("~/composables/useDatastoreRequirement", () => ({
+  useDatastoreRequirement: vi.fn(),
 }));
 
 describe("AnalysesTable.vue", () => {
@@ -48,7 +52,13 @@ describe("AnalysesTable.vue", () => {
     vi.mocked(useToast).mockReturnValue(mockToast);
     spy = vi.spyOn(mockToast, "add");
 
-    vi.mocked(useNodeType).mockResolvedValue(ref("default"));
+    vi.mocked(useDatastoreRequirement).mockResolvedValue({
+      datastoreState: ref({
+        datastoreRequired: true,
+        nodeType: "default",
+      }),
+      setDatastoreRequired: vi.fn(),
+    });
 
     // The basic response
     vi.mocked(getAnalysisNodes).mockResolvedValue({

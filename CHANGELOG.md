@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.4.2](https://github.com/PrivateAIM/node-ui/compare/v0.4.1...v0.4.2) (2026-02-18)
+
+
+### Features
+
+* implement data requirement toggle ([4d9ea94](https://github.com/PrivateAIM/node-ui/commit/4d9ea94d32780b712e470560fadf0d116c1c9036))
+
+
+### Bug Fixes
+
+* **token:** fix refresh access token when in offline mode ([d606290](https://github.com/PrivateAIM/node-ui/commit/d606290cf5720654b79e5e62cc4fb9c3bd10de59))
+* Z no longer needed for timestamps from Python ([ddbbdac](https://github.com/PrivateAIM/node-ui/commit/ddbbdacbbef78922666a25300337a0148f2584c7))
+
+
+### Reverts
+
+* add NUXT_PUBLIC_ORIGIN back ([8193472](https://github.com/PrivateAIM/node-ui/commit/8193472080f154ec406af89ba7a8c8e75cdd9f3b))
+
 ## [0.4.1](https://github.com/PrivateAIM/node-ui/compare/v0.4.0...v0.4.1) (2026-02-05)
 
 

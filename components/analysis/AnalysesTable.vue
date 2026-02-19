@@ -27,12 +27,27 @@ import {
 } from "~/services/Api";
 import { ApprovalStatus } from "~/types/node";
 import ContainerCounter from "~/components/analysis/ContainerCounter.vue";
-import { useNodeType } from "~/composables/useNodeType";
+import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
 import type { ModifiedAnalysisNode } from "~/services/modifiedApiInterfaces";
 import { ProcessStatus } from "~/types/analysis";
 
 const toast = useToast();
-const nodeType = await useNodeType();
+
+// Data Store Requirement Check
+const { datastoreState } = await useDatastoreRequirement();
+const datastoreRequired = computed(
+  () => datastoreState.value.datastoreRequired,
+);
+const nodeType = computed(() => datastoreState.value.nodeType);
+
+const datastoreBadgeSeverity = computed(() =>
+  datastoreRequired.value ? "danger" : "secondary",
+);
+const datastoreBadgeTooltip = computed(() =>
+  datastoreRequired.value
+    ? "Data store missing!"
+    : "Data store missing, but not required",
+);
 
 const analysesMap = ref<Map<string, ModifiedAnalysisNode>>(new Map());
 const analyses = computed(() => Array.from(analysesMap.value.values()));
@@ -657,9 +672,11 @@ const onCloseNavToast = () => {
                 ></Badge>
               </div>
               <div v-else class="datastore-badge">
-                <Badge class="w-8 h-8 rounded-full" severity="danger"
+                <Badge
+                  class="w-8 h-8 rounded-full"
+                  :severity="datastoreBadgeSeverity"
                   ><i
-                    v-tooltip.top="'Data store missing!'"
+                    v-tooltip.top="datastoreBadgeTooltip"
                     class="pi pi-times"
                   ></i
                 ></Badge>
@@ -741,7 +758,7 @@ const onCloseNavToast = () => {
                   :analysisExecutionStatus="slotProps.data.execution_status"
                   :datastore="slotProps.data.datastore"
                   :nodeId="slotProps.data.node_id"
-                  :nodeType="nodeType!"
+                  :requireDatastore="datastoreRequired!"
                   :projectId="slotProps.data.analysis.project_id"
                   @missingDataStore="showDataStoreNavToast"
                   @updateAnalysisRow="updateAnalysisRun"

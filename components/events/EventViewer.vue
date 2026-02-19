@@ -2,10 +2,12 @@
 import { getEvents } from "~/composables/useAPIFetch";
 import { FilterMatchMode, FilterService } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
+import MeterGroup from "primevue/metergroup";
+import Chip from "primevue/chip";
 import {
   EventLogLevelTag,
   EventServiceTag,
-  type EventTag
+  type EventTag,
 } from "~/types/eventTag";
 import TagFilterSidePanel from "~/components/events/TagFilterSidePanel.vue";
 import type { EventLog, EventLogResponse } from "~/services/Api";
@@ -21,21 +23,21 @@ const appliedFilters = ref<EventTag[]>([]);
 const logLevelColorMap = new Map([
   [EventLogLevelTag.Error, "#ef4444"],
   [EventLogLevelTag.Warning, "#eab308"],
-  [EventLogLevelTag.Info, "#3b82f6"]
+  [EventLogLevelTag.Info, "#3b82f6"],
 ]);
 const logLevelDistributions = ref(
   Array.from(logLevelColorMap, ([label, color]) => ({
     label,
     color,
-    value: 0
-  }))
+    value: 0,
+  })),
 );
 
 const filters = ref();
 
 const dateTimeFormat = new Intl.DateTimeFormat(undefined, {
   dateStyle: "short",
-  timeStyle: "long"
+  timeStyle: "long",
 });
 
 const { data: response, status } = await getEvents();
@@ -52,21 +54,27 @@ onMounted(() => {
   parseData();
 });
 
-function updateLogLevelCounts() {
-  // Reset counts
-  logLevelDistributions.value.forEach((dist) => (dist.value = 0));
+function updateLogLevelCounts(eventList: EventLog[] = events.value) {
+  // Reset counts with new array to force MeterGroup reactivity
+  const updatedCounts = new Map(
+    logLevelDistributions.value.map((dist) => [
+      dist.label,
+      { ...dist, value: 0 },
+    ]),
+  );
 
-  // Count occurrences
-  if (events.value) {
-    events.value.forEach((event) => {
+  if (eventList) {
+    // Count occurrences
+    eventList.forEach((event) => {
       const tags = event.attributes?.tags || [];
 
-      logLevelDistributions.value.forEach((dist) => {
+      updatedCounts.forEach((dist) => {
         if (tags.includes(dist.label)) {
           dist.value++;
         }
       });
     });
+    logLevelDistributions.value = Array.from(updatedCounts.values());
   }
 }
 
@@ -87,12 +95,16 @@ function formatEventName(eventName: string): string {
   return eventChunks.join("-");
 }
 
-function formatTimestamp(timestamp: string): string {
-  const date = new Date(timestamp + "Z"); // Python does not return timestamp with standard "Z"
-  const formattedDateTime = dateTimeFormat.format(date);
-  const [dateString, timeString] = formattedDateTime.split(", ");
+function formatTimestamp(timestamp: string): string | undefined {
+  try {
+    const date = new Date(timestamp); // Python does not return timestamp with standard "Z"
+    const formattedDateTime = dateTimeFormat.format(date);
+    const [dateString, timeString] = formattedDateTime.split(", ");
 
-  return `${dateString}<br><b>${timeString}</b>`;
+    return `${dateString}<br><b>${timeString}</b>`;
+  } catch (error) {
+    console.error(`Timestamp: ${timestamp}; Error: ${error}`);
+  }
 }
 
 function getLogLevelColor(tags: string[]): string | undefined {
@@ -101,7 +113,7 @@ function getLogLevelColor(tags: string[]): string | undefined {
     for (const tag of [
       EventLogLevelTag.Error,
       EventLogLevelTag.Warning,
-      EventLogLevelTag.Info
+      EventLogLevelTag.Info,
     ]) {
       if (tags.includes(tag)) {
         return logLevelColorMap.get(tag);
@@ -113,21 +125,30 @@ function getLogLevelColor(tags: string[]): string | undefined {
 
 // Table filters
 FilterService.register("tagsContainsAny", (value, filter) => {
-  if (!filter || filter.length === 0) {
-    return true;
-  }
+  if (!filter || filter.length === 0) return true;
+  if (!value || value.length === 0) return false;
 
-  if (!value || value.length === 0) {
-    return false;
-  }
+  const selectedServices = filter.filter((f: EventTag) =>
+    Object.values(EventServiceTag).includes(f),
+  );
+  const selectedLogLevels = filter.filter((f: EventTag) =>
+    Object.values(EventLogLevelTag).includes(f),
+  );
 
-  // Check if any element in the filter array exists in the value array
-  return filter.some((filterItem: EventTag) => value.includes(filterItem));
+  const matchesService =
+    selectedServices.length === 0 ||
+    selectedServices.some((f: EventTag) => value.includes(f));
+
+  const matchesLogLevel =
+    selectedLogLevels.length === 0 ||
+    selectedLogLevels.some((f: EventTag) => value.includes(f));
+
+  return matchesService && matchesLogLevel;
 });
 
 const defaultFilters = {
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  "attributes.tags": { value: null, matchMode: "tagsContainsAny" }
+  "attributes.tags": { value: null, matchMode: "tagsContainsAny" },
 };
 
 filters.value = defaultFilters;
@@ -140,7 +161,7 @@ function clearAllFilters() {
   const clearedFilters = {};
   for (const filterKey in defaultFilters) {
     clearedFilters[filterKey] = {
-      ...defaultFilters[filterKey]
+      ...defaultFilters[filterKey],
     };
     clearedFilters[filterKey].value = null;
   }
@@ -150,7 +171,7 @@ function clearAllFilters() {
 
 function handleRemoveFilterTag(tag: EventTag) {
   appliedFilters.value = appliedFilters.value.filter(
-    (filter) => filter !== tag
+    (filter) => filter !== tag,
   );
 }
 
@@ -161,9 +182,9 @@ function handleShowRequestEvents(requestedEvents: EventLogResponse) {
 }
 
 function handleFilter(event: DataTableFilterEvent) {
-  filteredEventCount.value = event.filteredValue
-    ? event.filteredValue.length
-    : 0;
+  const filtered = event.filteredValue ?? [];
+  filteredEventCount.value = filtered.length;
+  updateLogLevelCounts(filtered);
 }
 
 watch(
@@ -175,7 +196,7 @@ watch(
       filters.value["attributes.tags"].value = null;
     }
   },
-  { deep: true }
+  { deep: true },
 );
 </script>
 
@@ -190,13 +211,16 @@ watch(
           />
         </div>
         <div class="log-distribution-meter">
-          <MeterGroup :value="logLevelDistributions" :max="events.length" />
+          <MeterGroup
+            :value="logLevelDistributions"
+            :max="filteredEventCount || eventCount"
+          />
         </div>
         <div class="table-header-row">
           <div class="table-header-row-filter-chips-container">
             <div class="table-header-row-filter-chips-container-counter">
               <span
-              ><b>FILTERS: ({{ appliedFilters.length }})</b></span
+                ><b>FILTERS: ({{ appliedFilters.length }})</b></span
               >
             </div>
             <div class="table-header-row-filter-chips flex flex-wrap gap-2">

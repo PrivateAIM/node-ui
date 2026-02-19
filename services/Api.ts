@@ -1222,6 +1222,15 @@ export interface Node {
   updated_at: string;
 }
 
+/** NodeSettings */
+export interface NodeSettings {
+  /**
+   * Data Required
+   * @default true
+   */
+  data_required?: boolean | null;
+}
+
 /** NodeTypeResponse */
 export interface NodeTypeResponse {
   /** Type */
@@ -2346,6 +2355,48 @@ export class Api<
     ) =>
       this.request<AnalysisImageUrl, void | HTTPValidationError>({
         path: `/analysis/image`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+  };
+  node = {
+    /**
+     * @description Get the node configuration settings
+     *
+     * @tags Node
+     * @name NodeSettingsGetNodeSettingsGet
+     * @summary Node.Settings.Get
+     * @request GET:/node/settings
+     * @secure
+     */
+    nodeSettingsGetNodeSettingsGet: (params: RequestParams = {}) =>
+      this.request<NodeSettings, void>({
+        path: `/node/settings`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Update the node configuration settings.
+     *
+     * @tags Node
+     * @name NodeSettingsUpdateNodeSettingsPost
+     * @summary Node.Settings.Update
+     * @request POST:/node/settings
+     * @secure
+     */
+    nodeSettingsUpdateNodeSettingsPost: (
+      data: NodeSettings,
+      params: RequestParams = {},
+    ) =>
+      this.request<NodeSettings, void | HTTPValidationError>({
+        path: `/node/settings`,
         method: "POST",
         body: data,
         secure: true,

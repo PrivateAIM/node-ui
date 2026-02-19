@@ -1,12 +1,20 @@
 <script lang="ts" setup>
 import Menu from "primevue/menu";
+import ToggleSwitch from "primevue/toggleswitch";
 import Button from "primevue/button";
 import { useRuntimeConfig } from "#app";
 import CleanupDialog from "~/components/header/CleanupDialog.vue";
+import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
 
 const { signIn, signOut, status, data } = useAuth();
 
 const menu = ref();
+
+const { datastoreState, setDatastoreRequired } =
+  await useDatastoreRequirement();
+const datastoreRequired = computed(
+  () => datastoreState.value.datastoreRequired,
+);
 
 const config = useRuntimeConfig();
 const baseUrl = new URL(config.public.baseUrl).origin;
@@ -28,6 +36,7 @@ const menuItems = ref([
         label: userActionLabel,
         icon: userActionIcon,
         command: () => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
           isAuthenticated.value ? signOut() : signIn(`${idpProvider}`);
         },
       },
@@ -44,6 +53,11 @@ const menuItems = ref([
           showCleanupDialog.value = true;
         },
         disabled: !isAuthenticated.value,
+      },
+      {
+        label: "Require Data Store",
+        icon: "pi pi-database",
+        isToggle: true, // custom flag to identify it in the slot
       },
     ],
   },
@@ -92,6 +106,22 @@ const toggle = (event) => {
     >
       <template #item="{ item, props }">
         <a
+          v-if="item.isToggle"
+          v-ripple
+          class="flex items-center"
+          v-bind="props.action"
+          @click.prevent="setDatastoreRequired(!datastoreRequired)"
+        >
+          <i :class="item.icon" />
+          <span class="ml-2 menu-item-label">{{ item.label }}</span>
+          <ToggleSwitch
+            :modelValue="datastoreRequired ?? false"
+            class="ml-auto"
+            @click.stop="setDatastoreRequired(!datastoreRequired)"
+          />
+        </a>
+        <a
+          v-else
           v-ripple
           :href="item.url"
           :target="item.target"

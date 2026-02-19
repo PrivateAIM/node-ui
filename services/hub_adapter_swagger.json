@@ -732,6 +732,81 @@
         }
       }
     },
+    "/node/settings": {
+      "get": {
+        "tags": ["Node"],
+        "summary": "Node.Settings.Get",
+        "description": "Get the node configuration settings",
+        "operationId": "node_settings_get_node_settings_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NodeSettings"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "post": {
+        "tags": ["Node"],
+        "summary": "Node.Settings.Update",
+        "description": "Update the node configuration settings.",
+        "operationId": "node_settings_update_node_settings_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NodeSettings",
+                "description": "Required information to start analysis"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NodeSettings"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/projects": {
       "get": {
         "tags": ["Hub"],
@@ -5734,6 +5809,24 @@
         ],
         "title": "Node"
       },
+      "NodeSettings": {
+        "properties": {
+          "data_required": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Required",
+            "default": true
+          }
+        },
+        "type": "object",
+        "title": "NodeSettings"
+      },
       "NodeTypeResponse": {
         "properties": {
           "type": {
@@ -7046,16 +7139,20 @@
       "description": "Gateway endpoints for interacting with logged events."
     },
     {
-      "name": "Meta",
-      "description": "Custom Hub Adapter endpoints which combine endpoints from other APIs."
+      "name": "Hub",
+      "description": "Gateway endpoints for the central Hub service."
     },
     {
       "name": "Health",
       "description": "Endpoints for checking the health of this API and the downstream services."
     },
     {
-      "name": "Hub",
-      "description": "Gateway endpoints for the central Hub service."
+      "name": "Meta",
+      "description": "Custom Hub Adapter endpoints which combine endpoints from other APIs."
+    },
+    {
+      "name": "Node",
+      "description": "Endpoints for setting and getting node settings and configuration options."
     },
     {
       "name": "Kong",
