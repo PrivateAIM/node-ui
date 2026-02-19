@@ -1,10 +1,21 @@
-import { mount } from "@vue/test-utils";
+import { flushPromises, mount } from "@vue/test-utils";
 import { useRuntimeConfig } from "#app";
-import { describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import MenuHeader from "~/components/header/MenuHeader.vue";
+import { type DefineComponent, defineComponent } from "vue";
 
 describe("MenuHeader.vue", () => {
   vi.mocked(useRuntimeConfig);
+
+  let MenuHeaderTestComponent: DefineComponent<typeof defineComponent>;
+
+  // Render the component with the fake params
+  beforeAll(async () => {
+    MenuHeaderTestComponent = defineComponent({
+      components: { MenuHeader },
+      template: "<Suspense><MenuHeader/></Suspense>",
+    });
+  });
 
   async function menuHeaderChecks(authenticated: boolean) {
     const status = authenticated ? "authenticated" : "unauthenticated";
@@ -20,8 +31,9 @@ describe("MenuHeader.vue", () => {
       status: ref(status),
     }));
 
-    const wrapper = mount(MenuHeader);
+    const wrapper = mount(MenuHeaderTestComponent);
     expect(wrapper).toBeTruthy();
+    await flushPromises();
 
     const menuBar = wrapper.find(".menu-bar-header");
 

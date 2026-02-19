@@ -30,6 +30,9 @@ export function getEvents(opts?) {
   return useAPIFetch<EventLogResponse>("/events", {
     ...opts,
     method: "GET",
+    query: {
+      limit: 100,
+    },
   });
 }
 

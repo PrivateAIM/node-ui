@@ -15,7 +15,7 @@ describe("AvatarButton.vue", () => {
 
   vi.mocked(useRuntimeConfig);
 
-  beforeAll(async () => {
+  beforeAll(() => {
     AvatarButtonTestComponent = defineComponent({
       components: { AvatarButton },
       template: "<Suspense><AvatarButton/></Suspense>",
