@@ -52,21 +52,27 @@ onMounted(() => {
   parseData();
 });
 
-function updateLogLevelCounts() {
-  // Reset counts
-  logLevelDistributions.value.forEach((dist) => (dist.value = 0));
+function updateLogLevelCounts(eventList: EventLog[] = events.value) {
+  // Reset counts with new array to force MeterGroup reactivity
+  const updatedCounts = new Map(
+    logLevelDistributions.value.map((dist) => [
+      dist.label,
+      { ...dist, value: 0 },
+    ]),
+  );
 
-  // Count occurrences
-  if (events.value) {
-    events.value.forEach((event) => {
+  if (eventList) {
+    // Count occurrences
+    eventList.forEach((event) => {
       const tags = event.attributes?.tags || [];
 
-      logLevelDistributions.value.forEach((dist) => {
+      updatedCounts.forEach((dist) => {
         if (tags.includes(dist.label)) {
           dist.value++;
         }
       });
     });
+    logLevelDistributions.value = Array.from(updatedCounts.values());
   }
 }
 
@@ -117,16 +123,25 @@ function getLogLevelColor(tags: string[]): string | undefined {
 
 // Table filters
 FilterService.register("tagsContainsAny", (value, filter) => {
-  if (!filter || filter.length === 0) {
-    return true;
-  }
+  if (!filter || filter.length === 0) return true;
+  if (!value || value.length === 0) return false;
 
-  if (!value || value.length === 0) {
-    return false;
-  }
+  const selectedServices = filter.filter((f: EventTag) =>
+    Object.values(EventServiceTag).includes(f),
+  );
+  const selectedLogLevels = filter.filter((f: EventTag) =>
+    Object.values(EventLogLevelTag).includes(f),
+  );
 
-  // Check if any element in the filter array exists in the value array
-  return filter.some((filterItem: EventTag) => value.includes(filterItem));
+  const matchesService =
+    selectedServices.length === 0 ||
+    selectedServices.some((f: EventTag) => value.includes(f));
+
+  const matchesLogLevel =
+    selectedLogLevels.length === 0 ||
+    selectedLogLevels.some((f: EventTag) => value.includes(f));
+
+  return matchesService && matchesLogLevel;
 });
 
 const defaultFilters = {
@@ -165,9 +180,9 @@ function handleShowRequestEvents(requestedEvents: EventLogResponse) {
 }
 
 function handleFilter(event: DataTableFilterEvent) {
-  filteredEventCount.value = event.filteredValue
-    ? event.filteredValue.length
-    : 0;
+  const filtered = event.filteredValue ?? [];
+  filteredEventCount.value = filtered.length;
+  updateLogLevelCounts(filtered);
 }
 
 watch(
@@ -194,7 +209,10 @@ watch(
           />
         </div>
         <div class="log-distribution-meter">
-          <MeterGroup :value="logLevelDistributions" :max="events.length" />
+          <MeterGroup
+            :value="logLevelDistributions"
+            :max="filteredEventCount || eventCount"
+          />
         </div>
         <div class="table-header-row">
           <div class="table-header-row-filter-chips-container">
