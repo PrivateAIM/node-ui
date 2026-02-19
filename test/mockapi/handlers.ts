@@ -34,7 +34,9 @@ export const handlers = [
   http.get("/node/settings", () => {
     return HttpResponse.json({
       status: 200,
-      data_required: false,
+      data: {
+        data_required: false,
+      },
     });
   }),
 
