@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { mount } from "@vue/test-utils";
+import { flushPromises, mount } from "@vue/test-utils";
 import DateFilterGraph from "~/components/events/DateFilterGraph.vue";
 import { fakeEventResponse } from "~/test/components/events/constants";
 
@@ -33,6 +33,7 @@ describe("DateFilterGraph.vue", () => {
     const submit = wrapper.find(".custom-date-filter-submit-btn button");
     expect(submit.exists()).toBe(true);
     await submit.trigger("click");
+    await flushPromises();
 
     expect(wrapper.emitted("showRequestedEvents")).toHaveLength(1);
   });
