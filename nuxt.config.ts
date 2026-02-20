@@ -6,7 +6,12 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
   ssr: process.env.NODE_ENV !== "development",
   devtools: { enabled: false },
-  modules: ["@primevue/nuxt-module", "@sidebase/nuxt-auth", "@pinia/nuxt"],
+  modules: [
+    "@primevue/nuxt-module",
+    "@sidebase/nuxt-auth",
+    "@pinia/nuxt",
+    "@nuxt/test-utils/module",
+  ],
 
   runtimeConfig: {
     authSecret: process.env.NUXT_AUTH_SECRET,
@@ -67,6 +72,7 @@ export default defineNuxtConfig({
   ],
 
   vite: {
+    // @ts-expect-error plugin complaint
     plugins: [tailwindcss()],
   },
 
