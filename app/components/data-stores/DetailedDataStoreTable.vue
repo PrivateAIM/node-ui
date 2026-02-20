@@ -9,7 +9,7 @@ import { extractUuid } from "~/utils/extract-uuid-from-kong-username";
 import { parseUnixTimestamp } from "~/utils/format-data-row";
 import { getDataStoreTypeSeverity } from "~/utils/status-tag-severity";
 import type { ModifiedDetailedService } from "~/services/modifiedApiInterfaces";
-import { useNuxtApp } from "#app";
+import { useNuxtApp } from "nuxt/app";
 
 interface DetailedDataStoreTableRow {
   name?: string | null;

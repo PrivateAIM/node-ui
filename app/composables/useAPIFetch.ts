@@ -12,8 +12,8 @@ import type {
   ProjectNode,
   Service,
 } from "~/services/Api";
-import type { UseFetchOptions } from "#app";
-import { useFetch, useNuxtApp } from "#app";
+
+import { useFetch, type UseFetchOptions, useNuxtApp } from "nuxt/app";
 
 export function useAPIFetch<T>(
   request: string | (() => string),

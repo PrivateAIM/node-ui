@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useNuxtApp } from "#app";
+import { useNuxtApp } from "nuxt/app";
 import { useToast } from "primevue/usetoast";
 import type { AnalysisNode, ProjectNode } from "~/services/Api";
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useNuxtApp } from "#app";
+import { useNuxtApp } from "nuxt/app";
 import DatePicker from "primevue/datepicker";
 import Toolbar from "primevue/toolbar";
 import FloatLabel from "primevue/floatlabel";

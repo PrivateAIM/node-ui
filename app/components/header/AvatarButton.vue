@@ -2,7 +2,7 @@
 import Menu from "primevue/menu";
 import ToggleSwitch from "primevue/toggleswitch";
 import Button from "primevue/button";
-import { useRuntimeConfig } from "#app";
+import { useRuntimeConfig } from "nuxt/app";
 import CleanupDialog from "~/components/header/CleanupDialog.vue";
 import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
 

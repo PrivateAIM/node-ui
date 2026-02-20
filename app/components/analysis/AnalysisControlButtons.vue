@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import AnalysisUpdateButton from "./AnalysisUpdateButton.vue";
 import { useToast } from "primevue/usetoast";
-import { useNuxtApp } from "#app";
+import { useNuxtApp } from "nuxt/app";
 import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
 import { PodStatus, type StatusResponse } from "~/services/Api";
 

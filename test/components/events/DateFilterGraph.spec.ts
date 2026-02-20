@@ -3,7 +3,7 @@ import { flushPromises, mount } from "@vue/test-utils";
 import DateFilterGraph from "~/components/events/DateFilterGraph.vue";
 import { fakeEventResponse } from "~/test/components/events/constants";
 
-vi.mock("#app", () => ({
+vi.mock("nuxt/app", () => ({
   useNuxtApp: () => ({
     $hubApi: vi.fn().mockResolvedValue(fakeEventResponse),
   }),

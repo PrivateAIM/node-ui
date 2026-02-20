@@ -1,6 +1,6 @@
 import { defineComponent, ref } from "vue";
 import { flushPromises, mount } from "@vue/test-utils"; // add flushPromises
-import { useRuntimeConfig } from "#app";
+import { useRuntimeConfig } from "nuxt/app";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import AvatarButton from "~/components/header/AvatarButton.vue";
 import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";

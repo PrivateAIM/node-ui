@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useRuntimeConfig } from "#app";
+import { useRuntimeConfig } from "nuxt/app";
 
 const { signIn, signOut, status } = useAuth();
 const config = useRuntimeConfig();

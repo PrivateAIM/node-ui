@@ -20,7 +20,14 @@ import { useToast } from "primevue/usetoast";
 export default defineNuxtPlugin(() => {
   const { signIn, data } = useAuth();
   const { shouldRefreshToken, refreshToken } = useAuthRefresh();
-  const toast = useToast();
+  let toast: ReturnType<typeof useToast> | null = null;
+  try {
+    toast = useToast();
+  } catch (e) {
+    // useToast may not be available during server-side initialization
+    toast = null;
+    console.error(e);
+  }
 
   const config = useRuntimeConfig();
   const idpProvider: string = config.public.idpProvider as string;
@@ -60,33 +67,41 @@ export default defineNuxtPlugin(() => {
 
       // Catch RBAC permission error
       if (errSvc && errSvc === "Auth" && response.status === 403) {
-        showRbacPermissionError(toast, errMsg);
+        if (toast) showRbacPermissionError(toast, errMsg);
+        else console.warn("RBAC permission error:", errMsg);
       }
 
       // Kong connection test errors
       else if (typeof request === "string" && request.includes("kong")) {
         switch (response.status) {
           case 403:
-            showKongS3BucketErrorToast(toast, errMsg);
+            if (toast) showKongS3BucketErrorToast(toast, errMsg);
+            else console.warn("Kong S3 bucket error:", errMsg);
             break;
 
           case 404:
-            showKongMissingHealthConsumerErrorToast(toast, errMsg);
+            if (toast) showKongMissingHealthConsumerErrorToast(toast, errMsg);
+            else console.warn("Kong missing health consumer:", errMsg);
             break;
 
           case 409:
-            showKongDuplicateErrorToast(toast);
+            if (toast) showKongDuplicateErrorToast(toast);
+            else console.warn("Kong duplicate error");
             break;
 
           case 502:
-            showKongGatewayErrorToast(toast, errMsg);
+            if (toast) showKongGatewayErrorToast(toast, errMsg);
+            else console.warn("Kong gateway error:", errMsg);
             break;
 
           case 503:
             if (errMsg && (errSvc == "FHIR" || errSvc == "S3")) {
-              showKongConsumerConnectionErrorToast(toast, errSvc, errMsg);
+              if (toast)
+                showKongConsumerConnectionErrorToast(toast, errSvc, errMsg);
+              else console.warn(`${errSvc} consumer connection error:`, errMsg);
             } else {
-              showKongConnectionErrorToast(toast);
+              if (toast) showKongConnectionErrorToast(toast);
+              else console.warn("Kong connection error");
             }
             break;
 
@@ -97,20 +112,27 @@ export default defineNuxtPlugin(() => {
         }
       }
       if (response.status === 500) {
-        showHubAdapterConnectionErrorToast(toast, errSvc);
+        if (toast) showHubAdapterConnectionErrorToast(toast, errSvc);
+        else console.error("Hub adapter 500", errSvc);
       } else if (response.status === 503) {
         const downstreamService = errSvc ?? "needed";
-        showDownstreamConnectionErrorToast(toast, downstreamService);
+        if (toast) showDownstreamConnectionErrorToast(toast, downstreamService);
+        else
+          console.error("Downstream service unavailable:", downstreamService);
       } else if (response.status === 400) {
         if (response._data.detail.code === "invalid_credentials") {
-          showInvalidRobotCredentialsToast(toast);
+          if (toast) showInvalidRobotCredentialsToast(toast);
+          else console.warn("Invalid robot credentials");
         } else if (errMsg) {
-          showHubSpecificErrorMessage(toast, errMsg);
+          if (toast) showHubSpecificErrorMessage(toast, errMsg);
+          else console.warn("Hub error:", errMsg);
         } else {
-          showWrongRobotIdToast(toast);
+          if (toast) showWrongRobotIdToast(toast);
+          else console.warn("Wrong robot id");
         }
       } else if (response.status === 408) {
-        showHubConnectionError(toast);
+        if (toast) showHubConnectionError(toast);
+        else console.warn("Hub connection timeout");
       }
     },
   });

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { type CleanupPodResponse } from "~/services/Api";
 import { useToast } from "primevue/usetoast";
-import { useNuxtApp } from "#app";
+import { useNuxtApp } from "nuxt/app";
 import Dialog from "primevue/dialog";
 import Listbox from "primevue/listbox";
 import Message from "primevue/message";

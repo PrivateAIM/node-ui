@@ -5,7 +5,7 @@ import { useIntervalFn } from "@vueuse/core";
 import { getAnalysisLogs } from "~/composables/useAPIFetch";
 import RefreshSwitch from "~/components/analysis/logs/RefreshSwitch.vue";
 import AnalysisLogCardContent from "~/components/analysis/logs/AnalysisLogCardContent.vue";
-import { useNuxtApp } from "#app";
+import { useNuxtApp } from "nuxt/app";
 import type { LogResponse } from "~/services/Api";
 
 interface logEntry {

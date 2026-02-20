@@ -1,5 +1,5 @@
 import { flushPromises, mount } from "@vue/test-utils";
-import { useRuntimeConfig } from "#app";
+import { useRuntimeConfig } from "nuxt/app";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import MenuHeader from "~/components/header/MenuHeader.vue";
 import { type DefineComponent, defineComponent } from "vue";

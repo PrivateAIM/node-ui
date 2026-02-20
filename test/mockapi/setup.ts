@@ -71,7 +71,7 @@ vi.mock("vue-router", async () => ({
   },
 }));
 
-vi.mock("#app", () => ({
+vi.mock("nuxt/app", () => ({
   useNuxtApp: () => ({
     $hubApi: fakeHubApi,
   }),

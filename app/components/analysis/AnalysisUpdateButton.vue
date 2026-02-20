@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useNuxtApp } from "#app";
+import { useNuxtApp } from "nuxt/app";
 import { useToast } from "primevue/usetoast";
 
 import { PodStatus, type StatusResponse } from "~/services/Api";

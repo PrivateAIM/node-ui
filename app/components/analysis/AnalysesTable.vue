@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useFetch, useNuxtApp, useState } from "#app";
+import { useFetch, useNuxtApp, useState } from "nuxt/app";
 import Badge from "primevue/badge";
 import { useToast } from "primevue/usetoast";
 import ProgressBar from "primevue/progressbar";

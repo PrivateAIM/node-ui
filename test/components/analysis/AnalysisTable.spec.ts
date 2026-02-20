@@ -1,4 +1,4 @@
-import { type AsyncDataRequestStatus, useFetch, useNuxtApp } from "#app";
+import { type AsyncDataRequestStatus, useFetch, useNuxtApp } from "nuxt/app";
 import { useToast } from "primevue/usetoast";
 import { defineComponent } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";

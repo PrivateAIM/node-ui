@@ -97,3 +97,6 @@ sw.*
 *.swp
 .nx
 .output
+
+# Claud
+.claude/
