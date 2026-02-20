@@ -1,3 +1,4 @@
+import { $fetch } from "ofetch";
 import { useToast } from "primevue/usetoast";
 import {
   showDownstreamConnectionErrorToast,
@@ -14,8 +15,7 @@ import {
   showKongS3BucketErrorToast,
   showRbacPermissionError,
   showWrongRobotIdToast,
-} from "~/composables/connectionErrorToast";
-import { $fetch } from "ofetch";
+} from "../../app/composables/connectionErrorToast";
 
 const toast = useToast();
 
@@ -27,7 +27,7 @@ export const fakeHubApi = $fetch.create({
   async onResponseError({ request, response }) {
     // Handle the response errors
     const errMsg = response._data?.detail?.message ?? "no message provided";
-    const errSvc = response._data?.detail?.service ?? null;
+    const errSvc = response._data?.detail?.service ?? undefined;
 
     // Catch RBAC permission error
     if (errSvc && errSvc === "Auth" && response.status === 403) {

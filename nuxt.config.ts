@@ -1,16 +1,14 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from "nuxt/config";
-import { Flame } from "./assets/primevue/flame-preset";
+import { Flame } from "./app/assets/primevue/flame-preset";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineNuxtConfig({
-  ssr: process.env.NODE_ENV !== "development",
+  ssr: false,
   devtools: { enabled: false },
-  modules: [
-    "@primevue/nuxt-module",
-    "@sidebase/nuxt-auth",
-    "@nuxtjs/tailwindcss",
-    "@pinia/nuxt",
-  ],
+  modules: ["@primevue/nuxt-module", "@sidebase/nuxt-auth", "@pinia/nuxt"],
+
+  plugins: ["./app/plugins/api.ts"],
 
   runtimeConfig: {
     authSecret: process.env.NUXT_AUTH_SECRET,
@@ -64,10 +62,16 @@ export default defineNuxtConfig({
   },
 
   css: [
+    "./app/assets/css/main.css",
     "primeicons/primeicons.css",
-    "@/assets/css/elements.css",
-    "@/assets/css/table.css",
+    "~/assets/css/elements.css",
+    "~/assets/css/table.css",
   ],
+
+  vite: {
+    // @ts-expect-error plugin complaint
+    plugins: [tailwindcss()],
+  },
 
   compatibilityDate: "2026-02-05",
 });

@@ -4,12 +4,13 @@ import {
   type BodyKongInitializeKongInitializePost,
   type BodyPodorcPodsCreatePoPost,
   type CleanupPodResponse,
-} from "~/services/Api";
+} from "../../app/services/Api";
 import {
   fakeDataStoreInitSuccess,
   fakeParsedProjects,
-} from "~/test/components/data-stores/constants";
-import { fakeProposalsResp } from "~/test/components/projects/constants";
+} from "../components/data-stores/constants";
+import { fakeProposalsResp } from "../components/projects/constants";
+import { fakeProjects } from "../components/analysis/constants";
 
 export const fakeValidProposalId = "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483";
 export const fakeInvalidProposalId = "15518efa-5146-4290-a7cb-95d27f41d991";
@@ -40,6 +41,11 @@ export const handlers = [
     });
   }),
 
+  // Analysis Table
+  http.get("/projects", () => {
+    return HttpResponse.json(fakeProjects);
+  }),
+
   http.post("/analysis/initialize", async ({ request }) => {
     const formData = await request.formData();
     const analysisId = formData.get("analysis_id");
@@ -56,7 +62,7 @@ export const handlers = [
         },
       );
     } else if (analysisId === fakeMissingAnalysisId) {
-      return new HttpResponse(null, { status: 404 });
+      return new HttpResponse(undefined, { status: 404 });
     } else if (analysisId === fakeInvalidRoleAnalysisId) {
       return HttpResponse.json(
         { detail: { service: "Auth" } },
@@ -123,7 +129,7 @@ export const handlers = [
         [fakeAnalysisId]: "started",
       });
     } else {
-      return HttpResponse.json(null, {
+      return HttpResponse.json(undefined, {
         status: 503,
       });
     }
@@ -217,7 +223,7 @@ export const handlers = [
 
   // Error test
   http.delete(`/po/cleanup/rs`, () => {
-    return HttpResponse.json(null, {
+    return HttpResponse.json(undefined, {
       status: 503,
     });
   }),
@@ -243,9 +249,9 @@ export const handlers = [
       data: [
         {
           created_at: 1749192126,
-          destinations: null,
-          headers: null,
-          hosts: null,
+          destinations: undefined,
+          headers: undefined,
+          hosts: undefined,
           https_redirect_status_code: 426,
           id: "ca6ba716-3e3a-4841-a9c3-0db732a74cd9",
           methods: ["GET"],
@@ -260,14 +266,14 @@ export const handlers = [
           service: {
             id: "1b7bc86e-fe14-4e15-ade5-4187183aad46",
           },
-          snis: null,
-          sources: null,
+          snis: undefined,
+          sources: undefined,
           strip_path: true,
           tags: ["7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483", "fhir"],
           updated_at: 1749192126,
         },
       ],
-      offset: null,
+      offset: undefined,
     });
   }),
   http.post(`/kong/analysis`, () => {
@@ -304,18 +310,18 @@ export const handlers = [
     const projectId = body.project_id;
     const hostname = body.datastore["host"];
 
-    const validProjectId = fakeParsedProjects[0].id;
-    const duplicateProjectId = fakeParsedProjects[1].id;
+    const validProjectId = fakeParsedProjects[0]!.id;
+    const duplicateProjectId = fakeParsedProjects[1]!.id;
 
     if (hostname === "void") {
       // Trigger for an error
-      return new HttpResponse(null, { status: 500 });
+      return new HttpResponse(undefined, { status: 500 });
     } else if (projectId === validProjectId) {
       return HttpResponse.json(fakeDataStoreInitSuccess);
     } else if (projectId === duplicateProjectId) {
-      return new HttpResponse(null, { status: 409 });
+      return new HttpResponse(undefined, { status: 409 });
     } else {
-      return new HttpResponse(null, { status: 500 });
+      return new HttpResponse(undefined, { status: 500 });
     }
   }),
 ];

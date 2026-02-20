@@ -1,9 +1,9 @@
 import { expect, test } from "vitest";
 import { formatDataRow, parseUnixTimestamp } from "~/utils/format-data-row";
 import {
-  fakeAnalysisData,
-  expectedFormattedAnalysisData,
   expectedDateParsedRow,
+  expectedFormattedAnalysisData,
+  fakeAnalysisData,
 } from "./row-test-data";
 
 test("Fake data is different", () => {

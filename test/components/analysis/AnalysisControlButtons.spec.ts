@@ -8,7 +8,7 @@ import {
   fakeBrokenAnalysisId,
   fakeInvalidRoleAnalysisId,
   fakeMissingAnalysisId,
-} from "~/test/mockapi/handlers";
+} from "@/test/mockapi/handlers";
 
 interface ButtonStates {
   playActive: boolean;

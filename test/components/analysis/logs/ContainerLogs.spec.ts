@@ -1,10 +1,10 @@
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import ContainerLogs from "~/components/analysis/logs/ContainerLogs.vue";
-import { fakeLogs } from "~/test/components/analysis/constants";
+import { fakeLogs } from "@/test/components/analysis/constants";
 import { getAnalysisLogs } from "~/composables/useAPIFetch";
-import { fakeAnalysisId } from "~/test/mockapi/handlers";
+import { fakeAnalysisId } from "@/test/mockapi/handlers";
 
 vi.mock("vue-router", () => ({
   useRoute: () => ({
@@ -44,7 +44,7 @@ describe("ContainerLogs.vue", () => {
     vi.mocked(getAnalysisLogs).mockResolvedValue({
       data: ref(mockedResp),
       pending: ref(false),
-      error: ref(null),
+      error: ref(undefined),
       status: ref("success"),
       refresh: vi.fn(),
       execute: vi.fn(),
@@ -67,7 +67,7 @@ describe("ContainerLogs.vue", () => {
     vi.mocked(getAnalysisLogs).mockResolvedValue({
       data: ref(emptyResp),
       pending: ref(false),
-      error: ref(null),
+      error: ref(undefined),
       status: ref("success"),
       refresh: vi.fn(),
       execute: vi.fn(),
