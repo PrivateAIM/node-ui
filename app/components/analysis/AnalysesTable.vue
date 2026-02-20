@@ -263,9 +263,17 @@ async function compileAnalysisTable(
   tableLoading.value = false;
 }
 
+let pollIntervalId: ReturnType<typeof setInterval> | undefined;
+
 onMounted(() => {
   compileAnalysisTable(status.value, analysisNodeResp.value);
-  setInterval(checkForUpdatesFromPodOrc, 15000); // Poll PO every 15 seconds
+  pollIntervalId = setInterval(checkForUpdatesFromPodOrc, 15000); // Poll PO every 15 seconds
+});
+
+onUnmounted(() => {
+  if (pollIntervalId) {
+    clearInterval(pollIntervalId);
+  }
 });
 
 async function onTableRefresh() {

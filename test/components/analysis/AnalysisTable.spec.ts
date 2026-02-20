@@ -79,7 +79,6 @@ describe("AnalysesTable.vue", () => {
 
     expect(AnalysisTableTestComponent).toBeTruthy();
     expect(wrapper.text()).toContain("Analyses"); // H1 of the page
-    console.log(wrapper.text());
 
     // Find header and all rows
     const headerRow = wrapper.findAll("thead tr");
@@ -103,7 +102,9 @@ describe("AnalysesTable.vue", () => {
     spy.mockClear();
 
     const dataRef = ref(fakeAnalysisNodes);
-    const errorRef = ref<{ statusCode: number; name: string; message: string } | undefined>(undefined);
+    const errorRef = ref<
+      { statusCode: number; name: string; message: string } | undefined
+    >(undefined);
     const statusRef = ref<AsyncDataRequestStatus>("success");
     const mockRefresh = vi.fn();
 

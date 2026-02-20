@@ -59,7 +59,7 @@ export default defineNuxtPlugin(() => {
         options.headers = headers;
       } else {
         showNotAuthenticatedToast(toast);
-        return undefined;
+        throw new Error("Not authenticated: no valid session token");
       }
     },
     onRequestError({ error }) {

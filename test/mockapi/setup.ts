@@ -54,6 +54,11 @@ config.global.stubs = {
   NuxtLink: { template: "<a><slot /></a>" },
 };
 
+vi.mock(
+  "@sidebase/nuxt-auth",
+  async () => import("@/test/mockapi/nuxt-auth-mock"),
+);
+
 // 2️⃣ Example: Mock a `v-tooltip` directive
 config.global.directives.tooltip = {
   mounted: (el, binding) => {

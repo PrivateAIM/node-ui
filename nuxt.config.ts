@@ -6,12 +6,7 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
   ssr: false,
   devtools: { enabled: false },
-  modules: [
-    "@primevue/nuxt-module",
-    "@sidebase/nuxt-auth",
-    "@pinia/nuxt",
-    "@nuxt/test-utils/module",
-  ],
+  modules: ["@primevue/nuxt-module", "@sidebase/nuxt-auth", "@pinia/nuxt"],
 
   plugins: ["./app/plugins/api.ts"],
 

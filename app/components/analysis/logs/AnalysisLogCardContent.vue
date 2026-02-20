@@ -4,10 +4,10 @@ import { onMounted, onUpdated, ref } from "vue";
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
 
-const props = defineProps({
-  nginxLogs: String || undefined,
-  analysisLogs: String || undefined,
-});
+const props = defineProps<{
+  nginxLogs?: string;
+  analysisLogs?: string;
+}>();
 const nginxLogBottom = ref();
 const analysisLogBottom = ref();
 
@@ -59,7 +59,7 @@ const copyToClipboard = async (analysisLogs: boolean) => {
         severity: "contrast",
         summary: "Copied to clipboard!",
         life: 3000,
-        group: "copiedLogs",
+        group: "copiedLogs"
       });
     } catch (err) {
       console.error("Failed to copy: ", err);
@@ -171,9 +171,8 @@ const copyToClipboard = async (analysisLogs: boolean) => {
 
 .log-scroll-panel {
   background: #000;
-  font-family:
-    Roboto Mono Regular,
-    monospace;
+  font-family: Roboto Mono Regular,
+  monospace;
   font-size: 0.8em;
   height: 30em;
   padding: 1em;
