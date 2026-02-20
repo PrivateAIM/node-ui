@@ -1,8 +1,8 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
 import EventViewer from "~/components/events/EventViewer.vue";
-import { type DefineComponent, defineComponent } from "vue";
-import { fakeEventResponse } from "~/test/components/events/constants";
+import { type DefineComponent, defineComponent, ref } from "vue";
+import { fakeEventResponse } from "@/test/components/events/constants";
 import { getEvents } from "~/composables/useAPIFetch";
 import type { EventLogResponse } from "~/services/Api";
 
@@ -45,16 +45,16 @@ describe("EventViewer.vue", () => {
 
     // Find header and check content
     const headerRow = wrapper.findAll("thead tr th");
-    expect(headerRow[0].text()).toBe("DateTime"); // First col
-    expect(headerRow[1].text()).toBe("Event"); // Second col
+    expect(headerRow[0]!.text()).toBe("DateTime"); // First col
+    expect(headerRow[1]!.text()).toBe("Event"); // Second col
 
     // Find row and check content
     const rows = wrapper.findAll("tbody tr");
     expect(rows.length).toBe(1);
 
-    const rowCells = rows[0].findAll("td");
-    expect(rowCells[0].text()).toContain("2/19/26"); // Datetime, limit to date due to TZ issues in runner
-    expect(rowCells[1].text()).toBe(
+    const rowCells = rows[0]!.findAll("td");
+    expect(rowCells[0]!.text()).toContain("2/19/26"); // Datetime, limit to date due to TZ issues in runner
+    expect(rowCells[1]!.text()).toBe(
       "NODE-SETTINGS-GET-SUCCESSHub AdapterNodeInfoA user fetched the node's configurations settings",
     );
   });

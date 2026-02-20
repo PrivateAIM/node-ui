@@ -1,5 +1,6 @@
 import { afterAll, afterEach, beforeAll, vi } from "vitest";
 import { computed, onMounted, ref, watch } from "vue";
+
 import { config } from "@vue/test-utils";
 import { setupServer } from "msw/node";
 import { handlers } from "./handlers";
@@ -45,9 +46,12 @@ config.global.components = {
   InputIcon,
   InputText,
   IconField,
-  NuxtLink: {
-    template: "<a><slot /></a>", // Simple stub to replace NuxtLink with an <a>
-  },
+};
+
+// Stub NuxtLink via stubs (matches by component `name` property) rather than
+// config.global.components, so it intercepts directly-imported NuxtLink too.
+config.global.stubs = {
+  NuxtLink: { template: "<a><slot /></a>" },
 };
 
 // 2️⃣ Example: Mock a `v-tooltip` directive

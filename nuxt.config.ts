@@ -69,8 +69,8 @@ export default defineNuxtConfig({
   css: [
     "./app/assets/css/main.css",
     "primeicons/primeicons.css",
-    "@/assets/css/elements.css",
-    "@/assets/css/table.css",
+    "~/assets/css/elements.css",
+    "~/assets/css/table.css",
   ],
 
   vite: {

@@ -6,7 +6,7 @@ import {
   fakeAnalysisId,
   fakeBrokenAnalysisId,
   fakeMissingAnalysisId,
-} from "~/test/mockapi/handlers";
+} from "../../mockapi/handlers";
 
 describe("AnalysisUpdateButton.vue", () => {
   let spy;

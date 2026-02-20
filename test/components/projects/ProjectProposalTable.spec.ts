@@ -5,7 +5,7 @@ import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import ProjectProposalTable from "~/components/projects/ProjectProposalTable.vue";
 import { getProjectNodes } from "~/composables/useAPIFetch";
 import type { ProjectNode } from "~/services/Api";
-import { fakeProposalsResp } from "~/test/components/projects/constants";
+import { fakeProposalsResp } from "@/test/components/projects/constants";
 
 vi.mock("~/composables/useAPIFetch", () => ({
   getProjectNodes: vi.fn(),

@@ -10,6 +10,7 @@ import {
   fakeParsedProjects,
 } from "../components/data-stores/constants";
 import { fakeProposalsResp } from "../components/projects/constants";
+import { fakeProjects } from "../components/analysis/constants";
 
 export const fakeValidProposalId = "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483";
 export const fakeInvalidProposalId = "15518efa-5146-4290-a7cb-95d27f41d991";
@@ -38,6 +39,11 @@ export const handlers = [
         data_required: false,
       },
     });
+  }),
+
+  // Analysis Table
+  http.get("/projects", () => {
+    return HttpResponse.json(fakeProjects);
   }),
 
   http.post("/analysis/initialize", async ({ request }) => {

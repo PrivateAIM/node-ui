@@ -1,6 +1,6 @@
 import { type AsyncDataRequestStatus, useFetch, useNuxtApp } from "nuxt/app";
 import { useToast } from "primevue/usetoast";
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import {
   afterEach,
@@ -12,15 +12,10 @@ import {
   vi,
 } from "vitest";
 import AnalysesTable from "~/components/analysis/AnalysesTable.vue";
-import {
-  fakeAnalysisNodes,
-  fakeProjects,
-  newFakeAnalysisNode,
-} from "~/test/components/analysis/constants";
+import { fakeAnalysisNodes, newFakeAnalysisNode } from "./constants";
 import { getAnalysisNodes } from "~/composables/useAPIFetch";
 import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
 import type { AnalysisNode } from "~/services/Api";
-import { FetchError } from "ofetch";
 
 vi.mock("~/composables/useAPIFetch", () => ({
   getAnalysisNodes: vi.fn(),
@@ -71,15 +66,6 @@ describe("AnalysesTable.vue", () => {
       clear: vi.fn(),
     });
 
-    vi.mocked(useFetch).mockResolvedValue({
-      data: ref(fakeProjects),
-      pending: ref(false),
-      error: ref(undefined),
-      status: ref("success"),
-      refresh: vi.fn(),
-      execute: vi.fn(),
-      clear: vi.fn(),
-    });
     vi.mocked(useNuxtApp);
   });
 
@@ -93,6 +79,7 @@ describe("AnalysesTable.vue", () => {
 
     expect(AnalysisTableTestComponent).toBeTruthy();
     expect(wrapper.text()).toContain("Analyses"); // H1 of the page
+    console.log(wrapper.text());
 
     // Find header and all rows
     const headerRow = wrapper.findAll("thead tr");
@@ -101,22 +88,22 @@ describe("AnalysesTable.vue", () => {
 
     // Verify header contents
     expect(headerRow.length).toBe(1);
-    const headerCols = headerRow[0].findAll("th");
-    expect(headerCols[0].text()).toBe("Name"); // First col
-    expect(headerCols[9].text()).toBe("Analysis Controls"); // Last col
+    const headerCols = headerRow[0]!.findAll("th");
+    expect(headerCols[0]!.text()).toBe("Name"); // First col
+    expect(headerCols[9]!.text()).toBe("Analysis Controls"); // Last col
 
     // Verify the second row's content
-    const secondRowCells = rows[1].findAll("td");
-    expect(secondRowCells[0].text()).toBe("T004"); // Name
-    expect(secondRowCells[1].text()).toBe("approved"); // Approval status
-    expect(secondRowCells[7].text()).toBe("14.03.2025"); // Last Updated
+    const secondRowCells = rows[1]!.findAll("td");
+    expect(secondRowCells[0]!.text()).toBe("T004"); // Name
+    expect(secondRowCells[1]!.text()).toBe("approved"); // Approval status
+    expect(secondRowCells[7]!.text()).toBe("14.03.2025"); // Last Updated
   });
 
   test("Cached results used", async () => {
     spy.mockClear();
 
     const dataRef = ref(fakeAnalysisNodes);
-    const errorRef = ref<FetchError | undefined>(undefined);
+    const errorRef = ref<{ statusCode: number; name: string; message: string } | undefined>(undefined);
     const statusRef = ref<AsyncDataRequestStatus>("success");
     const mockRefresh = vi.fn();
 

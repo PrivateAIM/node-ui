@@ -5,7 +5,7 @@ import ApproveRejectButtons from "~/components/table/ApproveRejectButtons.vue";
 import {
   fakeInvalidProposalId,
   fakeValidProposalId,
-} from "~/test/mockapi/handlers";
+} from "@/test/mockapi/handlers";
 
 describe("ApproveRejectButtons.vue", () => {
   let spy;

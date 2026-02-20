@@ -1,3 +1,4 @@
+import { $fetch } from "ofetch";
 import { useToast } from "primevue/usetoast";
 import {
   showDownstreamConnectionErrorToast,

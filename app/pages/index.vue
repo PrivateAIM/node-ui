@@ -28,7 +28,7 @@ definePageMeta({
     </div>
     <div class="col-6 landing-img">
       <img
-        src="@/assets/img/node_network.png"
+        src="~/assets/img/node_network.png"
         alt="Hospital Network"
         class="pimg network-img"
       />

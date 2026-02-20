@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import type { SessionData } from "h3";
+import type { Session } from "next-auth";
 
 interface RefreshResponse {
   success: boolean;
@@ -51,7 +51,7 @@ export const useAuthRefresh = () => {
       return false;
     }
 
-    const tokenData = data.value as SessionData;
+    const tokenData = data.value as Session;
     const exp = tokenData.expiresAt;
 
     if (!exp) {
@@ -59,8 +59,7 @@ export const useAuthRefresh = () => {
       return false;
     }
 
-    const expiryTime =
-      typeof exp === "number" ? exp * 1000 : new Date(exp).getTime();
+    const expiryTime = exp * 1000;
     const timeUntilExpiry = expiryTime - Date.now(); // Time in ms
 
     return timeUntilExpiry < bufferSeconds * 1000 && timeUntilExpiry > 0;

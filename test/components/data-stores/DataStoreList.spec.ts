@@ -1,13 +1,10 @@
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import DataStoreList from "~/components/data-stores/DataStoreList.vue";
 import { getDataStores, getProjects } from "~/composables/useAPIFetch";
 import type { ListServices, Project } from "~/services/Api";
-import {
-  fakeDataStoreResp,
-  fakeProjectResp,
-} from "~/test/components/data-stores/constants";
+import { fakeDataStoreResp, fakeProjectResp } from "./constants";
 
 vi.mock("~/composables/useAPIFetch", () => ({
   getProjects: vi.fn(),

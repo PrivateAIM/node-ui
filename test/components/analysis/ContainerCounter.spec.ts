@@ -2,7 +2,7 @@ import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 
 import ContainerCounter from "~/components/analysis/ContainerCounter.vue";
-import { fakeAnalysisNodes } from "~/test/components/analysis/constants";
+import { fakeAnalysisNodes } from "@/test/components/analysis/constants";
 import type { AnalysisNode } from "~/services/Api";
 
 interface filterData {
