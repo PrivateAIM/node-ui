@@ -14,7 +14,7 @@ import {
   showKongS3BucketErrorToast,
   showRbacPermissionError,
   showWrongRobotIdToast,
-} from "~/composables/connectionErrorToast";
+} from "../../app/composables/connectionErrorToast";
 import { $fetch } from "ofetch";
 
 const toast = useToast();

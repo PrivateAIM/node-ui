@@ -4,12 +4,12 @@ import {
   type BodyKongInitializeKongInitializePost,
   type BodyPodorcPodsCreatePoPost,
   type CleanupPodResponse,
-} from "~/services/Api";
+} from "../../app/services/Api";
 import {
   fakeDataStoreInitSuccess,
   fakeParsedProjects,
-} from "~/test/components/data-stores/constants";
-import { fakeProposalsResp } from "~/test/components/projects/constants";
+} from "../components/data-stores/constants";
+import { fakeProposalsResp } from "../components/projects/constants";
 
 export const fakeValidProposalId = "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483";
 export const fakeInvalidProposalId = "15518efa-5146-4290-a7cb-95d27f41d991";
@@ -304,8 +304,8 @@ export const handlers = [
     const projectId = body.project_id;
     const hostname = body.datastore["host"];
 
-    const validProjectId = fakeParsedProjects[0].id;
-    const duplicateProjectId = fakeParsedProjects[1].id;
+    const validProjectId = fakeParsedProjects[0]!.id;
+    const duplicateProjectId = fakeParsedProjects[1]!.id;
 
     if (hostname === "void") {
       // Trigger for an error

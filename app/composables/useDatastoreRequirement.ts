@@ -12,29 +12,31 @@ export async function useDatastoreRequirement() {
     nodeType: null,
   }));
 
-  let dataRequired: boolean = true;
+  let dataRequired: boolean = datastoreState.value.datastoreRequired || true; // Assume it's required if not set
 
-  // Get node configuration settings
-  if (!datastoreState.value.datastoreRequired) {
+  // If no setting for this requirement, fetch it
+  if (datastoreState.value.datastoreRequired == null) {
     const nodeConfigResp = (await useNuxtApp()
-      .$hubApi("/node/settings", { method: "GET" })
+      .$hubApi("/node/settings", {
+        method: "GET",
+      })
       .catch(() => null)) as NodeSettings;
     if (nodeConfigResp) {
       dataRequired = Boolean(nodeConfigResp.data_required);
     }
   }
 
-  if (!datastoreState.value.nodeType) {
-    // Re-fetch if node type couldn't be obtained previously
+  // If node type not set, fetch it
+  if (datastoreState.value.nodeType == null) {
     const nodeResp = (await useNuxtApp()
-      .$hubApi("/node-type", { method: "GET" })
+      .$hubApi("/node-type", {
+        method: "GET",
+      })
       .catch(() => null)) as NodeTypeResponse;
-
-    if (nodeResp) {
-      datastoreState.value = {
-        nodeType: nodeResp.type,
-        datastoreRequired: nodeResp.type !== "aggregator" && dataRequired,
-      };
+    if (nodeResp && nodeResp.type) {
+      datastoreState.value.nodeType = nodeResp.type;
+      datastoreState.value.datastoreRequired =
+        nodeResp.type !== "aggregator" && dataRequired;
     }
   }
 
@@ -45,12 +47,10 @@ export async function useDatastoreRequirement() {
         body: { data_required: updatedRequirement },
       })
       .catch(() => null)) as NodeSettings;
-
     if (nodeConfigResp) {
-      datastoreState.value = {
-        ...datastoreState.value,
-        datastoreRequired: nodeConfigResp.data_required,
-      };
+      datastoreState.value.datastoreRequired = Boolean(
+        nodeConfigResp.data_required,
+      );
     }
   }
 

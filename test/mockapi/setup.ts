@@ -2,8 +2,8 @@ import { afterAll, afterEach, beforeAll, vi } from "vitest";
 import { computed, onMounted, ref, watch } from "vue";
 import { config } from "@vue/test-utils";
 import { setupServer } from "msw/node";
-import { handlers } from "~/test/mockapi/handlers";
-import { fakeHubApi } from "~/test/mockapi/api";
+import { handlers } from "./handlers";
+import { fakeHubApi } from "./api";
 
 import PrimeVue from "primevue/config";
 import DataTable from "primevue/datatable";

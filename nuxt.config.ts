@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from "nuxt/config";
-import { Flame } from "./assets/primevue/flame-preset";
+import { Flame } from "./app/assets/primevue/flame-preset";
 
 export default defineNuxtConfig({
   ssr: process.env.NODE_ENV !== "development",

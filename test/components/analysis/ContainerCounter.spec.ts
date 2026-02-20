@@ -6,18 +6,17 @@ import { fakeAnalysisNodes } from "~/test/components/analysis/constants";
 import type { AnalysisNode } from "~/services/Api";
 
 interface filterData {
-  value: string[] | null,
-  matchMode: string
+  value: string[] | null;
+  matchMode: string;
 }
 
 interface filterObject {
-  global?: filterData,
-  run_status: filterData,
-  approval_status?: filterData,
+  global?: filterData;
+  run_status: filterData;
+  approval_status?: filterData;
 }
 
 describe("ContainerCounter.vue", () => {
-
   function countStatusOccurences(inputAnalyses: AnalysisNode[]) {
     const statusCounts = {
       started: 0,
@@ -25,12 +24,12 @@ describe("ContainerCounter.vue", () => {
       stopped: 0,
       failed: 0,
       finished: 0,
-    }
+    };
     inputAnalyses.forEach((analysisNode) => {
       if (analysisNode.run_status) {
         statusCounts[analysisNode.run_status]++;
       }
-    })
+    });
     return statusCounts;
   }
 
@@ -50,27 +49,34 @@ describe("ContainerCounter.vue", () => {
 
     // Success check
     const fillCounterDiv = wrapper.find(".counter-badge-all");
-    ["Started", "Running", "Stopped", "Failed", "Finished"].forEach((runStatus, index) => {
-      expect(fillCounterDiv.text()).toContain(runStatus)
-      const lowerStatus = runStatus.toLowerCase();
-      const statusCount = statusCounts[lowerStatus];
+    ["Started", "Running", "Stopped", "Failed", "Finished"].forEach(
+      (runStatus, index) => {
+        expect(fillCounterDiv.text()).toContain(runStatus);
+        const lowerStatus = runStatus.toLowerCase();
+        const statusCount = statusCounts[lowerStatus];
 
-      // Check individual badge properties
-      const counterDiv = wrapper.find(`.container-counter-${lowerStatus}`);
-      const badgeDiv = wrapper.find(`.counter-badge-${lowerStatus}`);
-      expect(badgeDiv.text()).toContain(statusCount);  // check status count
+        // Check individual badge properties
+        const counterDiv = wrapper.find(`.container-counter-${lowerStatus}`);
+        const badgeDiv = wrapper.find(`.counter-badge-${lowerStatus}`);
+        expect(badgeDiv.text()).toContain(statusCount); // check status count
 
-      // If not in filter list and filter list is not empty, then it should be opaque
-      if (mockFilters.run_status.value && !mockFilters.run_status.value.includes(lowerStatus)) {
-        expect(counterDiv.attributes("class")).toContain("opaque-badge")
-      }
+        // If not in filter list and filter list is not empty, then it should be opaque
+        if (
+          mockFilters.run_status.value &&
+          !mockFilters.run_status.value.includes(lowerStatus)
+        ) {
+          expect(counterDiv.attributes("class")).toContain("opaque-badge");
+        }
 
-      // Clicking on badge emits correctly
-      badgeDiv.trigger("click");
-      expect(wrapper.emitted()).toHaveProperty('applyRunStatusFilter')
-      expect(wrapper.emitted().applyRunStatusFilter).toHaveLength(index+1)
-      expect(wrapper.emitted().applyRunStatusFilter[index]).toEqual([lowerStatus]);
-    })
+        // Clicking on badge emits correctly
+        badgeDiv.trigger("click");
+        expect(wrapper.emitted()).toHaveProperty("applyRunStatusFilter");
+        expect(wrapper.emitted().applyRunStatusFilter).toHaveLength(index + 1);
+        expect(wrapper.emitted().applyRunStatusFilter[index]).toEqual([
+          lowerStatus,
+        ]);
+      },
+    );
 
     return wrapper;
   }
@@ -79,17 +85,17 @@ describe("ContainerCounter.vue", () => {
     counterCheck(fakeAnalysisNodes, {
       run_status: {
         value: null,
-        matchMode: 'in',
-      }
-    })
-  })
+        matchMode: "in",
+      },
+    });
+  });
 
   it("Filters applied", () => {
     counterCheck(fakeAnalysisNodes, {
       run_status: {
         value: ["started", "failed"],
-        matchMode: 'in',
-      }
-    })
-  })
-})
+        matchMode: "in",
+      },
+    });
+  });
+});

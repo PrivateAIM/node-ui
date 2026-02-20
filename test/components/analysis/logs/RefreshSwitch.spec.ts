@@ -1,5 +1,5 @@
 import { mount } from "@vue/test-utils";
-import { describe, test, expect } from "vitest";
+import { describe, expect, test } from "vitest";
 import RefreshSwitch from "~/components/analysis/logs/RefreshSwitch.vue";
 
 describe("RefreshSwitch.vue", async () => {
