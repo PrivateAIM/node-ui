@@ -12,20 +12,20 @@ import type { ModifiedDetailedService } from "~/services/modifiedApiInterfaces";
 import { useNuxtApp } from "nuxt/app";
 
 interface DetailedDataStoreTableRow {
-  name?: string | null;
-  type?: string | null;
-  project?: string | null;
-  path?: string | null;
-  host?: string | null;
-  port?: number | null;
-  protocol?: string | null;
-  created_at?: string | null;
-  updated_at?: string | null;
+  name?: string | undefined;
+  type?: string | undefined;
+  project?: string | undefined;
+  path?: string | undefined;
+  host?: string | undefined;
+  port?: number | undefined;
+  protocol?: string | undefined;
+  created_at?: string | undefined;
+  updated_at?: string | undefined;
 }
 
 const props = defineProps({
   stores: Array<ModifiedDetailedService>,
-  projectNameMap: Map<string, string | null>,
+  projectNameMap: Map<string, string | undefined>,
   loading: Boolean,
 });
 
@@ -52,7 +52,7 @@ const dataStores = computed(() => {
         routes.forEach((proj: Route) => {
           const projectParts = extractUuid(proj.name!);
           const dataStoreType = projectParts[0];
-          const projectUuid = projectParts[1];
+          const projectUuid = projectParts[1] as string;
           const newRow: DetailedDataStoreTableRow = {
             name: store.name,
             type: dataStoreType,
@@ -145,10 +145,10 @@ async function onCheckConnection(dsName: string) {
 
 // Table filters
 const defaultFilters = {
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  type: { value: null, matchMode: FilterMatchMode.EQUALS },
-  "created_at.short": { value: null, matchMode: FilterMatchMode.DATE_IS },
-  "updated_at.short": { value: null, matchMode: FilterMatchMode.DATE_IS },
+  global: { value: undefined, matchMode: FilterMatchMode.CONTAINS },
+  type: { value: undefined, matchMode: FilterMatchMode.EQUALS },
+  "created_at.short": { value: undefined, matchMode: FilterMatchMode.DATE_IS },
+  "updated_at.short": { value: undefined, matchMode: FilterMatchMode.DATE_IS },
 };
 
 const filters = ref(defaultFilters);
@@ -159,7 +159,7 @@ function resetFilters() {
     clearedFilters[filterKey] = {
       ...defaultFilters[filterKey],
     };
-    clearedFilters[filterKey].value = null;
+    clearedFilters[filterKey].value = undefined;
   }
   filters.value = clearedFilters;
 }

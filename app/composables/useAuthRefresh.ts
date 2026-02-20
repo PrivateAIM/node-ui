@@ -9,7 +9,7 @@ interface RefreshResponse {
 export const useAuthRefresh = () => {
   const { status, data, refresh } = useAuth();
   const isRefreshing = ref(false);
-  const refreshError = ref<string | null>(null);
+  const refreshError = ref<string | undefined>(undefined);
 
   const refreshToken = async (): Promise<RefreshResponse> => {
     // Prevent multiple simultaneous refresh attempts
@@ -23,7 +23,7 @@ export const useAuthRefresh = () => {
     }
 
     isRefreshing.value = true;
-    refreshError.value = null;
+    refreshError.value = undefined;
 
     try {
       await refresh(); // From sidebase methods

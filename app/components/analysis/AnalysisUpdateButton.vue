@@ -16,8 +16,8 @@ const emit = defineEmits(["updateAnalysisRun"]);
 const loading = ref(false);
 const toast = useToast();
 
-async function getStatusUpdateFromPodOrc(): Promise<PodStatus | null> {
-  let analysisStatus: PodStatus | null = null;
+async function getStatusUpdateFromPodOrc(): Promise<PodStatus | undefined> {
+  let analysisStatus: PodStatus | undefined = undefined;
 
   try {
     const analysisStatusUpdate: StatusResponse = await useNuxtApp().$hubApi(
@@ -49,7 +49,7 @@ async function getStatusUpdateFromPodOrc(): Promise<PodStatus | null> {
   } catch (err) {
     const fetchError = err as FetchError;
     if (fetchError.status === 403) {
-      return null; // Exit early on 403 to not overdo toasts
+      return undefined; // Exit early on 403 to not overdo toasts
     }
     toast.add({
       severity: "error",
@@ -67,8 +67,8 @@ async function onClickUpdate() {
   loading.value = true;
   const updatedStatus = await getStatusUpdateFromPodOrc();
   if (updatedStatus) {
-    // TODO replace null with progress update from PO
-    emit("updateAnalysisRun", updatedStatus, null);
+    // TODO replace undefined with progress update from PO
+    emit("updateAnalysisRun", updatedStatus, undefined);
   }
 
   loading.value = false;

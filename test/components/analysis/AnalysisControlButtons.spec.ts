@@ -277,7 +277,7 @@ describe("AnalysisControlButtons.vue", () => {
     const wrapper = mount(AnalysisControlButtons, {
       props: {
         analysisBuildStatus: AnalysisBuildStatus.Finished,
-        analysisRunStatus: null,
+        analysisRunStatus: undefined,
         analysisNodeId: "8003eefe-e39b-4bd4-aec4-78046c63b39b",
         analysisId: fakeAnalysisId,
         projectId: "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483",

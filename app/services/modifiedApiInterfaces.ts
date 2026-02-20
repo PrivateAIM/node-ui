@@ -13,20 +13,26 @@ export interface modifiedTimestamp {
   timestamp: number;
 }
 
-export interface ModifiedDetailedService
-  extends Omit<DetailedService, "created_at" | "updated_at"> {
+export interface ModifiedDetailedService extends Omit<
+  DetailedService,
+  "created_at" | "updated_at"
+> {
   created_at: modifiedTimestamp;
   updated_at: modifiedTimestamp;
 }
 
-export interface ModifiedConsumer
-  extends Omit<Consumer, "created_at" | "updated_at"> {
+export interface ModifiedConsumer extends Omit<
+  Consumer,
+  "created_at" | "updated_at"
+> {
   created_at: modifiedTimestamp;
   updated_at?: modifiedTimestamp;
 }
 
-export interface ModifiedRoute
-  extends Omit<Route, "created_at" | "updated_at"> {
+export interface ModifiedRoute extends Omit<
+  Route,
+  "created_at" | "updated_at"
+> {
   created_at: modifiedTimestamp;
   updated_at: modifiedTimestamp;
 }

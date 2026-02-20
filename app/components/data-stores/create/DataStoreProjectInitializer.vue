@@ -82,11 +82,11 @@ watch(selectedProject, (newSelectedProject) => {
 });
 
 function activateHelp(helpField: HelpTextField) {
-  helpActive.value = helpActive.value === helpField ? null : helpField;
+  helpActive.value = helpActive.value === helpField ? undefined : helpField;
 }
 
 function deactivateHelp() {
-  helpActive.value = null;
+  helpActive.value = undefined;
 }
 
 function validatePath(path: string) {
@@ -160,7 +160,7 @@ async function onSubmitCreateDataStoreAndProject() {
           life: 5000,
         });
         connMsg.value = "Invalid connection!";
-      }); // Set the response to null if an error occurs
+      }); // Set the response to undefined if an error occurs
 
     loading.value = false;
 

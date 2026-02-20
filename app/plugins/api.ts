@@ -17,6 +17,18 @@ import {
 } from "~/composables/connectionErrorToast";
 import { useToast } from "primevue/usetoast";
 
+declare module "nuxt/app" {
+  interface NuxtApp {
+    $hubApi: typeof $fetch;
+  }
+}
+
+declare module "vue" {
+  interface ComponentCustomProperties {
+    $hubApi: typeof $fetch;
+  }
+}
+
 export default defineNuxtPlugin(() => {
   const { signIn, getSession } = useAuth();
   const { shouldRefreshToken, refreshToken } = useAuthRefresh();
@@ -47,6 +59,7 @@ export default defineNuxtPlugin(() => {
         options.headers = headers;
       } else {
         showNotAuthenticatedToast(toast);
+        return undefined;
       }
     },
     onRequestError({ error }) {
@@ -55,7 +68,7 @@ export default defineNuxtPlugin(() => {
     async onResponseError({ request, response }) {
       // Handle the response errors
       const errMsg = response._data.detail?.message ?? "no message provided";
-      const errSvc = response._data.detail?.service ?? null;
+      const errSvc = response._data.detail?.service ?? undefined;
       // if (response.status === 401) {
       //   console.warn("User not signed in, returning to login");
       //   await signIn(idpProvider);

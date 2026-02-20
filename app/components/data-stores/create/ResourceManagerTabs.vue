@@ -4,7 +4,7 @@ import type { ProjectNode } from "~/services/Api";
 import DataStoreProjectInitializer from "~/components/data-stores/create/DataStoreProjectInitializer.vue";
 
 export interface availableProject {
-  name: string | null | undefined;
+  name: string | undefined | undefined;
   id: string;
   dropdown: string;
 }

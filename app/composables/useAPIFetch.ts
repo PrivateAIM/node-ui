@@ -77,13 +77,16 @@ export function getAnalyses(opts?) {
 }
 
 export function getAnalysisNodes(opts?) {
-  return useAPIFetch<AnalysisNode[]>("/analysis-nodes?include=analysis,node", {
-    ...opts,
-    method: "GET",
-    query: {
-      sort: "-updated_at",
+  return useAPIFetch<AnalysisNode[] | undefined>(
+    "/analysis-nodes?include=analysis,node",
+    {
+      ...opts,
+      method: "GET",
+      query: {
+        sort: "-updated_at",
+      },
     },
-  });
+  );
 }
 
 // Kong endpoints

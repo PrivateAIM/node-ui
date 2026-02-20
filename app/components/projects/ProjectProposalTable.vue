@@ -22,7 +22,7 @@ const { data: response, status, refresh } = await getProjectNodes();
 function parseData() {
   if (status.value === "success") {
     proposals.value = formatDataRow(
-      response.value as unknown as Map<string, string | number | null>[],
+      response.value as unknown as Map<string, string | number | undefined>[],
       dataRowUnixCols,
       expandRowEntries,
     );
@@ -47,8 +47,8 @@ async function onTableRefresh() {
 
 // Table filters
 const defaultFilters = {
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  approval_status: { value: null, matchMode: FilterMatchMode.EQUALS },
+  global: { value: undefined, matchMode: FilterMatchMode.CONTAINS },
+  approval_status: { value: undefined, matchMode: FilterMatchMode.EQUALS },
 };
 
 filters.value = defaultFilters;
@@ -59,7 +59,7 @@ function resetFilters() {
     clearedFilters[filterKey] = {
       ...defaultFilters[filterKey],
     };
-    clearedFilters[filterKey].value = null;
+    clearedFilters[filterKey].value = undefined;
   }
   filters.value = clearedFilters;
 }

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useFetch, useNuxtApp, useState } from "nuxt/app";
+import { useNuxtApp, useState } from "nuxt/app";
 import Badge from "primevue/badge";
 import { useToast } from "primevue/usetoast";
 import ProgressBar from "primevue/progressbar";
@@ -32,6 +32,7 @@ import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
 import type { ModifiedAnalysisNode } from "~/services/modifiedApiInterfaces";
 
 const toast = useToast();
+const tableLoading = ref(true);
 
 // Data Store Requirement Check
 const { datastoreState } = await useDatastoreRequirement();
@@ -60,11 +61,14 @@ const expandedRows = ref();
 const filters = ref();
 
 // Cache
-const analysisCache = useState<AnalysisNode[] | null>(
+const analysisCache = useState<AnalysisNode[] | undefined>(
   "analysisCache",
-  () => null,
+  () => undefined,
 );
-const projectCache = useState<Project[] | null>("projectCache", () => null);
+const projectCache = useState<Project[] | undefined>(
+  "projectCache",
+  () => undefined,
+);
 const podOrcUnreacheable = ref(false);
 
 // Paginated table
@@ -80,42 +84,46 @@ const approvalStatuses = Object.values(ApprovalStatus);
 const buildStatuses = Object.values(AnalysisBuildStatus);
 
 const { data: analysisNodeResp, status, refresh } = await getAnalysisNodes(); // Get the first batch of 50
-const { data: projResp, status: projStatus } = await useFetch<Project[] | null>(
-  "/projects",
-  {
-    $fetch: useNuxtApp().$hubApi as typeof $fetch,
-    method: "GET",
-    query: {
-      sort: "-updated_at",
-      fields: "id,name",
-    },
-  },
-);
 
-const kongProjectsResp = (await useNuxtApp()
-  .$hubApi("/kong/project", {
-    method: "GET",
-  })
-  .catch(() => null)) as ListRoutes;
-if (kongProjectsResp && kongProjectsResp.data) {
-  const projIds: string[] = [];
-  kongProjectsResp.data.forEach((proj: Route) => {
-    const nameChunks = proj.name?.split("-");
-    if (nameChunks && nameChunks.length > 1) {
-      nameChunks.pop(); // Remove suffix, either "fhir" or "s3"
-      const projUuid = nameChunks.join("-");
-      projIds.push(projUuid);
-    }
-  });
-  kongRoutes.value = new Set(projIds);
+async function getProjects() {
+  return (await useNuxtApp()
+    .$hubApi("/projects", {
+      method: "GET",
+      query: {
+        sort: "-updated_at",
+        fields: "id,name",
+      },
+    })
+    .catch(() => undefined)) as Project[];
+}
+
+async function getKongRoutes() {
+  const kongRoutesResp = (await useNuxtApp()
+    .$hubApi("/kong/project", {
+      method: "GET",
+    })
+    .catch(() => undefined)) as ListRoutes;
+  if (kongRoutesResp && kongRoutesResp.data) {
+    const projIds: string[] = [];
+    kongRoutesResp.data.forEach((proj: Route) => {
+      const nameChunks = proj.name?.split("-");
+      if (nameChunks && nameChunks.length > 1) {
+        nameChunks.pop(); // Remove suffix, either "fhir" or "s3"
+        const projUuid = nameChunks.join("-");
+        projIds.push(projUuid);
+      }
+    });
+    kongRoutes.value = new Set(projIds);
+  }
 }
 
 // Iterate through projects and populate map with proj UUID: name
-function parseProjects() {
-  let projData: Project[] | null;
-  if (projStatus.value === "success" && projResp.value) {
-    projectCache.value = projResp.value;
-    projData = projResp.value;
+async function parseProjects() {
+  const projResp = await getProjects();
+  let projData: Project[] | undefined;
+  if (projResp) {
+    projectCache.value = projResp;
+    projData = projResp;
   } else {
     // No need to show cache warning here since it is already called during analysis parsing
     projData = projectCache.value;
@@ -129,7 +137,7 @@ function parseProjects() {
   }
 }
 
-async function getRunStatusesFromPodOrc(): Promise<StatusResponse | null> {
+async function getRunStatusesFromPodOrc(): Promise<StatusResponse | undefined> {
   const podOrcResponse = (await useNuxtApp()
     .$hubApi("/po/status", {
       method: "GET",
@@ -193,7 +201,7 @@ function determineProgressBarColor(progress: number) {
 
 function parseAnalysis(
   analysisEntry: ModifiedAnalysisNode,
-  runStatuses: StatusResponse | null,
+  runStatuses: StatusResponse | undefined,
 ): ModifiedAnalysisNode {
   const projId = analysisEntry.analysis?.project_id;
   const analysisId = analysisEntry.analysis_id;
@@ -201,12 +209,12 @@ function parseAnalysis(
     analysisEntry.project_name = projMap.has(projId) ? projMap.get(projId) : "";
     analysisEntry.datastore = kongRoutes.value.has(projId);
   }
-  // If PodOrc status update returns null -> use hub info since it's all we have
+  // If PodOrc status update returns undefined -> use hub info since it's all we have
   // If status from PodOrc -> use it
   // If no run status reported by PodOrc, and it's not failed/finished -> set to null (wrong hub info)
   if (runStatuses) {
     if (analysisId in runStatuses) {
-      analysisEntry.run_status = runStatuses[analysisId];
+      analysisEntry.run_status = runStatuses[analysisId] ?? null;
     } else {
       if (
         analysisEntry.run_status != AnalysisNodeRunStatus.Failed &&
@@ -219,11 +227,17 @@ function parseAnalysis(
   return setProgress(analysisEntry);
 }
 
-async function parseData(respStatus: string, respData: AnalysisNode[] | null) {
+async function compileAnalysisTable(
+  respStatus: string,
+  respData: AnalysisNode[] | undefined,
+) {
+  tableLoading.value = true;
+  await parseProjects();
+  await getKongRoutes();
   const parsedAnalyses = new Map<string, ModifiedAnalysisNode>();
   const currentRunStatuses = await getRunStatusesFromPodOrc();
 
-  let analysisData: AnalysisNode[] | null;
+  let analysisData: AnalysisNode[] | undefined;
   if (respStatus === "success") {
     analysisCache.value = respData;
     analysisData = respData;
@@ -246,17 +260,17 @@ async function parseData(respStatus: string, respData: AnalysisNode[] | null) {
     });
     analysesMap.value = parsedAnalyses;
   }
+  tableLoading.value = false;
 }
 
 onMounted(() => {
-  parseProjects();
-  parseData(status.value, analysisNodeResp.value);
+  compileAnalysisTable(status.value, analysisNodeResp.value);
   setInterval(checkForUpdatesFromPodOrc, 15000); // Poll PO every 15 seconds
 });
 
 async function onTableRefresh() {
   await refresh();
-  await parseData(status.value, analysisNodeResp.value);
+  await compileAnalysisTable(status.value, analysisNodeResp.value);
 }
 
 function onPage(event) {
@@ -286,14 +300,14 @@ async function getNextPage() {
         sort: "-updated_at",
       },
     })
-    .catch(() => null)) as AnalysisNode[];
+    .catch(() => undefined)) as AnalysisNode[];
   if (nextSetResults.length > 0) {
     if (nextSetResults.length < queryLimit) {
       // Fewer than limit means we are at the end
       allResultsRetrieved = true;
     }
     currentOffset += queryLimit; // Increment offset value
-    await parseData("success", nextSetResults);
+    await compileAnalysisTable("success", nextSetResults);
   } else {
     // No results returned means all were retrieved
     allResultsRetrieved = true;
@@ -302,10 +316,10 @@ async function getNextPage() {
 
 // Table filters
 const defaultFilters = {
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  approval_status: { value: null, matchMode: FilterMatchMode.EQUALS },
-  "analysis.build_status": { value: null, matchMode: FilterMatchMode.IN },
-  run_status: { value: null, matchMode: FilterMatchMode.IN },
+  global: { value: undefined, matchMode: FilterMatchMode.CONTAINS },
+  approval_status: { value: undefined, matchMode: FilterMatchMode.EQUALS },
+  "analysis.build_status": { value: undefined, matchMode: FilterMatchMode.IN },
+  run_status: { value: undefined, matchMode: FilterMatchMode.IN },
 };
 filters.value = defaultFilters;
 
@@ -315,7 +329,7 @@ function resetFilters() {
     clearedFilters[filterKey] = {
       ...defaultFilters[filterKey],
     };
-    clearedFilters[filterKey].value = null;
+    clearedFilters[filterKey].value = undefined;
   }
   filters.value = clearedFilters;
 }
@@ -335,7 +349,7 @@ function updateAnalysisRun(analysisId: string, newStatus: PodStatus | null) {
 function updateRunStatusFilter(filterText: string) {
   const currentRunStatusFilters = filters.value.run_status.value;
   if (!currentRunStatusFilters) {
-    // If value is null then initialize with filter in array
+    // If value is undefined then initialize with filter in array
     filters.value.run_status.value = [filterText];
   } else {
     // Already run status filters present
@@ -345,8 +359,8 @@ function updateRunStatusFilter(filterText: string) {
         (item) => item !== filterText,
       );
       if (filteredStatuses.length == 0) {
-        // If empty array after filtering then set to null
-        filters.value.run_status.value = null;
+        // If empty array after filtering then set to undefined
+        filters.value.run_status.value = undefined;
       } else {
         filters.value.run_status.value = filteredStatuses;
       }
@@ -464,6 +478,7 @@ const onCloseNavToast = () => {
             table: 'table table-striped',
           }"
           :rows="10"
+          :loading="tableLoading"
           :rowsPerPageOptions="[10, 20, 50]"
           :sortOrder="-1"
           :value="analyses"

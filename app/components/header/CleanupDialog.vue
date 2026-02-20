@@ -74,7 +74,7 @@ const toast = useToast();
 const loading = ref(false);
 
 const handleCleanupShow = () => {
-  selectedCleanUpOption.value = null;
+  selectedCleanUpOption.value = undefined;
   cleanupVisible.value = true;
 };
 

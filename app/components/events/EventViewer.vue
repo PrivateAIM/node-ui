@@ -147,8 +147,8 @@ FilterService.register("tagsContainsAny", (value, filter) => {
 });
 
 const defaultFilters = {
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  "attributes.tags": { value: null, matchMode: "tagsContainsAny" },
+  global: { value: undefined, matchMode: FilterMatchMode.CONTAINS },
+  "attributes.tags": { value: undefined, matchMode: "tagsContainsAny" },
 };
 
 filters.value = defaultFilters;
@@ -163,7 +163,7 @@ function clearAllFilters() {
     clearedFilters[filterKey] = {
       ...defaultFilters[filterKey],
     };
-    clearedFilters[filterKey].value = null;
+    clearedFilters[filterKey].value = undefined;
   }
   filters.value = clearedFilters;
   appliedFilters.value = [];
@@ -193,7 +193,7 @@ watch(
     if (newFilters.length > 0) {
       filters.value["attributes.tags"].value = newFilters;
     } else {
-      filters.value["attributes.tags"].value = null;
+      filters.value["attributes.tags"].value = undefined;
     }
   },
   { deep: true },

@@ -30,7 +30,7 @@ export const showNotAuthenticatedToast = (toast: ToastServiceMethods) => {
 
 export const showHubAdapterConnectionErrorToast = (
   toast: ToastServiceMethods,
-  svc: string | null,
+  svc: string | undefined,
 ) => {
   let msg = "The API encountered an error";
   if (svc) {

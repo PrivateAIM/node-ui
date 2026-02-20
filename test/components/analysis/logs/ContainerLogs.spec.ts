@@ -44,7 +44,7 @@ describe("ContainerLogs.vue", () => {
     vi.mocked(getAnalysisLogs).mockResolvedValue({
       data: ref(mockedResp),
       pending: ref(false),
-      error: ref(null),
+      error: ref(undefined),
       status: ref("success"),
       refresh: vi.fn(),
       execute: vi.fn(),
@@ -67,7 +67,7 @@ describe("ContainerLogs.vue", () => {
     vi.mocked(getAnalysisLogs).mockResolvedValue({
       data: ref(emptyResp),
       pending: ref(false),
-      error: ref(null),
+      error: ref(undefined),
       status: ref("success"),
       refresh: vi.fn(),
       execute: vi.fn(),

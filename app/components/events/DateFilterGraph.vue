@@ -19,9 +19,9 @@ const endDate = ref<Date>();
 
 const emit = defineEmits(["showRequestedEvents"]);
 
-function formatDate(date: Date | null): string | null {
+function formatDate(date: Date | undefined): string | undefined {
   if (!date) {
-    return null;
+    return undefined;
   } else {
     return date.toISOString().slice(0, 16); // cut off unnecessary stuff
   }
@@ -44,7 +44,7 @@ async function requestEvents() {
         detail: "Unable to fetch events from database",
         life: 5000,
       });
-      return null;
+      return undefined;
     });
   loading.value = false;
   if (eventResp) {

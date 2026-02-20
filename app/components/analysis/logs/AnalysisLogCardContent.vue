@@ -5,8 +5,8 @@ import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
 
 const props = defineProps({
-  nginxLogs: String || null,
-  analysisLogs: String || null,
+  nginxLogs: String || undefined,
+  analysisLogs: String || undefined,
 });
 const nginxLogBottom = ref();
 const analysisLogBottom = ref();

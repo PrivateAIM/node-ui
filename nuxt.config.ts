@@ -13,6 +13,8 @@ export default defineNuxtConfig({
     "@nuxt/test-utils/module",
   ],
 
+  plugins: ["./app/plugins/api.ts"],
+
   runtimeConfig: {
     authSecret: process.env.NUXT_AUTH_SECRET,
     public: {

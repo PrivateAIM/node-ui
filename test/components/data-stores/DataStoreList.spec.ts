@@ -32,13 +32,13 @@ describe("DataStoreList.vue", () => {
   });
 
   async function checkTabs(
-    datastoreData: ListServices | null,
-    projectData: Project[] | null,
+    datastoreData: ListServices | undefined,
+    projectData: Project[] | undefined,
   ) {
     vi.mocked(getDataStores).mockResolvedValue({
       data: ref(datastoreData),
       pending: ref(false),
-      error: ref(null),
+      error: ref(undefined),
       status: ref("success"),
       refresh: vi.fn(),
       execute: vi.fn(),
@@ -48,7 +48,7 @@ describe("DataStoreList.vue", () => {
     vi.mocked(getProjects).mockResolvedValue({
       data: ref(projectData),
       pending: ref(false),
-      error: ref(null),
+      error: ref(undefined),
       status: ref("success"),
       refresh: vi.fn(),
       execute: vi.fn(),
@@ -87,10 +87,10 @@ describe("DataStoreList.vue", () => {
   });
 
   test("Missing data store data", async () => {
-    await checkTabs(null, fakeProjectResp);
+    await checkTabs(undefined, fakeProjectResp);
   });
 
   test("Missing project data", async () => {
-    await checkTabs(fakeDataStoreResp, null);
+    await checkTabs(fakeDataStoreResp, undefined);
   });
 });

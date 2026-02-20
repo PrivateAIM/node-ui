@@ -190,7 +190,7 @@
                   "format": "uuid"
                 },
                 {
-                  "type": "null"
+                  "type": "undefined"
                 }
               ],
               "description": "UUID of the analysis.",
@@ -277,7 +277,7 @@
                   "format": "uuid"
                 },
                 {
-                  "type": "null"
+                  "type": "undefined"
                 }
               ],
               "description": "UUID of the analysis.",
@@ -364,7 +364,7 @@
                   "format": "uuid"
                 },
                 {
-                  "type": "null"
+                  "type": "undefined"
                 }
               ],
               "description": "UUID of the analysis.",
@@ -451,7 +451,7 @@
                   "format": "uuid"
                 },
                 {
-                  "type": "null"
+                  "type": "undefined"
                 }
               ],
               "description": "UUID of the analysis.",
@@ -538,7 +538,7 @@
                   "format": "uuid"
                 },
                 {
-                  "type": "null"
+                  "type": "undefined"
                 }
               ],
               "description": "UUID of the analysis.",
@@ -2377,7 +2377,7 @@
                   "type": "string"
                 },
                 {
-                  "type": "null"
+                  "type": "undefined"
                 }
               ],
               "description": "Filter consumers by project using the project UUID",
@@ -2485,7 +2485,7 @@
                   "type": "string"
                 },
                 {
-                  "type": "null"
+                  "type": "undefined"
                 }
               ],
               "description": "UUID of the analysis.",
@@ -2503,7 +2503,7 @@
                   "type": "string"
                 },
                 {
-                  "type": "null"
+                  "type": "undefined"
                 }
               ],
               "description": "Filter consumers by project using the project UUID",
@@ -2758,7 +2758,7 @@
                   "type": "integer"
                 },
                 {
-                  "type": "null"
+                  "type": "undefined"
                 }
               ],
               "description": "Maximum number of events to return",
@@ -2777,7 +2777,7 @@
                   "type": "integer"
                 },
                 {
-                  "type": "null"
+                  "type": "undefined"
                 }
               ],
               "description": "Number of events to offset by",
@@ -2796,7 +2796,7 @@
                   "type": "string"
                 },
                 {
-                  "type": "null"
+                  "type": "undefined"
                 }
               ],
               "description": "Filter events by service tag",
@@ -2814,7 +2814,7 @@
                   "type": "string"
                 },
                 {
-                  "type": "null"
+                  "type": "undefined"
                 }
               ],
               "description": "Filter events by event name",
@@ -2832,7 +2832,7 @@
                   "type": "string"
                 },
                 {
-                  "type": "null"
+                  "type": "undefined"
                 }
               ],
               "description": "Filter events by username",
@@ -2851,7 +2851,7 @@
                   "format": "date-time"
                 },
                 {
-                  "type": "null"
+                  "type": "undefined"
                 }
               ],
               "description": "Filter events by start date using ISO8601 format",
@@ -2870,7 +2870,7 @@
                   "format": "date-time"
                 },
                 {
-                  "type": "null"
+                  "type": "undefined"
                 }
               ],
               "description": "Filter events by end date using ISO8601 format",
@@ -2969,7 +2969,7 @@
                 "$ref": "#/components/schemas/ACLConsumer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ]
           },
@@ -2979,7 +2979,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Created At",
@@ -2991,7 +2991,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Id"
@@ -3002,7 +3002,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Group",
@@ -3017,7 +3017,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Tags",
@@ -3036,7 +3036,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Id"
@@ -3054,7 +3054,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Description"
@@ -3065,7 +3065,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Name"
@@ -3082,7 +3082,7 @@
                 "format": "uuid"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Master Image Id"
@@ -3094,7 +3094,7 @@
                 "format": "uuid"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Registry Id"
@@ -3133,7 +3133,7 @@
                 ]
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Build Status"
@@ -3153,7 +3153,7 @@
                 ]
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Run Status"
@@ -3174,7 +3174,7 @@
                 "$ref": "#/components/schemas/Registry"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ]
           },
@@ -3197,7 +3197,7 @@
                 "$ref": "#/components/schemas/MasterImage"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ]
           }
@@ -3240,7 +3240,7 @@
                 "format": "uuid"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "External Id"
@@ -3293,7 +3293,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Project Id"
@@ -3304,7 +3304,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Kong Token"
@@ -3323,7 +3323,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Registry User"
@@ -3334,7 +3334,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Registry Password"
@@ -3368,7 +3368,7 @@
                 "enum": ["rejected", "approved"]
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Approval Status"
@@ -3388,7 +3388,7 @@
                 ]
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Run Status"
@@ -3399,7 +3399,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Comment"
@@ -3410,7 +3410,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Artifact Tag"
@@ -3421,7 +3421,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Artifact Digest"
@@ -3614,7 +3614,7 @@
                 "$ref": "#/components/schemas/MinioConfig"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "description": "Minio configuration"
@@ -3663,7 +3663,7 @@
                 "$ref": "#/components/schemas/MinioConfig"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "description": "Minio configuration"
@@ -3802,7 +3802,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "All"
@@ -3813,7 +3813,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Analyzes"
@@ -3824,7 +3824,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Services"
@@ -3835,7 +3835,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Mb"
@@ -3846,7 +3846,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Rs"
@@ -3857,7 +3857,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Zombies"
@@ -3875,7 +3875,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Created At",
@@ -3887,7 +3887,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Custom Id",
@@ -3899,7 +3899,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Id"
@@ -3913,7 +3913,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Tags",
@@ -3925,7 +3925,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Username",
@@ -3944,7 +3944,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Id"
@@ -3968,7 +3968,7 @@
                 "$ref": "#/components/schemas/Route"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ]
           },
@@ -3978,7 +3978,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Status"
@@ -3997,7 +3997,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Description"
@@ -4008,7 +4008,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Name"
@@ -4025,7 +4025,7 @@
                 "format": "uuid"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Master Image Id"
@@ -4037,7 +4037,7 @@
                 "format": "uuid"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Registry Id"
@@ -4076,7 +4076,7 @@
                 ]
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Build Status"
@@ -4096,7 +4096,7 @@
                 ]
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Run Status"
@@ -4117,7 +4117,7 @@
                 "$ref": "#/components/schemas/Registry"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ]
           },
@@ -4137,7 +4137,7 @@
                 "$ref": "#/components/schemas/Project"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ]
           },
@@ -4147,7 +4147,7 @@
                 "$ref": "#/components/schemas/MasterImage"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ]
           }
@@ -4180,7 +4180,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Created At",
@@ -4195,7 +4195,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Destinations",
@@ -4208,7 +4208,7 @@
                 "type": "object"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Headers",
@@ -4223,7 +4223,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Hosts",
@@ -4235,7 +4235,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Https Redirect Status Code",
@@ -4248,7 +4248,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Id"
@@ -4262,7 +4262,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Methods",
@@ -4274,7 +4274,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Name",
@@ -4286,7 +4286,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Path Handling",
@@ -4302,7 +4302,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Paths",
@@ -4314,7 +4314,7 @@
                 "type": "boolean"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Preserve Host",
@@ -4330,7 +4330,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Protocols",
@@ -4342,7 +4342,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Regex Priority",
@@ -4355,7 +4355,7 @@
                 "type": "boolean"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Request Buffering",
@@ -4368,7 +4368,7 @@
                 "type": "boolean"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Response Buffering",
@@ -4384,7 +4384,7 @@
                 "$ref": "#/components/schemas/RouteService"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Service"
@@ -4398,7 +4398,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Snis",
@@ -4413,7 +4413,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Sources",
@@ -4425,7 +4425,7 @@
                 "type": "boolean"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Strip Path",
@@ -4441,7 +4441,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Tags",
@@ -4453,7 +4453,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Updated At",
@@ -4475,11 +4475,11 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Ca Certificates",
-            "description": "Array of `CA Certificate` object UUIDs that are used to build the trust store while verifying upstream server's TLS certificate. If set to `null` when Nginx default is respected. If default CA list in Nginx are not specified and TLS verification is enabled, then handshake with upstream server will always fail (because no CA are trusted)."
+            "description": "Array of `CA Certificate` object UUIDs that are used to build the trust store while verifying upstream server's TLS certificate. If set to `undefined` when Nginx default is respected. If default CA list in Nginx are not specified and TLS verification is enabled, then handshake with upstream server will always fail (because no CA are trusted)."
           },
           "client_certificate": {
             "anyOf": [
@@ -4487,7 +4487,7 @@
                 "$ref": "#/components/schemas/ServiceClientCertificate"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ]
           },
@@ -4497,7 +4497,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Connect Timeout",
@@ -4510,7 +4510,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Created At",
@@ -4522,7 +4522,7 @@
                 "type": "boolean"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Enabled",
@@ -4535,7 +4535,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Host",
@@ -4547,7 +4547,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Id"
@@ -4558,7 +4558,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Name",
@@ -4570,7 +4570,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Path",
@@ -4582,7 +4582,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Port",
@@ -4595,7 +4595,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Protocol",
@@ -4608,7 +4608,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Read Timeout",
@@ -4621,7 +4621,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Retries",
@@ -4637,7 +4637,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Tags",
@@ -4649,11 +4649,11 @@
                 "type": "boolean"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Tls Verify",
-            "description": "Whether to enable verification of upstream server TLS certificate. If set to `null`, then the Nginx default is respected."
+            "description": "Whether to enable verification of upstream server TLS certificate. If set to `undefined`, then the Nginx default is respected."
           },
           "tls_verify_depth": {
             "anyOf": [
@@ -4661,11 +4661,11 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Tls Verify Depth",
-            "description": "Maximum depth of chain while verifying Upstream server's TLS certificate. If set to `null`, then the Nginx default is respected.'"
+            "description": "Maximum depth of chain while verifying Upstream server's TLS certificate. If set to `undefined`, then the Nginx default is respected.'"
           },
           "updated_at": {
             "anyOf": [
@@ -4673,7 +4673,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Updated At",
@@ -4685,7 +4685,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Url",
@@ -4697,7 +4697,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Write Timeout",
@@ -4713,7 +4713,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Routes",
@@ -4905,7 +4905,7 @@
                 "$ref": "#/components/schemas/KeyAuthConsumer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ]
           },
@@ -4915,7 +4915,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Created At",
@@ -4927,7 +4927,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Id"
@@ -4938,7 +4938,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Key",
@@ -4953,7 +4953,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Tags",
@@ -4972,7 +4972,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Id"
@@ -5025,7 +5025,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Data"
@@ -5036,7 +5036,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Offset",
@@ -5058,7 +5058,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Data"
@@ -5069,7 +5069,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Offset",
@@ -5091,7 +5091,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Data"
@@ -5102,7 +5102,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Offset",
@@ -5121,7 +5121,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ]
           },
@@ -5142,7 +5142,7 @@
                 "$ref": "#/components/schemas/LogReport"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ]
           },
@@ -5152,7 +5152,7 @@
                 "$ref": "#/components/schemas/LogReport"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ]
           }
@@ -5174,7 +5174,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Path"
@@ -5197,7 +5197,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Command"
@@ -5211,7 +5211,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Command Arguments"
@@ -5254,7 +5254,7 @@
                 "enum": ["before", "after"]
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Position"
@@ -5313,7 +5313,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Bucket Name"
@@ -5329,7 +5329,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Strip Path Pattern"
@@ -5348,7 +5348,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "External Name"
@@ -5359,7 +5359,7 @@
                 "type": "boolean"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Hidden"
@@ -5375,7 +5375,7 @@
                 "format": "uuid"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Realm Id"
@@ -5387,7 +5387,7 @@
                 "format": "uuid"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Registry Id"
@@ -5399,7 +5399,7 @@
                 "enum": ["aggregator", "default"]
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Type"
@@ -5415,7 +5415,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Public Key"
@@ -5430,7 +5430,7 @@
                 "$ref": "#/components/schemas/Registry"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ]
           },
@@ -5441,7 +5441,7 @@
                 "format": "uuid"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Registry Project Id"
@@ -5452,7 +5452,7 @@
                 "$ref": "#/components/schemas/RegistryProject"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ]
           },
@@ -5498,7 +5498,7 @@
                 "type": "boolean"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Data Required",
@@ -5528,7 +5528,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ]
           },
@@ -5563,7 +5563,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Description"
@@ -5575,7 +5575,7 @@
                 "format": "uuid"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Master Image Id"
@@ -5603,7 +5603,7 @@
                 "$ref": "#/components/schemas/MasterImage"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ]
           },
@@ -5629,7 +5629,7 @@
                 "format": "uuid"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "User Id"
@@ -5641,7 +5641,7 @@
                 "format": "uuid"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Robot Id"
@@ -5691,7 +5691,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Comment"
@@ -5759,7 +5759,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Account Name"
@@ -5770,7 +5770,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Account Secret"
@@ -5844,7 +5844,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "External Id"
@@ -5855,7 +5855,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Webhook Name"
@@ -5866,7 +5866,7 @@
                 "type": "boolean"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Webhook Exists"
@@ -5878,7 +5878,7 @@
                 "format": "uuid"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Realm Id"
@@ -5892,7 +5892,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Account Id"
@@ -5903,7 +5903,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Account Name"
@@ -5914,7 +5914,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Account Secret"
@@ -5955,7 +5955,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Created At",
@@ -5970,7 +5970,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Destinations",
@@ -5983,7 +5983,7 @@
                 "type": "object"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Headers",
@@ -5998,7 +5998,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Hosts",
@@ -6010,7 +6010,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Https Redirect Status Code",
@@ -6023,7 +6023,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Id"
@@ -6037,7 +6037,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Methods",
@@ -6049,7 +6049,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Name",
@@ -6061,7 +6061,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Path Handling",
@@ -6077,7 +6077,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Paths",
@@ -6089,7 +6089,7 @@
                 "type": "boolean"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Preserve Host",
@@ -6105,7 +6105,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Protocols",
@@ -6117,7 +6117,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Regex Priority",
@@ -6130,7 +6130,7 @@
                 "type": "boolean"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Request Buffering",
@@ -6143,7 +6143,7 @@
                 "type": "boolean"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Response Buffering",
@@ -6156,7 +6156,7 @@
                 "$ref": "#/components/schemas/RouteService"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ]
           },
@@ -6169,7 +6169,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Snis",
@@ -6184,7 +6184,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Sources",
@@ -6196,7 +6196,7 @@
                 "type": "boolean"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Strip Path",
@@ -6212,7 +6212,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Tags",
@@ -6224,7 +6224,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Updated At",
@@ -6241,7 +6241,7 @@
             "anyOf": [
               {},
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Default"
@@ -6259,7 +6259,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Id"
@@ -6280,11 +6280,11 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Ca Certificates",
-            "description": "Array of `CA Certificate` object UUIDs that are used to build the trust store while verifying upstream server's TLS certificate. If set to `null` when Nginx default is respected. If default CA list in Nginx are not specified and TLS verification is enabled, then handshake with upstream server will always fail (because no CA are trusted)."
+            "description": "Array of `CA Certificate` object UUIDs that are used to build the trust store while verifying upstream server's TLS certificate. If set to `undefined` when Nginx default is respected. If default CA list in Nginx are not specified and TLS verification is enabled, then handshake with upstream server will always fail (because no CA are trusted)."
           },
           "client_certificate": {
             "anyOf": [
@@ -6292,7 +6292,7 @@
                 "$ref": "#/components/schemas/ServiceClientCertificate"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ]
           },
@@ -6302,7 +6302,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Connect Timeout",
@@ -6315,7 +6315,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Created At",
@@ -6327,7 +6327,7 @@
                 "type": "boolean"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Enabled",
@@ -6340,7 +6340,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Host",
@@ -6352,7 +6352,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Id"
@@ -6363,7 +6363,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Name",
@@ -6375,7 +6375,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Path",
@@ -6387,7 +6387,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Port",
@@ -6400,7 +6400,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Protocol",
@@ -6413,7 +6413,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Read Timeout",
@@ -6426,7 +6426,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Retries",
@@ -6442,7 +6442,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Tags",
@@ -6454,11 +6454,11 @@
                 "type": "boolean"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Tls Verify",
-            "description": "Whether to enable verification of upstream server TLS certificate. If set to `null`, then the Nginx default is respected."
+            "description": "Whether to enable verification of upstream server TLS certificate. If set to `undefined`, then the Nginx default is respected."
           },
           "tls_verify_depth": {
             "anyOf": [
@@ -6466,11 +6466,11 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Tls Verify Depth",
-            "description": "Maximum depth of chain while verifying Upstream server's TLS certificate. If set to `null`, then the Nginx default is respected.'"
+            "description": "Maximum depth of chain while verifying Upstream server's TLS certificate. If set to `undefined`, then the Nginx default is respected.'"
           },
           "updated_at": {
             "anyOf": [
@@ -6478,7 +6478,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Updated At",
@@ -6490,7 +6490,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Url",
@@ -6502,7 +6502,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Write Timeout",
@@ -6522,7 +6522,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Id"
@@ -6540,7 +6540,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Name",
@@ -6552,7 +6552,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Retries",
@@ -6565,7 +6565,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Protocol",
@@ -6582,7 +6582,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Port",
@@ -6598,7 +6598,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Connect Timeout",
@@ -6611,7 +6611,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Write Timeout",
@@ -6624,7 +6624,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Read Timeout",
@@ -6640,7 +6640,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Tags",
@@ -6652,7 +6652,7 @@
                 "$ref": "#/components/schemas/CreateServiceRequestClientCertificate"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ]
           },
@@ -6662,7 +6662,7 @@
                 "type": "boolean"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Tls Verify"
@@ -6673,11 +6673,11 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Tls Verify Depth",
-            "description": "Maximum depth of chain while verifying Upstream server's TLS certificate. If set to null, then the Nginx default is respected. Default: null. "
+            "description": "Maximum depth of chain while verifying Upstream server's TLS certificate. If set to undefined, then the Nginx default is respected. Default: undefined. "
           },
           "ca_certificates": {
             "anyOf": [
@@ -6688,7 +6688,7 @@
                 "type": "array"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Ca Certificates"
@@ -6750,7 +6750,7 @@
                 "type": "string"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Refresh Token"
@@ -6761,7 +6761,7 @@
                 "type": "integer"
               },
               {
-                "type": "null"
+                "type": "undefined"
               }
             ],
             "title": "Refresh Expires In"

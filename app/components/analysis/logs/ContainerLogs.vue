@@ -29,7 +29,7 @@ const {
 gatherCurrentLogs();
 await gatherPreviousLogs();
 
-function parseLogs(logResp: LogResponse | null): logEntry[] {
+function parseLogs(logResp: LogResponse | undefined): logEntry[] {
   const analysisLogs = logResp?.analysis;
   const nginxLogs = logResp?.nginx;
   let compiledLogs: logEntry[] = [];
@@ -61,7 +61,7 @@ async function gatherPreviousLogs() {
     .$hubApi(`/po/history/${analysisId}`, {
       method: "GET",
     })
-    .catch(() => null)) as LogResponse;
+    .catch(() => undefined)) as LogResponse;
 
   if (prevLogResp) {
     prevLogs.value = parseLogs(prevLogResp);

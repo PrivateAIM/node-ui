@@ -29,7 +29,7 @@ describe("EventViewer.vue", () => {
     vi.mocked(getEvents).mockResolvedValue({
       data: ref(fakeEventResponse),
       pending: ref(false),
-      error: ref(null),
+      error: ref(undefined),
       status: ref("success"),
       refresh: vi.fn(),
       execute: vi.fn(),
@@ -66,7 +66,7 @@ describe("EventViewer.vue", () => {
         meta: { count: 0, total: 0, limit: 0, offset: 0 },
       }),
       pending: ref(false),
-      error: ref(null),
+      error: ref(undefined),
       status: ref("success"),
       refresh: vi.fn(),
       execute: vi.fn(),

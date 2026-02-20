@@ -54,20 +54,20 @@ const loading = ref(false);
 const NOT_FOUND_STATUS = 404;
 const CONFLICT_STATUS = 409;
 
-const playButtonActiveStates = [null, ""];
-const rerunButtonActiveStates: Array<string | null> = [
+const playButtonActiveStates = [undefined, ""];
+const rerunButtonActiveStates: Array<string | null | undefined> = [
   AnalysisNodeRunStatus.Failed,
   AnalysisNodeRunStatus.Finished,
   AnalysisNodeRunStatus.Stopped,
   AnalysisNodeRunStatus.Stopping,
 ];
-const stopButtonActiveStates: Array<string | null> = [
+const stopButtonActiveStates: Array<string | null | undefined> = [
   AnalysisNodeRunStatus.Running,
   AnalysisNodeRunStatus.Starting,
   AnalysisNodeRunStatus.Started,
   AnalysisNodeRunStatus.Stopping,
 ];
-const deleteButtonActiveStates: Array<string | null> = [
+const deleteButtonActiveStates: Array<string | null | undefined> = [
   PodStatus.Failed,
   AnalysisNodeRunStatus.Stopped,
   AnalysisNodeRunStatus.Stopping,
@@ -76,7 +76,7 @@ const deleteButtonActiveStates: Array<string | null> = [
   AnalysisNodeRunStatus.Started,
 ];
 
-function getButtonStatuses(podStatus: string | null) {
+function getButtonStatuses(podStatus: string | null | undefined) {
   return {
     playActive: playButtonActiveStates.includes(podStatus),
     rerunActive: rerunButtonActiveStates.includes(podStatus),
@@ -90,8 +90,8 @@ const buttonStatuses = computed<ButtonStates>(
 );
 
 function updatePodStatus(
-  podStatus: string | null,
-  progressUpdate?: number | null,
+  podStatus: string | null | undefined,
+  progressUpdate?: number | undefined,
 ) {
   emit("updateAnalysisRow", props.analysisId, podStatus, progressUpdate);
 }
@@ -118,9 +118,9 @@ async function checkPodStatus(): Promise<boolean> {
     .$hubApi(`/po/status/${props.analysisId}`, {
       method: "GET",
     })
-    .catch(() => null)) as StatusResponse; // Set the response to null if an error occurs
+    .catch(() => undefined)) as StatusResponse; // Set the response to undefined if an error occurs
 
-  // If response is not null AND "status" in response AND "status" is not empty
+  // If response is not undefined AND "status" in response AND "status" is not empty
   if (podStatus && props.analysisId in podStatus) {
     const currentPodStatus = podStatus[props.analysisId];
     // If the status is not empty and not FINISHED
@@ -157,7 +157,7 @@ async function onStartAnalysis() {
       body: analysisProps,
     })
     .catch((e) => {
-      updatePodStatus(null);
+      updatePodStatus(undefined);
       if (e.status == 408) {
         // Timed out waiting for image to pull
         updatePodStatus(AnalysisNodeRunStatus.Started);
@@ -210,7 +210,7 @@ async function onStopAnalysis() {
       );
     })) as StatusResponse;
 
-  // stopResp is null if error occurred
+  // stopResp is undefined if error occurred
   if (stopResp) {
     if (props.analysisId in stopResp) {
       showToast(
@@ -246,7 +246,7 @@ async function onDeleteAnalysis() {
       );
     })) as StatusResponse;
 
-  // deleteResp is null if error occurred
+  // deleteResp is undefined if error occurred
   if (deleteResp) {
     if (props.analysisId in deleteResp) {
       showToast(

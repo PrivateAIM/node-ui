@@ -12,8 +12,8 @@ import type {
 import DetailedDataStoreTable from "~/components/data-stores/DetailedDataStoreTable.vue";
 
 const dataStores = ref<ModifiedDetailedService[]>([]);
-const projectNameMap = ref<Map<string, string | null>>(
-  new Map<string, string | null>(),
+const projectNameMap = ref<Map<string, string | undefined>>(
+  new Map<string, string | undefined>(),
 );
 
 const loading = ref(true);
@@ -80,7 +80,7 @@ async function loadDetailedDataStoreTable(
 }
 
 function mapDataFromHub(hubData: Project[] | DetailedAnalysis[]) {
-  let mappedNames = new Map<string, string | null>();
+  let mappedNames = new Map<string, string | undefined>();
   if (hubData && hubData.length > 0) {
     hubData.forEach((entry: Project | DetailedAnalysis) => {
       if (entry.id) {

@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import IconField from "primevue/iconfield";
 import InputIcon from "primevue/inputicon";
+
 const props = defineProps({
-  searchTerm: [String, null],
+  searchTerm: [String, undefined],
 });
 
 const emit = defineEmits(["clearFilters", "updateSearch"]);
@@ -17,7 +18,7 @@ const updatedGlobalSearchText = computed({
 });
 
 const clearFilters = () => {
-  emit("updateSearch", null);
+  emit("updateSearch", undefined);
   emit("clearFilters");
 };
 </script>

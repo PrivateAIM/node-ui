@@ -82,24 +82,24 @@ export enum CleanUpType {
  * ACL entities are used to control access to a resource. An ACL can be applied to a Consumer
  */
 export interface ACL {
-  consumer?: ACLConsumer | null;
+  consumer?: ACLConsumer | undefined;
   /**
    * Created At
    * Unix epoch when the resource was created.
    */
-  created_at?: number | null;
+  created_at?: number | undefined;
   /** Id */
-  id?: string | null;
+  id?: string | undefined;
   /**
    * Group
    * The group that this ACL represents.
    */
-  group?: string | null;
+  group?: string | undefined;
   /**
    * Tags
    * An optional set of strings associated with the ACL for grouping and filtering.
    */
-  tags?: string[] | null;
+  tags?: string[] | undefined;
 }
 
 /**
@@ -108,24 +108,24 @@ export interface ACL {
  */
 export interface ACLConsumer {
   /** Id */
-  id?: string | null;
+  id?: string | undefined;
 }
 
 /** Analysis */
 export interface Analysis {
   /** Description */
-  description: string | null;
+  description: string | undefined;
   /** Name */
-  name: string | null;
+  name: string | undefined;
   /**
    * Project Id
    * @format uuid
    */
   project_id: string;
   /** Master Image Id */
-  master_image_id: string | null;
+  master_image_id: string | undefined;
   /** Registry Id */
-  registry_id: string | null;
+  registry_id: string | undefined;
   /** Image Command Arguments */
   image_command_arguments?: MasterImageCommandArgument[];
   /**
@@ -145,7 +145,7 @@ export interface Analysis {
     | "stopped"
     | "finished"
     | "failed"
-    | null;
+    | undefined;
   /** Run Status */
   run_status:
     | "starting"
@@ -155,7 +155,7 @@ export interface Analysis {
     | "stopped"
     | "finished"
     | "failed"
-    | null;
+    | undefined;
   /**
    * Created At
    * @format date-time
@@ -166,7 +166,7 @@ export interface Analysis {
    * @format date-time
    */
   updated_at: string;
-  registry?: Registry | null;
+  registry?: Registry | undefined;
   /**
    * Realm Id
    * @format uuid
@@ -178,7 +178,7 @@ export interface Analysis {
    */
   user_id: string;
   project?: Project;
-  master_image?: MasterImage | null;
+  master_image?: MasterImage | undefined;
 }
 
 /** AnalysisBucket */
@@ -191,7 +191,7 @@ export interface AnalysisBucket {
   /** Type */
   type: "CODE" | "RESULT" | "TEMP";
   /** External Id */
-  external_id: string | null;
+  external_id: string | undefined;
   /**
    * Created At
    * @format date-time
@@ -220,17 +220,17 @@ export interface AnalysisImageUrl {
   /** Image Url */
   image_url: string;
   /** Project Id */
-  project_id?: string | null;
+  project_id?: string | undefined;
   /** Kong Token */
-  kong_token?: string | null;
+  kong_token?: string | undefined;
   /** Analysis Id */
   analysis_id: string;
   /** Registry Url */
   registry_url: string;
   /** Registry User */
-  registry_user?: string | null;
+  registry_user?: string | undefined;
   /** Registry Password */
-  registry_password?: string | null;
+  registry_password?: string | undefined;
 }
 
 /** AnalysisNode */
@@ -251,7 +251,7 @@ export interface AnalysisNode {
    */
   id: string;
   /** Approval Status */
-  approval_status: "rejected" | "approved" | null;
+  approval_status: "rejected" | "approved" | undefined;
   /** Run Status */
   run_status:
     | "starting"
@@ -261,13 +261,13 @@ export interface AnalysisNode {
     | "running"
     | "finished"
     | "failed"
-    | null;
+    | undefined;
   /** Comment */
-  comment: string | null;
+  comment: string | undefined;
   /** Artifact Tag */
-  artifact_tag: string | null;
+  artifact_tag: string | undefined;
   /** Artifact Digest */
-  artifact_digest: string | null;
+  artifact_digest: string | undefined;
   /**
    * Created At
    * @format date-time
@@ -372,7 +372,7 @@ export interface BodyKongDatastoreCreateKongDatastorePost {
   /** Data store type. Either 's3' or 'fhir' */
   ds_type: DataStoreType;
   /** Minio configuration */
-  minio_config?: MinioConfig | null;
+  minio_config?: MinioConfig | undefined;
 }
 
 /** Body_kong_initialize_kong_initialize_post */
@@ -396,7 +396,7 @@ export interface BodyKongInitializeKongInitializePost {
    */
   datastore: ServiceRequest;
   /** Minio configuration */
-  minio_config?: MinioConfig | null;
+  minio_config?: MinioConfig | undefined;
 }
 
 /** Body_kong_project_create_kong_project_post */
@@ -460,17 +460,17 @@ export interface BodyPodorcPodsCreatePoPost {
  */
 export interface CleanupPodResponse {
   /** All */
-  all?: string | null;
+  all?: string | undefined;
   /** Analyzes */
-  analyzes?: string | null;
+  analyzes?: string | undefined;
   /** Services */
-  services?: string | null;
+  services?: string | undefined;
   /** Mb */
-  mb?: string | null;
+  mb?: string | undefined;
   /** Rs */
-  rs?: string | null;
+  rs?: string | undefined;
   /** Zombies */
-  zombies?: string | null;
+  zombies?: string | undefined;
 }
 
 /**
@@ -482,24 +482,24 @@ export interface Consumer {
    * Created At
    * Unix epoch when the resource was created.
    */
-  created_at?: number | null;
+  created_at?: number | undefined;
   /**
    * Custom Id
    * Field for storing an existing unique ID for the Consumer - useful for mapping Kong with users in your existing database. You must send either this field or `username` with the request.
    */
-  custom_id?: string | null;
+  custom_id?: string | undefined;
   /** Id */
-  id?: string | null;
+  id?: string | undefined;
   /**
    * Tags
    * An optional set of strings associated with the Consumer for grouping and filtering.
    */
-  tags?: string[] | null;
+  tags?: string[] | undefined;
   /**
    * Username
    * The unique username of the Consumer. You must send either this field or `custom_id` with the request.
    */
-  username?: string | null;
+  username?: string | undefined;
 }
 
 /**
@@ -508,7 +508,7 @@ export interface Consumer {
  */
 export interface CreateServiceRequestClientCertificate {
   /** Id */
-  id?: string | null;
+  id?: string | undefined;
 }
 
 /**
@@ -516,9 +516,9 @@ export interface CreateServiceRequestClientCertificate {
  * Response from disconnecting a project from a datastore.
  */
 export interface DeleteProject {
-  removed: Route | null;
+  removed: Route | undefined;
   /** Status */
-  status?: number | null;
+  status?: number | undefined;
 }
 
 /**
@@ -527,18 +527,18 @@ export interface DeleteProject {
  */
 export interface DetailedAnalysis {
   /** Description */
-  description: string | null;
+  description: string | undefined;
   /** Name */
-  name: string | null;
+  name: string | undefined;
   /**
    * Project Id
    * @format uuid
    */
   project_id: string;
   /** Master Image Id */
-  master_image_id: string | null;
+  master_image_id: string | undefined;
   /** Registry Id */
-  registry_id: string | null;
+  registry_id: string | undefined;
   /** Image Command Arguments */
   image_command_arguments?: MasterImageCommandArgument[];
   /**
@@ -558,7 +558,7 @@ export interface DetailedAnalysis {
     | "stopped"
     | "finished"
     | "failed"
-    | null;
+    | undefined;
   /** Run Status */
   run_status:
     | "starting"
@@ -568,7 +568,7 @@ export interface DetailedAnalysis {
     | "stopped"
     | "finished"
     | "failed"
-    | null;
+    | undefined;
   /**
    * Created At
    * @format date-time
@@ -579,7 +579,7 @@ export interface DetailedAnalysis {
    * @format date-time
    */
   updated_at: string;
-  registry?: Registry | null;
+  registry?: Registry | undefined;
   /**
    * Realm Id
    * @format uuid
@@ -590,8 +590,8 @@ export interface DetailedAnalysis {
    * @format uuid
    */
   user_id: string;
-  project?: Project | null;
-  master_image?: MasterImage | null;
+  project?: Project | undefined;
+  master_image?: MasterImage | undefined;
 }
 
 /**
@@ -603,108 +603,108 @@ export interface DetailedRoute {
    * Created At
    * Unix epoch when the resource was created.
    */
-  created_at?: number | null;
+  created_at?: number | undefined;
   /**
    * Destinations
    * A list of IP destinations of incoming connections that match this route when using stream routing. Each entry is an object with fields "ip" (optionally in CIDR range notation) and/or "port".
    */
-  destinations?: RouteDestinationsInner[] | null;
+  destinations?: RouteDestinationsInner[] | undefined;
   /**
    * Headers
    * One or more lists of values indexed by header name that will cause this route to match if present in the request. The `Host` header cannot be used with this hosts should be specified using the `hosts` attribute. When `headers` contains only one value and that value starts with the special prefix `~*`, the value is interpreted as a regular expression.
    */
-  headers?: Record<string, any> | null;
+  headers?: Record<string, any> | undefined;
   /**
    * Hosts
    * A list of domain names that match this route. Note that the hosts value is case sensitive.
    */
-  hosts?: string[] | null;
+  hosts?: string[] | undefined;
   /**
    * Https Redirect Status Code
    * The status code Kong responds with when all properties of a route match except the protocol i.e. if the protocol of the request is `HTTP` instead of `HTTPS`. `Location` header is injected by Kong if the field is set to 301, 302, 307 or 308. This config applies only if the route is configured to only accept the `https` protocol.
    * @default 426
    */
-  https_redirect_status_code?: number | null;
+  https_redirect_status_code?: number | undefined;
   /** Id */
-  id?: string | null;
+  id?: string | undefined;
   /**
    * Methods
    * A list of HTTP methods that match this route.
    */
-  methods?: string[] | null;
+  methods?: string[] | undefined;
   /**
    * Name
    * The name of the route. Route names must be unique, and they are case sensitive. For example, there can be two different routes named "test" and "Test".
    */
-  name?: string | null;
+  name?: string | undefined;
   /**
    * Path Handling
    * Controls how the service path, route path and requested path are combined when sending a request to the upstream. See above for a detailed description of each behavior.
    * @default "v0"
    */
-  path_handling?: string | null;
+  path_handling?: string | undefined;
   /**
    * Paths
    * A list of paths that match this route.
    */
-  paths?: string[] | null;
+  paths?: string[] | undefined;
   /**
    * Preserve Host
    * When matching a route via one of the `hosts` domain names, use the request `Host` header in the upstream request headers. If set to `false`, the upstream `Host` header will be that of the services `host`.
    * @default false
    */
-  preserve_host?: boolean | null;
+  preserve_host?: boolean | undefined;
   /**
    * Protocols
    * An array of the protocols this route should allow. See the [route Object](#route-object) section for a list of accepted protocols. When set to only `"https"`, HTTP requests are answered with an upgrade error. When set to only `"http"`, HTTPS requests are answered with an error.
    */
-  protocols?: string[] | null;
+  protocols?: string[] | undefined;
   /**
    * Regex Priority
    * A number used to choose which route resolves a given request when several routes match it using regexes simultaneously. When two routes match the path and have the same `regex_priority`, the older one (lowest `created_at`) is used. Note that the priority for non-regex routes is different (longer non-regex routes are matched before shorter ones).
    * @default 0
    */
-  regex_priority?: number | null;
+  regex_priority?: number | undefined;
   /**
    * Request Buffering
    * Whether to enable request body buffering or not. With HTTP 1.1, it may make sense to turn this off on services that receive data with chunked transfer encoding.
    * @default true
    */
-  request_buffering?: boolean | null;
+  request_buffering?: boolean | undefined;
   /**
    * Response Buffering
    * Whether to enable response body buffering or not. With HTTP 1.1, it may make sense to turn this off on services that send data with chunked transfer encoding.
    * @default true
    */
-  response_buffering?: boolean | null;
+  response_buffering?: boolean | undefined;
   /** Service */
-  service?: Service | RouteService | null;
+  service?: Service | RouteService | undefined;
   /**
    * Snis
    * A list of SNIs that match this route when using stream routing.
    */
-  snis?: string[] | null;
+  snis?: string[] | undefined;
   /**
    * Sources
    * A list of IP sources of incoming connections that match this route when using stream routing. Each entry is an object with fields "ip" (optionally in CIDR range notation) and/or "port".
    */
-  sources?: RouteDestinationsInner[] | null;
+  sources?: RouteDestinationsInner[] | undefined;
   /**
    * Strip Path
    * When matching a route via one of the `paths`, strip the matching prefix from the upstream request URL.
    * @default true
    */
-  strip_path?: boolean | null;
+  strip_path?: boolean | undefined;
   /**
    * Tags
    * An optional set of strings associated with the route for grouping and filtering.
    */
-  tags?: string[] | null;
+  tags?: string[] | undefined;
   /**
    * Updated At
    * Unix epoch when the resource was last updated.
    */
-  updated_at?: number | null;
+  updated_at?: number | undefined;
 }
 
 /**
@@ -714,104 +714,104 @@ export interface DetailedRoute {
 export interface DetailedService {
   /**
    * Ca Certificates
-   * Array of `CA Certificate` object UUIDs that are used to build the trust store while verifying upstream server's TLS certificate. If set to `null` when Nginx default is respected. If default CA list in Nginx are not specified and TLS verification is enabled, then handshake with upstream server will always fail (because no CA are trusted).
+   * Array of `CA Certificate` object UUIDs that are used to build the trust store while verifying upstream server's TLS certificate. If set to `undefined` when Nginx default is respected. If default CA list in Nginx are not specified and TLS verification is enabled, then handshake with upstream server will always fail (because no CA are trusted).
    */
-  ca_certificates?: string[] | null;
-  client_certificate?: ServiceClientCertificate | null;
+  ca_certificates?: string[] | undefined;
+  client_certificate?: ServiceClientCertificate | undefined;
   /**
    * Connect Timeout
    * The timeout in milliseconds for establishing a connection to the upstream server.
    * @default 60000
    */
-  connect_timeout?: number | null;
+  connect_timeout?: number | undefined;
   /**
    * Created At
    * Unix epoch when the resource was created.
    */
-  created_at?: number | null;
+  created_at?: number | undefined;
   /**
    * Enabled
    * Whether the service is active. If set to `false`, the proxy behavior will be as if any routes attached to it do not exist (404).
    * @default true
    */
-  enabled?: boolean | null;
+  enabled?: boolean | undefined;
   /**
    * Host
    * The host of the upstream server. Note that the host value is case sensitive.
    */
-  host?: string | null;
+  host?: string | undefined;
   /** Id */
-  id?: string | null;
+  id?: string | undefined;
   /**
    * Name
    * The service name.
    */
-  name?: string | null;
+  name?: string | undefined;
   /**
    * Path
    * The path to be used in requests to the upstream server.
    */
-  path?: string | null;
+  path?: string | undefined;
   /**
    * Port
    * The upstream server port.
    * @default 80
    */
-  port?: number | null;
+  port?: number | undefined;
   /**
    * Protocol
    * The protocol used to communicate with the upstream.
    * @default "http"
    */
-  protocol?: string | null;
+  protocol?: string | undefined;
   /**
    * Read Timeout
    * The timeout in milliseconds between two successive read operations for transmitting a request to the upstream server.
    * @default 60000
    */
-  read_timeout?: number | null;
+  read_timeout?: number | undefined;
   /**
    * Retries
    * The number of retries to execute upon failure to proxy.
    * @default 5
    */
-  retries?: number | null;
+  retries?: number | undefined;
   /**
    * Tags
    * An optional set of strings associated with the service for grouping and filtering.
    */
-  tags?: string[] | null;
+  tags?: string[] | undefined;
   /**
    * Tls Verify
-   * Whether to enable verification of upstream server TLS certificate. If set to `null`, then the Nginx default is respected.
+   * Whether to enable verification of upstream server TLS certificate. If set to `undefined`, then the Nginx default is respected.
    */
-  tls_verify?: boolean | null;
+  tls_verify?: boolean | undefined;
   /**
    * Tls Verify Depth
-   * Maximum depth of chain while verifying Upstream server's TLS certificate. If set to `null`, then the Nginx default is respected.'
+   * Maximum depth of chain while verifying Upstream server's TLS certificate. If set to `undefined`, then the Nginx default is respected.'
    */
-  tls_verify_depth?: number | null;
+  tls_verify_depth?: number | undefined;
   /**
    * Updated At
    * Unix epoch when the resource was last updated.
    */
-  updated_at?: number | null;
+  updated_at?: number | undefined;
   /**
    * Url
    * Helper field to set `protocol`, `host`, `port` and `path` using a URL. This field is write-only and is not returned in responses.
    */
-  url?: string | null;
+  url?: string | undefined;
   /**
    * Write Timeout
    * The timeout in milliseconds between two successive write operations for transmitting a request to the upstream server.
    * @default 60000
    */
-  write_timeout?: number | null;
+  write_timeout?: number | undefined;
   /**
    * Routes
    * @default []
    */
-  routes?: Route[] | null;
+  routes?: Route[] | undefined;
 }
 
 /**
@@ -891,24 +891,24 @@ export interface InitializeAnalysis {
  * A Key-auth entity represents a key used to authenticate consumers with the key-auth plugin. The key-auth plugin is used to protect API endpoints by requiring a secret key to be sent with the request.
  */
 export interface KeyAuth {
-  consumer?: KeyAuthConsumer | null;
+  consumer?: KeyAuthConsumer | undefined;
   /**
    * Created At
    * Unix epoch when the resource was created.
    */
-  created_at?: number | null;
+  created_at?: number | undefined;
   /** Id */
-  id?: string | null;
+  id?: string | undefined;
   /**
    * Key
    * The key that will be used to authenticate the consumer. If this field is not specified, it will be auto-generated.
    */
-  key?: string | null;
+  key?: string | undefined;
   /**
    * Tags
    * An optional set of strings associated with the Key for grouping and filtering.
    */
-  tags?: string[] | null;
+  tags?: string[] | undefined;
 }
 
 /**
@@ -917,7 +917,7 @@ export interface KeyAuth {
  */
 export interface KeyAuthConsumer {
   /** Id */
-  id?: string | null;
+  id?: string | undefined;
 }
 
 /** LinkDataStoreProject */
@@ -946,12 +946,12 @@ export interface LinkProjectAnalysis {
  */
 export interface ListConsumers {
   /** Data */
-  data?: Consumer[] | null;
+  data?: Consumer[] | undefined;
   /**
    * Offset
    * Offset is used to paginate through the API. Provide this value to the next list operation to fetch the next page
    */
-  offset?: string | null;
+  offset?: string | undefined;
 }
 
 /**
@@ -960,12 +960,12 @@ export interface ListConsumers {
  */
 export interface ListRoutes {
   /** Data */
-  data?: DetailedRoute[] | null;
+  data?: DetailedRoute[] | undefined;
   /**
    * Offset
    * Offset is used to paginate through the API. Provide this value to the next list operation to fetch the next page
    */
-  offset?: string | null;
+  offset?: string | undefined;
 }
 
 /**
@@ -974,27 +974,27 @@ export interface ListRoutes {
  */
 export interface ListServices {
   /** Data */
-  data?: DetailedService[] | null;
+  data?: DetailedService[] | undefined;
   /**
    * Offset
    * Offset is used to paginate through the API. Provide this value to the next list operation to fetch the next page
    */
-  offset?: string | null;
+  offset?: string | undefined;
 }
 
 /**
  * LogReport
  * Response with dynamic UUID keys and dynamic analysis log keys
  */
-export type LogReport = Record<any, (string | null)[]>;
+export type LogReport = Record<any, (string | undefined)[]>;
 
 /**
  * LogResponse
  * Response for log endpoint
  */
 export interface LogResponse {
-  analysis?: LogReport | null;
-  nginx?: LogReport | null;
+  analysis?: LogReport | undefined;
+  nginx?: LogReport | undefined;
 }
 
 /** MasterImage */
@@ -1005,7 +1005,7 @@ export interface MasterImage {
    */
   id: string;
   /** Path */
-  path: string | null;
+  path: string | undefined;
   /** Virtual Path */
   virtual_path: string;
   /** Group Virtual Path */
@@ -1013,9 +1013,9 @@ export interface MasterImage {
   /** Name */
   name: string;
   /** Command */
-  command: string | null;
+  command: string | undefined;
   /** Command Arguments */
-  command_arguments: MasterImageCommandArgument[] | null;
+  command_arguments: MasterImageCommandArgument[] | undefined;
   /**
    * Created At
    * @format date-time
@@ -1033,7 +1033,7 @@ export interface MasterImageCommandArgument {
   /** Value */
   value: string;
   /** Position */
-  position: "before" | "after" | null;
+  position: "before" | "after" | undefined;
 }
 
 /**
@@ -1072,43 +1072,43 @@ export interface MinioConfig {
    */
   minio_region?: string;
   /** Bucket Name */
-  bucket_name?: string | null;
+  bucket_name?: string | undefined;
   /**
    * Timeout
    * @default 100000
    */
   timeout?: number;
   /** Strip Path Pattern */
-  strip_path_pattern?: string | null;
+  strip_path_pattern?: string | undefined;
 }
 
 /** Node */
 export interface Node {
   /** External Name */
-  external_name: string | null;
+  external_name: string | undefined;
   /** Hidden */
-  hidden: boolean | null;
+  hidden: boolean | undefined;
   /** Name */
   name: string;
   /** Realm Id */
-  realm_id: string | null;
+  realm_id: string | undefined;
   /** Registry Id */
-  registry_id: string | null;
+  registry_id: string | undefined;
   /** Type */
-  type: "aggregator" | "default" | null;
+  type: "aggregator" | "default" | undefined;
   /**
    * Id
    * @format uuid
    */
   id: string;
   /** Public Key */
-  public_key: string | null;
+  public_key: string | undefined;
   /** Online */
   online: boolean;
-  registry?: Registry | null;
+  registry?: Registry | undefined;
   /** Registry Project Id */
-  registry_project_id: string | null;
-  registry_project?: RegistryProject | null;
+  registry_project_id: string | undefined;
+  registry_project?: RegistryProject | undefined;
   /**
    * Robot Id
    * @format uuid
@@ -1132,7 +1132,7 @@ export interface NodeSettings {
    * Data Required
    * @default true
    */
-  data_required?: boolean | null;
+  data_required?: boolean | undefined;
 }
 
 /** NodeTypeResponse */
@@ -1142,14 +1142,14 @@ export interface NodeTypeResponse {
 }
 
 /** PodResponse */
-export type PodResponse = Record<any, (string | null)[]>;
+export type PodResponse = Record<any, (string | undefined)[]>;
 
 /** Project */
 export interface Project {
   /** Description */
-  description: string | null;
+  description: string | undefined;
   /** Master Image Id */
-  master_image_id: string | null;
+  master_image_id: string | undefined;
   /** Name */
   name: string;
   /**
@@ -1161,7 +1161,7 @@ export interface Project {
   analyses: number;
   /** Nodes */
   nodes: number;
-  master_image?: MasterImage | null;
+  master_image?: MasterImage | undefined;
   /**
    * Created At
    * @format date-time
@@ -1178,9 +1178,9 @@ export interface Project {
    */
   realm_id: string;
   /** User Id */
-  user_id: string | null;
+  user_id: string | undefined;
   /** Robot Id */
-  robot_id: string | null;
+  robot_id: string | undefined;
 }
 
 /** ProjectNode */
@@ -1203,7 +1203,7 @@ export interface ProjectNode {
   /** Approval Status */
   approval_status: "rejected" | "approved";
   /** Comment */
-  comment: string | null;
+  comment: string | undefined;
   /**
    * Created At
    * @format date-time
@@ -1235,9 +1235,9 @@ export interface Registry {
   /** Host */
   host: string;
   /** Account Name */
-  account_name: string | null;
+  account_name: string | undefined;
   /** Account Secret */
-  account_secret?: string | null;
+  account_secret?: string | undefined;
   /**
    * Id
    * @format uuid
@@ -1282,20 +1282,20 @@ export interface RegistryProject {
   /** Public */
   public: boolean;
   /** External Id */
-  external_id: string | null;
+  external_id: string | undefined;
   /** Webhook Name */
-  webhook_name: string | null;
+  webhook_name: string | undefined;
   /** Webhook Exists */
-  webhook_exists: boolean | null;
+  webhook_exists: boolean | undefined;
   /** Realm Id */
-  realm_id: string | null;
+  realm_id: string | undefined;
   registry?: Registry;
   /** Account Id */
-  account_id?: string | null;
+  account_id?: string | undefined;
   /** Account Name */
-  account_name?: string | null;
+  account_name?: string | undefined;
   /** Account Secret */
-  account_secret?: string | null;
+  account_secret?: string | undefined;
   /**
    * Created At
    * @format date-time
@@ -1317,107 +1317,107 @@ export interface Route {
    * Created At
    * Unix epoch when the resource was created.
    */
-  created_at?: number | null;
+  created_at?: number | undefined;
   /**
    * Destinations
    * A list of IP destinations of incoming connections that match this route when using stream routing. Each entry is an object with fields "ip" (optionally in CIDR range notation) and/or "port".
    */
-  destinations?: RouteDestinationsInner[] | null;
+  destinations?: RouteDestinationsInner[] | undefined;
   /**
    * Headers
    * One or more lists of values indexed by header name that will cause this route to match if present in the request. The `Host` header cannot be used with this hosts should be specified using the `hosts` attribute. When `headers` contains only one value and that value starts with the special prefix `~*`, the value is interpreted as a regular expression.
    */
-  headers?: Record<string, any> | null;
+  headers?: Record<string, any> | undefined;
   /**
    * Hosts
    * A list of domain names that match this route. Note that the hosts value is case sensitive.
    */
-  hosts?: string[] | null;
+  hosts?: string[] | undefined;
   /**
    * Https Redirect Status Code
    * The status code Kong responds with when all properties of a route match except the protocol i.e. if the protocol of the request is `HTTP` instead of `HTTPS`. `Location` header is injected by Kong if the field is set to 301, 302, 307 or 308. This config applies only if the route is configured to only accept the `https` protocol.
    * @default 426
    */
-  https_redirect_status_code?: number | null;
+  https_redirect_status_code?: number | undefined;
   /** Id */
-  id?: string | null;
+  id?: string | undefined;
   /**
    * Methods
    * A list of HTTP methods that match this route.
    */
-  methods?: string[] | null;
+  methods?: string[] | undefined;
   /**
    * Name
    * The name of the route. Route names must be unique, and they are case sensitive. For example, there can be two different routes named "test" and "Test".
    */
-  name?: string | null;
+  name?: string | undefined;
   /**
    * Path Handling
    * Controls how the service path, route path and requested path are combined when sending a request to the upstream. See above for a detailed description of each behavior.
    * @default "v0"
    */
-  path_handling?: string | null;
+  path_handling?: string | undefined;
   /**
    * Paths
    * A list of paths that match this route.
    */
-  paths?: string[] | null;
+  paths?: string[] | undefined;
   /**
    * Preserve Host
    * When matching a route via one of the `hosts` domain names, use the request `Host` header in the upstream request headers. If set to `false`, the upstream `Host` header will be that of the services `host`.
    * @default false
    */
-  preserve_host?: boolean | null;
+  preserve_host?: boolean | undefined;
   /**
    * Protocols
    * An array of the protocols this route should allow. See the [route Object](#route-object) section for a list of accepted protocols. When set to only `"https"`, HTTP requests are answered with an upgrade error. When set to only `"http"`, HTTPS requests are answered with an error.
    */
-  protocols?: string[] | null;
+  protocols?: string[] | undefined;
   /**
    * Regex Priority
    * A number used to choose which route resolves a given request when several routes match it using regexes simultaneously. When two routes match the path and have the same `regex_priority`, the older one (lowest `created_at`) is used. Note that the priority for non-regex routes is different (longer non-regex routes are matched before shorter ones).
    * @default 0
    */
-  regex_priority?: number | null;
+  regex_priority?: number | undefined;
   /**
    * Request Buffering
    * Whether to enable request body buffering or not. With HTTP 1.1, it may make sense to turn this off on services that receive data with chunked transfer encoding.
    * @default true
    */
-  request_buffering?: boolean | null;
+  request_buffering?: boolean | undefined;
   /**
    * Response Buffering
    * Whether to enable response body buffering or not. With HTTP 1.1, it may make sense to turn this off on services that send data with chunked transfer encoding.
    * @default true
    */
-  response_buffering?: boolean | null;
-  service?: RouteService | null;
+  response_buffering?: boolean | undefined;
+  service?: RouteService | undefined;
   /**
    * Snis
    * A list of SNIs that match this route when using stream routing.
    */
-  snis?: string[] | null;
+  snis?: string[] | undefined;
   /**
    * Sources
    * A list of IP sources of incoming connections that match this route when using stream routing. Each entry is an object with fields "ip" (optionally in CIDR range notation) and/or "port".
    */
-  sources?: RouteDestinationsInner[] | null;
+  sources?: RouteDestinationsInner[] | undefined;
   /**
    * Strip Path
    * When matching a route via one of the `paths`, strip the matching prefix from the upstream request URL.
    * @default true
    */
-  strip_path?: boolean | null;
+  strip_path?: boolean | undefined;
   /**
    * Tags
    * An optional set of strings associated with the route for grouping and filtering.
    */
-  tags?: string[] | null;
+  tags?: string[] | undefined;
   /**
    * Updated At
    * Unix epoch when the resource was last updated.
    */
-  updated_at?: number | null;
+  updated_at?: number | undefined;
 }
 
 /**
@@ -1426,7 +1426,7 @@ export interface Route {
  */
 export interface RouteDestinationsInner {
   /** Default */
-  default?: null;
+  default?: undefined;
 }
 
 /**
@@ -1435,7 +1435,7 @@ export interface RouteDestinationsInner {
  */
 export interface RouteService {
   /** Id */
-  id?: string | null;
+  id?: string | undefined;
 }
 
 /**
@@ -1445,99 +1445,99 @@ export interface RouteService {
 export interface Service {
   /**
    * Ca Certificates
-   * Array of `CA Certificate` object UUIDs that are used to build the trust store while verifying upstream server's TLS certificate. If set to `null` when Nginx default is respected. If default CA list in Nginx are not specified and TLS verification is enabled, then handshake with upstream server will always fail (because no CA are trusted).
+   * Array of `CA Certificate` object UUIDs that are used to build the trust store while verifying upstream server's TLS certificate. If set to `undefined` when Nginx default is respected. If default CA list in Nginx are not specified and TLS verification is enabled, then handshake with upstream server will always fail (because no CA are trusted).
    */
-  ca_certificates?: string[] | null;
-  client_certificate?: ServiceClientCertificate | null;
+  ca_certificates?: string[] | undefined;
+  client_certificate?: ServiceClientCertificate | undefined;
   /**
    * Connect Timeout
    * The timeout in milliseconds for establishing a connection to the upstream server.
    * @default 60000
    */
-  connect_timeout?: number | null;
+  connect_timeout?: number | undefined;
   /**
    * Created At
    * Unix epoch when the resource was created.
    */
-  created_at?: number | null;
+  created_at?: number | undefined;
   /**
    * Enabled
    * Whether the service is active. If set to `false`, the proxy behavior will be as if any routes attached to it do not exist (404).
    * @default true
    */
-  enabled?: boolean | null;
+  enabled?: boolean | undefined;
   /**
    * Host
    * The host of the upstream server. Note that the host value is case sensitive.
    */
-  host?: string | null;
+  host?: string | undefined;
   /** Id */
-  id?: string | null;
+  id?: string | undefined;
   /**
    * Name
    * The service name.
    */
-  name?: string | null;
+  name?: string | undefined;
   /**
    * Path
    * The path to be used in requests to the upstream server.
    */
-  path?: string | null;
+  path?: string | undefined;
   /**
    * Port
    * The upstream server port.
    * @default 80
    */
-  port?: number | null;
+  port?: number | undefined;
   /**
    * Protocol
    * The protocol used to communicate with the upstream.
    * @default "http"
    */
-  protocol?: string | null;
+  protocol?: string | undefined;
   /**
    * Read Timeout
    * The timeout in milliseconds between two successive read operations for transmitting a request to the upstream server.
    * @default 60000
    */
-  read_timeout?: number | null;
+  read_timeout?: number | undefined;
   /**
    * Retries
    * The number of retries to execute upon failure to proxy.
    * @default 5
    */
-  retries?: number | null;
+  retries?: number | undefined;
   /**
    * Tags
    * An optional set of strings associated with the service for grouping and filtering.
    */
-  tags?: string[] | null;
+  tags?: string[] | undefined;
   /**
    * Tls Verify
-   * Whether to enable verification of upstream server TLS certificate. If set to `null`, then the Nginx default is respected.
+   * Whether to enable verification of upstream server TLS certificate. If set to `undefined`, then the Nginx default is respected.
    */
-  tls_verify?: boolean | null;
+  tls_verify?: boolean | undefined;
   /**
    * Tls Verify Depth
-   * Maximum depth of chain while verifying Upstream server's TLS certificate. If set to `null`, then the Nginx default is respected.'
+   * Maximum depth of chain while verifying Upstream server's TLS certificate. If set to `undefined`, then the Nginx default is respected.'
    */
-  tls_verify_depth?: number | null;
+  tls_verify_depth?: number | undefined;
   /**
    * Updated At
    * Unix epoch when the resource was last updated.
    */
-  updated_at?: number | null;
+  updated_at?: number | undefined;
   /**
    * Url
    * Helper field to set `protocol`, `host`, `port` and `path` using a URL. This field is write-only and is not returned in responses.
    */
-  url?: string | null;
+  url?: string | undefined;
   /**
    * Write Timeout
    * The timeout in milliseconds between two successive write operations for transmitting a request to the upstream server.
    * @default 60000
    */
-  write_timeout?: number | null;
+  write_timeout?: number | undefined;
 }
 
 /**
@@ -1546,7 +1546,7 @@ export interface Service {
  */
 export interface ServiceClientCertificate {
   /** Id */
-  id?: string | null;
+  id?: string | undefined;
 }
 
 /**
@@ -1558,18 +1558,18 @@ export interface ServiceRequest {
    * Name
    * The service name.
    */
-  name?: string | null;
+  name?: string | undefined;
   /**
    * Retries
    * The number of retries to execute upon failure to proxy. Default:`5`.
    * @default 5
    */
-  retries?: number | null;
+  retries?: number | undefined;
   /**
    * Protocol
    * @default "http"
    */
-  protocol?: string | null;
+  protocol?: string | undefined;
   /**
    * Host
    * The host of the upstream server. Note that the host value is case sensitive.
@@ -1579,7 +1579,7 @@ export interface ServiceRequest {
    * Port
    * @default 80
    */
-  port?: number | null;
+  port?: number | undefined;
   /** Path */
   path: string;
   /**
@@ -1587,34 +1587,34 @@ export interface ServiceRequest {
    * The timeout in milliseconds for establishing a connection to the upstream server.
    * @default 6000
    */
-  connect_timeout?: number | null;
+  connect_timeout?: number | undefined;
   /**
    * Write Timeout
    * The timeout in milliseconds between two successive write operations for transmitting a request to the upstream server. Default: `60000`.
    * @default 6000
    */
-  write_timeout?: number | null;
+  write_timeout?: number | undefined;
   /**
    * Read Timeout
    * The timeout in milliseconds between two successive read operations for transmitting a request to the upstream server. Default: `60000`.
    * @default 6000
    */
-  read_timeout?: number | null;
+  read_timeout?: number | undefined;
   /**
    * Tags
    * An optional set of strings associated with the service for grouping and filtering.
    */
-  tags?: string[] | null;
-  client_certificate?: CreateServiceRequestClientCertificate | null;
+  tags?: string[] | undefined;
+  client_certificate?: CreateServiceRequestClientCertificate | undefined;
   /** Tls Verify */
-  tls_verify?: boolean | null;
+  tls_verify?: boolean | undefined;
   /**
    * Tls Verify Depth
-   * Maximum depth of chain while verifying Upstream server's TLS certificate. If set to null, then the Nginx default is respected. Default: null.
+   * Maximum depth of chain while verifying Upstream server's TLS certificate. If set to undefined, then the Nginx default is respected. Default: undefined.
    */
-  tls_verify_depth?: string | null;
+  tls_verify_depth?: string | undefined;
   /** Ca Certificates */
-  ca_certificates?: string[] | null;
+  ca_certificates?: string[] | undefined;
   /**
    * Enabled
    * @default true
@@ -1640,9 +1640,9 @@ export interface Token {
   /** Expires In */
   expires_in: number;
   /** Refresh Token */
-  refresh_token?: string | null;
+  refresh_token?: string | undefined;
   /** Refresh Expires In */
-  refresh_expires_in?: number | null;
+  refresh_expires_in?: number | undefined;
 }
 
 /** ValidationError */
@@ -1686,13 +1686,15 @@ export interface ApiConfig<SecurityDataType = unknown> {
   baseUrl?: string;
   baseApiParams?: Omit<RequestParams, "baseUrl" | "cancelToken" | "signal">;
   securityWorker?: (
-    securityData: SecurityDataType | null,
+    securityData: SecurityDataType | undefined,
   ) => Promise<RequestParams | void> | RequestParams | void;
   customFetch?: typeof fetch;
 }
 
-export interface HttpResponse<D extends unknown, E extends unknown = unknown>
-  extends Response {
+export interface HttpResponse<
+  D extends unknown,
+  E extends unknown = unknown,
+> extends Response {
   data: D;
   error: E;
 }
@@ -1709,7 +1711,7 @@ export enum ContentType {
 
 export class HttpClient<SecurityDataType = unknown> {
   public baseUrl: string = "";
-  private securityData: SecurityDataType | null = null;
+  private securityData: SecurityDataType | undefined = undefined;
   private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
   private abortControllers = new Map<CancelToken, AbortController>();
   private customFetch = (...fetchParams: Parameters<typeof fetch>) =>
@@ -1726,7 +1728,7 @@ export class HttpClient<SecurityDataType = unknown> {
     Object.assign(this, apiConfig);
   }
 
-  public setSecurityData = (data: SecurityDataType | null) => {
+  public setSecurityData = (data: SecurityDataType | undefined) => {
     this.securityData = data;
   };
 
@@ -1765,15 +1767,17 @@ export class HttpClient<SecurityDataType = unknown> {
 
   private contentFormatters: Record<ContentType, (input: any) => any> = {
     [ContentType.Json]: (input: any) =>
-      input !== null && (typeof input === "object" || typeof input === "string")
+      input !== undefined &&
+      (typeof input === "object" || typeof input === "string")
         ? JSON.stringify(input)
         : input,
     [ContentType.JsonApi]: (input: any) =>
-      input !== null && (typeof input === "object" || typeof input === "string")
+      input !== undefined &&
+      (typeof input === "object" || typeof input === "string")
         ? JSON.stringify(input)
         : input,
     [ContentType.Text]: (input: any) =>
-      input !== null && typeof input !== "string"
+      input !== undefined && typeof input !== "string"
         ? JSON.stringify(input)
         : input,
     [ContentType.FormData]: (input: any) => {
@@ -1787,7 +1791,7 @@ export class HttpClient<SecurityDataType = unknown> {
           key,
           property instanceof Blob
             ? property
-            : typeof property === "object" && property !== null
+            : typeof property === "object" && property !== undefined
               ? JSON.stringify(property)
               : `${property}`,
         );
@@ -1872,16 +1876,16 @@ export class HttpClient<SecurityDataType = unknown> {
         signal:
           (cancelToken
             ? this.createAbortSignal(cancelToken)
-            : requestParams.signal) || null,
+            : requestParams.signal) || undefined,
         body:
-          typeof body === "undefined" || body === null
-            ? null
+          typeof body === "undefined" || body === undefined
+            ? undefined
             : payloadFormatter(body),
       },
     ).then(async (response) => {
       const r = response as HttpResponse<T, E>;
-      r.data = null as unknown as T;
-      r.error = null as unknown as E;
+      r.data = undefined as unknown as T;
+      r.error = undefined as unknown as E;
 
       const responseToParse = responseFormat ? response.clone() : response;
       const data = !responseFormat
@@ -2011,7 +2015,7 @@ export class Api<
      * @secure
      */
     podorcHistoryGetPoHistoryAnalysisIdGet: (
-      analysisId: string | null,
+      analysisId: string | undefined,
       params: RequestParams = {},
     ) =>
       this.request<LogResponse, void | HTTPValidationError>({
@@ -2050,7 +2054,7 @@ export class Api<
      * @secure
      */
     podorcStatusGetPoStatusAnalysisIdGet: (
-      analysisId: string | null,
+      analysisId: string | undefined,
       params: RequestParams = {},
     ) =>
       this.request<StatusResponse, void | HTTPValidationError>({
@@ -2089,7 +2093,7 @@ export class Api<
      * @secure
      */
     podorcPodsGetPoPodsAnalysisIdGet: (
-      analysisId: string | null,
+      analysisId: string | undefined,
       params: RequestParams = {},
     ) =>
       this.request<PodResponse, void | HTTPValidationError>({
@@ -2128,7 +2132,7 @@ export class Api<
      * @secure
      */
     podorcPodsStopPoStopAnalysisIdPut: (
-      analysisId: string | null,
+      analysisId: string | undefined,
       params: RequestParams = {},
     ) =>
       this.request<StatusResponse, void | HTTPValidationError>({
@@ -2167,7 +2171,7 @@ export class Api<
      * @secure
      */
     podorcPodsDeletePoDeleteAnalysisIdDelete: (
-      analysisId: string | null,
+      analysisId: string | undefined,
       params: RequestParams = {},
     ) =>
       this.request<StatusResponse, void | HTTPValidationError>({
@@ -2995,7 +2999,7 @@ export class Api<
          * Tag
          * Filter consumers by project using the project UUID
          */
-        tag?: string | null;
+        tag?: string | undefined;
       },
       params: RequestParams = {},
     ) =>
@@ -3041,13 +3045,13 @@ export class Api<
      * @secure
      */
     kongAnalysisGetKongAnalysisAnalysisIdGet: (
-      analysisId: string | null,
+      analysisId: string | undefined,
       query?: {
         /**
          * Tag
          * Filter consumers by project using the project UUID
          */
-        tag?: string | null;
+        tag?: string | undefined;
       },
       params: RequestParams = {},
     ) =>
@@ -3176,38 +3180,38 @@ export class Api<
          * Maximum number of events to return
          * @default 100
          */
-        limit?: number | null;
+        limit?: number | undefined;
         /**
          * Offset
          * Number of events to offset by
          * @default 0
          */
-        offset?: number | null;
+        offset?: number | undefined;
         /**
          * Service Tag
          * Filter events by service tag
          */
-        service_tag?: string | null;
+        service_tag?: string | undefined;
         /**
          * Event Name
          * Filter events by event name
          */
-        event_name?: string | null;
+        event_name?: string | undefined;
         /**
          * Username
          * Filter events by username
          */
-        username?: string | null;
+        username?: string | undefined;
         /**
          * Start Date
          * Filter events by start date using ISO8601 format
          */
-        start_date?: string | null;
+        start_date?: string | undefined;
         /**
          * End Date
          * Filter events by end date using ISO8601 format
          */
-        end_date?: string | null;
+        end_date?: string | undefined;
       },
       params: RequestParams = {},
     ) =>

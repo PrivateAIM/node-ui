@@ -61,7 +61,10 @@ describe("AnalysisUpdateButton.vue", () => {
       fakeAnalysisId,
     );
     expect(wrapper.emitted("updateAnalysisRun")).toHaveLength(1);
-    expect(wrapper.emitted("updateAnalysisRun")![0]).toEqual(["running", null]);
+    expect(wrapper.emitted("updateAnalysisRun")![0]).toEqual([
+      "running",
+      undefined,
+    ]);
   });
 
   it("Update analysis status - none running", async () => {

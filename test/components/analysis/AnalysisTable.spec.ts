@@ -64,7 +64,7 @@ describe("AnalysesTable.vue", () => {
     vi.mocked(getAnalysisNodes).mockResolvedValue({
       data: ref(fakeAnalysisNodes),
       pending: ref(false),
-      error: ref(null),
+      error: ref(undefined),
       status: ref("success"),
       refresh: vi.fn(),
       execute: vi.fn(),
@@ -74,7 +74,7 @@ describe("AnalysesTable.vue", () => {
     vi.mocked(useFetch).mockResolvedValue({
       data: ref(fakeProjects),
       pending: ref(false),
-      error: ref(null),
+      error: ref(undefined),
       status: ref("success"),
       refresh: vi.fn(),
       execute: vi.fn(),
@@ -116,7 +116,7 @@ describe("AnalysesTable.vue", () => {
     spy.mockClear();
 
     const dataRef = ref(fakeAnalysisNodes);
-    const errorRef = ref<FetchError | null>(null);
+    const errorRef = ref<FetchError | undefined>(undefined);
     const statusRef = ref<AsyncDataRequestStatus>("success");
     const mockRefresh = vi.fn();
 
@@ -171,7 +171,7 @@ describe("AnalysesTable.vue", () => {
     vi.mocked(getAnalysisNodes).mockResolvedValue({
       data: ref(fakeAnalysisNodes),
       pending: ref(false),
-      error: ref(null),
+      error: ref(undefined),
       status: ref("success"),
       refresh: vi.fn(),
       execute: vi.fn(),
@@ -189,7 +189,7 @@ describe("AnalysesTable.vue", () => {
     vi.mocked(getAnalysisNodes).mockResolvedValue({
       data: ref(emptyResp),
       pending: ref(false),
-      error: ref(null),
+      error: ref(undefined),
       status: ref("success"),
       refresh: vi.fn(),
       execute: vi.fn(),
@@ -199,7 +199,7 @@ describe("AnalysesTable.vue", () => {
     vi.mocked(useFetch).mockResolvedValue({
       data: ref([]),
       pending: ref(false),
-      error: ref(null),
+      error: ref(undefined),
       status: ref("success"),
       refresh: vi.fn(),
       execute: vi.fn(),

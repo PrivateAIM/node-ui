@@ -6,7 +6,7 @@ import { fakeAnalysisNodes } from "~/test/components/analysis/constants";
 import type { AnalysisNode } from "~/services/Api";
 
 interface filterData {
-  value: string[] | null;
+  value: string[] | undefined;
   matchMode: string;
 }
 
@@ -84,7 +84,7 @@ describe("ContainerCounter.vue", () => {
   it("No filters applied", () => {
     counterCheck(fakeAnalysisNodes, {
       run_status: {
-        value: null,
+        value: undefined,
         matchMode: "in",
       },
     });

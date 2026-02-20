@@ -3,7 +3,7 @@ import { HelpTextField } from "~/components/data-stores/create/index";
 import Panel from "primevue/panel";
 
 const props = defineProps({
-  helpField: String || null,
+  helpField: String || undefined,
 });
 
 const emit = defineEmits(["closeHelp"]);
