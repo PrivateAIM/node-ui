@@ -4,7 +4,7 @@ import AvatarButton from "~/components/header/AvatarButton.vue";
 import DarkModeToggle from "~/components/header/DarkModeToggle.vue";
 import { RouterLink } from "vue-router";
 
-const { status } = useAuth();
+const { status } = useAuthState();
 
 const items = ref([
   {

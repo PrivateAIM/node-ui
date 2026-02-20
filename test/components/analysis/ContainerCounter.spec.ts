@@ -72,7 +72,7 @@ describe("ContainerCounter.vue", () => {
         badgeDiv.trigger("click");
         expect(wrapper.emitted()).toHaveProperty("applyRunStatusFilter");
         expect(wrapper.emitted().applyRunStatusFilter).toHaveLength(index + 1);
-        expect(wrapper.emitted().applyRunStatusFilter[index]).toEqual([
+        expect(wrapper.emitted().applyRunStatusFilter![index]).toEqual([
           lowerStatus,
         ]);
       },

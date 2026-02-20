@@ -3,7 +3,7 @@ import { useRuntimeConfig } from "nuxt/app";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import MenuHeader from "~/components/header/MenuHeader.vue";
 import { type DefineComponent, defineComponent, ref } from "vue";
-import useAuth from "../../mockapi/nuxt-auth-mock";
+import { useAuthState } from "@/test/mockapi/nuxt-auth-mock";
 
 describe("MenuHeader.vue", () => {
   vi.mocked(useRuntimeConfig);
@@ -28,12 +28,9 @@ describe("MenuHeader.vue", () => {
       "Data Stores",
     ];
 
-    vi.mocked(useAuth).mockReturnValue({
+    vi.mocked(useAuthState).mockReturnValue({
       status: ref(status),
-      signIn: vi.fn(),
-      signOut: vi.fn(),
       data: ref(null),
-      getSession: vi.fn(),
     });
 
     const wrapper = mount(MenuHeaderTestComponent, {

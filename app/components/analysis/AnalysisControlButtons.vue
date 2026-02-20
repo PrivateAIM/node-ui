@@ -54,7 +54,7 @@ const loading = ref(false);
 const NOT_FOUND_STATUS = 404;
 const CONFLICT_STATUS = 409;
 
-const playButtonActiveStates = [undefined, ""];
+const playButtonActiveStates = [undefined, null, ""];
 const rerunButtonActiveStates: Array<string | null | undefined> = [
   AnalysisNodeRunStatus.Failed,
   AnalysisNodeRunStatus.Finished,
