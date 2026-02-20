@@ -9,10 +9,10 @@ import {
   it,
   vi,
 } from "vitest";
-import DataStoreProjectInitializer from "~/components/data-stores/create/DataStoreProjectInitializer.vue";
-import { fakeParsedProjects } from "~/test/components/data-stores/constants";
-import type { availableProject } from "~/components/data-stores/create/ResourceManagerTabs.vue";
-import { DataStoreType } from "~/services/Api";
+import DataStoreProjectInitializer from "../../../../app/components/data-stores/create/DataStoreProjectInitializer.vue";
+import { fakeParsedProjects } from "../constants";
+import type { availableProject } from "../../../../app/components/data-stores/create/ResourceManagerTabs.vue";
+import { DataStoreType } from "../../../../app/services/Api";
 
 describe("DataStoreProjectInitializer.vue", () => {
   let spy;
@@ -187,7 +187,7 @@ describe("DataStoreProjectInitializer.vue", () => {
 
   it("Create a valid data store", async () => {
     await checkDataStoreInit(
-      fakeParsedProjects[0],
+      fakeParsedProjects[0]!,
       true,
       "success",
       "Registration success",
@@ -197,7 +197,7 @@ describe("DataStoreProjectInitializer.vue", () => {
 
   it("Try to create a duplicate data store", async () => {
     await checkDataStoreInit(
-      fakeParsedProjects[1], // pseudo-duplicate
+      fakeParsedProjects[1]!, // pseudo-duplicate
       false,
       "error",
       "Registration failure",
@@ -207,7 +207,7 @@ describe("DataStoreProjectInitializer.vue", () => {
 
   it("Invoke an error", async () => {
     await checkDataStoreInit(
-      fakeParsedProjects[0], // pseudo-duplicate
+      fakeParsedProjects[0]!, // pseudo-duplicate
       false,
       "error",
       "Registration failure",
