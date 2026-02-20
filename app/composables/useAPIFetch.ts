@@ -21,7 +21,7 @@ export function useAPIFetch<T>(
 ) {
   return useFetch(request, {
     ...options,
-    $fetch: useNuxtApp().$hubApi,
+    $fetch: useNuxtApp().$hubApi as typeof $fetch,
   });
 }
 

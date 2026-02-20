@@ -5,7 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineNuxtConfig({
   ssr: false,
-  devtools: { enabled: false },
+  devtools: { enabled: true },
   modules: [
     "@primevue/nuxt-module",
     "@sidebase/nuxt-auth",
@@ -34,7 +34,7 @@ export default defineNuxtConfig({
     originEnvKey: "NUXT_PUBLIC_ORIGIN",
     baseURL:
       process.env.NUXT_PUBLIC_ORIGIN || "http://localhost:3000/flame/api/auth",
-    disableServerSideAuth: true,
+    disableServerSideAuth: false,
     globalAppMiddleware: true,
     provider: {
       type: "authjs",

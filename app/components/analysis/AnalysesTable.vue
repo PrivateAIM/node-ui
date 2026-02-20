@@ -83,7 +83,7 @@ const { data: analysisNodeResp, status, refresh } = await getAnalysisNodes(); //
 const { data: projResp, status: projStatus } = await useFetch<Project[] | null>(
   "/projects",
   {
-    $fetch: useNuxtApp().$hubApi,
+    $fetch: useNuxtApp().$hubApi as typeof $fetch,
     method: "GET",
     query: {
       sort: "-updated_at",

@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import { useRuntimeConfig } from "nuxt/app";
 
-const { signIn, signOut, status } = useAuth();
+const { signIn, signOut } = useAuth();
+const { status } = useAuthState();
 const config = useRuntimeConfig();
 const idpProvider: string = config.public.idpProvider as string;
 const idpNameCapitalized: string =

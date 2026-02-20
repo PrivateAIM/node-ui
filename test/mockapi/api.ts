@@ -15,7 +15,6 @@ import {
   showRbacPermissionError,
   showWrongRobotIdToast,
 } from "../../app/composables/connectionErrorToast";
-import { $fetch } from "ofetch";
 
 const toast = useToast();
 

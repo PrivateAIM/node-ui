@@ -6,7 +6,8 @@ import { useRuntimeConfig } from "nuxt/app";
 import CleanupDialog from "~/components/header/CleanupDialog.vue";
 import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
 
-const { signIn, signOut, status, data } = useAuth();
+const { signIn, signOut } = useAuth();
+const { status: authStatus, data: authData } = useAuthState();
 
 const menu = ref();
 
@@ -17,10 +18,10 @@ const datastoreRequired = computed(
 );
 
 const config = useRuntimeConfig();
-const baseUrl = new URL(config.public.baseUrl).origin;
+const baseUrl = new URL(config.public.baseUrl as string).origin;
 const idpProvider = config.public.idpProvider;
 
-const isAuthenticated = ref(status.value === "authenticated");
+const isAuthenticated = computed(() => authStatus.value === "authenticated");
 const showCleanupDialog = ref(false);
 
 const userActionLabel = isAuthenticated.value ? "Logout" : "Login";
@@ -72,7 +73,7 @@ const toggle = (event) => {
   <div class="container">
     <div v-if="isAuthenticated" class="avatar-container">
       <p class="username-menu-bar">
-        {{ data?.user?.name || "Swell Person" }}
+        {{ authData?.user?.name || "Swell Person" }}
       </p>
       <Button
         aria-controls="overlay_menu"

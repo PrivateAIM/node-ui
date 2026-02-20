@@ -20,6 +20,14 @@ export function showConnectionErrorToast(
   }, life);
 }
 
+export const showNotAuthenticatedToast = (toast: ToastServiceMethods) => {
+  showConnectionErrorToast(toast, {
+    severity: "error",
+    summary: "Missing JWT",
+    detail: "No token was found for your account.",
+  });
+};
+
 export const showHubAdapterConnectionErrorToast = (
   toast: ToastServiceMethods,
   svc: string | null,
@@ -35,14 +43,12 @@ export const showHubAdapterConnectionErrorToast = (
   });
 };
 
-export const showCacheWarningToast = (
-    toast: ToastServiceMethods,
-) => {
-    showConnectionErrorToast(toast, {
-        severity: "warn",
-        summary: "Unable to refresh the table",
-        detail: "The Hub is unreachable and the table could not be updated",
-    });
+export const showCacheWarningToast = (toast: ToastServiceMethods) => {
+  showConnectionErrorToast(toast, {
+    severity: "warn",
+    summary: "Unable to refresh the table",
+    detail: "The Hub is unreachable and the table could not be updated",
+  });
 };
 
 export const showDownstreamConnectionErrorToast = (
