@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.4.3](https://github.com/PrivateAIM/node-ui/compare/v0.4.2...v0.4.3) (2026-02-20)
+
+
+### Features
+
+* update event filtering and bind to meter group ([d3a216c](https://github.com/PrivateAIM/node-ui/commit/d3a216c9878106e3b71a728f7b1ab5533588a311))
+
+
+### Bug Fixes
+
+* update app import ([d730304](https://github.com/PrivateAIM/node-ui/commit/d73030462916a670676e4c41f31e273480764596))
+
+
+### Performance Improvements
+
+* skip settings retrieval until after authentication ([d77c8dd](https://github.com/PrivateAIM/node-ui/commit/d77c8ddf2633715daa0c8555e2df2d53966ae442))
+
 ## [0.4.2](https://github.com/PrivateAIM/node-ui/compare/v0.4.1...v0.4.2) (2026-02-18)
 
 ### Features
