@@ -6,35 +6,52 @@
  * @param rowExpansionKeys - data keys that will be moved to an expandable subset
  */
 import { useTimeAgo } from "@vueuse/core";
+import type { AnalysisNode, ProjectNode, Route } from "~/services/Api";
+import type { ModifiedDetailedService } from "~/services/modifiedApiInterfaces";
 
 export function formatDataRow(
-  rowEntries,
+  rowEntries:
+    | ProjectNode[]
+    | ModifiedDetailedService[]
+    | Route[]
+    | AnalysisNode[]
+    | null,
   datetimeKeys: string[],
   rowExpansionKeys: string[],
 ) {
   if (rowEntries) {
-    rowEntries.map((row) => {
-      parseUnixTimestamp(row, datetimeKeys);
-      const expandData: object = {};
-      rowExpansionKeys.forEach((key) => {
-        if (key in row) {
-          expandData[key] = row[key];
-          delete row[key];
-        }
-      });
-      row["expand"] = expandData;
-    });
+    return rowEntries.map(
+      (row: ProjectNode | ModifiedDetailedService | Route | AnalysisNode) => {
+        // Create a shallow copy of the row
+        const newRow = { ...row };
+
+        // parseUnixTimestamp now returns a new object, so assign it back
+        const parsedRow = parseUnixTimestamp(newRow, datetimeKeys);
+
+        const expandData: object = {};
+        rowExpansionKeys.forEach((key) => {
+          if (key in parsedRow) {
+            expandData[key] = parsedRow[key];
+            delete parsedRow[key];
+          }
+        });
+        parsedRow["expand"] = expandData;
+
+        return parsedRow;
+      },
+    );
   }
   return rowEntries;
 }
 
 export function parseUnixTimestamp(
-  dataRow: object,
+  dataRow: ProjectNode | ModifiedDetailedService | Route | AnalysisNode,
   keysToModify: string[],
-): object {
+) {
+  const result = { ...dataRow };
   keysToModify.forEach((key) => {
-    if (key in dataRow) {
-      const timestamp = dataRow[key];
+    if (key in result) {
+      const timestamp = result[key];
       let date: Date;
       if (typeof timestamp !== "object") {
         // If it is an object, then no need to parse
@@ -54,7 +71,7 @@ export function parseUnixTimestamp(
               year: "numeric",
             });
 
-        dataRow[key] = {
+        result[key] = {
           short: shortDate,
           long: date.toLocaleString("de-DE", {
             month: "short",
@@ -70,7 +87,7 @@ export function parseUnixTimestamp(
       }
     }
   });
-  return dataRow;
+  return result;
 }
 
 function isLessThanOneWeekAgo(date: Date): boolean {

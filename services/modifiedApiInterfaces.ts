@@ -41,3 +41,9 @@ export interface ModifiedAnalysisNode
   execution_status: PodStatus | null;
   progress: number;
 }
+
+export interface ModifiedParsedAnalysisNode
+  extends Omit<ModifiedAnalysisNode, "created_at" | "updated_at"> {
+  created_at: modifiedTimestamp;
+  updated_at: modifiedTimestamp;
+}

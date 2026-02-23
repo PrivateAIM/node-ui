@@ -12,6 +12,7 @@ import {
 import DataStoreProjectInitializer from "~/components/data-stores/create/DataStoreProjectInitializer.vue";
 import { fakeParsedProjects } from "~/test/components/data-stores/constants";
 import type { availableProject } from "~/components/data-stores/create/ResourceManagerTabs.vue";
+import { DataStoreType } from "~/services/Api";
 
 describe("DataStoreProjectInitializer.vue", () => {
   let spy;
@@ -101,12 +102,6 @@ describe("DataStoreProjectInitializer.vue", () => {
     checkDropdown(".communication-protocol-picker", acceptedProtocols);
   });
 
-  // TODO: Fix for MultiSelect component
-  // it("Check data store request method dropdown options", () => {
-  //   const availableMethods = ["GET", "POST", "PUT", "DELETE"];
-  //   checkDropdown(".methods-picker", availableMethods);
-  // });
-
   it("Header content", () => {
     expect(wrapper.text()).toContain("Create a Data Store for a Project");
     expect(wrapper.text()).toContain("Helpful tooltips");
@@ -120,7 +115,7 @@ describe("DataStoreProjectInitializer.vue", () => {
     toastDetail: string,
     server: string = "whonnock",
     path: string = "/fake/path",
-    storeType: string = "FHIR",
+    storeType: DataStoreType = DataStoreType.Fhir,
     port: string = "80",
     protocol: string = "http",
     // methods?: string[],
@@ -154,7 +149,9 @@ describe("DataStoreProjectInitializer.vue", () => {
     // Set data store type
     wrapper.vm.selectedDataStoreType = storeType;
     await wrapper.vm.$nextTick();
-    expect(wrapper.find(".data-store-type-input span").text()).toBe(storeType);
+    expect(
+      wrapper.find(".data-store-type-input span").text().toLowerCase(),
+    ).toBe(storeType);
 
     // Set port
     const portWrapper = wrapper.find(".data-store-port-input");
@@ -164,9 +161,6 @@ describe("DataStoreProjectInitializer.vue", () => {
     // Set protocol
     await wrapper.find(".communication-protocol-picker").trigger("click"); // open dropdown menu
     await wrapper.find(`li[aria-label="${protocol}"]`).trigger("click"); // select first option
-    // expect(wrapper.find(".communication-protocol-picker span").text()).toBe(
-    //   protocol,
-    // );
 
     // TODO: Make methods
 
@@ -218,9 +212,7 @@ describe("DataStoreProjectInitializer.vue", () => {
       "error",
       "Registration failure",
       "An error occurred while trying to register the data store",
-      "whonnock",
-      "fake/path",
-      "S3", // Triggers an error (only during testing)
+      "void",
     );
   });
 
@@ -229,19 +221,18 @@ describe("DataStoreProjectInitializer.vue", () => {
       wrapper.findComponent(".bucket-access-policy-radio").exists(),
     ).toBeFalsy(); // Starts on FHIR so should not be in view
     const select = wrapper.findComponent(".data-store-type-picker");
-    await select.vm.$emit("update:modelValue", "S3"); // Simulate the S3 option being clicked
+    await select.vm.$emit("update:modelValue", DataStoreType.S3); // Simulate the S3 option being clicked
     await wrapper.vm.$nextTick();
     expect(wrapper.find(".bucket-access-policy-radio").exists()).toBe(true); // Check radio options exist now
 
-    // Private fields
-    expect(
-      wrapper.findComponent(".data-store-path-input-s3-private").exists(),
-    ).toBeFalsy(); // Starts on public, private fields should not exist
-
-    wrapper.vm.selectedBucketAccessPolicy = "Private"; // Simulate private being selected
-    await wrapper.vm.$nextTick();
     expect(
       wrapper.findComponent(".data-store-path-input-s3-private").exists(),
     ).toBeTruthy();
+
+    wrapper.vm.selectedBucketAccessPolicy = "Public"; // Simulate public being selected
+    await wrapper.vm.$nextTick();
+    expect(
+      wrapper.findComponent(".data-store-path-input-s3-private").exists(),
+    ).toBeFalsy();
   });
 });

@@ -110,7 +110,10 @@ async function refreshAccessToken(token: any) {
   const clientIssuer =
     process.env.NUXT_PUBLIC_IDP_ISSUER ?? "http://localhost:8080/realms/flame";
 
-  const tokenEndpoint = `${clientIssuer}/protocol/openid-connect/token`; // Assumes OIDC
+  const internalEndpoint =
+    process.env.NUXT_PUBLIC_INTERNAL_KEYCLOAK_URL ?? clientIssuer;
+
+  const tokenEndpoint = `${internalEndpoint}/protocol/openid-connect/token`; // Assumes OIDC
 
   const response = await fetch(tokenEndpoint, {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -137,6 +140,36 @@ async function refreshAccessToken(token: any) {
 
 export default NuxtAuthHandler({
   secret: useRuntimeConfig().authSecret,
+  events: {
+    async signIn({ account }) {
+      // After successful sign in
+      const hubAdapterApi = process.env.NUXT_PUBLIC_HUB_ADAPTER_URL;
+      if (!hubAdapterApi || !account?.access_token) return;
+      const signInEndpoint = `${hubAdapterApi.replace(/\/$/, "")}/events/signin`;
+      try {
+        await fetch(signInEndpoint, {
+          headers: { Authorization: `Bearer ${account.access_token}` },
+          method: "POST",
+        });
+      } catch (error) {
+        console.error("Failed to log sign-in event:", error);
+      }
+    },
+    async signOut({ token }) {
+      // After successful sign out
+      const hubAdapterApi = process.env.NUXT_PUBLIC_HUB_ADAPTER_URL;
+      if (!hubAdapterApi || !token?.access_token) return;
+      const signOutEndpoint = `${hubAdapterApi.replace(/\/$/, "")}/events/signout`;
+      try {
+        await fetch(signOutEndpoint, {
+          headers: { Authorization: `Bearer ${token.access_token}` },
+          method: "POST",
+        });
+      } catch (error) {
+        console.error("Failed to log sign-out event:", error);
+      }
+    },
+  },
   callbacks: {
     /* on session retrieval */
     async session({ session, token }) {

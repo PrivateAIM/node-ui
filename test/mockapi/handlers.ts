@@ -1,14 +1,14 @@
 // For spoofing requests not made using the useFetch
 import { http, HttpResponse } from "msw";
 import {
-  type BodyCreateAnalysisPoPost,
+  type BodyKongInitializeKongInitializePost,
+  type BodyPodorcPodsCreatePoPost,
   type CleanupPodResponse,
 } from "~/services/Api";
 import {
   fakeDataStoreInitSuccess,
   fakeParsedProjects,
 } from "~/test/components/data-stores/constants";
-import type { kongBody } from "~/components/data-stores/create/DataStoreProjectInitializer.vue";
 import { fakeProposalsResp } from "~/test/components/projects/constants";
 
 export const fakeValidProposalId = "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483";
@@ -26,6 +26,16 @@ export const handlers = [
       status: 200,
       data: {
         type: "default",
+      },
+    });
+  }),
+
+  // Node settings (used by various components during setup)
+  http.get("/node/settings", () => {
+    return HttpResponse.json({
+      status: 200,
+      data: {
+        data_required: false,
       },
     });
   }),
@@ -106,7 +116,7 @@ export const handlers = [
 
   // Working analysis controls
   http.post(`/po`, async ({ request }) => {
-    const body = (await request.json()) as BodyCreateAnalysisPoPost;
+    const body = (await request.json()) as BodyPodorcPodsCreatePoPost;
     const analysisId = body.analysis_id;
     if (analysisId === fakeAnalysisId) {
       return HttpResponse.json({
@@ -132,13 +142,13 @@ export const handlers = [
   // Update Analysis Button - running analysis TODO remove
   http.get(`/po/status/${fakeAnalysisId}`, () => {
     return HttpResponse.json({
-      [fakeAnalysisId]: "running",
+      [fakeAnalysisId]: "executing",
     });
   }),
 
   http.get(`/po/status`, () => {
     return HttpResponse.json({
-      [fakeAnalysisId]: "running",
+      [fakeAnalysisId]: "executing",
     });
   }),
 
@@ -290,15 +300,15 @@ export const handlers = [
     });
   }),
   http.post(`/kong/initialize`, async ({ request }) => {
-    const body = (await request.json()) as kongBody;
+    const body = (await request.json()) as BodyKongInitializeKongInitializePost;
     const projectId = body.project_id;
-    const dsType = body.ds_type;
+    const hostname = body.datastore["host"];
 
     const validProjectId = fakeParsedProjects[0].id;
     const duplicateProjectId = fakeParsedProjects[1].id;
 
-    if (dsType === "s3") {
-      // s3 is my trigger for an error
+    if (hostname === "void") {
+      // Trigger for an error
       return new HttpResponse(null, { status: 500 });
     } else if (projectId === validProjectId) {
       return HttpResponse.json(fakeDataStoreInitSuccess);

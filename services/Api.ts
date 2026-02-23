@@ -29,11 +29,11 @@ export enum ProtocolCode {
 export enum PodStatus {
   Starting = "starting",
   Started = "started",
-  Stuck = "stuck",
-  Running = "running",
   Stopping = "stopping",
   Stopped = "stopped",
-  Finished = "finished",
+  Executing = "executing",
+  Executed = "executed",
+  Stuck = "stuck",
   Failed = "failed",
 }
 
@@ -75,6 +75,13 @@ export enum CleanUpType {
   Rs = "rs",
   Keycloak = "keycloak",
   Zombies = "zombies",
+}
+
+/** AnalysisBucketType */
+export enum AnalysisBucketType {
+  CODE = "CODE",
+  RESULT = "RESULT",
+  TEMP = "TEMP",
 }
 
 /**
@@ -135,6 +142,8 @@ export interface Analysis {
   id: string;
   /** Nodes */
   nodes: number;
+  /** Nodes Approved */
+  nodes_approved: number;
   /** Configuration Locked */
   configuration_locked: boolean;
   /** Configuration Entrypoint Valid */
@@ -153,25 +162,40 @@ export interface Analysis {
     | "started"
     | "stopping"
     | "stopped"
-    | "finished"
+    | "executing"
+    | "executed"
     | "failed"
     | null;
-  /** Execution Status */
-  execution_status:
-    | "starting"
-    | "started"
-    | "stopping"
-    | "stopped"
-    | "finished"
-    | "failed"
-    | null;
+  /** Build Nodes Valid */
+  build_nodes_valid: boolean;
+  /** Build Progress */
+  build_progress: number | null;
+  /** Build Hash */
+  build_hash: string | null;
+  /** Build Os */
+  build_os: string | null;
+  /** Build Size */
+  build_size: number | null;
   /** Distribution Status */
   distribution_status:
     | "starting"
     | "started"
     | "stopping"
     | "stopped"
-    | "finished"
+    | "executing"
+    | "executed"
+    | "failed"
+    | null;
+  /** Distribution Progress */
+  distribution_progress: number | null;
+  /** Execution Status */
+  execution_status:
+    | "starting"
+    | "started"
+    | "stopping"
+    | "stopped"
+    | "executing"
+    | "executed"
     | "failed"
     | null;
   /** Execution Progress */
@@ -203,15 +227,22 @@ export interface Analysis {
 
 /** AnalysisBucket */
 export interface AnalysisBucket {
+  type: AnalysisBucketType;
+  /**
+   * Bucket Id
+   * @format uuid
+   */
+  bucket_id: string;
+  /**
+   * Analysis Id
+   * @format uuid
+   */
+  analysis_id: string;
   /**
    * Id
    * @format uuid
    */
   id: string;
-  /** Type */
-  type: "CODE" | "RESULT" | "TEMP";
-  /** External Id */
-  external_id: string | null;
   /**
    * Created At
    * @format date-time
@@ -222,11 +253,6 @@ export interface AnalysisBucket {
    * @format date-time
    */
   updated_at: string;
-  /**
-   * Analysis Id
-   * @format uuid
-   */
-  analysis_id: string;
   analysis?: Analysis;
   /**
    * Realm Id
@@ -278,7 +304,8 @@ export interface AnalysisNode {
     | "started"
     | "stopping"
     | "stopped"
-    | "finished"
+    | "executing"
+    | "executed"
     | "failed"
     | null;
   /** Execution Progress */
@@ -313,26 +340,22 @@ export interface AnalysisNode {
   node_realm_id: string;
 }
 
-/** Body_accept_reject_analysis_node_analysis_nodes__analysis_node_id__post */
-export interface BodyAcceptRejectAnalysisNodeAnalysisNodesAnalysisNodeIdPost {
+/** Body_auth_token_get_token_post */
+export interface BodyAuthTokenGetTokenPost {
   /**
-   * Approval Status
-   * Set the approval status of project for the node. Either 'rejected' or 'approved'
+   * Username
+   * Keycloak username
    */
-  approval_status: "rejected" | "approved";
+  username: string;
+  /**
+   * Password
+   * Keycloak password
+   */
+  password: string;
 }
 
-/** Body_accept_reject_project_proposal_project_nodes__project_node_id__post */
-export interface BodyAcceptRejectProjectProposalProjectNodesProjectNodeIdPost {
-  /**
-   * Approval Status
-   * Set the approval status of project for the node. Either 'rejected' or 'approved'
-   */
-  approval_status: "rejected" | "approved";
-}
-
-/** Body_create_analysis_po_post */
-export interface BodyCreateAnalysisPoPost {
+/** Body_hub_analysis_image_get_analysis_image_post */
+export interface BodyHubAnalysisImageGetAnalysisImagePost {
   /**
    * Analysis Id
    * Analysis UUID
@@ -355,8 +378,26 @@ export interface BodyCreateAnalysisPoPost {
   node_id: string;
 }
 
-/** Body_create_and_connect_analysis_to_project_kong_analysis_post */
-export interface BodyCreateAndConnectAnalysisToProjectKongAnalysisPost {
+/** Body_hub_analysis_node_update_analysis_nodes__analysis_node_id__post */
+export interface BodyHubAnalysisNodeUpdateAnalysisNodesAnalysisNodeIdPost {
+  /**
+   * Approval Status
+   * Set the approval status of project for the node. Either 'rejected' or 'approved'
+   */
+  approval_status: "rejected" | "approved";
+}
+
+/** Body_hub_project_node_update_project_nodes__project_node_id__post */
+export interface BodyHubProjectNodeUpdateProjectNodesProjectNodeIdPost {
+  /**
+   * Approval Status
+   * Set the approval status of project for the node. Either 'rejected' or 'approved'
+   */
+  approval_status: "rejected" | "approved";
+}
+
+/** Body_kong_analysis_create_kong_analysis_post */
+export interface BodyKongAnalysisCreateKongAnalysisPost {
   /**
    * Project Id
    * UUID or name of the project
@@ -369,19 +410,26 @@ export interface BodyCreateAndConnectAnalysisToProjectKongAnalysisPost {
   analysis_id: string;
 }
 
-/** Body_create_datastore_and_project_with_link_kong_initialize_post */
-export interface BodyCreateDatastoreAndProjectWithLinkKongInitializePost {
+/** Body_kong_datastore_create_kong_datastore_post */
+export interface BodyKongDatastoreCreateKongDatastorePost {
+  /**
+   * Data store metadata.
+   * Required information for creating a new data store.
+   */
+  datastore: ServiceRequest;
+  /** Data store type. Either 's3' or 'fhir' */
+  ds_type: DataStoreType;
+  /** Minio configuration */
+  minio_config?: MinioConfig | null;
+}
+
+/** Body_kong_initialize_kong_initialize_post */
+export interface BodyKongInitializeKongInitializePost {
   /**
    * Project Id
    * UUID of the project
    */
   project_id: string;
-  /**
-   * Methods
-   * List of acceptable HTTP methods
-   * @default ["GET"]
-   */
-  methods?: HttpMethodCode[];
   /**
    * Protocols
    * List of acceptable transfer protocols. A combo of 'http', 'grpc', 'grpcs', 'tls', 'tcp'
@@ -395,10 +443,12 @@ export interface BodyCreateDatastoreAndProjectWithLinkKongInitializePost {
    * Required information for creating a new data store.
    */
   datastore: ServiceRequest;
+  /** Minio configuration */
+  minio_config?: MinioConfig | null;
 }
 
-/** Body_create_route_to_datastore_kong_project_post */
-export interface BodyCreateRouteToDatastoreKongProjectPost {
+/** Body_kong_project_create_kong_project_post */
+export interface BodyKongProjectCreateKongProjectPost {
   /**
    * Data Store Id
    * UUID of the data store or 'service'
@@ -428,19 +478,8 @@ export interface BodyCreateRouteToDatastoreKongProjectPost {
   ds_type?: DataStoreType;
 }
 
-/** Body_create_service_kong_datastore_post */
-export interface BodyCreateServiceKongDatastorePost {
-  /**
-   * Data store metadata.
-   * Required information for creating a new data store.
-   */
-  datastore: ServiceRequest;
-  /** Data store type. Either 's3' or 'fhir' */
-  ds_type: DataStoreType;
-}
-
-/** Body_get_analysis_image_url_analysis_image_post */
-export interface BodyGetAnalysisImageUrlAnalysisImagePost {
+/** Body_podorc_pods_create_po_post */
+export interface BodyPodorcPodsCreatePoPost {
   /**
    * Analysis Id
    * Analysis UUID
@@ -461,20 +500,6 @@ export interface BodyGetAnalysisImageUrlAnalysisImagePost {
    * Node UUID
    */
   node_id: string;
-}
-
-/** Body_get_token_token_post */
-export interface BodyGetTokenTokenPost {
-  /**
-   * Username
-   * Keycloak username
-   */
-  username: string;
-  /**
-   * Password
-   * Keycloak password
-   */
-  password: string;
 }
 
 /**
@@ -571,6 +596,8 @@ export interface DetailedAnalysis {
   id: string;
   /** Nodes */
   nodes: number;
+  /** Nodes Approved */
+  nodes_approved: number;
   /** Configuration Locked */
   configuration_locked: boolean;
   /** Configuration Entrypoint Valid */
@@ -589,25 +616,40 @@ export interface DetailedAnalysis {
     | "started"
     | "stopping"
     | "stopped"
-    | "finished"
+    | "executing"
+    | "executed"
     | "failed"
     | null;
-  /** Execution Status */
-  execution_status:
-    | "starting"
-    | "started"
-    | "stopping"
-    | "stopped"
-    | "finished"
-    | "failed"
-    | null;
+  /** Build Nodes Valid */
+  build_nodes_valid: boolean;
+  /** Build Progress */
+  build_progress: number | null;
+  /** Build Hash */
+  build_hash: string | null;
+  /** Build Os */
+  build_os: string | null;
+  /** Build Size */
+  build_size: number | null;
   /** Distribution Status */
   distribution_status:
     | "starting"
     | "started"
     | "stopping"
     | "stopped"
-    | "finished"
+    | "executing"
+    | "executed"
+    | "failed"
+    | null;
+  /** Distribution Progress */
+  distribution_progress: number | null;
+  /** Execution Status */
+  execution_status:
+    | "starting"
+    | "started"
+    | "stopping"
+    | "stopped"
+    | "executing"
+    | "executed"
     | "failed"
     | null;
   /** Execution Progress */
@@ -863,11 +905,44 @@ export interface DetailedService {
  */
 export interface DownstreamHealthCheck {
   /** Po */
-  po: Record<string, any> | string;
-  /** Results */
-  results: Record<string, any> | string;
+  po: HealthCheck | string;
+  /** Storage */
+  storage: HealthCheck | string;
   /** Kong */
-  kong: Record<string, any> | string;
+  kong: HealthCheck | string;
+}
+
+/**
+ * EventLog
+ * Event log response model.
+ */
+export interface EventLog {
+  /** Id */
+  id: number;
+  /** Event Name */
+  event_name: string;
+  /** Service Name */
+  service_name: string;
+  /**
+   * Timestamp
+   * @format date-time
+   */
+  timestamp: string;
+  /** Body */
+  body: string;
+  /** Attributes */
+  attributes: Record<string, any>;
+}
+
+/**
+ * EventLogResponse
+ * Event log response model.
+ */
+export interface EventLogResponse {
+  /** Data */
+  data: EventLog[];
+  /** Event log metadata model. */
+  meta: Meta;
 }
 
 /** HTTPValidationError */
@@ -1020,6 +1095,18 @@ export interface MasterImage {
   virtual_path: string;
   /** Group Virtual Path */
   group_virtual_path: string;
+  /** Build Status */
+  build_status:
+    | "starting"
+    | "started"
+    | "stopping"
+    | "stopped"
+    | "executing"
+    | "executed"
+    | "failed"
+    | null;
+  /** Build Progress */
+  build_progress: number | null;
   /** Name */
   name: string;
   /** Command */
@@ -1044,6 +1131,52 @@ export interface MasterImageCommandArgument {
   value: string;
   /** Position */
   position: "before" | "after" | null;
+}
+
+/**
+ * Meta
+ * Event log metadata model.
+ */
+export interface Meta {
+  /** Count */
+  count: number;
+  /** Total */
+  total: number;
+  /** Limit */
+  limit: number;
+  /** Offset */
+  offset: number;
+}
+
+/**
+ * MinioConfig
+ * Credentials for accessing a private S3 bucket hosted on MinIO.
+ */
+export interface MinioConfig {
+  /**
+   * Minio Access Key
+   * @format password
+   */
+  minio_access_key: string;
+  /**
+   * Minio Secret Key
+   * @format password
+   */
+  minio_secret_key: string;
+  /**
+   * Minio Region
+   * @default "us-east-1"
+   */
+  minio_region?: string;
+  /** Bucket Name */
+  bucket_name?: string | null;
+  /**
+   * Timeout
+   * @default 100000
+   */
+  timeout?: number;
+  /** Strip Path Pattern */
+  strip_path_pattern?: string | null;
 }
 
 /** Node */
@@ -1073,11 +1206,10 @@ export interface Node {
   /** Registry Project Id */
   registry_project_id: string | null;
   registry_project?: RegistryProject | null;
-  /**
-   * Robot Id
-   * @format uuid
-   */
-  robot_id: string;
+  /** Robot Id */
+  robot_id: string | null;
+  /** Client Id */
+  client_id: string | null;
   /**
    * Created At
    * @format date-time
@@ -1088,6 +1220,15 @@ export interface Node {
    * @format date-time
    */
   updated_at: string;
+}
+
+/** NodeSettings */
+export interface NodeSettings {
+  /**
+   * Data Required
+   * @default true
+   */
+  data_required?: boolean | null;
 }
 
 /** NodeTypeResponse */
@@ -1731,8 +1872,12 @@ export class HttpClient<SecurityDataType = unknown> {
       input !== null && typeof input !== "string"
         ? JSON.stringify(input)
         : input,
-    [ContentType.FormData]: (input: any) =>
-      Object.keys(input || {}).reduce((formData, key) => {
+    [ContentType.FormData]: (input: any) => {
+      if (input instanceof FormData) {
+        return input;
+      }
+
+      return Object.keys(input || {}).reduce((formData, key) => {
         const property = input[key];
         formData.append(
           key,
@@ -1743,7 +1888,8 @@ export class HttpClient<SecurityDataType = unknown> {
               : `${property}`,
         );
         return formData;
-      }, new FormData()),
+      }, new FormData());
+    },
     [ContentType.UrlEncoded]: (input: any) => this.toQueryString(input),
   };
 
@@ -1829,13 +1975,14 @@ export class HttpClient<SecurityDataType = unknown> {
             : payloadFormatter(body),
       },
     ).then(async (response) => {
-      const r = response.clone() as HttpResponse<T, E>;
+      const r = response as HttpResponse<T, E>;
       r.data = null as unknown as T;
       r.error = null as unknown as E;
 
+      const responseToParse = responseFormat ? response.clone() : response;
       const data = !responseFormat
         ? r
-        : await response[responseFormat]()
+        : await responseToParse[responseFormat]()
             .then((data) => {
               if (r.ok) {
                 r.data = data;
@@ -1874,13 +2021,13 @@ export class Api<
      * @description Gather the image URL for the requested analysis container and send information to the PO.
      *
      * @tags PodOrc
-     * @name CreateAnalysisPoPost
-     * @summary Create Analysis
+     * @name PodorcPodsCreatePoPost
+     * @summary Podorc.Pods.Create
      * @request POST:/po
      * @secure
      */
-    createAnalysisPoPost: (
-      data: BodyCreateAnalysisPoPost,
+    podorcPodsCreatePoPost: (
+      data: BodyPodorcPodsCreatePoPost,
       params: RequestParams = {},
     ) =>
       this.request<StatusResponse, void | HTTPValidationError>({
@@ -1897,12 +2044,12 @@ export class Api<
      * @description Get all analysis pod logs.
      *
      * @tags PodOrc
-     * @name GetAllAnalysisLogsPoLogsGet
-     * @summary Get All Analysis Logs
+     * @name PodorcLogsGetPoLogsGet
+     * @summary Podorc.Logs.Get
      * @request GET:/po/logs
      * @secure
      */
-    getAllAnalysisLogsPoLogsGet: (params: RequestParams = {}) =>
+    podorcLogsGetPoLogsGet: (params: RequestParams = {}) =>
       this.request<LogResponse, void>({
         path: `/po/logs`,
         method: "GET",
@@ -1915,12 +2062,12 @@ export class Api<
      * @description Get the analysis pod logs.
      *
      * @tags PodOrc
-     * @name GetAnalysisLogsPoLogsAnalysisIdGet
-     * @summary Get Analysis Logs
+     * @name PodorcLogsGetPoLogsAnalysisIdGet
+     * @summary Podorc.Logs.Get
      * @request GET:/po/logs/{analysis_id}
      * @secure
      */
-    getAnalysisLogsPoLogsAnalysisIdGet: (
+    podorcLogsGetPoLogsAnalysisIdGet: (
       analysisId: string,
       params: RequestParams = {},
     ) =>
@@ -1936,12 +2083,12 @@ export class Api<
      * @description Get all previous analysis pod logs.
      *
      * @tags PodOrc
-     * @name GetAllAnalysisLogHistoryPoHistoryGet
-     * @summary Get All Analysis Log History
+     * @name PodorcHistoryGetPoHistoryGet
+     * @summary Podorc.History.Get
      * @request GET:/po/history
      * @secure
      */
-    getAllAnalysisLogHistoryPoHistoryGet: (params: RequestParams = {}) =>
+    podorcHistoryGetPoHistoryGet: (params: RequestParams = {}) =>
       this.request<LogResponse, void>({
         path: `/po/history`,
         method: "GET",
@@ -1954,12 +2101,12 @@ export class Api<
      * @description Get the previous analysis pod logs.
      *
      * @tags PodOrc
-     * @name GetAnalysisLogHistoryPoHistoryAnalysisIdGet
-     * @summary Get Analysis Log History
+     * @name PodorcHistoryGetPoHistoryAnalysisIdGet
+     * @summary Podorc.History.Get
      * @request GET:/po/history/{analysis_id}
      * @secure
      */
-    getAnalysisLogHistoryPoHistoryAnalysisIdGet: (
+    podorcHistoryGetPoHistoryAnalysisIdGet: (
       analysisId: string | null,
       params: RequestParams = {},
     ) =>
@@ -1975,12 +2122,12 @@ export class Api<
      * @description Get all analysis run statuses.
      *
      * @tags PodOrc
-     * @name GetAllAnalysisStatusPoStatusGet
-     * @summary Get All Analysis Status
+     * @name PodorcStatusGetPoStatusGet
+     * @summary Podorc.Status.Get
      * @request GET:/po/status
      * @secure
      */
-    getAllAnalysisStatusPoStatusGet: (params: RequestParams = {}) =>
+    podorcStatusGetPoStatusGet: (params: RequestParams = {}) =>
       this.request<StatusResponse, void>({
         path: `/po/status`,
         method: "GET",
@@ -1993,12 +2140,12 @@ export class Api<
      * @description Get a specific analysis pod run status.
      *
      * @tags PodOrc
-     * @name GetAnalysisStatusPoStatusAnalysisIdGet
-     * @summary Get Analysis Status
+     * @name PodorcStatusGetPoStatusAnalysisIdGet
+     * @summary Podorc.Status.Get
      * @request GET:/po/status/{analysis_id}
      * @secure
      */
-    getAnalysisStatusPoStatusAnalysisIdGet: (
+    podorcStatusGetPoStatusAnalysisIdGet: (
       analysisId: string | null,
       params: RequestParams = {},
     ) =>
@@ -2014,12 +2161,12 @@ export class Api<
      * @description Get all running pods in the k8s cluster.
      *
      * @tags PodOrc
-     * @name GetAllAnalysisPodsPoPodsGet
-     * @summary Get All Analysis Pods
+     * @name PodorcPodsGetPoPodsGet
+     * @summary Podorc.Pods.Get
      * @request GET:/po/pods
      * @secure
      */
-    getAllAnalysisPodsPoPodsGet: (params: RequestParams = {}) =>
+    podorcPodsGetPoPodsGet: (params: RequestParams = {}) =>
       this.request<PodResponse, void>({
         path: `/po/pods`,
         method: "GET",
@@ -2032,12 +2179,12 @@ export class Api<
      * @description Get information on a specific running analysis pod in the k8s cluster.
      *
      * @tags PodOrc
-     * @name GetAnalysisPodsPoPodsAnalysisIdGet
-     * @summary Get Analysis Pods
+     * @name PodorcPodsGetPoPodsAnalysisIdGet
+     * @summary Podorc.Pods.Get
      * @request GET:/po/pods/{analysis_id}
      * @secure
      */
-    getAnalysisPodsPoPodsAnalysisIdGet: (
+    podorcPodsGetPoPodsAnalysisIdGet: (
       analysisId: string | null,
       params: RequestParams = {},
     ) =>
@@ -2053,12 +2200,12 @@ export class Api<
      * @description Stop all analysis pods.
      *
      * @tags PodOrc
-     * @name StopAllAnalysesPoStopPut
-     * @summary Stop All Analyses
+     * @name PodorcPodsStopPoStopPut
+     * @summary Podorc.Pods.Stop
      * @request PUT:/po/stop
      * @secure
      */
-    stopAllAnalysesPoStopPut: (params: RequestParams = {}) =>
+    podorcPodsStopPoStopPut: (params: RequestParams = {}) =>
       this.request<StatusResponse, void>({
         path: `/po/stop`,
         method: "PUT",
@@ -2071,12 +2218,12 @@ export class Api<
      * @description Stop a specific analysis run.
      *
      * @tags PodOrc
-     * @name StopAnalysisPoStopAnalysisIdPut
-     * @summary Stop Analysis
+     * @name PodorcPodsStopPoStopAnalysisIdPut
+     * @summary Podorc.Pods.Stop
      * @request PUT:/po/stop/{analysis_id}
      * @secure
      */
-    stopAnalysisPoStopAnalysisIdPut: (
+    podorcPodsStopPoStopAnalysisIdPut: (
       analysisId: string | null,
       params: RequestParams = {},
     ) =>
@@ -2092,12 +2239,12 @@ export class Api<
      * @description Delete all analysis pods.
      *
      * @tags PodOrc
-     * @name DeleteAllAnalysesPoDeleteDelete
-     * @summary Delete All Analyses
+     * @name PodorcPodsDeletePoDeleteDelete
+     * @summary Podorc.Pods.Delete
      * @request DELETE:/po/delete
      * @secure
      */
-    deleteAllAnalysesPoDeleteDelete: (params: RequestParams = {}) =>
+    podorcPodsDeletePoDeleteDelete: (params: RequestParams = {}) =>
       this.request<StatusResponse, void>({
         path: `/po/delete`,
         method: "DELETE",
@@ -2110,12 +2257,12 @@ export class Api<
      * @description Delete a specific analysis run.
      *
      * @tags PodOrc
-     * @name DeleteAnalysisPoDeleteAnalysisIdDelete
-     * @summary Delete Analysis
+     * @name PodorcPodsDeletePoDeleteAnalysisIdDelete
+     * @summary Podorc.Pods.Delete
      * @request DELETE:/po/delete/{analysis_id}
      * @secure
      */
-    deleteAnalysisPoDeleteAnalysisIdDelete: (
+    podorcPodsDeletePoDeleteAnalysisIdDelete: (
       analysisId: string | null,
       params: RequestParams = {},
     ) =>
@@ -2131,12 +2278,12 @@ export class Api<
      * @description Delete specific types of resources. Should be a comma separated combination of the following entries: 'all', 'analyzes', 'services', 'mb', 'rs', 'keycloak'
      *
      * @tags PodOrc
-     * @name CleanupNodePoCleanupCleanupTypeDelete
-     * @summary Cleanup Node
+     * @name PodorcCleanupPoCleanupCleanupTypeDelete
+     * @summary Podorc.Cleanup
      * @request DELETE:/po/cleanup/{cleanup_type}
      * @secure
      */
-    cleanupNodePoCleanupCleanupTypeDelete: (
+    podorcCleanupPoCleanupCleanupTypeDelete: (
       cleanupType: CleanUpType,
       params: RequestParams = {},
     ) =>
@@ -2153,12 +2300,12 @@ export class Api<
      * @description Perform the required checks to start an analysis and send information to the PO.
      *
      * @tags Meta
-     * @name InitializeAnalysisAnalysisInitializePost
-     * @summary Initialize Analysis
+     * @name MetaInitializeAnalysisInitializePost
+     * @summary Meta.Initialize
      * @request POST:/analysis/initialize
      * @secure
      */
-    initializeAnalysisAnalysisInitializePost: (
+    metaInitializeAnalysisInitializePost: (
       data: InitializeAnalysis,
       params: RequestParams = {},
     ) =>
@@ -2176,12 +2323,12 @@ export class Api<
      * @description Perform the required checks to stop an analysis and delete it and its components. This method will first delete the kong consumer and then send the delete command to the PO.
      *
      * @tags Meta
-     * @name TerminateAnalysisAnalysisTerminateAnalysisIdDelete
-     * @summary Terminate Analysis
+     * @name MetaTerminateAnalysisTerminateAnalysisIdDelete
+     * @summary Meta.Terminate
      * @request DELETE:/analysis/terminate/{analysis_id}
      * @secure
      */
-    terminateAnalysisAnalysisTerminateAnalysisIdDelete: (
+    metaTerminateAnalysisTerminateAnalysisIdDelete: (
       analysisId: string,
       params: RequestParams = {},
     ) =>
@@ -2197,17 +2344,59 @@ export class Api<
      * @description Build an analysis image URL using its metadata from the Hub.
      *
      * @tags Hub
-     * @name GetAnalysisImageUrlAnalysisImagePost
-     * @summary Get Analysis Image Url
+     * @name HubAnalysisImageGetAnalysisImagePost
+     * @summary Hub.Analysis.Image.Get
      * @request POST:/analysis/image
      * @secure
      */
-    getAnalysisImageUrlAnalysisImagePost: (
-      data: BodyGetAnalysisImageUrlAnalysisImagePost,
+    hubAnalysisImageGetAnalysisImagePost: (
+      data: BodyHubAnalysisImageGetAnalysisImagePost,
       params: RequestParams = {},
     ) =>
       this.request<AnalysisImageUrl, void | HTTPValidationError>({
         path: `/analysis/image`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+  };
+  node = {
+    /**
+     * @description Get the node configuration settings
+     *
+     * @tags Node
+     * @name NodeSettingsGetNodeSettingsGet
+     * @summary Node.Settings.Get
+     * @request GET:/node/settings
+     * @secure
+     */
+    nodeSettingsGetNodeSettingsGet: (params: RequestParams = {}) =>
+      this.request<NodeSettings, void>({
+        path: `/node/settings`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Update the node configuration settings.
+     *
+     * @tags Node
+     * @name NodeSettingsUpdateNodeSettingsPost
+     * @summary Node.Settings.Update
+     * @request POST:/node/settings
+     * @secure
+     */
+    nodeSettingsUpdateNodeSettingsPost: (
+      data: NodeSettings,
+      params: RequestParams = {},
+    ) =>
+      this.request<NodeSettings, void | HTTPValidationError>({
+        path: `/node/settings`,
         method: "POST",
         body: data,
         secure: true,
@@ -2221,12 +2410,12 @@ export class Api<
      * @description List all projects.
      *
      * @tags Hub
-     * @name ListAllProjectsProjectsGet
+     * @name HubProjectGetProjectsGet
      * @summary List all of the projects
      * @request GET:/projects
      * @secure
      */
-    listAllProjectsProjectsGet: (params: RequestParams = {}) =>
+    hubProjectGetProjectsGet: (params: RequestParams = {}) =>
       this.request<Project[], void>({
         path: `/projects`,
         method: "GET",
@@ -2239,12 +2428,12 @@ export class Api<
      * @description List project for a given UUID.
      *
      * @tags Hub
-     * @name ListSpecificProjectProjectsProjectIdGet
+     * @name HubProjectGetProjectsProjectIdGet
      * @summary List a specific project
      * @request GET:/projects/{project_id}
      * @secure
      */
-    listSpecificProjectProjectsProjectIdGet: (
+    hubProjectGetProjectsProjectIdGet: (
       projectId: string,
       params: RequestParams = {},
     ) =>
@@ -2261,12 +2450,12 @@ export class Api<
      * @description List project proposals.
      *
      * @tags Hub
-     * @name ListProjectProposalsProjectNodesGet
+     * @name HubProjectNodeGetProjectNodesGet
      * @summary List all of the project proposals
      * @request GET:/project-nodes
      * @secure
      */
-    listProjectProposalsProjectNodesGet: (
+    hubProjectNodeGetProjectNodesGet: (
       query?: {
         /**
          * Force Refresh
@@ -2289,12 +2478,12 @@ export class Api<
      * @description Set the approval status of a project proposal.
      *
      * @tags Hub
-     * @name ListProjectProposalProjectNodesProjectNodeIdGet
+     * @name HubProjectNodeGetProjectNodesProjectNodeIdGet
      * @summary List a specific project proposal
      * @request GET:/project-nodes/{project_node_id}
      * @secure
      */
-    listProjectProposalProjectNodesProjectNodeIdGet: (
+    hubProjectNodeGetProjectNodesProjectNodeIdGet: (
       projectNodeId: string,
       params: RequestParams = {},
     ) =>
@@ -2310,14 +2499,14 @@ export class Api<
      * @description Set the approval status of a project proposal.
      *
      * @tags Hub
-     * @name AcceptRejectProjectProposalProjectNodesProjectNodeIdPost
+     * @name HubProjectNodeUpdateProjectNodesProjectNodeIdPost
      * @summary Update a specific project proposal
      * @request POST:/project-nodes/{project_node_id}
      * @secure
      */
-    acceptRejectProjectProposalProjectNodesProjectNodeIdPost: (
+    hubProjectNodeUpdateProjectNodesProjectNodeIdPost: (
       projectNodeId: string,
-      data: BodyAcceptRejectProjectProposalProjectNodesProjectNodeIdPost,
+      data: BodyHubProjectNodeUpdateProjectNodesProjectNodeIdPost,
       params: RequestParams = {},
     ) =>
       this.request<ProjectNode, void | HTTPValidationError>({
@@ -2335,12 +2524,12 @@ export class Api<
      * @description List all analysis nodes for give node.
      *
      * @tags Hub
-     * @name ListAnalysisNodesAnalysisNodesGet
+     * @name HubAnalysisNodeGetAnalysisNodesGet
      * @summary List all of the analysis proposals
      * @request GET:/analysis-nodes
      * @secure
      */
-    listAnalysisNodesAnalysisNodesGet: (
+    hubAnalysisNodeGetAnalysisNodesGet: (
       query?: {
         /**
          * Force Refresh
@@ -2363,12 +2552,12 @@ export class Api<
      * @description List a specific analysis node.
      *
      * @tags Hub
-     * @name ListSpecificAnalysisNodeAnalysisNodesAnalysisNodeIdGet
+     * @name HubAnalysisNodeGetAnalysisNodesAnalysisNodeIdGet
      * @summary List a specific analysis node
      * @request GET:/analysis-nodes/{analysis_node_id}
      * @secure
      */
-    listSpecificAnalysisNodeAnalysisNodesAnalysisNodeIdGet: (
+    hubAnalysisNodeGetAnalysisNodesAnalysisNodeIdGet: (
       analysisNodeId: string,
       params: RequestParams = {},
     ) =>
@@ -2384,14 +2573,14 @@ export class Api<
      * @description Set the approval status of an analysis proposal.
      *
      * @tags Hub
-     * @name AcceptRejectAnalysisNodeAnalysisNodesAnalysisNodeIdPost
+     * @name HubAnalysisNodeUpdateAnalysisNodesAnalysisNodeIdPost
      * @summary Update a specific analysis proposal
      * @request POST:/analysis-nodes/{analysis_node_id}
      * @secure
      */
-    acceptRejectAnalysisNodeAnalysisNodesAnalysisNodeIdPost: (
+    hubAnalysisNodeUpdateAnalysisNodesAnalysisNodeIdPost: (
       analysisNodeId: string,
-      data: BodyAcceptRejectAnalysisNodeAnalysisNodesAnalysisNodeIdPost,
+      data: BodyHubAnalysisNodeUpdateAnalysisNodesAnalysisNodeIdPost,
       params: RequestParams = {},
     ) =>
       this.request<AnalysisNode, void | HTTPValidationError>({
@@ -2409,12 +2598,12 @@ export class Api<
      * @description List all registered analyses.
      *
      * @tags Hub
-     * @name ListAllAnalysesAnalysesGet
+     * @name HubAnalysisGetAnalysesGet
      * @summary List all of the analysis proposals
      * @request GET:/analyses
      * @secure
      */
-    listAllAnalysesAnalysesGet: (params: RequestParams = {}) =>
+    hubAnalysisGetAnalysesGet: (params: RequestParams = {}) =>
       this.request<Analysis[], void>({
         path: `/analyses`,
         method: "GET",
@@ -2427,12 +2616,12 @@ export class Api<
      * @description List a specific analysis.
      *
      * @tags Hub
-     * @name ListSpecificAnalysisAnalysesAnalysisIdGet
+     * @name HubAnalysisGetAnalysesAnalysisIdGet
      * @summary List a specific analysis
      * @request GET:/analyses/{analysis_id}
      * @secure
      */
-    listSpecificAnalysisAnalysesAnalysisIdGet: (
+    hubAnalysisGetAnalysesAnalysisIdGet: (
       analysisId: string,
       params: RequestParams = {},
     ) =>
@@ -2448,12 +2637,12 @@ export class Api<
      * @description Update analysis with a given UUID.
      *
      * @tags Hub
-     * @name UpdateSpecificAnalysisAnalysesAnalysisIdPost
+     * @name HubAnalysisUpdateAnalysesAnalysisIdPost
      * @summary Update a specific analysis proposal
      * @request POST:/analyses/{analysis_id}
      * @secure
      */
-    updateSpecificAnalysisAnalysesAnalysisIdPost: (
+    hubAnalysisUpdateAnalysesAnalysisIdPost: (
       analysisId: string,
       data: string,
       params: RequestParams = {},
@@ -2473,12 +2662,12 @@ export class Api<
      * @description List all nodes.
      *
      * @tags Hub
-     * @name ListAllNodesNodesGet
+     * @name HubNodeGetNodesGet
      * @summary List all of the nodes
      * @request GET:/nodes
      * @secure
      */
-    listAllNodesNodesGet: (params: RequestParams = {}) =>
+    hubNodeGetNodesGet: (params: RequestParams = {}) =>
       this.request<Node[], void>({
         path: `/nodes`,
         method: "GET",
@@ -2491,15 +2680,12 @@ export class Api<
      * @description List a specific node.
      *
      * @tags Hub
-     * @name ListSpecificNodeNodesNodeIdGet
+     * @name HubNodeGetNodesNodeIdGet
      * @summary List a specific node
      * @request GET:/nodes/{node_id}
      * @secure
      */
-    listSpecificNodeNodesNodeIdGet: (
-      nodeId: string,
-      params: RequestParams = {},
-    ) =>
+    hubNodeGetNodesNodeIdGet: (nodeId: string, params: RequestParams = {}) =>
       this.request<Node, void | HTTPValidationError>({
         path: `/nodes/${nodeId}`,
         method: "GET",
@@ -2513,12 +2699,12 @@ export class Api<
      * @description Return what type of node this API is deployed on.
      *
      * @tags Hub
-     * @name GetNodeTypeNodeTypeGet
+     * @name HubNodeTypeGetNodeTypeGet
      * @summary Return what type of node this API is deployed on
      * @request GET:/node-type
      * @secure
      */
-    getNodeTypeNodeTypeGet: (params: RequestParams = {}) =>
+    hubNodeTypeGetNodeTypeGet: (params: RequestParams = {}) =>
       this.request<NodeTypeResponse, void>({
         path: `/node-type`,
         method: "GET",
@@ -2532,12 +2718,12 @@ export class Api<
      * @description List registry data for a project.
      *
      * @tags Hub
-     * @name GetRegistryMetadataForProjectRegistryProjectsRegistryProjectIdGet
+     * @name HubRegistryMetadataGetRegistryProjectsRegistryProjectIdGet
      * @summary Get registry project
      * @request GET:/registry-projects/{registry_project_id}
      * @secure
      */
-    getRegistryMetadataForProjectRegistryProjectsRegistryProjectIdGet: (
+    hubRegistryMetadataGetRegistryProjectsRegistryProjectIdGet: (
       registryProjectId: string,
       params: RequestParams = {},
     ) =>
@@ -2554,12 +2740,12 @@ export class Api<
      * @description List all analysis buckets.
      *
      * @tags Hub
-     * @name ListAllAnalysisBucketsAnalysisBucketsGet
+     * @name HubAnalysisBucketGetAnalysisBucketsGet
      * @summary List a specific analysis bucket
      * @request GET:/analysis-buckets
      * @secure
      */
-    listAllAnalysisBucketsAnalysisBucketsGet: (params: RequestParams = {}) =>
+    hubAnalysisBucketGetAnalysisBucketsGet: (params: RequestParams = {}) =>
       this.request<any, void>({
         path: `/analysis-buckets`,
         method: "GET",
@@ -2572,12 +2758,12 @@ export class Api<
      * @description List a specific analysis bucket.
      *
      * @tags Hub
-     * @name ListSpecificAnalysisBucketsAnalysisBucketsAnalysisBucketIdGet
+     * @name HubAnalysisBucketGetAnalysisBucketsAnalysisBucketIdGet
      * @summary List a specific analysis bucket
      * @request GET:/analysis-buckets/{analysis_bucket_id}
      * @secure
      */
-    listSpecificAnalysisBucketsAnalysisBucketsAnalysisBucketIdGet: (
+    hubAnalysisBucketGetAnalysisBucketsAnalysisBucketIdGet: (
       analysisBucketId: string,
       params: RequestParams = {},
     ) =>
@@ -2594,12 +2780,12 @@ export class Api<
      * @description List partial analysis bucket files.
      *
      * @tags Hub
-     * @name ListAllAnalysisBucketFilesAnalysisBucketFilesGet
+     * @name HubAnalysisBucketFileGetAnalysisBucketFilesGet
      * @summary List partial analysis bucket files.
      * @request GET:/analysis-bucket-files
      * @secure
      */
-    listAllAnalysisBucketFilesAnalysisBucketFilesGet: (
+    hubAnalysisBucketFileGetAnalysisBucketFilesGet: (
       params: RequestParams = {},
     ) =>
       this.request<any, void>({
@@ -2614,12 +2800,12 @@ export class Api<
      * @description List specific partial analysis bucket file.
      *
      * @tags Hub
-     * @name ListSpecificAnalysisBucketFileAnalysisBucketFilesAnalysisBucketFileIdGet
+     * @name HubAnalysisBucketFileGetAnalysisBucketFilesAnalysisBucketFileIdGet
      * @summary List partial analysis bucket files.
      * @request GET:/analysis-bucket-files/{analysis_bucket_file_id}
      * @secure
      */
-    listSpecificAnalysisBucketFileAnalysisBucketFilesAnalysisBucketFileIdGet: (
+    hubAnalysisBucketFileGetAnalysisBucketFilesAnalysisBucketFileIdGet: (
       analysisBucketFileId: string,
       params: RequestParams = {},
     ) =>
@@ -2635,13 +2821,13 @@ export class Api<
     /**
      * @description Delete all objects in MinIO and all Postgres database entries related to the specified project. Returns a 200 on success, a 400 if the project is still available on the Hub and a 403 if it is not the Hub Adapter client that sends the request. In both error cases nothing is deleted at all.
      *
-     * @tags Results
-     * @name DeleteLocalResultsLocalDelete
-     * @summary Delete Local Results
-     * @request DELETE:/local
+     * @tags Storage
+     * @name StorageLocalDeleteLocalDelete
+     * @summary Storage.Local.Delete
+     * @request DELETE:/local/
      * @secure
      */
-    deleteLocalResultsLocalDelete: (
+    storageLocalDeleteLocalDelete: (
       query: {
         /**
          * Project Id
@@ -2652,7 +2838,7 @@ export class Api<
       params: RequestParams = {},
     ) =>
       this.request<any, void | HTTPValidationError>({
-        path: `/local`,
+        path: `/local/`,
         method: "DELETE",
         query: query,
         secure: true,
@@ -2665,12 +2851,12 @@ export class Api<
      * @description List all available data stores (referred to as services by kong).
      *
      * @tags Kong
-     * @name ListDataStoresKongDatastoreGet
-     * @summary List Data Stores
+     * @name KongDatastoreGetKongDatastoreGet
+     * @summary Kong.Datastore.Get
      * @request GET:/kong/datastore
      * @secure
      */
-    listDataStoresKongDatastoreGet: (
+    kongDatastoreGetKongDatastoreGet: (
       query?: {
         /**
          * Detailed
@@ -2694,13 +2880,13 @@ export class Api<
      * @description Create a datastore (referred to as services by kong) by providing necessary metadata.
      *
      * @tags Kong
-     * @name CreateServiceKongDatastorePost
-     * @summary Create Service
+     * @name KongDatastoreCreateKongDatastorePost
+     * @summary Kong.Datastore.Create
      * @request POST:/kong/datastore
      * @secure
      */
-    createServiceKongDatastorePost: (
-      data: BodyCreateServiceKongDatastorePost,
+    kongDatastoreCreateKongDatastorePost: (
+      data: BodyKongDatastoreCreateKongDatastorePost,
       params: RequestParams = {},
     ) =>
       this.request<Service, void | HTTPValidationError>({
@@ -2717,12 +2903,12 @@ export class Api<
      * @description Retrieve a specific data store using the project UUID
      *
      * @tags Kong
-     * @name ListSpecificDataStoreKongDatastoreProjectIdGet
-     * @summary List Specific Data Store
+     * @name KongDatastoreGetKongDatastoreProjectIdGet
+     * @summary Kong.Datastore.Get
      * @request GET:/kong/datastore/{project_id}
      * @secure
      */
-    listSpecificDataStoreKongDatastoreProjectIdGet: (
+    kongDatastoreGetKongDatastoreProjectIdGet: (
       projectId: string,
       query?: {
         /**
@@ -2747,12 +2933,12 @@ export class Api<
      * @description Delete the listed data store (referred to as services by kong).
      *
      * @tags Kong
-     * @name DeleteDataStoreKongDatastoreDataStoreNameDelete
-     * @summary Delete Data Store
+     * @name KongDatastoreDeleteKongDatastoreDataStoreNameDelete
+     * @summary Kong.Datastore.Delete
      * @request DELETE:/kong/datastore/{data_store_name}
      * @secure
      */
-    deleteDataStoreKongDatastoreDataStoreNameDelete: (
+    kongDatastoreDeleteKongDatastoreDataStoreNameDelete: (
       dataStoreName: string,
       params: RequestParams = {},
     ) =>
@@ -2768,12 +2954,12 @@ export class Api<
      * @description List all projects (referred to as routes by kong) available, can be filtered by project_id. Set "detailed" to True to include detailed information on the linked kong service.
      *
      * @tags Kong
-     * @name ListProjectsKongProjectGet
-     * @summary List Projects
+     * @name KongProjectGetKongProjectGet
+     * @summary Kong.Project.Get
      * @request GET:/kong/project
      * @secure
      */
-    listProjectsKongProjectGet: (
+    kongProjectGetKongProjectGet: (
       query?: {
         /**
          * Detailed
@@ -2797,13 +2983,13 @@ export class Api<
      * @description Connect a project to a data store (referred to as a route by kong).
      *
      * @tags Kong
-     * @name CreateRouteToDatastoreKongProjectPost
-     * @summary Create Route To Datastore
+     * @name KongProjectCreateKongProjectPost
+     * @summary Kong.Project.Create
      * @request POST:/kong/project
      * @secure
      */
-    createRouteToDatastoreKongProjectPost: (
-      data: BodyCreateRouteToDatastoreKongProjectPost,
+    kongProjectCreateKongProjectPost: (
+      data: BodyKongProjectCreateKongProjectPost,
       params: RequestParams = {},
     ) =>
       this.request<LinkDataStoreProject, void | HTTPValidationError>({
@@ -2820,12 +3006,12 @@ export class Api<
      * @description List a specific projects (referred to as routes by kong) using the project UUID. Set "detailed" to True to include detailed information on the linked kong service.
      *
      * @tags Kong
-     * @name ListSpecificProjectKongProjectProjectIdGet
-     * @summary List Specific Project
+     * @name KongProjectGetKongProjectProjectIdGet
+     * @summary Kong.Project.Get
      * @request GET:/kong/project/{project_id}
      * @secure
      */
-    listSpecificProjectKongProjectProjectIdGet: (
+    kongProjectGetKongProjectProjectIdGet: (
       projectId: string,
       query?: {
         /**
@@ -2850,13 +3036,13 @@ export class Api<
      * @description Creates a new datastore (service) and a new project (route), then links them together with a health consumer.
      *
      * @tags Kong
-     * @name CreateDatastoreAndProjectWithLinkKongInitializePost
-     * @summary Create Datastore And Project With Link
+     * @name KongInitializeKongInitializePost
+     * @summary Kong.Initialize
      * @request POST:/kong/initialize
      * @secure
      */
-    createDatastoreAndProjectWithLinkKongInitializePost: (
-      data: BodyCreateDatastoreAndProjectWithLinkKongInitializePost,
+    kongInitializeKongInitializePost: (
+      data: BodyKongInitializeKongInitializePost,
       params: RequestParams = {},
     ) =>
       this.request<LinkDataStoreProject, void | HTTPValidationError>({
@@ -2873,12 +3059,12 @@ export class Api<
      * @description Disconnect a project (route) from all data stores (services) and delete associated analyses (consumers).
      *
      * @tags Kong
-     * @name DeleteRouteKongProjectProjectRouteIdDelete
-     * @summary Delete Route
+     * @name KongProjectDeleteKongProjectProjectRouteIdDelete
+     * @summary Kong.Project.Delete
      * @request DELETE:/kong/project/{project_route_id}
      * @secure
      */
-    deleteRouteKongProjectProjectRouteIdDelete: (
+    kongProjectDeleteKongProjectProjectRouteIdDelete: (
       projectRouteId: string,
       params: RequestParams = {},
     ) =>
@@ -2894,12 +3080,12 @@ export class Api<
      * @description List all analyses (referred to as consumers by kong) available. Can be filtered by project UUID using tag.
      *
      * @tags Kong
-     * @name ListAnalysesKongAnalysisGet
-     * @summary List Analyses
+     * @name KongAnalysisGetKongAnalysisGet
+     * @summary Kong.Analysis.Get
      * @request GET:/kong/analysis
      * @secure
      */
-    listAnalysesKongAnalysisGet: (
+    kongAnalysisGetKongAnalysisGet: (
       query?: {
         /**
          * Tag
@@ -2922,13 +3108,13 @@ export class Api<
      * @description Create a new analysis and link it to a project.
      *
      * @tags Kong
-     * @name CreateAndConnectAnalysisToProjectKongAnalysisPost
-     * @summary Create And Connect Analysis To Project
+     * @name KongAnalysisCreateKongAnalysisPost
+     * @summary Kong.Analysis.Create
      * @request POST:/kong/analysis
      * @secure
      */
-    createAndConnectAnalysisToProjectKongAnalysisPost: (
-      data: BodyCreateAndConnectAnalysisToProjectKongAnalysisPost,
+    kongAnalysisCreateKongAnalysisPost: (
+      data: BodyKongAnalysisCreateKongAnalysisPost,
       params: RequestParams = {},
     ) =>
       this.request<LinkProjectAnalysis, void | HTTPValidationError>({
@@ -2945,12 +3131,12 @@ export class Api<
      * @description List all analyses (referred to as consumers by kong) available.
      *
      * @tags Kong
-     * @name ListSpecificAnalysisKongAnalysisAnalysisIdGet
-     * @summary List Specific Analysis
+     * @name KongAnalysisGetKongAnalysisAnalysisIdGet
+     * @summary Kong.Analysis.Get
      * @request GET:/kong/analysis/{analysis_id}
      * @secure
      */
-    listSpecificAnalysisKongAnalysisAnalysisIdGet: (
+    kongAnalysisGetKongAnalysisAnalysisIdGet: (
       analysisId: string | null,
       query?: {
         /**
@@ -2974,12 +3160,12 @@ export class Api<
      * @description Delete the listed analysis.
      *
      * @tags Kong
-     * @name DeleteAnalysisKongAnalysisAnalysisIdDelete
-     * @summary Delete Analysis
+     * @name KongAnalysisDeleteKongAnalysisAnalysisIdDelete
+     * @summary Kong.Analysis.Delete
      * @request DELETE:/kong/analysis/{analysis_id}
      * @secure
      */
-    deleteAnalysisKongAnalysisAnalysisIdDelete: (
+    kongAnalysisDeleteKongAnalysisAnalysisIdDelete: (
       analysisId: string,
       params: RequestParams = {},
     ) =>
@@ -2995,12 +3181,12 @@ export class Api<
      * @description Test whether Kong can read the requested data source. Because we use the key-auth plugin, a consumer is required for pinging the data service.
      *
      * @tags Kong
-     * @name ProbeConnectionKongProjectProjectIdDsTypeHealthGet
-     * @summary Probe Connection
+     * @name KongProbeKongProjectProjectIdDsTypeHealthGet
+     * @summary Kong.Probe
      * @request GET:/kong/project/{project_id}/{ds_type}/health
      * @secure
      */
-    probeConnectionKongProjectProjectIdDsTypeHealthGet: (
+    kongProbeKongProjectProjectIdDsTypeHealthGet: (
       projectId: string,
       dsType: DataStoreType,
       params: RequestParams = {},
@@ -3018,11 +3204,11 @@ export class Api<
      * @description ## Perform a Health Check Endpoint to perform a healthcheck on. This endpoint can primarily be used Docker to ensure a robust container orchestration and management is in place. Other services which rely on proper functioning of the API service will not deploy if this endpoint returns any other HTTP status code except 200 (OK). Returns: HealthCheck: Returns a JSON response with the health status
      *
      * @tags Health
-     * @name GetHealthHealthzGet
+     * @name HealthStatusGetHealthzGet
      * @summary Perform a Health Check
      * @request GET:/healthz
      */
-    getHealthHealthzGet: (params: RequestParams = {}) =>
+    healthStatusGetHealthzGet: (params: RequestParams = {}) =>
       this.request<HealthCheck, any>({
         path: `/healthz`,
         method: "GET",
@@ -3035,13 +3221,11 @@ export class Api<
      * @description Return the health of the downstream microservices.
      *
      * @tags Health
-     * @name GetHealthDownstreamServicesHealthServicesGet
+     * @name HealthStatusServicesGetHealthServicesGet
      * @summary Perform a Health Check on the downstream microservices
      * @request GET:/health/services
      */
-    getHealthDownstreamServicesHealthServicesGet: (
-      params: RequestParams = {},
-    ) =>
+    healthStatusServicesGetHealthServicesGet: (params: RequestParams = {}) =>
       this.request<DownstreamHealthCheck, any>({
         path: `/health/services`,
         method: "GET",
@@ -3054,12 +3238,12 @@ export class Api<
      * @description Get a JWT from the IDP by passing a valid username and password. This token can then be used to authenticate yourself with this API. If no client ID/secret is provided, it will be autofilled using the hub adapter.
      *
      * @tags Auth
-     * @name GetTokenTokenPost
+     * @name AuthTokenGetTokenPost
      * @summary Get a token from the IDP
      * @request POST:/token
      */
-    getTokenTokenPost: (
-      data: BodyGetTokenTokenPost,
+    authTokenGetTokenPost: (
+      data: BodyAuthTokenGetTokenPost,
       params: RequestParams = {},
     ) =>
       this.request<Token, void | HTTPValidationError>({
@@ -3067,6 +3251,103 @@ export class Api<
         method: "POST",
         body: data,
         type: ContentType.UrlEncoded,
+        format: "json",
+        ...params,
+      }),
+  };
+  events = {
+    /**
+     * @description Retrieve a selection of logged events.
+     *
+     * @tags Events
+     * @name EventsGetEventsGet
+     * @summary Events.Get
+     * @request GET:/events
+     * @secure
+     */
+    eventsGetEventsGet: (
+      query?: {
+        /**
+         * Limit
+         * Maximum number of events to return
+         * @default 100
+         */
+        limit?: number | null;
+        /**
+         * Offset
+         * Number of events to offset by
+         * @default 0
+         */
+        offset?: number | null;
+        /**
+         * Service Tag
+         * Filter events by service tag
+         */
+        service_tag?: string | null;
+        /**
+         * Event Name
+         * Filter events by event name
+         */
+        event_name?: string | null;
+        /**
+         * Username
+         * Filter events by username
+         */
+        username?: string | null;
+        /**
+         * Start Date
+         * Filter events by start date using ISO8601 format
+         */
+        start_date?: string | null;
+        /**
+         * End Date
+         * Filter events by end date using ISO8601 format
+         */
+        end_date?: string | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<EventLogResponse, void | HTTPValidationError>({
+        path: `/events`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Create a log event that a user signed in. Username is extracted from the JWT required to call this endpoint.
+     *
+     * @tags Events
+     * @name AuthUserSigninEventsSigninPost
+     * @summary Auth.User.Signin
+     * @request POST:/events/signin
+     * @secure
+     */
+    authUserSigninEventsSigninPost: (params: RequestParams = {}) =>
+      this.request<any, void>({
+        path: `/events/signin`,
+        method: "POST",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Create a log event that a user signed out. Username is extracted from the JWT required to call this endpoint.
+     *
+     * @tags Events
+     * @name AuthUserSignoutEventsSignoutPost
+     * @summary Auth.User.Signout
+     * @request POST:/events/signout
+     * @secure
+     */
+    authUserSignoutEventsSignoutPost: (params: RequestParams = {}) =>
+      this.request<any, void>({
+        path: `/events/signout`,
+        method: "POST",
+        secure: true,
         format: "json",
         ...params,
       }),

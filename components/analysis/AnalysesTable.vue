@@ -15,7 +15,7 @@ import AnalysisControlButtons from "./AnalysisControlButtons.vue";
 import {
   getApprovalStatusSeverity,
   getBuildStatusSeverity,
-  getRunStatusSeverity,
+  getExecutionStatusSeverity,
 } from "~/utils/status-tag-severity";
 import {
   type AnalysisNode,
@@ -25,14 +25,29 @@ import {
   type Route,
   type StatusResponse,
 } from "~/services/Api";
-import { ProcessStatus } from "~/types/analysis";
 import { ApprovalStatus } from "~/types/node";
 import ContainerCounter from "~/components/analysis/ContainerCounter.vue";
-import { useNodeType } from "~/composables/useNodeType";
+import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
 import type { ModifiedAnalysisNode } from "~/services/modifiedApiInterfaces";
+import { ProcessStatus } from "~/types/analysis";
 
 const toast = useToast();
-const nodeType = await useNodeType();
+
+// Data Store Requirement Check
+const { datastoreState } = await useDatastoreRequirement();
+const datastoreRequired = computed(
+  () => datastoreState.value.datastoreRequired,
+);
+const nodeType = computed(() => datastoreState.value.nodeType);
+
+const datastoreBadgeSeverity = computed(() =>
+  datastoreRequired.value ? "danger" : "secondary",
+);
+const datastoreBadgeTooltip = computed(() =>
+  datastoreRequired.value
+    ? "Data store missing!"
+    : "Data store missing, but not required",
+);
 
 const analysesMap = ref<Map<string, ModifiedAnalysisNode>>(new Map());
 const analyses = computed(() => Array.from(analysesMap.value.values()));
@@ -114,7 +129,23 @@ function parseProjects() {
   }
 }
 
-async function getRunStatusesFromPodOrc(): Promise<StatusResponse | null> {
+/**
+ * Changes to "executing" to "running" and "executed" to "finished" which is simpler language.
+ * @param status
+ */
+function useCommonLanguage(
+  status: PodStatus,
+): PodStatus | "running" | "finished" {
+  if (status === PodStatus.Executing) {
+    return "running";
+  } else if (status === PodStatus.Executed) {
+    return "finished";
+  } else {
+    return status;
+  }
+}
+
+async function getExecutionStatusesFromPodOrc(): Promise<StatusResponse | null> {
   const podOrcResponse = (await useNuxtApp()
     .$hubApi("/po/status", {
       method: "GET",
@@ -134,7 +165,7 @@ async function getRunStatusesFromPodOrc(): Promise<StatusResponse | null> {
 
 async function checkForUpdatesFromPodOrc() {
   if (!podOrcUnreacheable.value) {
-    const newStatuses = await getRunStatusesFromPodOrc();
+    const newStatuses = await getExecutionStatusesFromPodOrc();
     if (newStatuses) {
       for (const [analysisId, status] of Object.entries(newStatuses)) {
         updateAnalysisRun(analysisId, status);
@@ -151,7 +182,7 @@ function setProgress(analysis: ModifiedAnalysisNode): ModifiedAnalysisNode {
   if (currentRunStatus) {
     if (currentRunStatus === PodStatus.Failed) {
       analysis.progress = 0;
-    } else if (currentRunStatus === PodStatus.Finished) {
+    } else if (currentRunStatus === PodStatus.Executed) {
       analysis.progress = 100;
     }
   }
@@ -178,7 +209,7 @@ function determineProgressBarColor(progress: number) {
 
 function parseAnalysis(
   analysisEntry: ModifiedAnalysisNode,
-  runStatuses: StatusResponse | null,
+  executionStatuses: StatusResponse | null,
 ): ModifiedAnalysisNode {
   const projId = analysisEntry.analysis?.project_id;
   const analysisId = analysisEntry.analysis_id;
@@ -189,13 +220,13 @@ function parseAnalysis(
   // If PodOrc status update returns null -> use hub info since it's all we have
   // If status from PodOrc -> use it
   // If no run status reported by PodOrc, and it's not failed/finished -> set to null (wrong hub info)
-  if (runStatuses) {
-    if (analysisId in runStatuses) {
-      analysisEntry.execution_status = runStatuses[analysisId];
+  if (executionStatuses) {
+    if (analysisId in executionStatuses) {
+      analysisEntry.execution_status = executionStatuses[analysisId];
     } else {
       if (
         analysisEntry.execution_status != PodStatus.Failed &&
-        analysisEntry.execution_status != PodStatus.Finished
+        analysisEntry.execution_status != PodStatus.Executed
       ) {
         analysisEntry.execution_status = null;
       }
@@ -206,7 +237,7 @@ function parseAnalysis(
 
 async function parseData(respStatus: string, respData: AnalysisNode[] | null) {
   const parsedAnalyses = new Map<string, ModifiedAnalysisNode>();
-  const currentRunStatuses = await getRunStatusesFromPodOrc();
+  const currentExecutionStatuses = await getExecutionStatusesFromPodOrc();
 
   let analysisData: AnalysisNode[] | null;
   if (respStatus === "success") {
@@ -221,12 +252,12 @@ async function parseData(respStatus: string, respData: AnalysisNode[] | null) {
     analysisData,
     ["created_at", "updated_at"],
     expandRowEntries,
-  );
-  if (projMap.size > 0) {
+  ) as ModifiedAnalysisNode[];
+  if (formattedAnalyses && projMap.size > 0) {
     formattedAnalyses.forEach((analysisEntry: ModifiedAnalysisNode) => {
       parsedAnalyses.set(
         analysisEntry.analysis_id,
-        parseAnalysis(analysisEntry, currentRunStatuses),
+        parseAnalysis(analysisEntry, currentExecutionStatuses),
       );
     });
     analysesMap.value = parsedAnalyses;
@@ -317,16 +348,16 @@ function updateAnalysisRun(analysisId: string, newStatus: PodStatus | null) {
   }
 }
 
-function updateRunStatusFilter(filterText: string) {
-  const currentRunStatusFilters = filters.value.execution_status.value;
-  if (!currentRunStatusFilters) {
+function updateExecutionStatusFilter(filterText: string) {
+  const currentExecutionStatusFilters = filters.value.execution_status.value;
+  if (!currentExecutionStatusFilters) {
     // If value is null then initialize with filter in array
     filters.value.execution_status.value = [filterText];
   } else {
     // Already run status filters present
-    if (currentRunStatusFilters.includes(filterText)) {
+    if (currentExecutionStatusFilters.includes(filterText)) {
       // If filter already there, then remove it
-      const filteredStatuses = currentRunStatusFilters.filter(
+      const filteredStatuses = currentExecutionStatusFilters.filter(
         (item) => item !== filterText,
       );
       if (filteredStatuses.length == 0) {
@@ -408,7 +439,7 @@ const onCloseNavToast = () => {
               If the image for the analysis is not yet
               <Tag
                 :severity="'success'"
-                :value="'finished'"
+                :value="'executed'"
                 style="margin-left: 0.5em; margin-right: 0.5em"
               />
               (see Build Status) or if a data store does not exist for the
@@ -419,7 +450,7 @@ const onCloseNavToast = () => {
             <ContainerCounter
               :activeFilters="filters"
               :analyses="analyses"
-              @applyRunStatusFilter="updateRunStatusFilter"
+              @applyExecutionStatusFilter="updateExecutionStatusFilter"
             />
           </div>
         </div>
@@ -536,7 +567,7 @@ const onCloseNavToast = () => {
               <Tag
                 v-if="data.analysis.build_status"
                 :severity="getBuildStatusSeverity(data.analysis.build_status)"
-                :value="data.analysis.build_status"
+                :value="useCommonLanguage(data.analysis.build_status)"
               />
             </template>
             <template #filter="{ filterModel, filterCallback }">
@@ -581,14 +612,14 @@ const onCloseNavToast = () => {
             <template #body="{ data }">
               <Tag
                 v-if="data.execution_status"
-                :severity="getRunStatusSeverity(data.execution_status)"
-                :value="data.execution_status"
+                :severity="getExecutionStatusSeverity(data.execution_status)"
+                :value="useCommonLanguage(data.execution_status)"
               />
             </template>
             <template #filter="{ filterModel, filterCallback }">
               <MultiSelect
                 v-model="filterModel.value"
-                :options="runStatuses"
+                :options="executionStatuses"
                 class="p-column-filter"
                 optionLabel=""
                 placeholder="Any"
@@ -598,7 +629,7 @@ const onCloseNavToast = () => {
                   <div class="flex align-items-center gap-2">
                     <Tag
                       v-if="slotProps.option"
-                      :severity="getRunStatusSeverity(slotProps.option)"
+                      :severity="getExecutionStatusSeverity(slotProps.option)"
                       :value="slotProps.option"
                     />
                   </div>
@@ -641,9 +672,11 @@ const onCloseNavToast = () => {
                 ></Badge>
               </div>
               <div v-else class="datastore-badge">
-                <Badge class="w-8 h-8 rounded-full" severity="danger"
+                <Badge
+                  class="w-8 h-8 rounded-full"
+                  :severity="datastoreBadgeSeverity"
                   ><i
-                    v-tooltip.top="'Data store missing!'"
+                    v-tooltip.top="datastoreBadgeTooltip"
                     class="pi pi-times"
                   ></i
                 ></Badge>
@@ -694,7 +727,8 @@ const onCloseNavToast = () => {
             <template #body="{ data }">
               <ProgressBar
                 :mode="
-                  data.execution_status === PodStatus.Running && !data.progress
+                  data.execution_status === PodStatus.Executing &&
+                  !data.progress
                     ? 'indeterminate'
                     : 'determinate'
                 "
@@ -721,10 +755,10 @@ const onCloseNavToast = () => {
                   :analysisBuildStatus="slotProps.data.analysis.build_status"
                   :analysisId="slotProps.data.analysis_id"
                   :analysisNodeId="slotProps.data.id"
-                  :analysisRunStatus="slotProps.data.execution_status"
+                  :analysisExecutionStatus="slotProps.data.execution_status"
                   :datastore="slotProps.data.datastore"
                   :nodeId="slotProps.data.node_id"
-                  :nodeType="nodeType!"
+                  :requireDatastore="datastoreRequired!"
                   :projectId="slotProps.data.analysis.project_id"
                   @missingDataStore="showDataStoreNavToast"
                   @updateAnalysisRow="updateAnalysisRun"

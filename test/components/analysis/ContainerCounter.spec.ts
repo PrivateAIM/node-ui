@@ -20,10 +20,10 @@ describe("ContainerCounter.vue", () => {
   function countStatusOccurences(inputAnalyses: AnalysisNode[]) {
     const statusCounts = {
       started: 0,
-      running: 0,
+      executing: 0,
       stopped: 0,
       failed: 0,
-      finished: 0,
+      executed: 0,
     };
     inputAnalyses.forEach((analysisNode) => {
       if (analysisNode.execution_status) {
@@ -49,10 +49,18 @@ describe("ContainerCounter.vue", () => {
 
     // Success check
     const fillCounterDiv = wrapper.find(".counter-badge-all");
-    ["Started", "Running", "Stopped", "Failed", "Finished"].forEach(
-      (runStatus, index) => {
-        expect(fillCounterDiv.text()).toContain(runStatus);
-        const lowerStatus = runStatus.toLowerCase();
+    ["Started", "Executing", "Stopped", "Failed", "Executed"].forEach(
+      (executionStatus, index) => {
+        let displayedStatus = "";
+        if (executionStatus === "Executing") {
+          displayedStatus = "Running";
+        } else if (executionStatus === "Executed") {
+          displayedStatus = "Finished";
+        } else {
+          displayedStatus = executionStatus;
+        }
+        expect(fillCounterDiv.text()).toContain(displayedStatus);
+        const lowerStatus = executionStatus.toLowerCase();
         const statusCount = statusCounts[lowerStatus];
 
         // Check individual badge properties
@@ -70,9 +78,11 @@ describe("ContainerCounter.vue", () => {
 
         // Clicking on badge emits correctly
         badgeDiv.trigger("click");
-        expect(wrapper.emitted()).toHaveProperty("applyRunStatusFilter");
-        expect(wrapper.emitted().applyRunStatusFilter).toHaveLength(index + 1);
-        expect(wrapper.emitted().applyRunStatusFilter[index]).toEqual([
+        expect(wrapper.emitted()).toHaveProperty("applyExecutionStatusFilter");
+        expect(wrapper.emitted().applyExecutionStatusFilter).toHaveLength(
+          index + 1,
+        );
+        expect(wrapper.emitted().applyExecutionStatusFilter[index]).toEqual([
           lowerStatus,
         ]);
       },
@@ -93,7 +103,7 @@ describe("ContainerCounter.vue", () => {
   it("Filters applied", () => {
     counterCheck(fakeAnalysisNodes, {
       execution_status: {
-        value: ["started", "failed"],
+        value: ["started", "executed"],
         matchMode: "in",
       },
     });
