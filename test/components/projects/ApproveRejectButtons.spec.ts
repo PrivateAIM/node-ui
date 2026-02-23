@@ -1,11 +1,11 @@
 import { useToast } from "primevue/usetoast";
 import { flushPromises, mount } from "@vue/test-utils";
-import { vi, describe, it, expect, afterEach, beforeAll } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import ApproveRejectButtons from "~/components/table/ApproveRejectButtons.vue";
 import {
   fakeInvalidProposalId,
   fakeValidProposalId,
-} from "~/test/mockapi/handlers";
+} from "@/test/mockapi/handlers";
 
 describe("ApproveRejectButtons.vue", () => {
   let spy;

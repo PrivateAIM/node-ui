@@ -1,9 +1,10 @@
 import { afterAll, afterEach, beforeAll, vi } from "vitest";
 import { computed, onMounted, ref, watch } from "vue";
+
 import { config } from "@vue/test-utils";
 import { setupServer } from "msw/node";
-import { handlers } from "~/test/mockapi/handlers";
-import { fakeHubApi } from "~/test/mockapi/api";
+import { handlers } from "./handlers";
+import { fakeHubApi } from "./api";
 
 import PrimeVue from "primevue/config";
 import DataTable from "primevue/datatable";
@@ -45,10 +46,18 @@ config.global.components = {
   InputIcon,
   InputText,
   IconField,
-  NuxtLink: {
-    template: "<a><slot /></a>", // Simple stub to replace NuxtLink with an <a>
-  },
 };
+
+// Stub NuxtLink via stubs (matches by component `name` property) rather than
+// config.global.components, so it intercepts directly-imported NuxtLink too.
+config.global.stubs = {
+  NuxtLink: { template: "<a><slot /></a>" },
+};
+
+vi.mock(
+  "@sidebase/nuxt-auth",
+  async () => import("@/test/mockapi/nuxt-auth-mock"),
+);
 
 // 2️⃣ Example: Mock a `v-tooltip` directive
 config.global.directives.tooltip = {
@@ -71,7 +80,7 @@ vi.mock("vue-router", async () => ({
   },
 }));
 
-vi.mock("#app", () => ({
+vi.mock("nuxt/app", () => ({
   useNuxtApp: () => ({
     $hubApi: fakeHubApi,
   }),

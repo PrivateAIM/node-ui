@@ -5,7 +5,7 @@ import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import ProjectProposalTable from "~/components/projects/ProjectProposalTable.vue";
 import { getProjectNodes } from "~/composables/useAPIFetch";
 import type { ProjectNode } from "~/services/Api";
-import { fakeProposalsResp } from "~/test/components/projects/constants";
+import { fakeProposalsResp } from "@/test/components/projects/constants";
 
 vi.mock("~/composables/useAPIFetch", () => ({
   getProjectNodes: vi.fn(),
@@ -32,7 +32,7 @@ describe("ProjectProposalTable.vue", () => {
     vi.mocked(getProjectNodes).mockResolvedValue({
       data: ref(fakeProposalsResp),
       pending: ref(false),
-      error: ref(null),
+      error: ref(undefined),
       status: ref("success"),
       refresh: vi.fn(),
       execute: vi.fn(),
@@ -68,7 +68,7 @@ describe("ProjectProposalTable.vue", () => {
     vi.mocked(getProjectNodes).mockResolvedValue({
       data: ref(emptyResp),
       pending: ref(false),
-      error: ref(null),
+      error: ref(undefined),
       status: ref("success"),
       refresh: vi.fn(),
       execute: vi.fn(),
@@ -84,9 +84,9 @@ describe("ProjectProposalTable.vue", () => {
 
   test("API error", async () => {
     vi.mocked(getProjectNodes).mockResolvedValue({
-      data: ref(null),
+      data: ref(undefined),
       pending: ref(false),
-      error: ref(null),
+      error: ref(undefined),
       status: ref("error"),
       refresh: vi.fn(),
       execute: vi.fn(),

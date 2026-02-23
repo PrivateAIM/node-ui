@@ -1,0 +1,76 @@
+import { ref } from "vue";
+import type { Session } from "next-auth";
+
+interface RefreshResponse {
+  success: boolean;
+  error?: string;
+}
+
+export const useAuthRefresh = () => {
+  const { status, data, refresh } = useAuth();
+  const isRefreshing = ref(false);
+  const refreshError = ref<string | undefined>(undefined);
+
+  const refreshToken = async (): Promise<RefreshResponse> => {
+    // Prevent multiple simultaneous refresh attempts
+    if (isRefreshing.value) {
+      return { success: false, error: "Refresh in progress" };
+    }
+
+    // Check if user is authenticated
+    if (status.value !== "authenticated") {
+      return { success: false, error: "No active session" };
+    }
+
+    isRefreshing.value = true;
+    refreshError.value = undefined;
+
+    try {
+      await refresh(); // From sidebase methods
+
+      // Verify the refresh was successful
+      if (status.value === "authenticated") {
+        return { success: true };
+      } else {
+        refreshError.value = "Session refresh failed";
+        return { success: false, error: refreshError.value };
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
+      refreshError.value = errorMessage;
+      console.error("Token refresh error:", error);
+      return { success: false, error: errorMessage };
+    } finally {
+      isRefreshing.value = false;
+    }
+  };
+
+  const shouldRefreshToken = (bufferSeconds: number = 120): boolean => {
+    if (status.value !== "authenticated" || !data.value) {
+      return false;
+    }
+
+    const tokenData = data.value as Session;
+    const exp = tokenData.expiresAt;
+
+    if (!exp) {
+      console.warn("Token expiration time not found in session data");
+      return false;
+    }
+
+    const expiryTime = exp * 1000;
+    const timeUntilExpiry = expiryTime - Date.now(); // Time in ms
+
+    return timeUntilExpiry < bufferSeconds * 1000 && timeUntilExpiry > 0;
+  };
+
+  return {
+    refreshToken,
+    shouldRefreshToken,
+    isRefreshing: readonly(isRefreshing),
+    refreshError: readonly(refreshError),
+    status,
+    data,
+  };
+};

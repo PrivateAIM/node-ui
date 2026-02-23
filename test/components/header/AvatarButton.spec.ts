@@ -1,9 +1,10 @@
 import { defineComponent, ref } from "vue";
 import { flushPromises, mount } from "@vue/test-utils"; // add flushPromises
-import { useRuntimeConfig } from "#app";
+import { useRuntimeConfig } from "nuxt/app";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import AvatarButton from "~/components/header/AvatarButton.vue";
 import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
+import { useAuth, useAuthState } from "@/test/mockapi/nuxt-auth-mock";
 
 vi.mock("~/composables/useDatastoreRequirement", () => ({
   useDatastoreRequirement: vi.fn(),
@@ -23,6 +24,7 @@ describe("AvatarButton.vue", () => {
   });
 
   beforeEach(() => {
+    vi.restoreAllMocks();
     vi.mocked(useDatastoreRequirement).mockResolvedValue({
       datastoreState: ref({
         datastoreRequired: true,
@@ -38,12 +40,15 @@ describe("AvatarButton.vue", () => {
     const logPrompt = authenticated ? "Logout" : "Login";
     const userData = authenticated ? { user: { name: testUser } } : {};
 
-    vi.stubGlobal("useAuth", () => ({
+    vi.mocked(useAuth).mockReturnValue({
       signIn: vi.fn(),
       signOut: vi.fn(),
+    });
+
+    vi.mocked(useAuthState).mockReturnValue({
       status: ref(status),
       data: ref(userData),
-    }));
+    });
 
     const wrapper = mount(AvatarButtonTestComponent, {
       global: {

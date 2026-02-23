@@ -85,6 +85,7 @@ describe("CleanupDialog.vue", () => {
       global: {
         stubs: {
           teleport: true, // Now dropdowns are included/teleported in root element
+          transition: true,
         },
       },
     });
@@ -99,6 +100,7 @@ describe("CleanupDialog.vue", () => {
 
     const cancelBtn = wrapper.find(".cleanup-cancel-btn");
     await cancelBtn.trigger("click");
+    await wrapper.vm.$nextTick(); // add this
 
     const cleanupBoxAfter = wrapper.find(".cleanup-dialog");
     expect(cleanupBoxAfter.exists()).toBeFalsy();

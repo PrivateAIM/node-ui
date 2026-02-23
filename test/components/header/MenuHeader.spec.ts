@@ -1,8 +1,9 @@
 import { flushPromises, mount } from "@vue/test-utils";
-import { useRuntimeConfig } from "#app";
+import { useRuntimeConfig } from "nuxt/app";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import MenuHeader from "~/components/header/MenuHeader.vue";
-import { type DefineComponent, defineComponent } from "vue";
+import { type DefineComponent, defineComponent, ref } from "vue";
+import { useAuthState } from "@/test/mockapi/nuxt-auth-mock";
 
 describe("MenuHeader.vue", () => {
   vi.mocked(useRuntimeConfig);
@@ -27,11 +28,16 @@ describe("MenuHeader.vue", () => {
       "Data Stores",
     ];
 
-    vi.stubGlobal("useAuth", () => ({
+    vi.mocked(useAuthState).mockReturnValue({
       status: ref(status),
-    }));
+      data: ref(null),
+    });
 
-    const wrapper = mount(MenuHeaderTestComponent);
+    const wrapper = mount(MenuHeaderTestComponent, {
+      global: {
+        stubs: { AvatarButton: true, DarkModeToggle: true },
+      },
+    });
     expect(wrapper).toBeTruthy();
     await flushPromises();
 

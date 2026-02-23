@@ -1,13 +1,10 @@
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import DataStoreList from "~/components/data-stores/DataStoreList.vue";
 import { getDataStores, getProjects } from "~/composables/useAPIFetch";
 import type { ListServices, Project } from "~/services/Api";
-import {
-  fakeDataStoreResp,
-  fakeProjectResp,
-} from "~/test/components/data-stores/constants";
+import { fakeDataStoreResp, fakeProjectResp } from "./constants";
 
 vi.mock("~/composables/useAPIFetch", () => ({
   getProjects: vi.fn(),
@@ -32,13 +29,13 @@ describe("DataStoreList.vue", () => {
   });
 
   async function checkTabs(
-    datastoreData: ListServices | null,
-    projectData: Project[] | null,
+    datastoreData: ListServices | undefined,
+    projectData: Project[] | undefined,
   ) {
     vi.mocked(getDataStores).mockResolvedValue({
       data: ref(datastoreData),
       pending: ref(false),
-      error: ref(null),
+      error: ref(undefined),
       status: ref("success"),
       refresh: vi.fn(),
       execute: vi.fn(),
@@ -48,7 +45,7 @@ describe("DataStoreList.vue", () => {
     vi.mocked(getProjects).mockResolvedValue({
       data: ref(projectData),
       pending: ref(false),
-      error: ref(null),
+      error: ref(undefined),
       status: ref("success"),
       refresh: vi.fn(),
       execute: vi.fn(),
@@ -87,10 +84,10 @@ describe("DataStoreList.vue", () => {
   });
 
   test("Missing data store data", async () => {
-    await checkTabs(null, fakeProjectResp);
+    await checkTabs(undefined, fakeProjectResp);
   });
 
   test("Missing project data", async () => {
-    await checkTabs(fakeDataStoreResp, null);
+    await checkTabs(fakeDataStoreResp, undefined);
   });
 });

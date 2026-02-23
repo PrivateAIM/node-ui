@@ -7,7 +7,7 @@ import {
   fakeBrokenAnalysisId,
   fakeInvalidRoleAnalysisId,
   fakeMissingAnalysisId,
-} from "~/test/mockapi/handlers";
+} from "@/test/mockapi/handlers";
 import { PodStatus } from "~/services/Api";
 import { ProcessStatus } from "~/types/analysis";
 
