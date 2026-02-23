@@ -93,9 +93,9 @@ describe("AnalysesTable.vue", () => {
 
     // Verify the second row's content
     const secondRowCells = rows[1]!.findAll("td");
-    expect(secondRowCells[0]!.text()).toBe("T004"); // Name
+    expect(secondRowCells[0]!.text()).toBe("T006"); // Name
     expect(secondRowCells[1]!.text()).toBe("approved"); // Approval status
-    expect(secondRowCells[7]!.text()).toBe("14.03.2025"); // Last Updated
+    expect(secondRowCells[7]!.text()).toBe("18.03.2025"); // Last Updated
   });
 
   test("Cached results used", async () => {

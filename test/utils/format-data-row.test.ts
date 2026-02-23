@@ -1,7 +1,7 @@
 // Test the format-data-row functions
 import { expect, test } from "vitest";
 import { formatDataRow, parseUnixTimestamp } from "~/utils/format-data-row";
-import { fakeAnalysisNodes } from "~/test/components/analysis/constants";
+import { fakeAnalysisNodes } from "@/test/components/analysis/constants";
 import type { ModifiedAnalysisNode } from "~/services/modifiedApiInterfaces";
 
 test("Format Unix timestamp", () => {
