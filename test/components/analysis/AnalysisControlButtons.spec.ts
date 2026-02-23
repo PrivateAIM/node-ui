@@ -6,6 +6,7 @@ import { ProcessStatus } from "~/types/analysis";
 import {
   fakeAnalysisId,
   fakeBrokenAnalysisId,
+  fakeInvalidRoleAnalysisId,
   fakeMissingAnalysisId,
 } from "~/test/mockapi/handlers";
 import { PodStatus } from "~/services/Api";
@@ -71,7 +72,7 @@ describe("AnalysisControlButtons.vue", () => {
     }
 
     if (expectedToastCalls > 0) {
-      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledTimes(expectedToastCalls);
       expect(spy).toHaveBeenCalledWith({
         severity: toastSeverity,
         summary: toastSummary,
@@ -148,7 +149,7 @@ describe("AnalysisControlButtons.vue", () => {
   it("Stop analysis button - working", async () => {
     await basicButtonCheck(
       ".stop-analysis-btn",
-      "info",
+      "success",
       "Stop success",
       "Successfully stopped the container",
       fakeAnalysisId,
@@ -182,7 +183,7 @@ describe("AnalysisControlButtons.vue", () => {
   it("Stop analysis button - PO broken", async () => {
     await basicButtonCheck(
       ".stop-analysis-btn",
-      "warn",
+      "error",
       "Stop failure",
       "Failed to stop the analysis container",
       fakeBrokenAnalysisId,
@@ -199,7 +200,7 @@ describe("AnalysisControlButtons.vue", () => {
   it("Delete analysis button - working", async () => {
     await basicButtonCheck(
       ".delete-analysis-btn",
-      "info",
+      "success",
       "Delete success",
       "Successfully removed the container",
       fakeAnalysisId,
@@ -233,7 +234,7 @@ describe("AnalysisControlButtons.vue", () => {
   it("Delete analysis button - PO broken", async () => {
     await basicButtonCheck(
       ".delete-analysis-btn",
-      "warn",
+      "error",
       "Terminate request failure",
       "Failed to terminate the analysis",
       fakeBrokenAnalysisId,
@@ -244,6 +245,24 @@ describe("AnalysisControlButtons.vue", () => {
         stopActive: true,
         deleteActive: true,
       },
+    );
+  });
+
+  it("Start analysis button - invalid role", async () => {
+    await basicButtonCheck(
+      ".start-analysis-btn",
+      "error",
+      "Start failure",
+      "Failed to start the analysis",
+      fakeInvalidRoleAnalysisId,
+      true,
+      {
+        playActive: true,
+        rerunActive: false,
+        stopActive: false,
+        deleteActive: false,
+      },
+      "",
     );
   });
 

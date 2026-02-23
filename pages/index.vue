@@ -22,13 +22,15 @@ definePageMeta({
           maintaining full control of who has access to your data.
         </p>
       </div>
-      <div class="landing-btns"><LandingButtons /></div>
+      <div class="landing-btns">
+        <LandingButtons />
+      </div>
     </div>
     <div class="col-6 landing-img">
       <img
-        src="@/assets/img/hospital_network.jpg"
+        src="@/assets/img/node_network.png"
         alt="Hospital Network"
-        class="pimg networkImg"
+        class="pimg network-img"
       />
     </div>
   </div>
@@ -49,14 +51,13 @@ definePageMeta({
 }
 
 .pimg {
-  height: 35em;
+  width: 70%;
 }
 
 .landing-img {
-  align-items: end;
+  justify-content: center;
   display: flex;
   float: right;
-  margin: 1em;
 }
 
 .p-tabview-header {

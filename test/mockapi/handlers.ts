@@ -17,6 +17,7 @@ export const fakeInvalidProposalId = "15518efa-5146-4290-a7cb-95d27f41d991";
 export const fakeAnalysisId = "15518efa-5146-4290-a7cb-95d27f41d991";
 export const fakeMissingAnalysisId = "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483";
 export const fakeBrokenAnalysisId = "ab1fbc92-3dc8-4bdd-9d51-3b571c2d7aaa";
+export const fakeInvalidRoleAnalysisId = "1a29aee7-538b-4a02-9fab-b184b1dcdc2a";
 
 export const handlers = [
   // Node-type
@@ -38,9 +39,21 @@ export const handlers = [
         [fakeAnalysisId]: "started",
       });
     } else if (analysisId === fakeBrokenAnalysisId) {
-      return new HttpResponse(null, { status: 500 });
+      return HttpResponse.json(
+        { detail: { service: "PO" } },
+        {
+          status: 500,
+        },
+      );
     } else if (analysisId === fakeMissingAnalysisId) {
       return new HttpResponse(null, { status: 404 });
+    } else if (analysisId === fakeInvalidRoleAnalysisId) {
+      return HttpResponse.json(
+        { detail: { service: "Auth" } },
+        {
+          status: 403,
+        },
+      );
     }
   }),
 

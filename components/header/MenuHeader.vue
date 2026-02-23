@@ -101,8 +101,13 @@ const items = ref([
   margin-left: 0.1rem;
 }
 
-.menu-bar-item {
+.menu-bar-header {
+  border-radius: 0;
+}
+
+.menu-bar-header .menu-bar-item {
   border-radius: inherit;
+  font-weight: 600;
 }
 
 .header-end {

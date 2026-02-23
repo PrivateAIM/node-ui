@@ -141,7 +141,7 @@ function onApplyRunStatusFilter(runStatus: string) {
 }
 
 .counter-card {
-  background: var(--p-content-hover-background);
+  background: var(--p-menubar-background);
 }
 
 .counter-badge-all {

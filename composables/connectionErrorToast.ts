@@ -35,6 +35,16 @@ export const showHubAdapterConnectionErrorToast = (
   });
 };
 
+export const showCacheWarningToast = (
+    toast: ToastServiceMethods,
+) => {
+    showConnectionErrorToast(toast, {
+        severity: "warn",
+        summary: "Unable to refresh the table",
+        detail: "The Hub is unreachable and the table could not be updated",
+    });
+};
+
 export const showDownstreamConnectionErrorToast = (
   toast: ToastServiceMethods,
   service: string,
@@ -159,6 +169,17 @@ export const showWrongRobotIdToast = (toast: ToastServiceMethods) => {
       "The robot ID is not a valid UUID. Please verify the robot ID was used during deployment and not the name.",
   });
   console.warn("Invalid robot ID");
+};
+
+export const showRbacPermissionError = (
+  toast: ToastServiceMethods,
+  msg: string,
+) => {
+  showConnectionErrorToast(toast, {
+    severity: "error",
+    summary: "Unauthorized Error",
+    detail: msg,
+  });
 };
 
 export const showHubConnectionError = (toast: ToastServiceMethods) => {
