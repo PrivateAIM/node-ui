@@ -461,7 +461,7 @@ const onCloseNavToast = () => {
               If the image for the analysis is not yet
               <Tag
                 :severity="'success'"
-                :value="'executed'"
+                :value="PodStatus.Running"
                 style="margin-left: 0.5em; margin-right: 0.5em"
               />
               (see Build Status) or if a data store does not exist for the
