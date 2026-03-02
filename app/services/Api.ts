@@ -31,6 +31,8 @@ export enum PodStatus {
   Started = "started",
   Stopping = "stopping",
   Stopped = "stopped",
+  Running = "running",
+  Finished = "finished",
   Executing = "executing",
   Executed = "executed",
   Stuck = "stuck",
@@ -340,6 +342,23 @@ export interface AnalysisNode {
   node_realm_id: string;
 }
 
+/**
+ * AutostartSettings
+ * Autostart Settings.
+ */
+export interface AutostartSettings {
+  /**
+   * Enabled
+   * @default false
+   */
+  enabled?: boolean | null;
+  /**
+   * Interval
+   * @default 60
+   */
+  interval?: number | null;
+}
+
 /** Body_auth_token_get_token_post */
 export interface BodyAuthTokenGetTokenPost {
   /**
@@ -462,15 +481,13 @@ export interface BodyKongProjectCreateKongProjectPost {
   /**
    * Methods
    * List of acceptable HTTP methods
-   * @default ["GET"]
    */
-  methods?: HttpMethodCode[];
+  methods?: HttpMethodCode[] | null;
   /**
    * Protocols
    * List of acceptable transfer protocols. A combo of 'http', 'grpc', 'grpcs', 'tls', 'tcp'
-   * @default ["http"]
    */
-  protocols?: ProtocolCode[];
+  protocols?: ProtocolCode[] | null;
   /**
    * Data store type. Either 's3' or 'fhir'
    * @default "fhir"
@@ -1222,15 +1239,6 @@ export interface Node {
   updated_at: string;
 }
 
-/** NodeSettings */
-export interface NodeSettings {
-  /**
-   * Data Required
-   * @default true
-   */
-  data_required?: boolean | null;
-}
-
 /** NodeTypeResponse */
 export interface NodeTypeResponse {
   /** Type */
@@ -1741,6 +1749,20 @@ export interface Token {
   refresh_expires_in?: number | null;
 }
 
+/**
+ * UserSettings
+ * Node configuration settings set by the user.
+ */
+export interface UserSettings {
+  /**
+   * Require Data Store
+   * @default true
+   */
+  require_data_store?: boolean | null;
+  /** @default {"enabled":false,"interval":60} */
+  autostart?: AutostartSettings | null;
+}
+
 /** ValidationError */
 export interface ValidationError {
   /** Location */
@@ -1749,6 +1771,10 @@ export interface ValidationError {
   msg: string;
   /** Error Type */
   type: string;
+  /** Input */
+  input?: any;
+  /** Context */
+  ctx?: object;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -1804,7 +1830,7 @@ export enum ContentType {
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public baseUrl: string = "";
+  public baseUrl: string = "/api";
   private securityData: SecurityDataType | null = null;
   private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
   private abortControllers = new Map<CancelToken, AbortController>();
@@ -2007,11 +2033,13 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title FLAME API
+ * @title FLAME Hub Adapter API
  * @version 0.1.0
  * @license Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0.html)
+ * @baseUrl /api
+ * @contact Bruce Schultz <bschultz013@gmail.com> (https://docs.privateaim.net/about/team.html)
  *
- * FLAME project API for interacting with various microservices within the node for the UI.
+ * FLAME Hub Adapter gateway API for interacting with downstream services.
  */
 export class Api<
   SecurityDataType extends unknown,
@@ -2374,7 +2402,7 @@ export class Api<
      * @secure
      */
     nodeSettingsGetNodeSettingsGet: (params: RequestParams = {}) =>
-      this.request<NodeSettings, void>({
+      this.request<UserSettings, void>({
         path: `/node/settings`,
         method: "GET",
         secure: true,
@@ -2383,7 +2411,7 @@ export class Api<
       }),
 
     /**
-     * @description Update the node configuration settings.
+     * @description Update the node configuration settings with partial data. Raises ------ HTTPException 422: If unknown settings keys are provided.
      *
      * @tags Node
      * @name NodeSettingsUpdateNodeSettingsPost
@@ -2392,10 +2420,10 @@ export class Api<
      * @secure
      */
     nodeSettingsUpdateNodeSettingsPost: (
-      data: NodeSettings,
+      data: UserSettings,
       params: RequestParams = {},
     ) =>
-      this.request<NodeSettings, void | HTTPValidationError>({
+      this.request<UserSettings, void | HTTPValidationError>({
         path: `/node/settings`,
         method: "POST",
         body: data,
@@ -2824,7 +2852,7 @@ export class Api<
      * @tags Storage
      * @name StorageLocalDeleteLocalDelete
      * @summary Storage.Local.Delete
-     * @request DELETE:/local/
+     * @request DELETE:/local
      * @secure
      */
     storageLocalDeleteLocalDelete: (
@@ -2838,7 +2866,7 @@ export class Api<
       params: RequestParams = {},
     ) =>
       this.request<any, void | HTTPValidationError>({
-        path: `/local/`,
+        path: `/local`,
         method: "DELETE",
         query: query,
         secure: true,
