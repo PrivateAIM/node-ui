@@ -343,6 +343,17 @@ export interface AnalysisNode {
 }
 
 /**
+ * AnalysisStatus
+ * Status report for an analysis from the PodOrchestrator
+ */
+export interface AnalysisStatus {
+  /** Custom PO run statuses. */
+  status: PodStatus;
+  /** Progress */
+  progress?: number | null;
+}
+
+/**
  * AutostartSettings
  * Autostart Settings.
  */
@@ -1245,7 +1256,16 @@ export interface NodeTypeResponse {
   type: "aggregator" | "default";
 }
 
-/** PodResponse */
+/**
+ * PodProgressResponse
+ * Response with dynamic UUID keys and dynamic analysis keys with progress/status
+ */
+export type PodProgressResponse = Record<any, AnalysisStatus>;
+
+/**
+ * PodResponse
+ * Response with a list of running pods for a given analysis ID
+ */
 export type PodResponse = Record<any, (string | null)[]>;
 
 /** Project */
@@ -1727,10 +1747,10 @@ export interface ServiceRequest {
 }
 
 /**
- * StatusResponse
+ * StatusOnlyResponse
  * Response with dynamic UUID keys and dynamic analysis keys
  */
-export type StatusResponse = Record<any, PodStatus>;
+export type StatusOnlyResponse = Record<any, PodStatus>;
 
 /**
  * Token
@@ -2058,7 +2078,7 @@ export class Api<
       data: BodyPodorcPodsCreatePoPost,
       params: RequestParams = {},
     ) =>
-      this.request<StatusResponse, void | HTTPValidationError>({
+      this.request<StatusOnlyResponse, void | HTTPValidationError>({
         path: `/po`,
         method: "POST",
         body: data,
@@ -2156,7 +2176,7 @@ export class Api<
      * @secure
      */
     podorcStatusGetPoStatusGet: (params: RequestParams = {}) =>
-      this.request<StatusResponse, void>({
+      this.request<PodProgressResponse, void>({
         path: `/po/status`,
         method: "GET",
         secure: true,
@@ -2177,7 +2197,7 @@ export class Api<
       analysisId: string | null,
       params: RequestParams = {},
     ) =>
-      this.request<StatusResponse, void | HTTPValidationError>({
+      this.request<PodProgressResponse, void | HTTPValidationError>({
         path: `/po/status/${analysisId}`,
         method: "GET",
         secure: true,
@@ -2234,7 +2254,7 @@ export class Api<
      * @secure
      */
     podorcPodsStopPoStopPut: (params: RequestParams = {}) =>
-      this.request<StatusResponse, void>({
+      this.request<StatusOnlyResponse, void>({
         path: `/po/stop`,
         method: "PUT",
         secure: true,
@@ -2255,7 +2275,7 @@ export class Api<
       analysisId: string | null,
       params: RequestParams = {},
     ) =>
-      this.request<StatusResponse, void | HTTPValidationError>({
+      this.request<StatusOnlyResponse, void | HTTPValidationError>({
         path: `/po/stop/${analysisId}`,
         method: "PUT",
         secure: true,
@@ -2273,7 +2293,7 @@ export class Api<
      * @secure
      */
     podorcPodsDeletePoDeleteDelete: (params: RequestParams = {}) =>
-      this.request<StatusResponse, void>({
+      this.request<StatusOnlyResponse, void>({
         path: `/po/delete`,
         method: "DELETE",
         secure: true,
@@ -2294,7 +2314,7 @@ export class Api<
       analysisId: string | null,
       params: RequestParams = {},
     ) =>
-      this.request<StatusResponse, void | HTTPValidationError>({
+      this.request<StatusOnlyResponse, void | HTTPValidationError>({
         path: `/po/delete/${analysisId}`,
         method: "DELETE",
         secure: true,
@@ -2337,7 +2357,7 @@ export class Api<
       data: InitializeAnalysis,
       params: RequestParams = {},
     ) =>
-      this.request<StatusResponse, void | HTTPValidationError>({
+      this.request<StatusOnlyResponse, void | HTTPValidationError>({
         path: `/analysis/initialize`,
         method: "POST",
         body: data,
@@ -2360,7 +2380,7 @@ export class Api<
       analysisId: string,
       params: RequestParams = {},
     ) =>
-      this.request<StatusResponse, void | HTTPValidationError>({
+      this.request<StatusOnlyResponse, void | HTTPValidationError>({
         path: `/analysis/terminate/${analysisId}`,
         method: "DELETE",
         secure: true,

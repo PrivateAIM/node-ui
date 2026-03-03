@@ -19,11 +19,12 @@ import {
 } from "~/utils/status-tag-severity";
 import {
   type AnalysisNode,
+  type AnalysisStatus,
   type ListRoutes,
+  type PodProgressResponse,
   PodStatus,
   type Project,
   type Route,
-  type StatusResponse,
 } from "~/services/Api";
 import { ApprovalStatus } from "~/types/node";
 import ContainerCounter from "~/components/analysis/ContainerCounter.vue";
@@ -154,7 +155,7 @@ async function parseProjects() {
 // }
 
 async function getExecutionStatusesFromPodOrc(): Promise<
-  StatusResponse | undefined
+  PodProgressResponse | undefined
 > {
   const podOrcResponse = (await useNuxtApp()
     .$hubApi("/po/status", {
@@ -168,7 +169,7 @@ async function getExecutionStatusesFromPodOrc(): Promise<
           "Unable to retrieve pod statuses from the PO, relying on information from the Hub",
         life: 3000,
       });
-    })) as StatusResponse;
+    })) as PodProgressResponse;
   podOrcUnreacheable.value = !podOrcResponse;
   return podOrcResponse;
 }
@@ -177,8 +178,8 @@ async function checkForUpdatesFromPodOrc() {
   if (!podOrcUnreacheable.value) {
     const newStatuses = await getExecutionStatusesFromPodOrc();
     if (newStatuses) {
-      for (const [analysisId, status] of Object.entries(newStatuses)) {
-        updateAnalysisRun(analysisId, status);
+      for (const [analysisId, progressData] of Object.entries(newStatuses)) {
+        updateAnalysisRun(analysisId, progressData);
       }
     }
   }
@@ -186,14 +187,19 @@ async function checkForUpdatesFromPodOrc() {
 
 function setProgress(analysis: ModifiedAnalysisNode): ModifiedAnalysisNode {
   // For testing: Math.round(Math.random() * 100);
-  analysis.progress = analysis.progress ? analysis.progress : 0;
+  analysis.execution_progress = analysis.execution_progress
+    ? analysis.execution_progress
+    : 0;
 
   const currentRunStatus = analysis.execution_status;
   if (currentRunStatus) {
     if (currentRunStatus === PodStatus.Failed) {
-      analysis.progress = 0;
-    } else if (currentRunStatus === PodStatus.Executed) {
-      analysis.progress = 100;
+      analysis.execution_progress = 0;
+    } else if (
+      currentRunStatus === PodStatus.Executed ||
+      currentRunStatus === PodStatus.Finished // deprecated
+    ) {
+      analysis.execution_progress = 100;
     }
   }
   return analysis;
@@ -219,7 +225,7 @@ function determineProgressBarColor(progress: number) {
 
 function parseAnalysis(
   analysisEntry: ModifiedAnalysisNode,
-  executionStatuses: StatusResponse | undefined,
+  executionStatuses: PodProgressResponse | undefined,
 ): ModifiedAnalysisNode {
   const projId = analysisEntry.analysis?.project_id;
   const analysisId = analysisEntry.analysis_id;
@@ -232,7 +238,7 @@ function parseAnalysis(
   // If no run status reported by PodOrc, and it's not failed/finished -> set to null (wrong hub info)
   if (executionStatuses) {
     if (analysisId in executionStatuses) {
-      analysisEntry.execution_status = executionStatuses[analysisId];
+      analysisEntry.execution_status = executionStatuses[analysisId]!.status;
     } else {
       if (
         analysisEntry.execution_status != PodStatus.Failed &&
@@ -253,7 +259,8 @@ async function compileAnalysisTable(
   await parseProjects();
   await getKongRoutes();
   const parsedAnalyses = new Map<string, ModifiedAnalysisNode>();
-  const currentExecutionStatuses = await getExecutionStatusesFromPodOrc();
+  const currentExecutionStatuses: PodProgressResponse | undefined =
+    await getExecutionStatusesFromPodOrc();
 
   let analysisData: AnalysisNode[] | undefined;
   if (respStatus === "success") {
@@ -366,11 +373,15 @@ const updateFilters = (filterText: string) => {
 
 function updateAnalysisRun(
   analysisId: string,
-  newStatus: PodStatus | undefined,
+  newStatusData: AnalysisStatus | undefined,
 ) {
   if (analysesMap.value.has(analysisId)) {
     const analysisToUpdate = analysesMap.value.get(analysisId)!; // Tell typescript we are sure there is a value
-    analysisToUpdate.execution_status = newStatus;
+    if (newStatusData) {
+      analysisToUpdate.execution_status = newStatusData.status;
+      analysisToUpdate.execution_progress =
+        newStatusData.execution_progress || 0;
+    }
     analysesMap.value.set(analysisId, setProgress(analysisToUpdate));
   }
 }
@@ -755,13 +766,14 @@ const onCloseNavToast = () => {
             <template #body="{ data }">
               <ProgressBar
                 :mode="
-                  data.execution_status === PodStatus.Executing &&
-                  !data.progress
+                  (data.execution_status === PodStatus.Executing ||
+                    data.execution_status === PodStatus.Running) &&
+                  !data.execution_progress
                     ? 'indeterminate'
                     : 'determinate'
                 "
-                :style="determineProgressBarColor(data.progress)"
-                :value="data.progress"
+                :style="determineProgressBarColor(data.execution_progress)"
+                :value="data.execution_progress"
               />
             </template>
           </Column>
