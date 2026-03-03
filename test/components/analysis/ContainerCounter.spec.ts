@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import ContainerCounter from "~/components/analysis/ContainerCounter.vue";
 import { fakeAnalysisNodes } from "@/test/components/analysis/constants";
-import type { AnalysisNode } from "~/services/Api";
+import { type AnalysisNode } from "~/services/Api";
 
 interface filterData {
   value: string[] | undefined;
@@ -48,6 +48,7 @@ describe("ContainerCounter.vue", () => {
     const statusCounts = countStatusOccurences(mockAnalyses);
 
     // Success check
+    let emitCounts = 0;
     const fillCounterDiv = wrapper.find(".counter-badge-all");
     ["Started", "Executing", "Stopped", "Failed", "Executed"].forEach(
       (executionStatus, index) => {
@@ -76,15 +77,23 @@ describe("ContainerCounter.vue", () => {
           expect(counterDiv.attributes("class")).toContain("opaque-badge");
         }
 
+        if (executionStatus === "Executing" || executionStatus === "Executed") {
+          // Emit extra for running and finished
+          emitCounts += 2;
+        } else {
+          emitCounts++;
+        }
         // Clicking on badge emits correctly
         badgeDiv.trigger("click");
+        console.log(wrapper.emitted().applyExecutionStatusFilter);
         expect(wrapper.emitted()).toHaveProperty("applyExecutionStatusFilter");
         expect(wrapper.emitted().applyExecutionStatusFilter).toHaveLength(
-          index + 1,
+          emitCounts,
         );
-        expect(wrapper.emitted().applyExecutionStatusFilter[index]).toEqual([
-          lowerStatus,
-        ]);
+
+        const emittedStatuses = wrapper.emitted().applyExecutionStatusFilter;
+        expect(emittedStatuses).toBeDefined();
+        expect(emittedStatuses!.flat()).toContain(lowerStatus);
       },
     );
 

@@ -15,7 +15,8 @@ export function formatDataRow(
     | ModifiedDetailedService[]
     | Route[]
     | AnalysisNode[]
-    | null,
+    | null
+    | undefined,
   datetimeKeys: string[],
   rowExpansionKeys: string[],
 ) {

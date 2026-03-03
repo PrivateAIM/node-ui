@@ -37,19 +37,23 @@ export interface ModifiedRoute extends Omit<
   updated_at: modifiedTimestamp;
 }
 
-export interface ModifiedAnalysisNode
-  extends Omit<AnalysisNode, "execution_status"> {
+export interface ModifiedAnalysisNode extends Omit<
+  AnalysisNode,
+  "execution_status"
+> {
   project_name: string | undefined;
   expand: {
     [key: string]: string;
   };
   datastore: boolean;
-  execution_status: PodStatus | null;
+  execution_status: PodStatus | undefined;
   progress: number;
 }
 
-export interface ModifiedParsedAnalysisNode
-  extends Omit<ModifiedAnalysisNode, "created_at" | "updated_at"> {
+export interface ModifiedParsedAnalysisNode extends Omit<
+  ModifiedAnalysisNode,
+  "created_at" | "updated_at"
+> {
   created_at: modifiedTimestamp;
   updated_at: modifiedTimestamp;
 }

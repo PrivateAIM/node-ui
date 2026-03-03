@@ -79,9 +79,9 @@ let currentOffset = 50; // Start with query limit and will increment by same amo
 const kongRoutes = ref<Set<string>>(new Set());
 
 // Imported values
-const runStatuses = Object.values(PodStatus);
 const approvalStatuses = Object.values(ApprovalStatus);
-const buildStatuses = Object.values(ProcessStatus);
+const processStatuses = Object.values(ProcessStatus);
+const podStatuses = Object.values(PodStatus);
 
 const { data: analysisNodeResp, status, refresh } = await getAnalysisNodes(); // Get the first batch of 50
 
@@ -137,23 +137,25 @@ async function parseProjects() {
   }
 }
 
-/**
- * Changes to "executing" to "running" and "executed" to "finished" which is simpler language.
- * @param status
- */
-function useCommonLanguage(
-  status: PodStatus,
-): PodStatus | "running" | "finished" {
-  if (status === PodStatus.Executing) {
-    return "running";
-  } else if (status === PodStatus.Executed) {
-    return "finished";
-  } else {
-    return status;
-  }
-}
+// /**
+//  * Changes to "executing" to "running" and "executed" to "finished" which is simpler language.
+//  * @param status
+//  */
+// function useCommonLanguage(
+//   status: PodStatus,
+// ): PodStatus | "running" | "finished" {
+//   if (status === PodStatus.Executing) {
+//     return "running";
+//   } else if (status === PodStatus.Executed) {
+//     return "finished";
+//   } else {
+//     return status;
+//   }
+// }
 
-async function getExecutionStatusesFromPodOrc(): Promise<StatusResponse | null> {
+async function getExecutionStatusesFromPodOrc(): Promise<
+  StatusResponse | undefined
+> {
   const podOrcResponse = (await useNuxtApp()
     .$hubApi("/po/status", {
       method: "GET",
@@ -236,7 +238,7 @@ function parseAnalysis(
         analysisEntry.execution_status != PodStatus.Failed &&
         analysisEntry.execution_status != PodStatus.Executed
       ) {
-        analysisEntry.execution_status = null;
+        analysisEntry.execution_status = undefined;
       }
     }
   }
@@ -362,7 +364,10 @@ const updateFilters = (filterText: string) => {
   filters.value.global.value = filterText;
 };
 
-function updateAnalysisRun(analysisId: string, newStatus: PodStatus | null) {
+function updateAnalysisRun(
+  analysisId: string,
+  newStatus: PodStatus | undefined,
+) {
   if (analysesMap.value.has(analysisId)) {
     const analysisToUpdate = analysesMap.value.get(analysisId)!; // Tell typescript we are sure there is a value
     analysisToUpdate.execution_status = newStatus;
@@ -590,13 +595,13 @@ const onCloseNavToast = () => {
               <Tag
                 v-if="data.analysis.build_status"
                 :severity="getBuildStatusSeverity(data.analysis.build_status)"
-                :value="useCommonLanguage(data.analysis.build_status)"
+                :value="data.analysis.build_status"
               />
             </template>
             <template #filter="{ filterModel, filterCallback }">
               <MultiSelect
                 v-model="filterModel.value"
-                :options="buildStatuses"
+                :options="processStatuses"
                 class="p-column-filter"
                 display="chip"
                 optionLabel=""
@@ -636,13 +641,13 @@ const onCloseNavToast = () => {
               <Tag
                 v-if="data.execution_status"
                 :severity="getExecutionStatusSeverity(data.execution_status)"
-                :value="useCommonLanguage(data.execution_status)"
+                :value="data.execution_status"
               />
             </template>
             <template #filter="{ filterModel, filterCallback }">
               <MultiSelect
                 v-model="filterModel.value"
-                :options="executionStatuses"
+                :options="podStatuses"
                 class="p-column-filter"
                 optionLabel=""
                 placeholder="Any"

@@ -1,7 +1,6 @@
-import {ApprovalStatus} from "~/types/node";
-import {PodStatus} from "~/services/Api";
-import {ProcessStatus} from "~/types/analysis";
-import type {TagSeverity} from "~/types/statusTag";
+import { ApprovalStatus } from "~/types/node";
+import { PodStatus } from "~/services/Api";
+import { ProcessStatus } from "~/types/analysis";
 
 export const getApprovalStatusSeverity = (status: ApprovalStatus) => {
   switch (status) {
@@ -13,17 +12,13 @@ export const getApprovalStatusSeverity = (status: ApprovalStatus) => {
   }
 };
 
-export const getBuildStatusSeverity = (status: ProcessStatus): TagSeverity => {
+export const getBuildStatusSeverity = (status: ProcessStatus) => {
   switch (status) {
     case ProcessStatus.Starting:
-      return "info";
-
     case ProcessStatus.Started:
       return "info";
 
     case ProcessStatus.Stopping:
-      return "warning";
-
     case ProcessStatus.Stopped:
       return "warning";
 
@@ -38,27 +33,25 @@ export const getBuildStatusSeverity = (status: ProcessStatus): TagSeverity => {
   }
 };
 
-export const getExecutionStatusSeverity = (status: PodStatus): TagSeverity => {
+export const getExecutionStatusSeverity = (status: PodStatus) => {
   switch (status) {
     case PodStatus.Starting:
-      return "info";
-
     case PodStatus.Started:
       return "info";
 
-    case PodStatus.Executing || PodStatus.Running:
+    case PodStatus.Executing:
+    case PodStatus.Running:
       return "contrast";
 
     case PodStatus.Stopping:
-      return "warning";
-
     case PodStatus.Stopped:
       return "warning";
 
     case PodStatus.Failed:
       return "danger";
 
-    case PodStatus.Executed || PodStatus.Finished:
+    case PodStatus.Executed:
+    case PodStatus.Finished:
       return "success";
   }
 };
