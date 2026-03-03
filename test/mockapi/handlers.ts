@@ -36,7 +36,7 @@ export const handlers = [
     return HttpResponse.json({
       status: 200,
       data: {
-        data_required: false,
+        require_data_store: false,
       },
     });
   }),

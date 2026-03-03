@@ -1,4 +1,4 @@
-import { type NodeSettings, type NodeTypeResponse } from "~/services/Api";
+import { type NodeTypeResponse, type UserSettings } from "~/services/Api";
 import { useNuxtApp, useRoute, useState } from "nuxt/app";
 
 interface DatastoreState {
@@ -29,9 +29,9 @@ export async function useDatastoreRequirement() {
         .$hubApi("/node/settings", {
           method: "GET",
         })
-        .catch(() => undefined)) as NodeSettings;
+        .catch(() => undefined)) as UserSettings;
       if (nodeConfigResp) {
-        dataRequired = Boolean(nodeConfigResp.data_required);
+        dataRequired = Boolean(nodeConfigResp.require_data_store);
       }
     }
 
@@ -54,12 +54,12 @@ export async function useDatastoreRequirement() {
     const nodeConfigResp = (await useNuxtApp()
       .$hubApi("/node/settings", {
         method: "POST",
-        body: { data_required: updatedRequirement },
+        body: { require_data_store: updatedRequirement },
       })
-      .catch(() => undefined)) as NodeSettings;
+      .catch(() => undefined)) as UserSettings;
     if (nodeConfigResp) {
       datastoreState.value.datastoreRequired = Boolean(
-        nodeConfigResp.data_required,
+        nodeConfigResp.require_data_store,
       );
     }
   }
