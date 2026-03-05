@@ -36,11 +36,8 @@ const toast = useToast();
 const tableLoading = ref(true);
 
 // Data Store Requirement Check
-const { datastoreState } = await useDatastoreRequirement();
-const datastoreRequired = computed(
-  () => datastoreState.value.datastoreRequired,
-);
-const nodeType = computed(() => datastoreState.value.nodeType);
+const { nodeType, requireDataStore: datastoreRequired } =
+  useDatastoreRequirement();
 
 const datastoreBadgeSeverity = computed(() =>
   datastoreRequired.value ? "danger" : "secondary",

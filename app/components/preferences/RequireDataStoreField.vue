@@ -1,12 +1,7 @@
 <script setup lang="ts">
-import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
 import ToggleSwitch from "primevue/toggleswitch";
 
-const { datastoreState, setDatastoreRequired } =
-  await useDatastoreRequirement();
-const datastoreRequired = computed(
-  () => datastoreState.value.datastoreRequired,
-);
+const model = defineModel<boolean>({ required: true });
 </script>
 
 <template>
@@ -19,11 +14,7 @@ const datastoreRequired = computed(
       >
     </div>
     <div class="settings-control data-store-requirement-toggle">
-      <ToggleSwitch
-        v-model="datastoreRequired"
-        label="Require Data Store"
-        @click="setDatastoreRequired(!datastoreRequired)"
-      />
+      <ToggleSwitch v-model="model" label="Require Data Store" />
     </div>
   </div>
 </template>

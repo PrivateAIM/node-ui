@@ -50,6 +50,7 @@ const menuItems = ref([
         command: () => {
           showCleanupDialog.value = true;
         },
+        visible: isAuthenticated.value,
         disabled: !isAuthenticated.value,
       },
       {
@@ -58,6 +59,7 @@ const menuItems = ref([
         command: () => {
           showPreferencesDialog.value = true;
         },
+        visible: isAuthenticated.value,
         disabled: !isAuthenticated.value,
       },
     ],

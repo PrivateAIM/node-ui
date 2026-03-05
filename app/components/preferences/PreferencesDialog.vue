@@ -1,35 +1,58 @@
 <script setup lang="ts">
 import RequireDataStoreField from "~/components/preferences/RequireDataStoreField.vue";
+import AutostartField from "~/components/preferences/AutostartField.vue";
 import Button from "primevue/button";
 import Divider from "primevue/divider";
-import AutostartField from "~/components/preferences/AutostartField.vue";
-import { type UserSettings } from "~/services/Api";
-import { useNuxtApp } from "nuxt/app";
+import { useNodeSettingsStore } from "~/stores/nodeSettingsStore";
 import { useToast } from "primevue/usetoast";
+import type { AutostartSettings } from "~/services/Api";
 
 const preferencesVisible = defineModel<boolean>("preferencesVisible");
 const loading = ref(false);
 const toast = useToast();
+const store = useNodeSettingsStore();
+
+const draftRequireDataStore = ref(store.requireDataStore);
+const draftAutostart = ref<AutostartSettings>({
+  enabled: store.autostartEnabled,
+  interval: store.autostartInterval,
+});
+
+watch(preferencesVisible, (visible) => {
+  if (visible) {
+    draftRequireDataStore.value = store.requireDataStore;
+    draftAutostart.value.enabled = store.autostartEnabled;
+    draftAutostart.value.interval = store.autostartInterval;
+  }
+});
 
 async function onSubmitPreferences() {
   loading.value = true;
-  let analysisProps: UserSettings = {};
 
-  let settingsUpdateResponse: UserSettings = (await useNuxtApp()
-    .$hubApi("/analysis/initialize", {
-      method: "POST",
-      body: analysisProps,
-    })
-    .catch(() => null)) as UserSettings;
+  const updated = await store.updateSettings({
+    require_data_store: draftRequireDataStore.value,
+    autostart: {
+      enabled: draftAutostart.value.enabled,
+      interval: draftAutostart.value.interval,
+    },
+  });
 
-  if (settingsUpdateResponse) {
+  if (updated) {
     toast.add({
       severity: "success",
       summary: "Update Success",
       detail: "Settings were successfully updated",
       life: 5000,
     });
+  } else {
+    toast.add({
+      severity: "error",
+      summary: "Update Failed",
+      detail: "Settings could not be updated",
+      life: 5000,
+    });
   }
+
   loading.value = false;
 }
 </script>
@@ -45,11 +68,11 @@ async function onSubmitPreferences() {
     >
       <Divider />
       <div class="data-store-requirement-section">
-        <RequireDataStoreField />
+        <RequireDataStoreField v-model="draftRequireDataStore" />
       </div>
       <Divider />
       <div class="autostart-section">
-        <AutostartField />
+        <AutostartField v-model="draftAutostart" />
       </div>
       <div class="preferences-update-btn">
         <Button
@@ -57,6 +80,7 @@ async function onSubmitPreferences() {
           severity="contrast"
           size="small"
           icon="pi pi-save"
+          :loading="loading"
           @click="onSubmitPreferences()"
         ></Button>
       </div>

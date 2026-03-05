@@ -5,6 +5,7 @@
 
 .settings-description-title {
     font-weight: bold;
+    padding-bottom: 1em;
 }
 
 .setting-description-text {
@@ -26,4 +27,10 @@
 
 .preferences-dialog-header .p-dialog-header {
     padding-bottom: 0
+}
+
+.autostart-interval-input {
+    min-width: unset;
+    height: 2.5em;
+    width: 8em;
 }
