@@ -7,6 +7,7 @@ import {
   fakeBrokenAnalysisId,
   fakeMissingAnalysisId,
 } from "../../mockapi/handlers";
+import { PodStatus } from "~/services/Api";
 
 describe("AnalysisUpdateButton.vue", () => {
   let spy;
@@ -62,7 +63,7 @@ describe("AnalysisUpdateButton.vue", () => {
     );
     expect(wrapper.emitted("updateAnalysisRun")).toHaveLength(1);
     expect(wrapper.emitted("updateAnalysisRun")![0]).toEqual([
-      "running",
+      PodStatus.Running,
       undefined,
     ]);
   });

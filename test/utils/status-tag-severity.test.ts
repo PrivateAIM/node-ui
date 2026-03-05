@@ -3,10 +3,11 @@ import {
   getApprovalStatusSeverity,
   getBuildStatusSeverity,
   getDataStoreTypeSeverity,
-  getRunStatusSeverity,
+  getExecutionStatusSeverity,
 } from "~/utils/status-tag-severity";
-import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
+import { ProcessStatus } from "~/types/analysis";
 import { ApprovalStatus } from "~/types/node";
+import { PodStatus } from "~/services/Api";
 
 test("Approval status severity tag", () => {
   const expectations = {
@@ -26,10 +27,11 @@ test("Build status severity tag", () => {
     started: "info",
     stopping: "warning",
     stopped: "warning",
-    finished: "success",
+    executing: "contrast",
+    executed: "success",
     failed: "danger",
   };
-  for (const buildStatus of Object.values(AnalysisBuildStatus)) {
+  for (const buildStatus of Object.values(ProcessStatus)) {
     expect(getBuildStatusSeverity(buildStatus)).toStrictEqual(
       expectations[buildStatus],
     );
@@ -40,16 +42,18 @@ test("Analysis run status severity tag", () => {
   const expectations = {
     starting: "info",
     started: "info",
-    running: "contrast",
+    running: "contrast", // deprecated
+    executing: "contrast",
     stopping: "warning",
     stopped: "warning",
-    finished: "success",
+    executed: "success",
+    finished: "success", // deprecated
     failed: "danger",
   };
 
-  for (const runStatus of Object.values(AnalysisNodeRunStatus)) {
-    expect(getRunStatusSeverity(runStatus)).toStrictEqual(
-      expectations[runStatus],
+  for (const executionStatus of Object.values(PodStatus)) {
+    expect(getExecutionStatusSeverity(executionStatus)).toStrictEqual(
+      expectations[executionStatus],
     );
   }
 });

@@ -1,11 +1,11 @@
-import { AnalysisNodeRunStatus } from "~/types/analysis";
+import { PodStatus } from "~/services/Api";
 import type { ModifiedAnalysisNode } from "~/services/modifiedApiInterfaces";
 
 export interface containerCount {
   started: number;
-  running: number;
+  executing: number;
   failed: number;
-  finished: number;
+  executed: number;
   stopped: number;
 }
 
@@ -14,39 +14,41 @@ export function countAnalysisContainers(
 ): containerCount {
   const counts: containerCount = {
     started: 0,
-    running: 0,
-    finished: 0,
+    executing: 0,
+    executed: 0,
     failed: 0,
     stopped: 0,
   };
   for (const analysis of currentAnalyses) {
-    const runStatus = analysis.run_status;
-    if (runStatus) {
-      switch (runStatus) {
-        case AnalysisNodeRunStatus.Started:
-        case AnalysisNodeRunStatus.Starting:
+    const executionStatus = analysis.execution_status;
+    if (executionStatus) {
+      switch (executionStatus) {
+        case PodStatus.Started:
+        case PodStatus.Starting:
           counts.started++;
           break;
 
-        case AnalysisNodeRunStatus.Running:
-          counts.running++;
+        case PodStatus.Executing:
+        case PodStatus.Running:
+          counts.executing++;
           break;
 
-        case AnalysisNodeRunStatus.Stopping:
-        case AnalysisNodeRunStatus.Stopped:
+        case PodStatus.Stopping:
+        case PodStatus.Stopped:
           counts.stopped++;
           break;
 
-        case AnalysisNodeRunStatus.Failed:
+        case PodStatus.Failed:
           counts.failed++;
           break;
 
-        case AnalysisNodeRunStatus.Finished:
-          counts.finished++;
+        case PodStatus.Executed:
+        case PodStatus.Finished:
+          counts.executed++;
           break;
 
         default:
-          console.log(`${runStatus} not an acceptable option`);
+          console.log(`${executionStatus} not an acceptable option`);
       }
     }
   }

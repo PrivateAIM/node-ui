@@ -1,6 +1,6 @@
 import { type AsyncDataRequestStatus, useFetch, useNuxtApp } from "nuxt/app";
+import { computed, defineComponent, ref } from "vue";
 import { useToast } from "primevue/usetoast";
-import { defineComponent, ref } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import {
   afterEach,
@@ -11,18 +11,23 @@ import {
   test,
   vi,
 } from "vitest";
+import { http, HttpResponse } from "msw";
 import AnalysesTable from "~/components/analysis/AnalysesTable.vue";
-import { fakeAnalysisNodes, newFakeAnalysisNode } from "./constants";
+import AnalysisControlButtons from "~/components/analysis/AnalysisControlButtons.vue";
+import {
+  fakeAnalysisNodes,
+  fakeBaseAnalysisNode,
+  newFakeAnalysisNode,
+} from "./constants";
 import { getAnalysisNodes } from "~/composables/useAPIFetch";
 import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
 import type { AnalysisNode } from "~/services/Api";
+import { PodStatus } from "~/services/Api";
+import { testServer } from "@/test/mockapi/setup";
+import { fakeAnalysisId } from "@/test/mockapi/handlers";
 
 vi.mock("~/composables/useAPIFetch", () => ({
   getAnalysisNodes: vi.fn(),
-}));
-
-vi.mock("~/composables/useNodeType", () => ({
-  useNodeType: vi.fn(),
 }));
 
 vi.mock("~/composables/useDatastoreRequirement", () => ({
@@ -47,12 +52,9 @@ describe("AnalysesTable.vue", () => {
     vi.mocked(useToast).mockReturnValue(mockToast);
     spy = vi.spyOn(mockToast, "add");
 
-    vi.mocked(useDatastoreRequirement).mockResolvedValue({
-      datastoreState: ref({
-        datastoreRequired: true,
-        nodeType: "default",
-      }),
-      setDatastoreRequired: vi.fn(),
+    vi.mocked(useDatastoreRequirement).mockReturnValue({
+      nodeType: computed(() => "default"),
+      requireDataStore: computed(() => true),
     });
 
     // The basic response
@@ -93,9 +95,9 @@ describe("AnalysesTable.vue", () => {
 
     // Verify the second row's content
     const secondRowCells = rows[1]!.findAll("td");
-    expect(secondRowCells[0]!.text()).toBe("T004"); // Name
+    expect(secondRowCells[0]!.text()).toBe("T006"); // Name
     expect(secondRowCells[1]!.text()).toBe("approved"); // Approval status
-    expect(secondRowCells[7]!.text()).toBe("14.03.2025"); // Last Updated
+    expect(secondRowCells[7]!.text()).toBe("18.03.2025"); // Last Updated
   });
 
   test("Cached results used", async () => {
@@ -199,5 +201,252 @@ describe("AnalysesTable.vue", () => {
 
     expect(AnalysisTableTestComponent).toBeTruthy();
     expect(wrapper.text()).toContain("No analyses found"); // H1 of the page
+  });
+});
+
+// ProgressBar stub used across progress tests — captures mode, value, and style as data attributes
+const ProgressBarStub = {
+  props: ["mode", "value", "style"],
+  template:
+    '<div class="mock-progress-bar" :data-mode="mode ?? \'determinate\'" :data-value="String(value ?? 0)" />',
+};
+
+// Helper: mock getAnalysisNodes for a single test
+function mockNodes(nodes: AnalysisNode[]) {
+  vi.mocked(getAnalysisNodes).mockResolvedValueOnce({
+    data: ref(nodes),
+    pending: ref(false),
+    error: ref(undefined),
+    status: ref("success"),
+    refresh: vi.fn(),
+    execute: vi.fn(),
+    clear: vi.fn(),
+  });
+}
+
+describe("AnalysesTable.vue — PO calls and Progress", () => {
+  let AnalysisTableTestComponent;
+
+  beforeAll(() => {
+    AnalysisTableTestComponent = defineComponent({
+      components: { AnalysesTable },
+      template: "<Suspense><AnalysesTable/></Suspense>",
+    });
+  });
+
+  beforeEach(() => {
+    vi.mocked(useToast).mockReturnValue({
+      add: vi.fn(),
+    } as unknown as ReturnType<typeof useToast>);
+    vi.mocked(useDatastoreRequirement).mockReturnValue({
+      nodeType: computed(() => "default"),
+      requireDataStore: computed(() => true),
+    });
+    // Default: three nodes so existing table tests keep working
+    vi.mocked(getAnalysisNodes).mockResolvedValue({
+      data: ref(fakeAnalysisNodes),
+      pending: ref(false),
+      error: ref(undefined),
+      status: ref("success"),
+      refresh: vi.fn(),
+      execute: vi.fn(),
+      clear: vi.fn(),
+    });
+  });
+
+  // Column index of the Progress cell in each DataTable row
+  const PROGRESS_COL = 8;
+  // Column index of the Run Status cell
+  const RUN_STATUS_COL = 3;
+
+  test("Progress bar is indeterminate when executing and progress is 0", async () => {
+    // fakeBaseAnalysisNode.analysis_id matches fakeAnalysisId, so PodOrc
+    // reports it as "executing", Hub execution_progress is 0 -> indeterminate.
+    mockNodes([
+      {
+        ...fakeBaseAnalysisNode,
+        execution_status: "started",
+        execution_progress: 0,
+      },
+    ]);
+
+    const wrapper = mount(AnalysisTableTestComponent, {
+      global: { stubs: { ProgressBar: ProgressBarStub } },
+    });
+    await flushPromises();
+
+    const progressBar = wrapper
+      .findAll("tbody tr")[0]!
+      .findAll("td")
+      [PROGRESS_COL]!.find(".mock-progress-bar");
+
+    expect(progressBar.attributes("data-mode")).toBe("indeterminate");
+  });
+
+  test("Progress bar is determinate when executing and progress is non-zero", async () => {
+    // Same analysis_id as fakeAnalysisId — PodOrc sets execution_status to
+    // "executing". Hub has execution_progress: 50, which is preserved.
+    mockNodes([
+      {
+        ...fakeBaseAnalysisNode,
+        execution_status: "started",
+        execution_progress: 50,
+      },
+    ]);
+
+    const wrapper = mount(AnalysisTableTestComponent, {
+      global: { stubs: { ProgressBar: ProgressBarStub } },
+    });
+    await flushPromises();
+
+    const progressBar = wrapper
+      .findAll("tbody tr")[0]!
+      .findAll("td")
+      [PROGRESS_COL]!.find(".mock-progress-bar");
+
+    expect(progressBar.attributes("data-mode")).toBe("determinate");
+    expect(progressBar.attributes("data-value")).toBe("50");
+  });
+
+  test("setProgress sets execution_progress to 100 for executed status", async () => {
+    // Unique ID not known to PodOrc. "executed" is terminal so parseAnalysis
+    // keeps it. setProgress then forces execution_progress to 100.
+    const executedNode: AnalysisNode = {
+      ...fakeBaseAnalysisNode,
+      analysis_id: "aaaaaaaa-0000-0000-0000-000000000001",
+      execution_status: "executed",
+      execution_progress: 0,
+    };
+    mockNodes([executedNode]);
+
+    const wrapper = mount(AnalysisTableTestComponent, {
+      global: { stubs: { ProgressBar: ProgressBarStub } },
+    });
+    await flushPromises();
+
+    const progressBar = wrapper
+      .findAll("tbody tr")[0]!
+      .findAll("td")
+      [PROGRESS_COL]!.find(".mock-progress-bar");
+
+    expect(progressBar.attributes("data-value")).toBe("100");
+  });
+
+  test("setProgress resets execution_progress to 0 for failed status", async () => {
+    // Hub reports 60% progress, but setProgress should zero it out for failed.
+    const failedNode: AnalysisNode = {
+      ...fakeBaseAnalysisNode,
+      analysis_id: "aaaaaaaa-0000-0000-0000-000000000002",
+      execution_status: "failed",
+      execution_progress: 60,
+    };
+    mockNodes([failedNode]);
+
+    const wrapper = mount(AnalysisTableTestComponent, {
+      global: { stubs: { ProgressBar: ProgressBarStub } },
+    });
+    await flushPromises();
+
+    const progressBar = wrapper
+      .findAll("tbody tr")[0]!
+      .findAll("td")
+      [PROGRESS_COL]!.find(".mock-progress-bar");
+
+    expect(progressBar.attributes("data-value")).toBe("0");
+  });
+
+  test("PodOrc execution_status overrides hub execution_status in Run Status column", async () => {
+    // Hub says "started"; PodOrc handler returns { status: "executing" } for the
+    // same analysis_id → parseAnalysis should use the PodOrc value.
+    mockNodes([
+      {
+        ...fakeBaseAnalysisNode,
+        execution_status: "started",
+        execution_progress: 0,
+      },
+    ]);
+
+    const wrapper = mount(AnalysisTableTestComponent);
+    await flushPromises();
+
+    const runStatusCell = wrapper.findAll("tbody tr")[0]!.findAll("td")[
+      RUN_STATUS_COL
+    ]!;
+    expect(runStatusCell.text()).toBe(PodStatus.Running);
+  });
+
+  test("Non-terminal execution_status is cleared when analysis is absent from PodOrc", async () => {
+    // Override PodOrc to return an empty response so no analysis ID matches.
+    // "started" is non-terminal → parseAnalysis nulls it → no Tag rendered.
+    testServer.use(http.get("/po/status", () => HttpResponse.json({})));
+
+    mockNodes([
+      {
+        ...fakeBaseAnalysisNode,
+        execution_status: "started",
+        execution_progress: 0,
+      },
+    ]);
+
+    const wrapper = mount(AnalysisTableTestComponent);
+    await flushPromises();
+
+    const runStatusCell = wrapper.findAll("tbody tr")[0]!.findAll("td")[
+      RUN_STATUS_COL
+    ]!;
+    expect(runStatusCell.text()).toBe("");
+  });
+
+  test("Terminal execution_status is preserved when analysis is absent from PodOrc", async () => {
+    // Unique ID not in PodOrc response. "executed" is terminal → parseAnalysis
+    // preserves it → Tag is rendered.
+    testServer.use(http.get("/po/status", () => HttpResponse.json({})));
+
+    const executedNode: AnalysisNode = {
+      ...fakeBaseAnalysisNode,
+      analysis_id: "aaaaaaaa-0000-0000-0000-000000000003",
+      execution_status: "executed",
+      execution_progress: 0,
+    };
+    mockNodes([executedNode]);
+
+    const wrapper = mount(AnalysisTableTestComponent);
+    await flushPromises();
+
+    const runStatusCell = wrapper.findAll("tbody tr")[0]!.findAll("td")[
+      RUN_STATUS_COL
+    ]!;
+    expect(runStatusCell.text()).toBe(PodStatus.Executed);
+  });
+
+  test("updateAnalysisRun updates the progress bar when the control buttons emit updateAnalysisRow", async () => {
+    // Start with fakeBaseAnalysisNode; PodOrc makes it "executing" with 0 progress → indeterminate
+    mockNodes([
+      {
+        ...fakeBaseAnalysisNode,
+        execution_status: "started",
+        execution_progress: 0,
+      },
+    ]);
+
+    const wrapper = mount(AnalysisTableTestComponent, {
+      global: { stubs: { ProgressBar: ProgressBarStub } },
+    });
+    await flushPromises();
+
+    const progressBarBefore = wrapper.find(".mock-progress-bar");
+    expect(progressBarBefore.attributes("data-mode")).toBe("indeterminate");
+
+    // Simulate AnalysisControlButtons emitting updateAnalysisRow with "executed".
+    // setProgress will force execution_progress to 100.
+    const controlButtons = wrapper.findComponent(AnalysisControlButtons);
+    controlButtons.vm.$emit("updateAnalysisRow", fakeAnalysisId, {
+      status: PodStatus.Executed,
+    });
+    await flushPromises();
+
+    const progressBarAfter = wrapper.find(".mock-progress-bar");
+    expect(progressBarAfter.attributes("data-mode")).toBe("determinate");
+    expect(progressBarAfter.attributes("data-value")).toBe("100");
   });
 });

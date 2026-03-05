@@ -1,14 +1,9 @@
 import { defineComponent, ref } from "vue";
 import { flushPromises, mount } from "@vue/test-utils"; // add flushPromises
 import { useRuntimeConfig } from "nuxt/app";
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import AvatarButton from "~/components/header/AvatarButton.vue";
-import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
 import { useAuth, useAuthState } from "@/test/mockapi/nuxt-auth-mock";
-
-vi.mock("~/composables/useDatastoreRequirement", () => ({
-  useDatastoreRequirement: vi.fn(),
-}));
 
 describe("AvatarButton.vue", () => {
   const testUser = "Johnny Storm";
@@ -20,17 +15,6 @@ describe("AvatarButton.vue", () => {
     AvatarButtonTestComponent = defineComponent({
       components: { AvatarButton },
       template: "<Suspense><AvatarButton/></Suspense>",
-    });
-  });
-
-  beforeEach(() => {
-    vi.restoreAllMocks();
-    vi.mocked(useDatastoreRequirement).mockResolvedValue({
-      datastoreState: ref({
-        datastoreRequired: true,
-        nodeType: "analysis",
-      }),
-      setDatastoreRequired: vi.fn(),
     });
   });
 
@@ -55,7 +39,7 @@ describe("AvatarButton.vue", () => {
         stubs: {
           teleport: true,
           CleanupDialog: true,
-          ToggleSwitch: true,
+          PreferencesDialog: true,
         },
       },
     });

@@ -4,7 +4,7 @@ import {
   type BodyKongInitializeKongInitializePost,
   type BodyPodorcPodsCreatePoPost,
   type CleanupPodResponse,
-} from "../../app/services/Api";
+} from "~/services/Api";
 import {
   fakeDataStoreInitSuccess,
   fakeParsedProjects,
@@ -36,7 +36,7 @@ export const handlers = [
     return HttpResponse.json({
       status: 200,
       data: {
-        data_required: false,
+        require_data_store: false,
       },
     });
   }),
@@ -154,7 +154,7 @@ export const handlers = [
 
   http.get(`/po/status`, () => {
     return HttpResponse.json({
-      [fakeAnalysisId]: "running",
+      [fakeAnalysisId]: { status: "running" },
     });
   }),
 

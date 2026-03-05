@@ -29,11 +29,13 @@ export enum ProtocolCode {
 export enum PodStatus {
   Starting = "starting",
   Started = "started",
-  Stuck = "stuck",
-  Running = "running",
   Stopping = "stopping",
   Stopped = "stopped",
+  Running = "running",
   Finished = "finished",
+  Executing = "executing",
+  Executed = "executed",
+  Stuck = "stuck",
   Failed = "failed",
 }
 
@@ -75,6 +77,13 @@ export enum CleanUpType {
   Rs = "rs",
   Keycloak = "keycloak",
   Zombies = "zombies",
+}
+
+/** AnalysisBucketType */
+export enum AnalysisBucketType {
+  CODE = "CODE",
+  RESULT = "RESULT",
+  TEMP = "TEMP",
 }
 
 /**
@@ -133,29 +142,66 @@ export interface Analysis {
    * @format uuid
    */
   id: string;
-  /** Configuration Locked */
-  configuration_locked: boolean;
   /** Nodes */
   nodes: number;
+  /** Nodes Approved */
+  nodes_approved: number;
+  /** Configuration Locked */
+  configuration_locked: boolean;
+  /** Configuration Entrypoint Valid */
+  configuration_entrypoint_valid: boolean;
+  /** Configuration Image Valid */
+  configuration_image_valid: boolean;
+  /** Configuration Node Aggregator Valid */
+  configuration_node_aggregator_valid: boolean;
+  /** Configuration Node Default Valid */
+  configuration_node_default_valid: boolean;
+  /** Configuration Nodes Valid */
+  configuration_nodes_valid: boolean;
   /** Build Status */
   build_status:
     | "starting"
     | "started"
     | "stopping"
     | "stopped"
-    | "finished"
+    | "executing"
+    | "executed"
     | "failed"
     | null;
-  /** Run Status */
-  run_status:
+  /** Build Nodes Valid */
+  build_nodes_valid: boolean;
+  /** Build Progress */
+  build_progress: number | null;
+  /** Build Hash */
+  build_hash: string | null;
+  /** Build Os */
+  build_os: string | null;
+  /** Build Size */
+  build_size: number | null;
+  /** Distribution Status */
+  distribution_status:
     | "starting"
     | "started"
-    | "running"
     | "stopping"
     | "stopped"
-    | "finished"
+    | "executing"
+    | "executed"
     | "failed"
     | null;
+  /** Distribution Progress */
+  distribution_progress: number | null;
+  /** Execution Status */
+  execution_status:
+    | "starting"
+    | "started"
+    | "stopping"
+    | "stopped"
+    | "executing"
+    | "executed"
+    | "failed"
+    | null;
+  /** Execution Progress */
+  execution_progress: number | null;
   /**
    * Created At
    * @format date-time
@@ -183,15 +229,22 @@ export interface Analysis {
 
 /** AnalysisBucket */
 export interface AnalysisBucket {
+  type: AnalysisBucketType;
+  /**
+   * Bucket Id
+   * @format uuid
+   */
+  bucket_id: string;
+  /**
+   * Analysis Id
+   * @format uuid
+   */
+  analysis_id: string;
   /**
    * Id
    * @format uuid
    */
   id: string;
-  /** Type */
-  type: "CODE" | "RESULT" | "TEMP";
-  /** External Id */
-  external_id: string | null;
   /**
    * Created At
    * @format date-time
@@ -202,11 +255,6 @@ export interface AnalysisBucket {
    * @format date-time
    */
   updated_at: string;
-  /**
-   * Analysis Id
-   * @format uuid
-   */
-  analysis_id: string;
   analysis?: Analysis;
   /**
    * Realm Id
@@ -252,16 +300,18 @@ export interface AnalysisNode {
   id: string;
   /** Approval Status */
   approval_status: "rejected" | "approved" | null;
-  /** Run Status */
-  run_status:
+  /** Execution Status */
+  execution_status:
     | "starting"
     | "started"
     | "stopping"
     | "stopped"
-    | "running"
-    | "finished"
+    | "executing"
+    | "executed"
     | "failed"
     | null;
+  /** Execution Progress */
+  execution_progress: number | null;
   /** Comment */
   comment: string | null;
   /** Artifact Tag */
@@ -290,6 +340,34 @@ export interface AnalysisNode {
    * @format uuid
    */
   node_realm_id: string;
+}
+
+/**
+ * AnalysisStatus
+ * Status report for an analysis from the PodOrchestrator
+ */
+export interface AnalysisStatus {
+  /** Custom PO run statuses. */
+  status: PodStatus;
+  /** Progress */
+  progress?: number | null;
+}
+
+/**
+ * AutostartSettings
+ * Autostart Settings.
+ */
+export interface AutostartSettings {
+  /**
+   * Enabled
+   * @default false
+   */
+  enabled?: boolean | null;
+  /**
+   * Interval
+   * @default 60
+   */
+  interval?: number | null;
 }
 
 /** Body_auth_token_get_token_post */
@@ -414,15 +492,13 @@ export interface BodyKongProjectCreateKongProjectPost {
   /**
    * Methods
    * List of acceptable HTTP methods
-   * @default ["GET"]
    */
-  methods?: HttpMethodCode[];
+  methods?: HttpMethodCode[] | null;
   /**
    * Protocols
    * List of acceptable transfer protocols. A combo of 'http', 'grpc', 'grpcs', 'tls', 'tcp'
-   * @default ["http"]
    */
-  protocols?: ProtocolCode[];
+  protocols?: ProtocolCode[] | null;
   /**
    * Data store type. Either 's3' or 'fhir'
    * @default "fhir"
@@ -546,29 +622,66 @@ export interface DetailedAnalysis {
    * @format uuid
    */
   id: string;
-  /** Configuration Locked */
-  configuration_locked: boolean;
   /** Nodes */
   nodes: number;
+  /** Nodes Approved */
+  nodes_approved: number;
+  /** Configuration Locked */
+  configuration_locked: boolean;
+  /** Configuration Entrypoint Valid */
+  configuration_entrypoint_valid: boolean;
+  /** Configuration Image Valid */
+  configuration_image_valid: boolean;
+  /** Configuration Node Aggregator Valid */
+  configuration_node_aggregator_valid: boolean;
+  /** Configuration Node Default Valid */
+  configuration_node_default_valid: boolean;
+  /** Configuration Nodes Valid */
+  configuration_nodes_valid: boolean;
   /** Build Status */
   build_status:
     | "starting"
     | "started"
     | "stopping"
     | "stopped"
-    | "finished"
+    | "executing"
+    | "executed"
     | "failed"
     | null;
-  /** Run Status */
-  run_status:
+  /** Build Nodes Valid */
+  build_nodes_valid: boolean;
+  /** Build Progress */
+  build_progress: number | null;
+  /** Build Hash */
+  build_hash: string | null;
+  /** Build Os */
+  build_os: string | null;
+  /** Build Size */
+  build_size: number | null;
+  /** Distribution Status */
+  distribution_status:
     | "starting"
     | "started"
-    | "running"
     | "stopping"
     | "stopped"
-    | "finished"
+    | "executing"
+    | "executed"
     | "failed"
     | null;
+  /** Distribution Progress */
+  distribution_progress: number | null;
+  /** Execution Status */
+  execution_status:
+    | "starting"
+    | "started"
+    | "stopping"
+    | "stopped"
+    | "executing"
+    | "executed"
+    | "failed"
+    | null;
+  /** Execution Progress */
+  execution_progress: number | null;
   /**
    * Created At
    * @format date-time
@@ -1010,6 +1123,18 @@ export interface MasterImage {
   virtual_path: string;
   /** Group Virtual Path */
   group_virtual_path: string;
+  /** Build Status */
+  build_status:
+    | "starting"
+    | "started"
+    | "stopping"
+    | "stopped"
+    | "executing"
+    | "executed"
+    | "failed"
+    | null;
+  /** Build Progress */
+  build_progress: number | null;
   /** Name */
   name: string;
   /** Command */
@@ -1109,11 +1234,10 @@ export interface Node {
   /** Registry Project Id */
   registry_project_id: string | null;
   registry_project?: RegistryProject | null;
-  /**
-   * Robot Id
-   * @format uuid
-   */
-  robot_id: string;
+  /** Robot Id */
+  robot_id: string | null;
+  /** Client Id */
+  client_id: string | null;
   /**
    * Created At
    * @format date-time
@@ -1126,22 +1250,22 @@ export interface Node {
   updated_at: string;
 }
 
-/** NodeSettings */
-export interface NodeSettings {
-  /**
-   * Data Required
-   * @default true
-   */
-  data_required?: boolean | null;
-}
-
 /** NodeTypeResponse */
 export interface NodeTypeResponse {
   /** Type */
   type: "aggregator" | "default";
 }
 
-/** PodResponse */
+/**
+ * PodProgressResponse
+ * Response with dynamic UUID keys and dynamic analysis keys with progress/status
+ */
+export type PodProgressResponse = Record<any, AnalysisStatus>;
+
+/**
+ * PodResponse
+ * Response with a list of running pods for a given analysis ID
+ */
 export type PodResponse = Record<any, (string | null)[]>;
 
 /** Project */
@@ -1623,10 +1747,10 @@ export interface ServiceRequest {
 }
 
 /**
- * StatusResponse
+ * StatusOnlyResponse
  * Response with dynamic UUID keys and dynamic analysis keys
  */
-export type StatusResponse = Record<any, PodStatus>;
+export type StatusOnlyResponse = Record<any, PodStatus>;
 
 /**
  * Token
@@ -1645,6 +1769,20 @@ export interface Token {
   refresh_expires_in?: number | null;
 }
 
+/**
+ * UserSettings
+ * Node configuration settings set by the user.
+ */
+export interface UserSettings {
+  /**
+   * Require Data Store
+   * @default true
+   */
+  require_data_store?: boolean | null;
+  /** @default {"enabled":false,"interval":60} */
+  autostart?: AutostartSettings | null;
+}
+
 /** ValidationError */
 export interface ValidationError {
   /** Location */
@@ -1653,6 +1791,10 @@ export interface ValidationError {
   msg: string;
   /** Error Type */
   type: string;
+  /** Input */
+  input?: any;
+  /** Context */
+  ctx?: object;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -1708,7 +1850,7 @@ export enum ContentType {
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public baseUrl: string = "";
+  public baseUrl: string = "/api";
   private securityData: SecurityDataType | null = null;
   private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
   private abortControllers = new Map<CancelToken, AbortController>();
@@ -1911,11 +2053,13 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title FLAME API
+ * @title FLAME Hub Adapter API
  * @version 0.1.0
  * @license Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0.html)
+ * @baseUrl /api
+ * @contact Bruce Schultz <bschultz013@gmail.com> (https://docs.privateaim.net/about/team.html)
  *
- * FLAME project API for interacting with various microservices within the node for the UI.
+ * FLAME Hub Adapter gateway API for interacting with downstream services.
  */
 export class Api<
   SecurityDataType extends unknown,
@@ -1934,7 +2078,7 @@ export class Api<
       data: BodyPodorcPodsCreatePoPost,
       params: RequestParams = {},
     ) =>
-      this.request<StatusResponse, void | HTTPValidationError>({
+      this.request<StatusOnlyResponse, void | HTTPValidationError>({
         path: `/po`,
         method: "POST",
         body: data,
@@ -2032,7 +2176,7 @@ export class Api<
      * @secure
      */
     podorcStatusGetPoStatusGet: (params: RequestParams = {}) =>
-      this.request<StatusResponse, void>({
+      this.request<PodProgressResponse, void>({
         path: `/po/status`,
         method: "GET",
         secure: true,
@@ -2053,7 +2197,7 @@ export class Api<
       analysisId: string | null,
       params: RequestParams = {},
     ) =>
-      this.request<StatusResponse, void | HTTPValidationError>({
+      this.request<PodProgressResponse, void | HTTPValidationError>({
         path: `/po/status/${analysisId}`,
         method: "GET",
         secure: true,
@@ -2110,7 +2254,7 @@ export class Api<
      * @secure
      */
     podorcPodsStopPoStopPut: (params: RequestParams = {}) =>
-      this.request<StatusResponse, void>({
+      this.request<StatusOnlyResponse, void>({
         path: `/po/stop`,
         method: "PUT",
         secure: true,
@@ -2131,7 +2275,7 @@ export class Api<
       analysisId: string | null,
       params: RequestParams = {},
     ) =>
-      this.request<StatusResponse, void | HTTPValidationError>({
+      this.request<StatusOnlyResponse, void | HTTPValidationError>({
         path: `/po/stop/${analysisId}`,
         method: "PUT",
         secure: true,
@@ -2149,7 +2293,7 @@ export class Api<
      * @secure
      */
     podorcPodsDeletePoDeleteDelete: (params: RequestParams = {}) =>
-      this.request<StatusResponse, void>({
+      this.request<StatusOnlyResponse, void>({
         path: `/po/delete`,
         method: "DELETE",
         secure: true,
@@ -2170,7 +2314,7 @@ export class Api<
       analysisId: string | null,
       params: RequestParams = {},
     ) =>
-      this.request<StatusResponse, void | HTTPValidationError>({
+      this.request<StatusOnlyResponse, void | HTTPValidationError>({
         path: `/po/delete/${analysisId}`,
         method: "DELETE",
         secure: true,
@@ -2213,7 +2357,7 @@ export class Api<
       data: InitializeAnalysis,
       params: RequestParams = {},
     ) =>
-      this.request<StatusResponse, void | HTTPValidationError>({
+      this.request<StatusOnlyResponse, void | HTTPValidationError>({
         path: `/analysis/initialize`,
         method: "POST",
         body: data,
@@ -2236,7 +2380,7 @@ export class Api<
       analysisId: string,
       params: RequestParams = {},
     ) =>
-      this.request<StatusResponse, void | HTTPValidationError>({
+      this.request<StatusOnlyResponse, void | HTTPValidationError>({
         path: `/analysis/terminate/${analysisId}`,
         method: "DELETE",
         secure: true,
@@ -2278,7 +2422,7 @@ export class Api<
      * @secure
      */
     nodeSettingsGetNodeSettingsGet: (params: RequestParams = {}) =>
-      this.request<NodeSettings, void>({
+      this.request<UserSettings, void>({
         path: `/node/settings`,
         method: "GET",
         secure: true,
@@ -2287,7 +2431,7 @@ export class Api<
       }),
 
     /**
-     * @description Update the node configuration settings.
+     * @description Update the node configuration settings with partial data. Raises ------ HTTPException 422: If unknown settings keys are provided.
      *
      * @tags Node
      * @name NodeSettingsUpdateNodeSettingsPost
@@ -2296,10 +2440,10 @@ export class Api<
      * @secure
      */
     nodeSettingsUpdateNodeSettingsPost: (
-      data: NodeSettings,
+      data: UserSettings,
       params: RequestParams = {},
     ) =>
-      this.request<NodeSettings, void | HTTPValidationError>({
+      this.request<UserSettings, void | HTTPValidationError>({
         path: `/node/settings`,
         method: "POST",
         body: data,
@@ -2728,7 +2872,7 @@ export class Api<
      * @tags Storage
      * @name StorageLocalDeleteLocalDelete
      * @summary Storage.Local.Delete
-     * @request DELETE:/local/
+     * @request DELETE:/local
      * @secure
      */
     storageLocalDeleteLocalDelete: (
@@ -2742,7 +2886,7 @@ export class Api<
       params: RequestParams = {},
     ) =>
       this.request<any, void | HTTPValidationError>({
-        path: `/local/`,
+        path: `/local`,
         method: "DELETE",
         query: query,
         secure: true,

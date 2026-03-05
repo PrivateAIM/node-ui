@@ -2,8 +2,12 @@
 import AnalysisUpdateButton from "./AnalysisUpdateButton.vue";
 import { useToast } from "primevue/usetoast";
 import { useNuxtApp } from "nuxt/app";
-import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
-import { PodStatus, type StatusResponse } from "~/services/Api";
+import { ProcessStatus } from "~/types/analysis";
+import {
+  type PodProgressResponse,
+  PodStatus,
+  type StatusOnlyResponse,
+} from "~/services/Api";
 
 type ToastSeverity = "success" | "info" | "warn" | "error" | undefined;
 
@@ -16,7 +20,7 @@ interface ButtonStates {
 
 const props = defineProps({
   analysisBuildStatus: [String, null],
-  analysisRunStatus: {
+  analysisExecutionStatus: {
     type: [String, null],
     required: true,
   },
@@ -54,26 +58,29 @@ const loading = ref(false);
 const NOT_FOUND_STATUS = 404;
 const CONFLICT_STATUS = 409;
 
-const playButtonActiveStates = [undefined, null, ""];
+const playButtonActiveStates = [null, "", undefined];
 const rerunButtonActiveStates: Array<string | null | undefined> = [
-  AnalysisNodeRunStatus.Failed,
-  AnalysisNodeRunStatus.Finished,
-  AnalysisNodeRunStatus.Stopped,
-  AnalysisNodeRunStatus.Stopping,
+  PodStatus.Failed,
+  PodStatus.Executed,
+  PodStatus.Finished, // Deprecated
+  PodStatus.Stopped,
+  PodStatus.Stopping,
 ];
 const stopButtonActiveStates: Array<string | null | undefined> = [
-  AnalysisNodeRunStatus.Running,
-  AnalysisNodeRunStatus.Starting,
-  AnalysisNodeRunStatus.Started,
-  AnalysisNodeRunStatus.Stopping,
+  PodStatus.Executing,
+  PodStatus.Running, // Deprecated
+  PodStatus.Starting,
+  PodStatus.Started,
+  PodStatus.Stopping,
 ];
 const deleteButtonActiveStates: Array<string | null | undefined> = [
   PodStatus.Failed,
-  AnalysisNodeRunStatus.Stopped,
-  AnalysisNodeRunStatus.Stopping,
-  AnalysisNodeRunStatus.Running,
-  AnalysisNodeRunStatus.Starting,
-  AnalysisNodeRunStatus.Started,
+  PodStatus.Stopped,
+  PodStatus.Stopping,
+  PodStatus.Executing,
+  PodStatus.Running, // Deprecated
+  PodStatus.Starting,
+  PodStatus.Started,
 ];
 
 function getButtonStatuses(podStatus: string | null | undefined) {
@@ -86,14 +93,18 @@ function getButtonStatuses(podStatus: string | null | undefined) {
 }
 
 const buttonStatuses = computed<ButtonStates>(
-  () => getButtonStatuses(props.analysisRunStatus), // Changes buttons when new status update comes in
+  () => getButtonStatuses(props.analysisExecutionStatus), // Changes buttons when new status update comes in
 );
 
 function updatePodStatus(
   podStatus: string | null | undefined,
-  progressUpdate?: number | undefined,
+  progressUpdate?: number | null | undefined,
 ) {
-  emit("updateAnalysisRow", props.analysisId, podStatus, progressUpdate);
+  const analysisUpdate = {
+    status: podStatus,
+    progress: progressUpdate,
+  };
+  emit("updateAnalysisRow", props.analysisId, analysisUpdate);
 }
 
 const showToast = (severity: ToastSeverity, summary: string, msg: string) => {
@@ -114,23 +125,24 @@ const showStatusUnknownToast = () => {
 };
 
 async function checkPodStatus(): Promise<boolean> {
-  const podStatus: StatusResponse = (await useNuxtApp()
+  const podStatus: PodProgressResponse = (await useNuxtApp()
     .$hubApi(`/po/status/${props.analysisId}`, {
       method: "GET",
     })
-    .catch(() => undefined)) as StatusResponse; // Set the response to undefined if an error occurs
+    .catch(() => null)) as PodProgressResponse; // Set the response to undefined if an error occurs
 
   // If response is not undefined AND "status" in response AND "status" is not empty
   if (podStatus && props.analysisId in podStatus) {
-    const currentPodStatus = podStatus[props.analysisId];
+    const currentPodStatus = podStatus[props.analysisId]!.status;
+    const currentPodProgress = podStatus[props.analysisId]!.progress;
     // If the status is not empty and not FINISHED
-    if (currentPodStatus != AnalysisNodeRunStatus.Finished) {
+    if (currentPodStatus != PodStatus.Executed) {
       showToast(
         "warn",
         "Analysis already running",
         "The analysis is already running on this node, the controls have been updated",
       );
-      updatePodStatus(currentPodStatus); // Grab the first status update
+      updatePodStatus(currentPodStatus, currentPodProgress); // Grab the first status update
       return true;
     }
   }
@@ -144,23 +156,23 @@ async function onRerunAnalysis() {
 
 async function onStartAnalysis() {
   loading.value = true;
-  const originalRunStatus = props.analysisRunStatus;
-  updatePodStatus(AnalysisNodeRunStatus.Starting);
+  const originalExecutionStatus = props.analysisExecutionStatus;
+  updatePodStatus(PodStatus.Starting);
   let analysisProps = new FormData();
 
   analysisProps.append("analysis_id", props.analysisId!);
   analysisProps.append("project_id", props.projectId!);
 
-  let startPodResp: StatusResponse = (await useNuxtApp()
+  let startPodResp: StatusOnlyResponse = (await useNuxtApp()
     .$hubApi("/analysis/initialize", {
       method: "POST",
       body: analysisProps,
     })
     .catch((e) => {
-      updatePodStatus(undefined);
+      updatePodStatus(null);
       if (e.status == 408) {
         // Timed out waiting for image to pull
-        updatePodStatus(AnalysisNodeRunStatus.Started);
+        updatePodStatus(PodStatus.Started);
         showToast(
           "info",
           "Analysis submitted",
@@ -180,14 +192,14 @@ async function onStartAnalysis() {
       } else {
         showToast("error", "Start failure", "Failed to start the analysis");
       }
-    })) as StatusResponse;
+    })) as StatusOnlyResponse;
 
   if (startPodResp && props.analysisId in startPodResp) {
-    const currentRunStatus = startPodResp[props.analysisId];
-    updatePodStatus(currentRunStatus);
+    const currentExecutionStatus = startPodResp[props.analysisId];
+    updatePodStatus(currentExecutionStatus);
     showToast("success", "Start success", "Successfully started the container");
   } else {
-    updatePodStatus(originalRunStatus);
+    updatePodStatus(originalExecutionStatus);
   }
 
   loading.value = false;
@@ -195,10 +207,10 @@ async function onStartAnalysis() {
 
 async function onStopAnalysis() {
   loading.value = true;
-  const originalRunStatus = props.analysisRunStatus;
-  updatePodStatus(AnalysisNodeRunStatus.Stopping);
+  const originalExecutionStatus = props.analysisExecutionStatus;
+  updatePodStatus(PodStatus.Stopping);
 
-  const stopResp: StatusResponse = (await useNuxtApp()
+  const stopResp: StatusOnlyResponse = (await useNuxtApp()
     .$hubApi(`/po/stop/${props.analysisId}`, {
       method: "PUT",
     })
@@ -208,7 +220,7 @@ async function onStopAnalysis() {
         "Stop failure",
         "Failed to stop the analysis container",
       );
-    })) as StatusResponse;
+    })) as StatusOnlyResponse;
 
   // stopResp is undefined if error occurred
   if (stopResp) {
@@ -222,19 +234,19 @@ async function onStopAnalysis() {
       // No pod statuses returned from PO for analysis
       showStatusUnknownToast();
     }
-    updatePodStatus(AnalysisNodeRunStatus.Stopped);
+    updatePodStatus(PodStatus.Stopped);
   } else {
-    updatePodStatus(originalRunStatus);
+    updatePodStatus(originalExecutionStatus);
   }
   loading.value = false;
 }
 
 async function onDeleteAnalysis() {
   loading.value = true;
-  const originalRunStatus = props.analysisRunStatus;
-  updatePodStatus(AnalysisNodeRunStatus.Stopping);
+  const originalExecutionStatus = props.analysisExecutionStatus;
+  updatePodStatus(PodStatus.Stopping);
 
-  const deleteResp: StatusResponse = (await useNuxtApp()
+  const deleteResp: StatusOnlyResponse = (await useNuxtApp()
     .$hubApi(`/analysis/terminate/${props.analysisId}`, {
       method: "DELETE",
     })
@@ -244,7 +256,7 @@ async function onDeleteAnalysis() {
         "Terminate request failure",
         "Failed to terminate the analysis",
       );
-    })) as StatusResponse;
+    })) as StatusOnlyResponse;
 
   // deleteResp is undefined if error occurred
   if (deleteResp) {
@@ -257,9 +269,9 @@ async function onDeleteAnalysis() {
     } else {
       showStatusUnknownToast();
     }
-    updatePodStatus("");
+    updatePodStatus(null);
   } else {
-    updatePodStatus(originalRunStatus);
+    updatePodStatus(originalExecutionStatus);
   }
 
   loading.value = false;
@@ -273,7 +285,7 @@ async function onDeleteAnalysis() {
       v-tooltip.top="'Start the analysis'"
       :disabled="
         !buttonStatuses.playActive ||
-        !(props.analysisBuildStatus === AnalysisBuildStatus.Finished) ||
+        !(props.analysisBuildStatus === ProcessStatus.Executed) ||
         (!props.datastore && props.requireDatastore)
       "
       :loading="loading"
@@ -288,7 +300,7 @@ async function onDeleteAnalysis() {
       v-tooltip.top="'Rerun the analysis'"
       :disabled="
         !buttonStatuses.rerunActive ||
-        !(props.analysisBuildStatus === AnalysisBuildStatus.Finished) ||
+        !(props.analysisBuildStatus === ProcessStatus.Executed) ||
         (!props.datastore && props.requireDatastore)
       "
       :loading="loading"
@@ -302,7 +314,7 @@ async function onDeleteAnalysis() {
       v-tooltip.top="'Stop the analysis'"
       :disabled="
         !buttonStatuses.stopActive ||
-        !(props.analysisBuildStatus === AnalysisBuildStatus.Finished) ||
+        !(props.analysisBuildStatus === ProcessStatus.Executed) ||
         (!props.datastore && props.requireDatastore)
       "
       :loading="loading"
@@ -316,7 +328,7 @@ async function onDeleteAnalysis() {
       v-tooltip.top="'Delete the analysis container'"
       :disabled="
         !buttonStatuses.deleteActive ||
-        !(props.analysisBuildStatus === AnalysisBuildStatus.Finished) ||
+        !(props.analysisBuildStatus === ProcessStatus.Executed) ||
         (!props.datastore && props.requireDatastore)
       "
       :loading="loading"

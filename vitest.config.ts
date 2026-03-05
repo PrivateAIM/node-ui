@@ -24,6 +24,9 @@ export default defineVitestConfig({
   plugins: [tsconfigPaths(), mockNuxtAuth],
   test: {
     globals: true,
+    env: {
+      TZ: "Europe/Berlin",
+    },
     exclude: [
       "**/node_modules/**",
       "**/dist/**",

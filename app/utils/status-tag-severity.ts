@@ -1,7 +1,8 @@
 import { ApprovalStatus } from "~/types/node";
-import { AnalysisBuildStatus, AnalysisNodeRunStatus } from "~/types/analysis";
+import { PodStatus } from "~/services/Api";
+import { ProcessStatus } from "~/types/analysis";
 
-export const getApprovalStatusSeverity = (status: string) => {
+export const getApprovalStatusSeverity = (status: ApprovalStatus) => {
   switch (status) {
     case ApprovalStatus.Approved:
       return "success";
@@ -11,54 +12,53 @@ export const getApprovalStatusSeverity = (status: string) => {
   }
 };
 
-export const getBuildStatusSeverity = (status: string) => {
+export const getBuildStatusSeverity = (status: ProcessStatus) => {
   switch (status) {
-    case AnalysisBuildStatus.Starting:
+    case ProcessStatus.Starting:
+    case ProcessStatus.Started:
       return "info";
 
-    case AnalysisBuildStatus.Started:
-      return "info";
-
-    case AnalysisBuildStatus.Stopping:
+    case ProcessStatus.Stopping:
+    case ProcessStatus.Stopped:
       return "warning";
 
-    case AnalysisBuildStatus.Stopped:
-      return "warning";
-
-    case AnalysisBuildStatus.Failed:
+    case ProcessStatus.Failed:
       return "danger";
 
-    case AnalysisBuildStatus.Finished:
-      return "success";
-  }
-};
-
-export const getRunStatusSeverity = (status: string) => {
-  switch (status) {
-    case AnalysisNodeRunStatus.Starting:
-      return "info";
-
-    case AnalysisNodeRunStatus.Started:
-      return "info";
-
-    case AnalysisNodeRunStatus.Running:
+    case ProcessStatus.Executing:
       return "contrast";
 
-    case AnalysisNodeRunStatus.Stopping:
-      return "warning";
-
-    case AnalysisNodeRunStatus.Stopped:
-      return "warning";
-
-    case AnalysisNodeRunStatus.Failed:
-      return "danger";
-
-    case AnalysisNodeRunStatus.Finished:
+    case ProcessStatus.Executed:
       return "success";
   }
 };
 
-export const getDataStoreTypeSeverity = (status: string) => {
+export const getExecutionStatusSeverity = (status: PodStatus) => {
+  switch (status) {
+    case PodStatus.Starting:
+    case PodStatus.Started:
+      return "info";
+
+    case PodStatus.Executing:
+    case PodStatus.Running:
+      return "contrast";
+
+    case PodStatus.Stopping:
+    case PodStatus.Stopped:
+      return "warning";
+
+    case PodStatus.Failed:
+      return "danger";
+
+    case PodStatus.Executed:
+    case PodStatus.Finished:
+      return "success";
+  }
+};
+
+export const getDataStoreTypeSeverity = (
+  status: string,
+): "info" | "warn" | undefined => {
   switch (status) {
     case "s3":
       return "info";

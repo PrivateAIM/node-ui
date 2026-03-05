@@ -1,2 +1,0 @@
-patchedDependencies:
-  next-auth@4.21.1: patches/next-auth-no-proxy.patch

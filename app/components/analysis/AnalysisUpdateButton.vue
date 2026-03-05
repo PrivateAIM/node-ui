@@ -2,7 +2,7 @@
 import { useNuxtApp } from "nuxt/app";
 import { useToast } from "primevue/usetoast";
 
-import { PodStatus, type StatusResponse } from "~/services/Api";
+import { type AnalysisStatus, type PodProgressResponse } from "~/services/Api";
 import { FetchError } from "ofetch";
 
 const props = defineProps({
@@ -16,16 +16,16 @@ const emit = defineEmits(["updateAnalysisRun"]);
 const loading = ref(false);
 const toast = useToast();
 
-async function getStatusUpdateFromPodOrc(): Promise<PodStatus | undefined> {
-  let analysisStatus: PodStatus | undefined = undefined;
+async function getStatusUpdateFromPodOrc(): Promise<
+  AnalysisStatus | undefined
+> {
+  let analysisStatus: AnalysisStatus | undefined = undefined;
 
   try {
-    const analysisStatusUpdate: StatusResponse = await useNuxtApp().$hubApi(
-      `/po/status/${props.analysisId}`,
-      {
+    const analysisStatusUpdate: PodProgressResponse =
+      await useNuxtApp().$hubApi(`/po/status/${props.analysisId}`, {
         method: "GET",
-      },
-    );
+      });
 
     if (analysisStatusUpdate && props.analysisId in analysisStatusUpdate) {
       analysisStatus = analysisStatusUpdate[props.analysisId];

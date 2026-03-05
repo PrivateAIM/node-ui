@@ -61,7 +61,7 @@ async function loadDetailedDataStoreTable(
     );
 
     formattedDataStores.forEach((store: ModifiedDetailedService) => {
-      if (store.routes!.length) {
+      if (store.routes) {
         store.routes = formatDataRow(
           store.routes,
           dataRowUnixCols,

@@ -2,7 +2,7 @@
 import Badge from "primevue/badge";
 import { countAnalysisContainers } from "~/utils/count-analyses";
 import type { ModifiedAnalysisNode } from "~/services/modifiedApiInterfaces";
-import { AnalysisNodeRunStatus } from "~/types/analysis";
+import { PodStatus } from "~/services/Api";
 
 const props = defineProps({
   analyses: {
@@ -15,15 +15,23 @@ const props = defineProps({
   },
 });
 
-const currentFilters = ref(props.activeFilters.run_status);
+const currentFilters = ref(props.activeFilters.execution_status);
 const counts = computed(() =>
   countAnalysisContainers(props.analyses as ModifiedAnalysisNode[]),
 );
 
-const emit = defineEmits(["applyRunStatusFilter"]);
+const emit = defineEmits(["applyExecutionStatusFilter"]);
 
-function onApplyRunStatusFilter(runStatus: string) {
-  emit("applyRunStatusFilter", runStatus);
+function onApplyExecutionStatusFilter(executionStatus: PodStatus) {
+  emit("applyExecutionStatusFilter", executionStatus);
+
+  // Also emit the PO alternatives
+  if (executionStatus === PodStatus.Executing) {
+    emit("applyExecutionStatusFilter", PodStatus.Running);
+  }
+  if (executionStatus === PodStatus.Executed) {
+    emit("applyExecutionStatusFilter", PodStatus.Finished);
+  }
 }
 </script>
 
@@ -40,8 +48,7 @@ function onApplyRunStatusFilter(runStatus: string) {
               'opaque-badge':
                 currentFilters.value &&
                 !currentFilters.value.includes(
-                  AnalysisNodeRunStatus.Started ||
-                    AnalysisNodeRunStatus.Starting,
+                  PodStatus.Started || PodStatus.Starting,
                 ),
             }"
             class="container-counter container-counter-started"
@@ -51,7 +58,7 @@ function onApplyRunStatusFilter(runStatus: string) {
               class="counter-badge counter-badge-started"
               severity="info"
               size="xlarge"
-              @click="onApplyRunStatusFilter(AnalysisNodeRunStatus.Started)"
+              @click="onApplyExecutionStatusFilter(PodStatus.Started)"
             />
             <span class="counter-id-txt">Started</span>
           </div>
@@ -59,16 +66,16 @@ function onApplyRunStatusFilter(runStatus: string) {
             :class="{
               'opaque-badge':
                 currentFilters.value &&
-                !currentFilters.value.includes(AnalysisNodeRunStatus.Running),
+                !currentFilters.value.includes(PodStatus.Executing),
             }"
-            class="container-counter container-counter-running"
+            class="container-counter container-counter-executing"
           >
             <Badge
-              :value="counts.running || 0"
-              class="counter-badge counter-badge-running"
+              :value="counts.executing || 0"
+              class="counter-badge counter-badge-executing"
               severity="contrast"
               size="xlarge"
-              @click="onApplyRunStatusFilter(AnalysisNodeRunStatus.Running)"
+              @click="onApplyExecutionStatusFilter(PodStatus.Executing)"
             />
             <span class="counter-id-txt">Running</span>
           </div>
@@ -77,8 +84,7 @@ function onApplyRunStatusFilter(runStatus: string) {
               'opaque-badge':
                 currentFilters.value &&
                 !currentFilters.value.includes(
-                  AnalysisNodeRunStatus.Stopped ||
-                    AnalysisNodeRunStatus.Stopping,
+                  PodStatus.Stopped || PodStatus.Stopping,
                 ),
             }"
             class="container-counter container-counter-stopped"
@@ -88,7 +94,7 @@ function onApplyRunStatusFilter(runStatus: string) {
               class="counter-badge counter-badge-stopped"
               severity="warning"
               size="xlarge"
-              @click="onApplyRunStatusFilter(AnalysisNodeRunStatus.Stopped)"
+              @click="onApplyExecutionStatusFilter(PodStatus.Stopped)"
             />
             <span class="counter-id-txt">Stopped</span>
           </div>
@@ -96,7 +102,7 @@ function onApplyRunStatusFilter(runStatus: string) {
             :class="{
               'opaque-badge':
                 currentFilters.value &&
-                !currentFilters.value.includes(AnalysisNodeRunStatus.Failed),
+                !currentFilters.value.includes(PodStatus.Failed),
             }"
             class="container-counter container-counter-failed"
           >
@@ -105,7 +111,7 @@ function onApplyRunStatusFilter(runStatus: string) {
               class="counter-badge counter-badge-failed"
               severity="danger"
               size="xlarge"
-              @click="onApplyRunStatusFilter(AnalysisNodeRunStatus.Failed)"
+              @click="onApplyExecutionStatusFilter(PodStatus.Failed)"
             />
             <span class="counter-id-txt">Failed</span>
           </div>
@@ -113,16 +119,16 @@ function onApplyRunStatusFilter(runStatus: string) {
             :class="{
               'opaque-badge':
                 currentFilters.value &&
-                !currentFilters.value.includes(AnalysisNodeRunStatus.Finished),
+                !currentFilters.value.includes(PodStatus.Executed),
             }"
-            class="container-counter container-counter-finished"
+            class="container-counter container-counter-executed"
           >
             <Badge
-              :value="counts.finished || 0"
-              class="counter-badge counter-badge-finished"
+              :value="counts.executed || 0"
+              class="counter-badge counter-badge-executed"
               severity="success"
               size="xlarge"
-              @click="onApplyRunStatusFilter(AnalysisNodeRunStatus.Finished)"
+              @click="onApplyExecutionStatusFilter(PodStatus.Executed)"
             />
             <span class="counter-id-txt">Finished</span>
           </div>

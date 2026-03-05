@@ -1,18 +1,10 @@
-export const AnalysisBuildStatus = {
-  Starting: "starting",
-  Started: "started",
-  Stopping: "stopping",
-  Stopped: "stopped",
-  Finished: "finished",
-  Failed: "failed",
-};
-
-export const AnalysisNodeRunStatus = {
-  Starting: "starting",
-  Started: "started",
-  Stopping: "stopping",
-  Stopped: "stopped",
-  Finished: "finished",
-  Running: "running",
-  Failed: "failed",
-};
+export enum ProcessStatus {
+  // As defined by the Hub
+  Starting = "starting",
+  Started = "started",
+  Stopping = "stopping",
+  Stopped = "stopped",
+  Executing = "executing",
+  Executed = "executed",
+  Failed = "failed",
+}
