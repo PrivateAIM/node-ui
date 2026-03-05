@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import AnalysisUpdateButton from "./AnalysisUpdateButton.vue";
-import {useToast} from "primevue/usetoast";
-import {useNuxtApp} from "nuxt/app";
-import {ProcessStatus} from "~/types/analysis";
-import {PodStatus, type StatusResponse} from "~/services/Api";
+import { useToast } from "primevue/usetoast";
+import { useNuxtApp } from "nuxt/app";
+import { ProcessStatus } from "~/types/analysis";
+import { PodStatus, type StatusResponse } from "~/services/Api";
 
 type ToastSeverity = "success" | "info" | "warn" | "error" | undefined;
 
@@ -58,13 +58,13 @@ const playButtonActiveStates = [null, "", undefined];
 const rerunButtonActiveStates: Array<string | null | undefined> = [
   PodStatus.Failed,
   PodStatus.Executed,
-  PodStatus.Finished,  // Deprecated
+  PodStatus.Finished, // Deprecated
   PodStatus.Stopped,
   PodStatus.Stopping,
 ];
 const stopButtonActiveStates: Array<string | null | undefined> = [
   PodStatus.Executing,
-  PodStatus.Running,  // Deprecated
+  PodStatus.Running, // Deprecated
   PodStatus.Starting,
   PodStatus.Started,
   PodStatus.Stopping,
@@ -74,7 +74,7 @@ const deleteButtonActiveStates: Array<string | null | undefined> = [
   PodStatus.Stopped,
   PodStatus.Stopping,
   PodStatus.Executing,
-  PodStatus.Running,  // Deprecated
+  PodStatus.Running, // Deprecated
   PodStatus.Starting,
   PodStatus.Started,
 ];

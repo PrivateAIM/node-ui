@@ -4,7 +4,7 @@ import {
   type BodyKongInitializeKongInitializePost,
   type BodyPodorcPodsCreatePoPost,
   type CleanupPodResponse,
-} from "../../app/services/Api";
+} from "~/services/Api";
 import {
   fakeDataStoreInitSuccess,
   fakeParsedProjects,
@@ -148,13 +148,13 @@ export const handlers = [
   // Update Analysis Button - running analysis TODO remove
   http.get(`/po/status/${fakeAnalysisId}`, () => {
     return HttpResponse.json({
-      [fakeAnalysisId]: "executing",
+      [fakeAnalysisId]: "running",
     });
   }),
 
   http.get(`/po/status`, () => {
     return HttpResponse.json({
-      [fakeAnalysisId]: "executing",
+      [fakeAnalysisId]: { status: "running" },
     });
   }),
 

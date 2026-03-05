@@ -241,7 +241,7 @@ function parseAnalysis(
         analysisEntry.execution_status != PodStatus.Failed &&
         analysisEntry.execution_status != PodStatus.Executed
       ) {
-        analysisEntry.execution_status = undefined;
+        analysisEntry.execution_status = null;
       }
     }
   }
@@ -376,8 +376,7 @@ function updateAnalysisRun(
     const analysisToUpdate = analysesMap.value.get(analysisId)!; // Tell typescript we are sure there is a value
     if (newStatusData) {
       analysisToUpdate.execution_status = newStatusData.status;
-      analysisToUpdate.execution_progress =
-        newStatusData.execution_progress || 0;
+      analysisToUpdate.execution_progress = newStatusData.progress || 0;
     }
     analysesMap.value.set(analysisId, setProgress(analysisToUpdate));
   }

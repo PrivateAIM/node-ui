@@ -41,12 +41,12 @@ export interface ModifiedAnalysisNode extends Omit<
   AnalysisNode,
   "execution_status"
 > {
-  project_name: string | undefined;
+  project_name: string | undefined | null;
   expand: {
     [key: string]: string;
   };
   datastore: boolean;
-  execution_status: PodStatus | undefined;
+  execution_status: PodStatus | undefined | null;
   progress: number;
 }
 

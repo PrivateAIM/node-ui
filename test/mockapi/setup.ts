@@ -132,13 +132,13 @@ vi.mock("primevue/useconfirm", () => ({
 }));
 
 // Mock MSW server for HTTP requests
-const server = setupServer(...handlers);
+export const testServer = setupServer(...handlers);
 
 // Start server before all tests
-beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
+beforeAll(() => testServer.listen({ onUnhandledRequest: "error" }));
 
 // Close server after all tests
-afterAll(() => server.close());
+afterAll(() => testServer.close());
 
 // Reset handlers after each test for test isolation
-afterEach(() => server.resetHandlers());
+afterEach(() => testServer.resetHandlers());

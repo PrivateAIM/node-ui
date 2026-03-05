@@ -49,7 +49,9 @@ describe("PreferencesDialog.vue", () => {
 
   beforeEach(() => {
     mockToast = { add: vi.fn() };
-    vi.mocked(useToast).mockReturnValue(mockToast as ReturnType<typeof useToast>);
+    vi.mocked(useToast).mockReturnValue(
+      mockToast as unknown as ReturnType<typeof useToast>,
+    );
 
     mockUpdateSettings = vi.fn().mockResolvedValue(defaultSettingsResponse);
     vi.mocked(useNodeSettingsStore).mockReturnValue({

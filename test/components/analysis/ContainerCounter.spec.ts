@@ -85,7 +85,6 @@ describe("ContainerCounter.vue", () => {
         }
         // Clicking on badge emits correctly
         badgeDiv.trigger("click");
-        console.log(wrapper.emitted().applyExecutionStatusFilter);
         expect(wrapper.emitted()).toHaveProperty("applyExecutionStatusFilter");
         expect(wrapper.emitted().applyExecutionStatusFilter).toHaveLength(
           emitCounts,

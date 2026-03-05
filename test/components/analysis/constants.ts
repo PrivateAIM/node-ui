@@ -76,7 +76,7 @@ const fakeBaseAnalysis: Analysis = {
   execution_progress: 0,
 };
 
-const fakeBaseAnalysisNode: AnalysisNode = {
+export const fakeBaseAnalysisNode: AnalysisNode = {
   id: "4c4b9b2e-85de-4319-8d68-bcc8247464eb",
   created_at: "2025-01-28T14:58:12Z",
   updated_at: "2025-03-18T09:11:14Z",
