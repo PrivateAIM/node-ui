@@ -3,7 +3,11 @@ import AnalysisUpdateButton from "./AnalysisUpdateButton.vue";
 import { useToast } from "primevue/usetoast";
 import { useNuxtApp } from "nuxt/app";
 import { ProcessStatus } from "~/types/analysis";
-import { PodStatus, type StatusResponse } from "~/services/Api";
+import {
+  type PodProgressResponse,
+  PodStatus,
+  type StatusOnlyResponse,
+} from "~/services/Api";
 
 type ToastSeverity = "success" | "info" | "warn" | "error" | undefined;
 
@@ -94,9 +98,13 @@ const buttonStatuses = computed<ButtonStates>(
 
 function updatePodStatus(
   podStatus: string | null | undefined,
-  progressUpdate?: number | undefined,
+  progressUpdate?: number | null | undefined,
 ) {
-  emit("updateAnalysisRow", props.analysisId, podStatus, progressUpdate);
+  const analysisUpdate = {
+    status: podStatus,
+    progress: progressUpdate,
+  };
+  emit("updateAnalysisRow", props.analysisId, analysisUpdate);
 }
 
 const showToast = (severity: ToastSeverity, summary: string, msg: string) => {
@@ -117,15 +125,16 @@ const showStatusUnknownToast = () => {
 };
 
 async function checkPodStatus(): Promise<boolean> {
-  const podStatus: StatusResponse = (await useNuxtApp()
+  const podStatus: PodProgressResponse = (await useNuxtApp()
     .$hubApi(`/po/status/${props.analysisId}`, {
       method: "GET",
     })
-    .catch(() => undefined)) as StatusResponse; // Set the response to undefined if an error occurs
+    .catch(() => null)) as PodProgressResponse; // Set the response to undefined if an error occurs
 
   // If response is not undefined AND "status" in response AND "status" is not empty
   if (podStatus && props.analysisId in podStatus) {
-    const currentPodStatus = podStatus[props.analysisId];
+    const currentPodStatus = podStatus[props.analysisId]!.status;
+    const currentPodProgress = podStatus[props.analysisId]!.progress;
     // If the status is not empty and not FINISHED
     if (currentPodStatus != PodStatus.Executed) {
       showToast(
@@ -133,7 +142,7 @@ async function checkPodStatus(): Promise<boolean> {
         "Analysis already running",
         "The analysis is already running on this node, the controls have been updated",
       );
-      updatePodStatus(currentPodStatus); // Grab the first status update
+      updatePodStatus(currentPodStatus, currentPodProgress); // Grab the first status update
       return true;
     }
   }
@@ -154,13 +163,13 @@ async function onStartAnalysis() {
   analysisProps.append("analysis_id", props.analysisId!);
   analysisProps.append("project_id", props.projectId!);
 
-  let startPodResp: StatusResponse = (await useNuxtApp()
+  let startPodResp: StatusOnlyResponse = (await useNuxtApp()
     .$hubApi("/analysis/initialize", {
       method: "POST",
       body: analysisProps,
     })
     .catch((e) => {
-      updatePodStatus(undefined);
+      updatePodStatus(null);
       if (e.status == 408) {
         // Timed out waiting for image to pull
         updatePodStatus(PodStatus.Started);
@@ -183,7 +192,7 @@ async function onStartAnalysis() {
       } else {
         showToast("error", "Start failure", "Failed to start the analysis");
       }
-    })) as StatusResponse;
+    })) as StatusOnlyResponse;
 
   if (startPodResp && props.analysisId in startPodResp) {
     const currentExecutionStatus = startPodResp[props.analysisId];
@@ -201,7 +210,7 @@ async function onStopAnalysis() {
   const originalExecutionStatus = props.analysisExecutionStatus;
   updatePodStatus(PodStatus.Stopping);
 
-  const stopResp: StatusResponse = (await useNuxtApp()
+  const stopResp: StatusOnlyResponse = (await useNuxtApp()
     .$hubApi(`/po/stop/${props.analysisId}`, {
       method: "PUT",
     })
@@ -211,7 +220,7 @@ async function onStopAnalysis() {
         "Stop failure",
         "Failed to stop the analysis container",
       );
-    })) as StatusResponse;
+    })) as StatusOnlyResponse;
 
   // stopResp is undefined if error occurred
   if (stopResp) {
@@ -237,7 +246,7 @@ async function onDeleteAnalysis() {
   const originalExecutionStatus = props.analysisExecutionStatus;
   updatePodStatus(PodStatus.Stopping);
 
-  const deleteResp: StatusResponse = (await useNuxtApp()
+  const deleteResp: StatusOnlyResponse = (await useNuxtApp()
     .$hubApi(`/analysis/terminate/${props.analysisId}`, {
       method: "DELETE",
     })
@@ -247,7 +256,7 @@ async function onDeleteAnalysis() {
         "Terminate request failure",
         "Failed to terminate the analysis",
       );
-    })) as StatusResponse;
+    })) as StatusOnlyResponse;
 
   // deleteResp is undefined if error occurred
   if (deleteResp) {
@@ -260,7 +269,7 @@ async function onDeleteAnalysis() {
     } else {
       showStatusUnknownToast();
     }
-    updatePodStatus("");
+    updatePodStatus(null);
   } else {
     updatePodStatus(originalExecutionStatus);
   }
