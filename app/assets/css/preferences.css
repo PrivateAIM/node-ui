@@ -1,0 +1,29 @@
+.settings-field {
+    display: flex;
+    justify-content: space-between;
+}
+
+.settings-description-title {
+    font-weight: bold;
+}
+
+.setting-description-text {
+    font-size: 0.85em;
+    color: gray;
+}
+
+.settings-control {
+    display: flex;
+    justify-content: flex-end;
+    min-width: fit-content;
+}
+
+.preferences-update-btn {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1em;
+}
+
+.preferences-dialog-header .p-dialog-header {
+    padding-bottom: 0
+}

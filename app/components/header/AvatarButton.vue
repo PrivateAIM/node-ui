@@ -1,33 +1,30 @@
 <script lang="ts" setup>
 import Menu from "primevue/menu";
-import ToggleSwitch from "primevue/toggleswitch";
 import Button from "primevue/button";
 import { useRuntimeConfig } from "nuxt/app";
 import CleanupDialog from "~/components/header/CleanupDialog.vue";
-import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
 
 const { signIn, signOut } = useAuth();
 const { status: authStatus, data: authData } = useAuthState();
 
 const menu = ref();
-
-const { datastoreState, setDatastoreRequired } =
-  await useDatastoreRequirement();
-const datastoreRequired = computed(
-  () => datastoreState.value.datastoreRequired,
-);
+const showCleanupDialog = ref(false);
+const showPreferencesDialog = ref(false);
 
 const config = useRuntimeConfig();
 const baseUrl = new URL(config.public.baseUrl as string).origin;
 const idpProvider = config.public.idpProvider;
 
 const isAuthenticated = computed(() => authStatus.value === "authenticated");
-const showCleanupDialog = ref(false);
 
 const userActionLabel = isAuthenticated.value ? "Logout" : "Login";
 const userActionIcon = isAuthenticated.value
   ? "pi pi-sign-in"
   : "pi pi-sign-out";
+
+const toggle = (event) => {
+  menu.value.toggle(event);
+};
 
 const menuItems = ref([
   {
@@ -56,17 +53,16 @@ const menuItems = ref([
         disabled: !isAuthenticated.value,
       },
       {
-        label: "Require Data Store",
-        icon: "pi pi-database",
-        isToggle: true, // custom flag to identify it in the slot
+        label: "Preferences",
+        icon: "pi pi-cog",
+        command: () => {
+          showPreferencesDialog.value = true;
+        },
+        disabled: !isAuthenticated.value,
       },
     ],
   },
 ]);
-
-const toggle = (event) => {
-  menu.value.toggle(event);
-};
 </script>
 
 <template>
@@ -107,22 +103,6 @@ const toggle = (event) => {
     >
       <template #item="{ item, props }">
         <a
-          v-if="item.isToggle"
-          v-ripple
-          class="flex items-center"
-          v-bind="props.action"
-          @click.prevent="setDatastoreRequired(!datastoreRequired)"
-        >
-          <i :class="item.icon" />
-          <span class="ml-2 menu-item-label">{{ item.label }}</span>
-          <ToggleSwitch
-            :modelValue="datastoreRequired ?? false"
-            class="ml-auto"
-            @click.stop="setDatastoreRequired(!datastoreRequired)"
-          />
-        </a>
-        <a
-          v-else
           v-ripple
           :href="item.url"
           :target="item.target"
@@ -135,6 +115,7 @@ const toggle = (event) => {
     </Menu>
   </div>
   <CleanupDialog v-model:cleanUpVisible="showCleanupDialog" />
+  <PreferencesDialog v-model:preferencesVisible="showPreferencesDialog" />
 </template>
 
 <style lang="scss" scoped>
