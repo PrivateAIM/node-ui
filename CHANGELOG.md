@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.5.0](https://github.com/PrivateAIM/node-ui/compare/v0.4.3...v0.5.0) (2026-03-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* add analysis progress parsing
+
+### Features
+
+* add analysis progress parsing ([e23bfc9](https://github.com/PrivateAIM/node-ui/commit/e23bfc92cfaba8bca9a16d08ec55ab714ac3a4df))
+* **preferences:** add dialog box with current user settings ([d274405](https://github.com/PrivateAIM/node-ui/commit/d274405bebaf3f9c6504aa4868d5df20be67b77c))
+
+
+### Bug Fixes
+
+* **analysis:** fix PO update parsing and run status update ([9db7717](https://github.com/PrivateAIM/node-ui/commit/9db7717fb7cab7552e0473cb5fd7d03e2c635add))
+* update HA user settings model ([cc9407a](https://github.com/PrivateAIM/node-ui/commit/cc9407ab072139075d6743f2ee88797042f295a7))
+
+
+### Performance Improvements
+
+* better handling of pod statuses ([2d5608c](https://github.com/PrivateAIM/node-ui/commit/2d5608cc32cc1190628900178284e7a6110826bd))
+
 ## [0.4.3](https://github.com/PrivateAIM/node-ui/compare/v0.4.2...v0.4.3) (2026-02-20)
 
 
