@@ -27,7 +27,7 @@ const menuItems = computed(() => [
     items: [
       {
         label: isAuthenticated.value ? "Logout" : "Login",
-        icon: isAuthenticated.value ? "pi pi-sign-in" : "pi pi-sign-out",
+        icon: isAuthenticated.value ? "pi pi-sign-out" : "pi pi-sign-in",
         command: () => {
           // eslint-disable-next-line @typescript-eslint/no-unused-expressions
           isAuthenticated.value ? signOut() : signIn(`${idpProvider}`);
@@ -79,6 +79,7 @@ const menuItems = computed(() => [
         @click="toggle"
       />
     </div>
+    <div v-else-if="authStatus === 'loading'" class="avatar-container" />
     <div v-else>
       <Button
         aria-controls="overlay_menu"
