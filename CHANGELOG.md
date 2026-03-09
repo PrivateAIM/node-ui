@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.1](https://github.com/PrivateAIM/node-ui/compare/v0.5.0...v0.5.1) (2026-03-09)
+
+
+### Bug Fixes
+
+* **ssr:** make avatar items computed refs ([0c7c738](https://github.com/PrivateAIM/node-ui/commit/0c7c738b49fb23021a33d4f68167eca5f4934f4b))
+
+
+### Performance Improvements
+
+* handle when authetication is loading ([e35d315](https://github.com/PrivateAIM/node-ui/commit/e35d3151736830a6684a4d7faa87420a84693bb2))
+
 ## [0.5.0](https://github.com/PrivateAIM/node-ui/compare/v0.4.3...v0.5.0) (2026-03-05)
 
 
