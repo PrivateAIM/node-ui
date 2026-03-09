@@ -17,22 +17,17 @@ const idpProvider = config.public.idpProvider;
 
 const isAuthenticated = computed(() => authStatus.value === "authenticated");
 
-const userActionLabel = isAuthenticated.value ? "Logout" : "Login";
-const userActionIcon = isAuthenticated.value
-  ? "pi pi-sign-in"
-  : "pi pi-sign-out";
-
 const toggle = (event) => {
   menu.value.toggle(event);
 };
 
-const menuItems = ref([
+const menuItems = computed(() => [
   {
     label: "Options",
     items: [
       {
-        label: userActionLabel,
-        icon: userActionIcon,
+        label: isAuthenticated.value ? "Logout" : "Login",
+        icon: isAuthenticated.value ? "pi pi-sign-out" : "pi pi-sign-in",
         command: () => {
           // eslint-disable-next-line @typescript-eslint/no-unused-expressions
           isAuthenticated.value ? signOut() : signIn(`${idpProvider}`);
@@ -84,6 +79,7 @@ const menuItems = ref([
         @click="toggle"
       />
     </div>
+    <div v-else-if="authStatus === 'loading'" class="avatar-container" />
     <div v-else>
       <Button
         aria-controls="overlay_menu"
