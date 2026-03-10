@@ -135,21 +135,21 @@ async function parseProjects() {
   }
 }
 
-/**
- * Changes to "executing" to "running" and "executed" to "finished" which is simpler language.
- * @param status
- */
-function useCommonLanguage(
-  status: PodStatus,
-): PodStatus | "running" | "finished" {
-  if (status === PodStatus.Executing) {
-    return PodStatus.Running;
-  } else if (status === PodStatus.Executed) {
-    return PodStatus.Finished;
-  } else {
-    return status;
-  }
-}
+// /**
+//  * Changes to "executing" to "running" and "executed" to "finished" which is simpler language.
+//  * @param status
+//  */
+// function useCommonLanguage(
+//   status: PodStatus,
+// ): PodStatus | "running" | "finished" {
+//   if (status === PodStatus.Executing) {
+//     return PodStatus.Running;
+//   } else if (status === PodStatus.Executed) {
+//     return PodStatus.Finished;
+//   } else {
+//     return status;
+//   }
+// }
 
 async function getExecutionStatusesFromPodOrc(): Promise<
   PodProgressResponse | undefined
@@ -240,7 +240,10 @@ function parseAnalysis(
     PodStatus.Finished, // Deprecated but still returned by PO
   ];
   if (executionStatuses && analysisId in executionStatuses) {
-    analysisEntry.execution_status = executionStatuses[analysisId]!.status;
+    const podStatus = executionStatuses[analysisId]!;
+    analysisEntry.execution_status = podStatus.status;
+    analysisEntry.execution_progress =
+      podStatus.progress ?? analysisEntry.execution_progress;
   } else {
     if (!acceptableHubStatuses.includes(analysisEntry.execution_status)) {
       analysisEntry.execution_status = null;
