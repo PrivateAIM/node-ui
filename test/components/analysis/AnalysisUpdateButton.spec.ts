@@ -61,8 +61,8 @@ describe("AnalysisUpdateButton.vue", () => {
       5000,
       fakeAnalysisId,
     );
-    expect(wrapper.emitted("updateAnalysisRun")).toHaveLength(1);
-    expect(wrapper.emitted("updateAnalysisRun")![0]).toEqual([
+    expect(wrapper.emitted("updateAnalysisRunStatus")).toHaveLength(1);
+    expect(wrapper.emitted("updateAnalysisRunStatus")![0]).toEqual([
       PodStatus.Running,
       undefined,
     ]);
@@ -76,7 +76,7 @@ describe("AnalysisUpdateButton.vue", () => {
       8000,
       fakeMissingAnalysisId,
     );
-    expect(wrapper.emitted("updateAnalysisRun")).toBeFalsy();
+    expect(wrapper.emitted("updateAnalysisRunStatus")).toBeFalsy();
   });
 
   it("Update analysis status - broken", async () => {

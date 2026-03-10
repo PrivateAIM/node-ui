@@ -3,6 +3,7 @@ import AuthentikProvider from "next-auth/providers/authentik";
 import OktaProvider from "next-auth/providers/okta";
 import OneLoginProvider from "next-auth/providers/onelogin";
 import ZitadelProvider from "next-auth/providers/zitadel";
+import type { JWT } from "next-auth/jwt";
 
 import { NuxtAuthHandler } from "#auth";
 
@@ -104,7 +105,7 @@ function buildProvider() {
   return providers;
 }
 
-async function refreshAccessToken(token: any) {
+async function refreshAccessToken(token: JWT) {
   const clientId = process.env.NUXT_IDP_CLIENT_ID ?? "node-ui";
   const clientSecret = process.env.NUXT_IDP_CLIENT_SECRET ?? "";
   const clientIssuer =
@@ -122,7 +123,7 @@ async function refreshAccessToken(token: any) {
       client_id: clientId,
       client_secret: clientSecret,
       grant_type: "refresh_token",
-      refresh_token: token.refresh_token,
+      refresh_token: token.refresh_token as string,
     }),
   });
 

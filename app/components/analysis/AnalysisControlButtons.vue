@@ -356,7 +356,7 @@ async function onDeleteAnalysis() {
     </NuxtLink>
     <AnalysisUpdateButton
       :analysisId="props.analysisId"
-      @updateAnalysisRun="updatePodStatus"
+      @updateAnalysisRunStatus="updatePodStatus"
     />
   </div>
 </template>

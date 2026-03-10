@@ -143,9 +143,9 @@ async function parseProjects() {
 //   status: PodStatus,
 // ): PodStatus | "running" | "finished" {
 //   if (status === PodStatus.Executing) {
-//     return "running";
+//     return PodStatus.Running;
 //   } else if (status === PodStatus.Executed) {
-//     return "finished";
+//     return PodStatus.Finished;
 //   } else {
 //     return status;
 //   }
@@ -233,16 +233,20 @@ function parseAnalysis(
   // If PodOrc status update returns undefined -> use hub info since it's all we have
   // If status from PodOrc -> use it
   // If no run status reported by PodOrc, and it's not failed/finished -> set to null (wrong hub info)
-  if (executionStatuses) {
-    if (analysisId in executionStatuses) {
-      analysisEntry.execution_status = executionStatuses[analysisId]!.status;
-    } else {
-      if (
-        analysisEntry.execution_status != PodStatus.Failed &&
-        analysisEntry.execution_status != PodStatus.Executed
-      ) {
-        analysisEntry.execution_status = null;
-      }
+  // REMEMBER: PO sends running/finished instead of executing/executed
+  const acceptableHubStatuses: Array<PodStatus | null | undefined> = [
+    PodStatus.Failed,
+    PodStatus.Executed,
+    PodStatus.Finished, // Deprecated but still returned by PO
+  ];
+  if (executionStatuses && analysisId in executionStatuses) {
+    const podStatus = executionStatuses[analysisId]!;
+    analysisEntry.execution_status = podStatus.status;
+    analysisEntry.execution_progress =
+      podStatus.progress ?? analysisEntry.execution_progress;
+  } else {
+    if (!acceptableHubStatuses.includes(analysisEntry.execution_status)) {
+      analysisEntry.execution_status = null;
     }
   }
   return setProgress(analysisEntry);
