@@ -133,7 +133,7 @@ async function refreshAccessToken(token: any) {
   return {
     ...token,
     access_token: refreshedTokens.access_token,
-    expires_at: Date.now() + refreshedTokens.expires_in * 1000,
+    expires_at: Math.floor(Date.now() / 1000) + refreshedTokens.expires_in,
     refresh_token: refreshedTokens.refresh_token ?? token.refresh_token,
   };
 }
@@ -189,7 +189,7 @@ export default NuxtAuthHandler({
           refresh_token: account.refresh_token,
         };
       }
-      if (Date.now() < (token.expires_at as number)) {
+      if (Math.floor(Date.now() / 1000) < (token.expires_at as number)) {
         // Subsequent logins, but the `access_token` is still valid
         return token;
       }
