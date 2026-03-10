@@ -12,7 +12,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["updateAnalysisRun"]);
+const emit = defineEmits(["updateAnalysisRunStatus"]);
 const loading = ref(false);
 const toast = useToast();
 
@@ -65,10 +65,14 @@ async function getStatusUpdateFromPodOrc(): Promise<
 
 async function onClickUpdate() {
   loading.value = true;
-  const updatedStatus = await getStatusUpdateFromPodOrc();
+  const updatedStatus: AnalysisStatus | undefined =
+    await getStatusUpdateFromPodOrc();
   if (updatedStatus) {
-    // TODO replace undefined with progress update from PO
-    emit("updateAnalysisRun", updatedStatus, undefined);
+    emit(
+      "updateAnalysisRunStatus",
+      updatedStatus.status,
+      updatedStatus.progress,
+    );
   }
 
   loading.value = false;
