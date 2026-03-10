@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.2](https://github.com/PrivateAIM/node-ui/compare/v0.5.1...v0.5.2) (2026-03-10)
+
+
+### Bug Fixes
+
+* **update:** parse PO status update when manually updated ([ea1885a](https://github.com/PrivateAIM/node-ui/commit/ea1885a99d32f2c89e4d8128f1d91b8f4485be61))
+
+
+### Reverts
+
+* **ssr:** disable SSR to ensure functionality ([f42d091](https://github.com/PrivateAIM/node-ui/commit/f42d0918c9b7deddf90f771beed2710407bd0640))
+
 ## [0.5.1](https://github.com/PrivateAIM/node-ui/compare/v0.5.0...v0.5.1) (2026-03-09)
 
 
