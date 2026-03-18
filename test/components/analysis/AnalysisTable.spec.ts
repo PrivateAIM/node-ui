@@ -91,13 +91,13 @@ describe("AnalysesTable.vue", () => {
     expect(headerRow.length).toBe(1);
     const headerCols = headerRow[0]!.findAll("th");
     expect(headerCols[0]!.text()).toBe("Name"); // First col
-    expect(headerCols[9]!.text()).toBe("Analysis Controls"); // Last col
+    expect(headerCols[10]!.text()).toBe("Analysis Controls"); // Last col
 
     // Verify the second row's content
     const secondRowCells = rows[1]!.findAll("td");
     expect(secondRowCells[0]!.text()).toBe("T006"); // Name
     expect(secondRowCells[1]!.text()).toBe("approved"); // Approval status
-    expect(secondRowCells[7]!.text()).toBe("18.03.2025"); // Last Updated
+    expect(secondRowCells[8]!.text()).toBe("18.03.2025"); // Last Updated
   });
 
   test("Cached results used", async () => {
@@ -150,23 +150,25 @@ describe("AnalysesTable.vue", () => {
   });
 
   test("Refresh table", async () => {
-    const wrapper = mount(AnalysisTableTestComponent);
-    await flushPromises();
-
-    const rows = wrapper.findAll("tbody tr");
-    expect(rows.length).toBe(3); // Ensure 3 rows exist as defined in fakeAnalysisNodes
-
-    // "Updated" response
-    fakeAnalysisNodes.push(newFakeAnalysisNode); // Add new entry to output
-    vi.mocked(getAnalysisNodes).mockResolvedValue({
-      data: ref(fakeAnalysisNodes),
+    const dataRef = ref([...fakeAnalysisNodes]);
+    const mockRefresh = vi.fn(async () => {
+      dataRef.value = [...fakeAnalysisNodes, newFakeAnalysisNode];
+    });
+    vi.mocked(getAnalysisNodes).mockResolvedValueOnce({
+      data: dataRef,
       pending: ref(false),
       error: ref(undefined),
       status: ref("success"),
-      refresh: vi.fn(),
+      refresh: mockRefresh,
       execute: vi.fn(),
       clear: vi.fn(),
     });
+
+    const wrapper = mount(AnalysisTableTestComponent);
+    await flushPromises();
+
+    expect(wrapper.findAll("tbody tr").length).toBe(3);
+
     const refreshButton = wrapper.find(".table-refresh-btn");
     await refreshButton.trigger("click");
     await flushPromises();
@@ -255,9 +257,10 @@ describe("AnalysesTable.vue — PO calls and Progress", () => {
   });
 
   // Column index of the Progress cell in each DataTable row
-  const PROGRESS_COL = 8;
+  // (0=Name, 1=Approval, 2=Build, 3=Distribution, 4=RunStatus, 5=Project, 6=DataStore, 7=Created, 8=LastUpdated, 9=Progress, 10=Controls)
+  const PROGRESS_COL = 9;
   // Column index of the Run Status cell
-  const RUN_STATUS_COL = 3;
+  const RUN_STATUS_COL = 4;
 
   test("Progress bar is indeterminate when executing and progress is 0", async () => {
     // fakeBaseAnalysisNode.analysis_id matches fakeAnalysisId, so PodOrc
