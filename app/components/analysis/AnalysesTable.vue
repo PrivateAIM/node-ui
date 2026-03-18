@@ -633,7 +633,7 @@ const onCloseNavToast = () => {
           </Column>
           <Column
             :sortable="true"
-            field="distribution"
+            field="analysis.distribution_status"
             headerStyle="text-align: center"
           >
             <template #header>
