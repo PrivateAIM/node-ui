@@ -98,7 +98,7 @@ const copyToClipboard = async (analysisLogs: boolean) => {
         </div>
       </template>
       <template #content>
-        <div class="card foo-card">
+        <div class="card nginx-log-content">
           <ScrollPanel class="log-scroll-panel">
             <span v-if="props.nginxLogs">
               {{ props.nginxLogs }}
@@ -158,6 +158,7 @@ const copyToClipboard = async (analysisLogs: boolean) => {
   border: 1px solid grey;
   height: 50%;
   background: var(--p-slate-800);
+  color: #f1f5f9;
 }
 
 .nginx-log-card {
@@ -170,7 +171,6 @@ const copyToClipboard = async (analysisLogs: boolean) => {
 }
 
 .log-scroll-panel {
-  background: #000;
   font-family: Roboto Mono Regular,
   monospace;
   font-size: 0.8em;
@@ -178,6 +178,11 @@ const copyToClipboard = async (analysisLogs: boolean) => {
   padding: 1em;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.flame-dark .log-scroll-panel {
+  background: #000;
+  color: #e2e8f0;
   border-top: white solid 1px;
 }
 
@@ -185,6 +190,7 @@ const copyToClipboard = async (analysisLogs: boolean) => {
   display: flex;
   align-items: center;
   background: var(--p-highlight-background);
+  color: var(--p-highlight-color);
   padding: 0.5em;
   border-radius: 6px;
 }
