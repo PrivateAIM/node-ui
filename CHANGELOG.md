@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.3](https://github.com/PrivateAIM/node-ui/compare/v0.5.2...v0.5.3) (2026-03-18)
+
+
+### Features
+
+* **analyses:** add distribution status column ([7ce1c8f](https://github.com/PrivateAIM/node-ui/commit/7ce1c8f7ecf4523db355ab9120a509752a2a2a23))
+
+
+### Bug Fixes
+
+* **analyses:** proper field for sorting distribution column ([f930931](https://github.com/PrivateAIM/node-ui/commit/f9309315c73b2c0b2e7e6f547c01a6cd39ac0e7d))
+
 ## [0.5.2](https://github.com/PrivateAIM/node-ui/compare/v0.5.1...v0.5.2) (2026-03-10)
 
 
