@@ -59,7 +59,7 @@ const copyToClipboard = async (analysisLogs: boolean) => {
         severity: "contrast",
         summary: "Copied to clipboard!",
         life: 3000,
-        group: "copiedLogs",
+        group: "copiedLogs"
       });
     } catch (err) {
       console.error("Failed to copy: ", err);
@@ -158,6 +158,7 @@ const copyToClipboard = async (analysisLogs: boolean) => {
   border: 1px solid grey;
   height: 50%;
   background: var(--p-slate-800);
+  color: #f1f5f9;
 }
 
 .nginx-log-card {
@@ -170,15 +171,18 @@ const copyToClipboard = async (analysisLogs: boolean) => {
 }
 
 .log-scroll-panel {
-  background: #000;
-  font-family:
-    Roboto Mono Regular,
-    monospace;
+  font-family: Roboto Mono Regular,
+  monospace;
   font-size: 0.8em;
   height: 30em;
   padding: 1em;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.flame-dark .log-scroll-panel {
+  background: #000;
+  color: #e2e8f0;
   border-top: white solid 1px;
 }
 
@@ -186,6 +190,7 @@ const copyToClipboard = async (analysisLogs: boolean) => {
   display: flex;
   align-items: center;
   background: var(--p-highlight-background);
+  color: var(--p-highlight-color);
   padding: 0.5em;
   border-radius: 6px;
 }

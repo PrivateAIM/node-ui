@@ -807,7 +807,13 @@ const onCloseNavToast = () => {
                     ? 'indeterminate'
                     : 'determinate'
                 "
-                :style="determineProgressBarColor(data.execution_progress)"
+                :style="
+                  (data.execution_status === PodStatus.Executing ||
+                    data.execution_status === PodStatus.Running) &&
+                  !data.execution_progress
+                    ? {}
+                    : determineProgressBarColor(data.execution_progress)
+                "
                 :value="data.execution_progress"
               />
             </template>
