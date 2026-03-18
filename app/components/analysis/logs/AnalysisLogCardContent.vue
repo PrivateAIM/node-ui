@@ -59,7 +59,7 @@ const copyToClipboard = async (analysisLogs: boolean) => {
         severity: "contrast",
         summary: "Copied to clipboard!",
         life: 3000,
-        group: "copiedLogs"
+        group: "copiedLogs",
       });
     } catch (err) {
       console.error("Failed to copy: ", err);
@@ -98,7 +98,7 @@ const copyToClipboard = async (analysisLogs: boolean) => {
         </div>
       </template>
       <template #content>
-        <div class="card foo-card">
+        <div class="card nginx-log-content">
           <ScrollPanel class="log-scroll-panel">
             <span v-if="props.nginxLogs">
               {{ props.nginxLogs }}
@@ -171,8 +171,9 @@ const copyToClipboard = async (analysisLogs: boolean) => {
 
 .log-scroll-panel {
   background: #000;
-  font-family: Roboto Mono Regular,
-  monospace;
+  font-family:
+    Roboto Mono Regular,
+    monospace;
   font-size: 0.8em;
   height: 30em;
   padding: 1em;

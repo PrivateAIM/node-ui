@@ -7,7 +7,7 @@ import { getAnalysisNodes } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
 import {
   showCacheWarningToast,
-  showConnectionErrorToast,
+  showConnectionErrorToast
 } from "~/composables/connectionErrorToast";
 import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
@@ -15,7 +15,7 @@ import AnalysisControlButtons from "./AnalysisControlButtons.vue";
 import {
   getApprovalStatusSeverity,
   getBuildStatusSeverity,
-  getExecutionStatusSeverity,
+  getExecutionStatusSeverity
 } from "~/utils/status-tag-severity";
 import {
   type AnalysisNode,
@@ -24,7 +24,7 @@ import {
   type PodProgressResponse,
   PodStatus,
   type Project,
-  type Route,
+  type Route
 } from "~/services/Api";
 import { ApprovalStatus } from "~/types/node";
 import ContainerCounter from "~/components/analysis/ContainerCounter.vue";
@@ -40,12 +40,12 @@ const { nodeType, requireDataStore: datastoreRequired } =
   useDatastoreRequirement();
 
 const datastoreBadgeSeverity = computed(() =>
-  datastoreRequired.value ? "danger" : "secondary",
+  datastoreRequired.value ? "danger" : "secondary"
 );
 const datastoreBadgeTooltip = computed(() =>
   datastoreRequired.value
     ? "Data store missing!"
-    : "Data store missing, but not required",
+    : "Data store missing, but not required"
 );
 
 const analysesMap = ref<Map<string, ModifiedAnalysisNode>>(new Map());
@@ -61,11 +61,11 @@ const filters = ref();
 // Cache
 const analysisCache = useState<AnalysisNode[] | undefined>(
   "analysisCache",
-  () => undefined,
+  () => undefined
 );
 const projectCache = useState<Project[] | undefined>(
   "projectCache",
-  () => undefined,
+  () => undefined
 );
 const podOrcUnreacheable = ref(false);
 
@@ -89,8 +89,8 @@ async function getProjects() {
       method: "GET",
       query: {
         sort: "-updated_at",
-        fields: "id,name",
-      },
+        fields: "id,name"
+      }
     })
     .catch(() => undefined)) as Project[];
 }
@@ -98,7 +98,7 @@ async function getProjects() {
 async function getKongRoutes() {
   const kongRoutesResp = (await useNuxtApp()
     .$hubApi("/kong/project", {
-      method: "GET",
+      method: "GET"
     })
     .catch(() => undefined)) as ListRoutes;
   if (kongRoutesResp && kongRoutesResp.data) {
@@ -156,7 +156,7 @@ async function getExecutionStatusesFromPodOrc(): Promise<
 > {
   const podOrcResponse = (await useNuxtApp()
     .$hubApi("/po/status", {
-      method: "GET",
+      method: "GET"
     })
     .catch(() => {
       showConnectionErrorToast(toast, {
@@ -164,7 +164,7 @@ async function getExecutionStatusesFromPodOrc(): Promise<
         summary: "Missing PO Status Update",
         detail:
           "Unable to retrieve pod statuses from the PO, relying on information from the Hub",
-        life: 3000,
+        life: 3000
       });
     })) as PodProgressResponse;
   podOrcUnreacheable.value = !podOrcResponse;
@@ -216,13 +216,13 @@ function determineProgressBarColor(progress: number) {
   }
 
   return {
-    "--p-progressbar-value-background": color,
+    "--p-progressbar-value-background": color
   };
 }
 
 function parseAnalysis(
   analysisEntry: ModifiedAnalysisNode,
-  executionStatuses: PodProgressResponse | undefined,
+  executionStatuses: PodProgressResponse | undefined
 ): ModifiedAnalysisNode {
   const projId = analysisEntry.analysis?.project_id;
   const analysisId = analysisEntry.analysis_id;
@@ -237,7 +237,7 @@ function parseAnalysis(
   const acceptableHubStatuses: Array<PodStatus | null | undefined> = [
     PodStatus.Failed,
     PodStatus.Executed,
-    PodStatus.Finished, // Deprecated but still returned by PO
+    PodStatus.Finished // Deprecated but still returned by PO
   ];
   if (executionStatuses && analysisId in executionStatuses) {
     const podStatus = executionStatuses[analysisId]!;
@@ -254,7 +254,7 @@ function parseAnalysis(
 
 async function compileAnalysisTable(
   respStatus: string,
-  respData: AnalysisNode[] | undefined,
+  respData: AnalysisNode[] | undefined
 ) {
   tableLoading.value = true;
   await parseProjects();
@@ -275,13 +275,13 @@ async function compileAnalysisTable(
   const formattedAnalyses = formatDataRow(
     analysisData,
     ["created_at", "updated_at"],
-    expandRowEntries,
+    expandRowEntries
   ) as ModifiedAnalysisNode[];
   if (formattedAnalyses && projMap.size > 0) {
     formattedAnalyses.forEach((analysisEntry: ModifiedAnalysisNode) => {
       parsedAnalyses.set(
         analysisEntry.analysis_id,
-        parseAnalysis(analysisEntry, currentExecutionStatuses),
+        parseAnalysis(analysisEntry, currentExecutionStatuses)
       );
     });
     analysesMap.value = parsedAnalyses;
@@ -328,11 +328,11 @@ async function getNextPage() {
       query: {
         page: {
           offset: currentOffset,
-          limit: queryLimit,
+          limit: queryLimit
         },
         include: "analysis,node",
-        sort: "-updated_at",
-      },
+        sort: "-updated_at"
+      }
     })
     .catch(() => undefined)) as AnalysisNode[];
   if (nextSetResults.length > 0) {
@@ -353,7 +353,7 @@ const defaultFilters = {
   global: { value: undefined, matchMode: FilterMatchMode.CONTAINS },
   approval_status: { value: undefined, matchMode: FilterMatchMode.EQUALS },
   "analysis.build_status": { value: undefined, matchMode: FilterMatchMode.IN },
-  execution_status: { value: undefined, matchMode: FilterMatchMode.IN },
+  execution_status: { value: undefined, matchMode: FilterMatchMode.IN }
 };
 filters.value = defaultFilters;
 
@@ -361,7 +361,7 @@ function resetFilters() {
   const clearedFilters = {};
   for (const filterKey in defaultFilters) {
     clearedFilters[filterKey] = {
-      ...defaultFilters[filterKey],
+      ...defaultFilters[filterKey]
     };
     clearedFilters[filterKey].value = undefined;
   }
@@ -374,7 +374,7 @@ const updateFilters = (filterText: string) => {
 
 function updateAnalysisRun(
   analysisId: string,
-  newStatusData: AnalysisStatus | undefined,
+  newStatusData: AnalysisStatus | undefined
 ) {
   if (analysesMap.value.has(analysisId)) {
     const analysisToUpdate = analysesMap.value.get(analysisId)!; // Tell typescript we are sure there is a value
@@ -396,7 +396,7 @@ function updateExecutionStatusFilter(filterText: string) {
     if (currentExecutionStatusFilters.includes(filterText)) {
       // If filter already there, then remove it
       const filteredStatuses = currentExecutionStatusFilters.filter(
-        (item) => item !== filterText,
+        (item) => item !== filterText
       );
       if (filteredStatuses.length == 0) {
         // If empty array after filtering then set to null
@@ -419,7 +419,7 @@ const showDataStoreNavToast = () => {
       "Unable to find an associated data store, click the button below " +
       "to create a data store for the project of this analysis",
     group: "datastoreToastLink",
-    life: 10000,
+    life: 10000
   });
 };
 
@@ -632,6 +632,40 @@ const onCloseNavToast = () => {
             </template>
           </Column>
           <Column
+            :sortable="true"
+            field="distribution"
+            headerStyle="text-align: center"
+          >
+            <template #header>
+              <span
+                v-tooltip.top="
+                  'Distribution status of the analysis Docker image'
+                "
+                class="help-text"
+              >
+                <b>Distribution Status</b>
+              </span>
+            </template>
+            <template #body="{ data }">
+              <div
+                v-if="data.analysis.distribution_status === 'executed'"
+                class="distribution-badge"
+              >
+                <Badge class="w-8 h-8 rounded-full" severity="success"
+                ><i v-tooltip.top="'Image available'" class="pi pi-check"></i
+                ></Badge>
+              </div>
+              <div v-else class="distribution-badge">
+                <Badge class="w-8 h-8 rounded-full" :severity="'danger'"
+                ><i
+                  v-tooltip.top="'Image unavailable'"
+                  class="pi pi-times"
+                ></i
+                ></Badge>
+              </div>
+            </template>
+          </Column>
+          <Column
             :showAddButton="false"
             :showApplyButton="false"
             :showClearButton="false"
@@ -639,6 +673,7 @@ const onCloseNavToast = () => {
             :showFilterOperator="false"
             field="execution_status"
             filterField="execution_status"
+            headerStyle="text-align: center"
           >
             <template #header>
               <span
@@ -707,17 +742,17 @@ const onCloseNavToast = () => {
             <template #body="{ data }">
               <div v-if="data.datastore" class="datastore-badge">
                 <Badge class="w-8 h-8 rounded-full" severity="success"
-                  ><i v-tooltip.top="'Data store found'" class="pi pi-check"></i
+                ><i v-tooltip.top="'Data store found'" class="pi pi-check"></i
                 ></Badge>
               </div>
               <div v-else class="datastore-badge">
                 <Badge
                   class="w-8 h-8 rounded-full"
                   :severity="datastoreBadgeSeverity"
-                  ><i
-                    v-tooltip.top="datastoreBadgeTooltip"
-                    class="pi pi-times"
-                  ></i
+                ><i
+                  v-tooltip.top="datastoreBadgeTooltip"
+                  class="pi pi-times"
+                ></i
                 ></Badge>
               </div>
             </template>
@@ -836,6 +871,10 @@ const onCloseNavToast = () => {
 
 .datastore-badge {
   margin-left: 2em;
+}
+
+.distribution-badge {
+  margin-left: 4rem;
 }
 
 .analysis-description-box {
