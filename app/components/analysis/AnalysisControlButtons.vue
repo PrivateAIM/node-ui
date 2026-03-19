@@ -24,6 +24,10 @@ const props = defineProps({
     type: [String, null],
     required: true,
   },
+  analysisDistributionStatus: {
+    type: [String, null],
+    required: true,
+  },
   analysisNodeId: {
     type: String,
     required: true,
@@ -286,6 +290,7 @@ async function onDeleteAnalysis() {
       :disabled="
         !buttonStatuses.playActive ||
         !(props.analysisBuildStatus === ProcessStatus.Executed) ||
+        !(props.analysisDistributionStatus === ProcessStatus.Executed) ||
         (!props.datastore && props.requireDatastore)
       "
       :loading="loading"
@@ -301,6 +306,7 @@ async function onDeleteAnalysis() {
       :disabled="
         !buttonStatuses.rerunActive ||
         !(props.analysisBuildStatus === ProcessStatus.Executed) ||
+        !(props.analysisDistributionStatus === ProcessStatus.Executed) ||
         (!props.datastore && props.requireDatastore)
       "
       :loading="loading"
@@ -315,6 +321,7 @@ async function onDeleteAnalysis() {
       :disabled="
         !buttonStatuses.stopActive ||
         !(props.analysisBuildStatus === ProcessStatus.Executed) ||
+        !(props.analysisDistributionStatus === ProcessStatus.Executed) ||
         (!props.datastore && props.requireDatastore)
       "
       :loading="loading"
@@ -329,6 +336,7 @@ async function onDeleteAnalysis() {
       :disabled="
         !buttonStatuses.deleteActive ||
         !(props.analysisBuildStatus === ProcessStatus.Executed) ||
+        !(props.analysisDistributionStatus === ProcessStatus.Executed) ||
         (!props.datastore && props.requireDatastore)
       "
       :loading="loading"

@@ -81,6 +81,12 @@ const approvalStatuses = Object.values(ApprovalStatus);
 const processStatuses = Object.values(ProcessStatus);
 const podStatuses = Object.values(PodStatus);
 
+// Stable sort function for distribution status column — maps to binary value so
+// rows group by badge (executed = '1', everything else = '0') rather than sorting
+// alphabetically across the many possible status strings.
+const distributionStatusSortFn = (row: ModifiedAnalysisNode) =>
+  row.analysis?.distribution_status === "executed" ? "1" : "0";
+
 const { data: analysisNodeResp, status, refresh } = await getAnalysisNodes(); // Get the first batch of 50
 
 async function getProjects() {
@@ -634,6 +640,7 @@ const onCloseNavToast = () => {
           <Column
             :sortable="true"
             field="analysis.distribution_status"
+            :sortField="distributionStatusSortFn"
             headerStyle="text-align: center"
           >
             <template #header>
@@ -834,6 +841,9 @@ const onCloseNavToast = () => {
               >
                 <AnalysisControlButtons
                   :analysisBuildStatus="slotProps.data.analysis.build_status"
+                  :analysisDistributionStatus="
+                    slotProps.data.analysis.distribution_status
+                  "
                   :analysisId="slotProps.data.analysis_id"
                   :analysisNodeId="slotProps.data.id"
                   :analysisExecutionStatus="slotProps.data.execution_status"
