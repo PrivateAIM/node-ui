@@ -6,12 +6,18 @@
  * @param rowExpansionKeys - data keys that will be moved to an expandable subset
  */
 import { useTimeAgo } from "@vueuse/core";
-import type { AnalysisNode, ProjectNode, Route } from "~/services/Api";
+import type {
+  AnalysisNode,
+  DetailedService,
+  ProjectNode,
+  Route,
+} from "~/services/Api";
 import type { ModifiedDetailedService } from "~/services/modifiedApiInterfaces";
 
 export function formatDataRow(
   rowEntries:
     | ProjectNode[]
+    | DetailedService[]
     | ModifiedDetailedService[]
     | Route[]
     | AnalysisNode[]

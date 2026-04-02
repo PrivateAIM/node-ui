@@ -2,7 +2,7 @@ import { ref, watchEffect } from "vue";
 import { getDataStores, getProjects } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
 import type { ModifiedDetailedService } from "~/services/modifiedApiInterfaces";
-import type { DetailedAnalysis, ListServices, Project, Route } from "~/services/Api";
+import type { DetailedAnalysis, Project, Route } from "~/services/Api";
 
 export function buildProjectNameMap(
   projects: Project[] | DetailedAnalysis[],
@@ -16,8 +16,8 @@ export function buildProjectNameMap(
   return map;
 }
 
-export function extractProjectIdFromPath(paths: string[]): string {
-  return paths[0].split("/")[1];
+export function extractProjectIdFromPath(paths: string[]): string | undefined {
+  return paths[0]!.split("/")[1];
 }
 
 const DATA_ROW_UNIX_COLS = ["created_at", "updated_at"];
@@ -41,7 +41,7 @@ export async function useDataStoreList() {
 
     if (dsResp.value?.data && dsStatus.value === "success") {
       let formatted = formatDataRow(
-        dsResp.value.data as ListServices,
+        dsResp.value.data,
         DATA_ROW_UNIX_COLS,
         [],
       ) as ModifiedDetailedService[];
@@ -50,7 +50,11 @@ export async function useDataStoreList() {
 
       formatted.forEach((store) => {
         if (store.routes) {
-          store.routes = formatDataRow(store.routes, DATA_ROW_UNIX_COLS, []);
+          store.routes = formatDataRow(
+            store.routes,
+            DATA_ROW_UNIX_COLS,
+            [],
+          ) as Route[];
           store.routes?.forEach((route: Route) => {
             route["projectId"] = extractProjectIdFromPath(
               route.paths as string[],
