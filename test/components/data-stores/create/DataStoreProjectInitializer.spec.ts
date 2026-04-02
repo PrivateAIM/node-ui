@@ -1,4 +1,5 @@
 import { useToast } from "primevue/usetoast";
+import { defineComponent } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import {
   afterEach,
@@ -11,14 +12,24 @@ import {
 } from "vitest";
 import DataStoreProjectInitializer from "../../../../app/components/data-stores/create/DataStoreProjectInitializer.vue";
 import { fakeParsedProjects } from "../constants";
-import type { availableProject } from "../../../../app/components/data-stores/create/ResourceManagerTabs.vue";
+import type { availableProject } from "../../../../app/components/data-stores/create/index";
 import { DataStoreType } from "../../../../app/services/Api";
+import { getProjectNodes } from "~/composables/useAPIFetch";
+
+vi.mock("~/composables/useAPIFetch", () => ({
+  getProjectNodes: vi.fn(),
+}));
 
 describe("DataStoreProjectInitializer.vue", () => {
   let spy;
   let mockToast;
 
   let wrapper;
+
+  const DataStoreProjectInitializerTestComponent = defineComponent({
+    components: { DataStoreProjectInitializer },
+    template: "<Suspense><DataStoreProjectInitializer/></Suspense>",
+  });
 
   beforeAll(() => {
     mockToast = { add: vi.fn() };
@@ -27,17 +38,30 @@ describe("DataStoreProjectInitializer.vue", () => {
   });
 
   beforeEach(async () => {
-    wrapper = mount(DataStoreProjectInitializer, {
+    vi.mocked(getProjectNodes).mockResolvedValue({
+      data: ref(
+        fakeParsedProjects.map((p) => ({
+          project: { name: p.name },
+          project_id: p.id,
+        })),
+      ),
+      pending: ref(false),
+      error: ref(undefined),
+      status: ref("success"),
+      refresh: vi.fn(),
+      execute: vi.fn(),
+      clear: vi.fn(),
+    });
+
+    wrapper = mount(DataStoreProjectInitializerTestComponent, {
       attachTo: document.body,
-      props: {
-        projects: fakeParsedProjects,
-      },
       global: {
         stubs: {
           teleport: true, // Now dropdowns are included/teleported in root element
         },
       },
     });
+    await flushPromises();
     expect(wrapper).toBeTruthy();
   });
 
@@ -45,6 +69,10 @@ describe("DataStoreProjectInitializer.vue", () => {
     spy.mockReset();
     wrapper.unmount();
   });
+
+  function innerVm() {
+    return wrapper.findComponent(DataStoreProjectInitializer).vm;
+  }
 
   async function checkDropdown(
     className: string,
@@ -108,7 +136,7 @@ describe("DataStoreProjectInitializer.vue", () => {
   });
 
   async function checkDataStoreInit(
-    projectDropdown: availableProject,
+    projectDropdown: availableProject & { dropdown: string },
     validConnection: boolean = true,
     toastSeverity: string,
     toastMsg: string,
@@ -130,8 +158,12 @@ describe("DataStoreProjectInitializer.vue", () => {
     expect(listItem.exists()).toBe(true);
     await listItem.trigger("click");
     // Can't get manually clicking option to work so manually setting it
-    wrapper.vm.selectedProject = projectDropdown;
-    await wrapper.vm.$nextTick();
+    // Use the actual availableProjects entry to ensure object identity matches Select options
+    const matchingProject = innerVm().availableProjects.find(
+      (p: availableProject) => p.id === projectDropdown.id,
+    );
+    innerVm().selectedProject = matchingProject;
+    await innerVm().$nextTick();
     expect(wrapper.find(".project-picker span").text()).toBe(
       projectDropdown.dropdown,
     );
@@ -147,8 +179,8 @@ describe("DataStoreProjectInitializer.vue", () => {
     expect(pathWrapper.find(".p-inputtext").attributes("value")).toBe(path);
 
     // Set data store type
-    wrapper.vm.selectedDataStoreType = storeType;
-    await wrapper.vm.$nextTick();
+    innerVm().selectedDataStoreType = storeType;
+    await innerVm().$nextTick();
     expect(
       wrapper.find(".data-store-type-input span").text().toLowerCase(),
     ).toBe(storeType);
@@ -222,15 +254,15 @@ describe("DataStoreProjectInitializer.vue", () => {
     ).toBeFalsy(); // Starts on FHIR so should not be in view
     const select = wrapper.findComponent(".data-store-type-picker");
     await select.vm.$emit("update:modelValue", DataStoreType.S3); // Simulate the S3 option being clicked
-    await wrapper.vm.$nextTick();
+    await innerVm().$nextTick();
     expect(wrapper.find(".bucket-access-policy-radio").exists()).toBe(true); // Check radio options exist now
 
     expect(
       wrapper.findComponent(".data-store-path-input-s3-private").exists(),
     ).toBeTruthy();
 
-    wrapper.vm.selectedBucketAccessPolicy = "Public"; // Simulate public being selected
-    await wrapper.vm.$nextTick();
+    innerVm().selectedBucketAccessPolicy = "Public"; // Simulate public being selected
+    await innerVm().$nextTick();
     expect(
       wrapper.findComponent(".data-store-path-input-s3-private").exists(),
     ).toBeFalsy();
