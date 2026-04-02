@@ -1,9 +1,7 @@
-<script setup lang="ts">
-import ResourceManagerTabs from "~/components/data-stores/create/ResourceManagerTabs.vue";
+<script lang="ts" setup>
+import DataStoreProjectInitializer from "~/components/data-stores/create/DataStoreProjectInitializer.vue";
 </script>
 
 <template>
-  <ResourceManagerTabs />
+  <DataStoreProjectInitializer />
 </template>
-
-<style scoped lang="scss"></style>
