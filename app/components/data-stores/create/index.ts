@@ -8,7 +8,7 @@ export enum HelpTextField {
   Type = "type",
 }
 
-export interface availableProject {
+export interface AvailableProject {
   name: string | undefined | null;
   id: string;
 }

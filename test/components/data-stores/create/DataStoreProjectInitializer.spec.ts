@@ -12,7 +12,7 @@ import {
 } from "vitest";
 import DataStoreProjectInitializer from "../../../../app/components/data-stores/create/DataStoreProjectInitializer.vue";
 import { fakeParsedProjects } from "../constants";
-import type { availableProject } from "../../../../app/components/data-stores/create/index";
+import type { AvailableProject } from "../../../../app/components/data-stores/create/index";
 import { DataStoreType } from "../../../../app/services/Api";
 import { getProjectNodes } from "~/composables/useAPIFetch";
 
@@ -107,7 +107,7 @@ describe("DataStoreProjectInitializer.vue", () => {
   });
 
   it("Check data store project dropdown options", () => {
-    const dropDownOptions = fakeParsedProjects.map((item) => item.dropdown);
+    const dropDownOptions = fakeParsedProjects.map((item) => item.name);
     checkDropdown(".project-picker", dropDownOptions, "Select a Project");
   });
 
@@ -136,7 +136,7 @@ describe("DataStoreProjectInitializer.vue", () => {
   });
 
   async function checkDataStoreInit(
-    projectDropdown: availableProject & { dropdown: string },
+    projectDropdown: AvailableProject,
     validConnection: boolean = true,
     toastSeverity: string,
     toastMsg: string,
@@ -153,19 +153,19 @@ describe("DataStoreProjectInitializer.vue", () => {
       fakeParsedProjects.length,
     );
     const listItem = wrapper.find(
-      `li[aria-label="${projectDropdown.dropdown}"]`,
+      `li[aria-label="${projectDropdown.name}"]`,
     );
     expect(listItem.exists()).toBe(true);
     await listItem.trigger("click");
     // Can't get manually clicking option to work so manually setting it
     // Use the actual availableProjects entry to ensure object identity matches Select options
     const matchingProject = innerVm().availableProjects.find(
-      (p: availableProject) => p.id === projectDropdown.id,
+      (p: AvailableProject) => p.id === projectDropdown.id,
     );
     innerVm().selectedProject = matchingProject;
     await innerVm().$nextTick();
     expect(wrapper.find(".project-picker span").text()).toBe(
-      projectDropdown.dropdown,
+      projectDropdown.name,
     );
 
     // Set server name

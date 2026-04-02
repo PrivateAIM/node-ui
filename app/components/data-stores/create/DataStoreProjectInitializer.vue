@@ -8,7 +8,7 @@ import InputNumber from "primevue/inputnumber";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import InputGroup from "primevue/inputgroup";
 import DataStoreHelpBox from "~/components/data-stores/create/DataStoreHelpBox.vue";
-import { type availableProject, HelpTextField } from "~/components/data-stores/create/index";
+import { type AvailableProject, HelpTextField } from "~/components/data-stores/create/index";
 import { useToast } from "primevue/usetoast";
 import {
   type BodyKongInitializeKongInitializePost,
@@ -28,7 +28,7 @@ const connMsgColor = computed(() =>
 const toast = useToast();
 
 // Project list
-const availableProjects = ref<availableProject[]>([]);
+const availableProjects = ref<AvailableProject[]>([]);
 
 const { data: projects, status: projStatus } = await getProjectNodes();
 
@@ -58,7 +58,7 @@ const selectedBucketAccessPolicy = ref<allowedBucketAccessPolicies>("Private");
 const bucketAccessKey = ref<string>("");
 const bucketSecretKey = ref<string>("");
 
-const selectedProject = ref<availableProject | undefined>();
+const selectedProject = ref<AvailableProject | undefined>();
 
 const dataStoreSettingsMap: Map<string, string> = new Map([
   ["name", "Project"],

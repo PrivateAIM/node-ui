@@ -21,3 +21,5 @@ const emit = defineEmits(["closeHelp"]);
     </Panel>
   </div>
 </template>
+
+<style scoped lang="scss"></style>
