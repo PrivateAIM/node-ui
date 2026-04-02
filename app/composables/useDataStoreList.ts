@@ -37,33 +37,34 @@ export async function useDataStoreList() {
   const { data: projectResp } = await getProjects({ lazy: true });
 
   watchEffect(() => {
-    if (dsResp.value?.data) {
-      if (dsStatus.value === "success") {
-        let formatted = formatDataRow(
-          dsResp.value.data as ListServices,
-          DATA_ROW_UNIX_COLS,
-          [],
-        ) as ModifiedDetailedService[];
+    if (dsStatus.value === "pending") return;
 
-        formatted = formatted.filter((s) => s.name !== "kong-admin-service");
+    if (dsResp.value?.data && dsStatus.value === "success") {
+      let formatted = formatDataRow(
+        dsResp.value.data as ListServices,
+        DATA_ROW_UNIX_COLS,
+        [],
+      ) as ModifiedDetailedService[];
 
-        formatted.forEach((store) => {
-          if (store.routes) {
-            store.routes = formatDataRow(store.routes, DATA_ROW_UNIX_COLS, []);
-            store.routes?.forEach((route: Route) => {
-              route["projectId"] = extractProjectIdFromPath(
-                route.paths as string[],
-              );
-            });
-          }
-        });
+      formatted = formatted.filter((s) => s.name !== "kong-admin-service");
 
-        dataStores.value = formatted;
-      } else if (dsError.value?.statusCode === 500) {
-        dataStores.value = [];
-      }
-      loading.value = false;
+      formatted.forEach((store) => {
+        if (store.routes) {
+          store.routes = formatDataRow(store.routes, DATA_ROW_UNIX_COLS, []);
+          store.routes?.forEach((route: Route) => {
+            route["projectId"] = extractProjectIdFromPath(
+              route.paths as string[],
+            );
+          });
+        }
+      });
+
+      dataStores.value = formatted;
+    } else if (dsError.value?.statusCode === 500) {
+      dataStores.value = [];
     }
+
+    loading.value = false;
   });
 
   watchEffect(() => {
