@@ -1,5 +1,5 @@
 import { useToast } from "primevue/usetoast";
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import {
   afterEach,
@@ -39,6 +39,7 @@ describe("DataStoreProjectInitializer.vue", () => {
 
   beforeEach(async () => {
     vi.mocked(getProjectNodes).mockResolvedValue({
+      // @ts-expect-error data is right
       data: ref(
         fakeParsedProjects.map((p) => ({
           project: { name: p.name },
@@ -152,9 +153,7 @@ describe("DataStoreProjectInitializer.vue", () => {
     expect(wrapper.findAll(".p-select-option").length).toBe(
       fakeParsedProjects.length,
     );
-    const listItem = wrapper.find(
-      `li[aria-label="${projectDropdown.name}"]`,
-    );
+    const listItem = wrapper.find(`li[aria-label="${projectDropdown.name}"]`);
     expect(listItem.exists()).toBe(true);
     await listItem.trigger("click");
     // Can't get manually clicking option to work so manually setting it

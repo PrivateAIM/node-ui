@@ -14,45 +14,43 @@ import type {
 } from "~/services/Api";
 import type { ModifiedDetailedService } from "~/services/modifiedApiInterfaces";
 
+type FormattableRow =
+  | ProjectNode
+  | DetailedService
+  | ModifiedDetailedService
+  | Route
+  | AnalysisNode;
+
 export function formatDataRow(
-  rowEntries:
-    | ProjectNode[]
-    | DetailedService[]
-    | ModifiedDetailedService[]
-    | Route[]
-    | AnalysisNode[]
-    | null
-    | undefined,
+  rowEntries: FormattableRow[] | null | undefined,
   datetimeKeys: string[],
   rowExpansionKeys: string[],
 ) {
   if (rowEntries) {
-    return rowEntries.map(
-      (row: ProjectNode | ModifiedDetailedService | Route | AnalysisNode) => {
-        // Create a shallow copy of the row
-        const newRow = { ...row };
+    return rowEntries.map((row: FormattableRow) => {
+      // Create a shallow copy of the row
+      const newRow = { ...row };
 
-        // parseUnixTimestamp now returns a new object, so assign it back
-        const parsedRow = parseUnixTimestamp(newRow, datetimeKeys);
+      // parseUnixTimestamp now returns a new object, so assign it back
+      const parsedRow = parseUnixTimestamp(newRow, datetimeKeys);
 
-        const expandData: object = {};
-        rowExpansionKeys.forEach((key) => {
-          if (key in parsedRow) {
-            expandData[key] = parsedRow[key];
-            delete parsedRow[key];
-          }
-        });
-        parsedRow["expand"] = expandData;
+      const expandData: object = {};
+      rowExpansionKeys.forEach((key) => {
+        if (key in parsedRow) {
+          expandData[key] = parsedRow[key];
+          delete parsedRow[key];
+        }
+      });
+      parsedRow["expand"] = expandData;
 
-        return parsedRow;
-      },
-    );
+      return parsedRow;
+    });
   }
   return rowEntries;
 }
 
 export function parseUnixTimestamp(
-  dataRow: ProjectNode | ModifiedDetailedService | Route | AnalysisNode,
+  dataRow: FormattableRow,
   keysToModify: string[],
 ) {
   const result = { ...dataRow };

@@ -7,10 +7,10 @@ import type {
   ListConsumers,
   ListRoutes,
   ListServices,
-  NodeSettings,
   Project,
   ProjectNode,
   Service,
+  UserSettings,
 } from "~/services/Api";
 
 import { useFetch, type UseFetchOptions, useNuxtApp } from "nuxt/app";
@@ -38,7 +38,7 @@ export function getEvents(opts?) {
 
 // Node endpoints
 export function getNodeConfiguration(opts?) {
-  return useAPIFetch<NodeSettings>("/node/settings", {
+  return useAPIFetch<UserSettings>("/node/settings", {
     ...opts,
     method: "GET",
   });

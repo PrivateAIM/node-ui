@@ -3,7 +3,7 @@ import {
   type ListConsumers,
   type ListServices,
   type Project,
-} from "../../../app/services/Api";
+} from "@/app/services/Api";
 
 export const validProjectId = "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483";
 export const duplicateProjectId = "bab3aa4f-9144-444c-8ec7-6ebbbe8e300f";
@@ -198,11 +198,11 @@ export const fakeProjectResp: Project[] = [
     analyses: 17,
     realm_id: "ab1fbc92-3dc8-4bdd-9d51-3b571c2d7aaa",
     user_id: "5ec456e2-e30c-4a29-96de-6425fe5b9355",
-    master_image_id: undefined,
+    master_image_id: null,
     master_image: undefined,
-    description: undefined,
+    description: null,
     nodes: 0,
-    robot_id: undefined,
+    robot_id: null,
   },
 ];
 export const fakeAnalysisResp: Analysis[] = [
@@ -213,17 +213,31 @@ export const fakeAnalysisResp: Analysis[] = [
     name: "T004",
     nodes: 2,
     build_status: "executed",
-    execution_status: undefined,
+    execution_status: null,
     registry_id: "bab3aa4f-9144-444c-8ec7-6ebbbe8e300f",
     realm_id: "ab1fbc92-3dc8-4bdd-9d51-3b571c2d7aaa",
     user_id: "5ec456e2-e30c-4a29-96de-6425fe5b9355",
     project_id: "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483",
     project: undefined,
-    master_image_id: undefined,
+    master_image_id: null,
     registry: undefined,
     master_image: undefined,
-    description: undefined,
+    description: null,
     configuration_locked: true,
+    nodes_approved: 0,
+    configuration_entrypoint_valid: false,
+    configuration_image_valid: false,
+    configuration_node_aggregator_valid: false,
+    configuration_node_default_valid: false,
+    configuration_nodes_valid: false,
+    build_nodes_valid: false,
+    build_progress: null,
+    build_hash: null,
+    build_os: null,
+    build_size: null,
+    distribution_status: null,
+    distribution_progress: null,
+    execution_progress: null,
   },
 ];
 export const fakeConsumerResp: ListConsumers = {

@@ -15,6 +15,7 @@ const emit = defineEmits(["closeHelp"]);
           icon="pi pi-times"
           severity="contrast"
           v-tooltip.top="'Close help box'"
+          aria-label="Close help box"
           @click="emit('closeHelp')"
         />
       </template>

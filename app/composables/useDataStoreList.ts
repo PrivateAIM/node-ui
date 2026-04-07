@@ -16,8 +16,11 @@ export function buildProjectNameMap(
   return map;
 }
 
-export function extractProjectIdFromPath(paths: string[]): string | undefined {
-  return paths[0]!.split("/")[1];
+export function extractProjectIdFromPath(
+  paths: string[] | null | undefined,
+): string | undefined {
+  const firstPath = paths?.[0];
+  return firstPath?.split("/")[1];
 }
 
 const DATA_ROW_UNIX_COLS = ["created_at", "updated_at"];
@@ -56,9 +59,7 @@ export async function useDataStoreList() {
             [],
           ) as Route[];
           store.routes?.forEach((route: Route) => {
-            route["projectId"] = extractProjectIdFromPath(
-              route.paths as string[],
-            );
+            route["projectId"] = extractProjectIdFromPath(route.paths);
           });
         }
       });
