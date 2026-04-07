@@ -7,3 +7,8 @@ export enum HelpTextField {
   Server = "server",
   Type = "type",
 }
+
+export interface AvailableProject {
+  name: string | undefined | null;
+  id: string;
+}

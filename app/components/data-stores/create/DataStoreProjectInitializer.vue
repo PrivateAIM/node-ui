@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { navigateTo, useNuxtApp } from "nuxt/app";
 import InputText from "primevue/inputtext";
 import RadioButton from "primevue/radiobutton";
@@ -8,19 +8,17 @@ import InputNumber from "primevue/inputnumber";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import InputGroup from "primevue/inputgroup";
 import DataStoreHelpBox from "~/components/data-stores/create/DataStoreHelpBox.vue";
-import { HelpTextField } from "~/components/data-stores/create/index";
+import { type AvailableProject, HelpTextField } from "~/components/data-stores/create/index";
 import { useToast } from "primevue/usetoast";
 import {
   type BodyKongInitializeKongInitializePost,
   DataStoreType,
+  type ProjectNode,
 } from "~/services/Api";
-
-const props = defineProps({
-  projects: Array,
-});
+import { getProjectNodes } from "~/composables/useAPIFetch";
 
 const loading = ref(false);
-const helpActive = ref();
+const helpActive = ref<HelpTextField | undefined>();
 
 const connMsg = ref("");
 const connMsgColor = computed(() =>
@@ -28,6 +26,21 @@ const connMsgColor = computed(() =>
 );
 
 const toast = useToast();
+
+// Project list
+const availableProjects = ref<AvailableProject[]>([]);
+
+const { data: projects, status: projStatus } = await getProjectNodes();
+
+if (projStatus.value === "success") {
+  const projectData = projects.value as unknown as Array<ProjectNode>;
+  if (projectData.length > 0) {
+    availableProjects.value = projectData.map((proj: ProjectNode) => ({
+      name: proj.project?.name,
+      id: proj.project_id,
+    }));
+  }
+}
 
 // Project settings
 const dataStoreTypeOptions = computed(() =>
@@ -45,7 +58,7 @@ const selectedBucketAccessPolicy = ref<allowedBucketAccessPolicies>("Private");
 const bucketAccessKey = ref<string>("");
 const bucketSecretKey = ref<string>("");
 
-const selectedProject = ref();
+const selectedProject = ref<AvailableProject | undefined>();
 
 const dataStoreSettingsMap: Map<string, string> = new Map([
   ["name", "Project"],
@@ -72,13 +85,14 @@ const acceptedProtocols = [
   "tcp",
   "tls",
   "tls_passthrough",
-  // "udp",
   "ws",
   "wss",
 ];
 
 watch(selectedProject, (newSelectedProject) => {
-  dataStoreName.value = `${newSelectedProject.id}`;
+  if (newSelectedProject) {
+    dataStoreName.value = `${newSelectedProject.id}`;
+  }
 });
 
 function activateHelp(helpField: HelpTextField) {
@@ -112,7 +126,7 @@ function verifyValuesFilled(settings: object): boolean {
 }
 
 async function onSubmitCreateDataStoreAndProject() {
-  const validatedPath = validatePath(path.value); // Adds "/" to name if missing
+  const validatedPath = validatePath(path.value);
   const datastoreSettings = {
     name: dataStoreName.value,
     host: host.value,
@@ -123,23 +137,20 @@ async function onSubmitCreateDataStoreAndProject() {
 
   const configSettings: BodyKongInitializeKongInitializePost = {
     datastore: datastoreSettings,
-    project_id: selectedProject.value.id,
+    project_id: selectedProject.value!.id,
     ds_type: selectedDataStoreType.value,
   };
 
   const minioSettings = {
     minio_access_key: bucketAccessKey.value || "",
     minio_secret_key: bucketSecretKey.value || "",
-    // bucket_name: validatedPath, // .replace(/^\//, ""), // Removing leading "/" if present
   };
 
-  // Check settings are filled in
-  let settingsValidated: boolean;
-  settingsValidated = verifyValuesFilled(datastoreSettings);
+  let settingsValidated = verifyValuesFilled(datastoreSettings);
 
   if (
-    selectedDataStoreType.value == DataStoreType.S3 &&
-    selectedBucketAccessPolicy.value == "Private"
+    selectedDataStoreType.value === DataStoreType.S3 &&
+    selectedBucketAccessPolicy.value === "Private"
   ) {
     configSettings.minio_config = minioSettings;
     settingsValidated = settingsValidated && verifyValuesFilled(minioSettings);
@@ -160,7 +171,7 @@ async function onSubmitCreateDataStoreAndProject() {
           life: 5000,
         });
         connMsg.value = "Invalid connection!";
-      }); // Set the response to undefined if an error occurs
+      });
 
     loading.value = false;
 
@@ -217,7 +228,7 @@ async function onSubmitCreateDataStoreAndProject() {
               </InputGroupAddon>
               <Select
                 v-model="selectedProject"
-                :options="props.projects"
+                :options="availableProjects"
                 class="project-picker"
                 optionLabel="name"
                 placeholder="Select a Project"
