@@ -15,8 +15,10 @@
     "version": "0.1.0"
   },
   "servers": [
-    { "url": "/api" },
-    { "url": "http://localhost:5000", "description": "api" }
+    {
+      "url": "http://localhost:5000",
+      "description": "api"
+    }
   ],
   "paths": {
     "/po": {
@@ -40,21 +42,31 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/StatusOnlyResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/StatusOnlyResponse"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
         },
-        "security": [{ "JWT": [] }]
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/po/logs": {
@@ -68,13 +80,21 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/LogResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/LogResponse"
+                }
               }
             }
           },
-          "404": { "description": "Not found" }
+          "404": {
+            "description": "Not found"
+          }
         },
-        "security": [{ "JWT": [] }]
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/po/logs/{analysis_id}": {
@@ -83,7 +103,11 @@
         "summary": "Podorc.Logs.Get",
         "description": "Get the analysis pod logs.",
         "operationId": "podorc_logs_get_po_logs__analysis_id__get",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "analysis_id",
@@ -103,16 +127,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/LogResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/LogResponse"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -130,13 +160,21 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/LogResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/LogResponse"
+                }
               }
             }
           },
-          "404": { "description": "Not found" }
+          "404": {
+            "description": "Not found"
+          }
         },
-        "security": [{ "JWT": [] }]
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/po/history/{analysis_id}": {
@@ -145,7 +183,11 @@
         "summary": "Podorc.History.Get",
         "description": "Get the previous analysis pod logs.",
         "operationId": "podorc_history_get_po_history__analysis_id__get",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "analysis_id",
@@ -153,8 +195,13 @@
             "required": true,
             "schema": {
               "anyOf": [
-                { "type": "string", "format": "uuid" },
-                { "type": "null" }
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
               ],
               "description": "UUID of the analysis.",
               "title": "Analysis Id"
@@ -167,16 +214,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/LogResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/LogResponse"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -194,13 +247,21 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PodProgressResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/PodProgressResponse"
+                }
               }
             }
           },
-          "404": { "description": "Not found" }
+          "404": {
+            "description": "Not found"
+          }
         },
-        "security": [{ "JWT": [] }]
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/po/status/{analysis_id}": {
@@ -209,7 +270,11 @@
         "summary": "Podorc.Status.Get",
         "description": "Get a specific analysis pod run status.",
         "operationId": "podorc_status_get_po_status__analysis_id__get",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "analysis_id",
@@ -217,8 +282,13 @@
             "required": true,
             "schema": {
               "anyOf": [
-                { "type": "string", "format": "uuid" },
-                { "type": "null" }
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
               ],
               "description": "UUID of the analysis.",
               "title": "Analysis Id"
@@ -231,16 +301,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PodProgressResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/PodProgressResponse"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -258,13 +334,21 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PodResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/PodResponse"
+                }
               }
             }
           },
-          "404": { "description": "Not found" }
+          "404": {
+            "description": "Not found"
+          }
         },
-        "security": [{ "JWT": [] }]
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/po/pods/{analysis_id}": {
@@ -273,7 +357,11 @@
         "summary": "Podorc.Pods.Get",
         "description": "Get information on a specific running analysis pod in the k8s cluster.",
         "operationId": "podorc_pods_get_po_pods__analysis_id__get",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "analysis_id",
@@ -281,8 +369,13 @@
             "required": true,
             "schema": {
               "anyOf": [
-                { "type": "string", "format": "uuid" },
-                { "type": "null" }
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
               ],
               "description": "UUID of the analysis.",
               "title": "Analysis Id"
@@ -295,16 +388,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PodResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/PodResponse"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -322,13 +421,21 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/StatusOnlyResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/StatusOnlyResponse"
+                }
               }
             }
           },
-          "404": { "description": "Not found" }
+          "404": {
+            "description": "Not found"
+          }
         },
-        "security": [{ "JWT": [] }]
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/po/stop/{analysis_id}": {
@@ -337,7 +444,11 @@
         "summary": "Podorc.Pods.Stop",
         "description": "Stop a specific analysis run.",
         "operationId": "podorc_pods_stop_po_stop__analysis_id__put",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "analysis_id",
@@ -345,8 +456,13 @@
             "required": true,
             "schema": {
               "anyOf": [
-                { "type": "string", "format": "uuid" },
-                { "type": "null" }
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
               ],
               "description": "UUID of the analysis.",
               "title": "Analysis Id"
@@ -359,16 +475,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/StatusOnlyResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/StatusOnlyResponse"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -386,13 +508,21 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/StatusOnlyResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/StatusOnlyResponse"
+                }
               }
             }
           },
-          "404": { "description": "Not found" }
+          "404": {
+            "description": "Not found"
+          }
         },
-        "security": [{ "JWT": [] }]
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/po/delete/{analysis_id}": {
@@ -401,7 +531,11 @@
         "summary": "Podorc.Pods.Delete",
         "description": "Delete a specific analysis run.",
         "operationId": "podorc_pods_delete_po_delete__analysis_id__delete",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "analysis_id",
@@ -409,8 +543,13 @@
             "required": true,
             "schema": {
               "anyOf": [
-                { "type": "string", "format": "uuid" },
-                { "type": "null" }
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
               ],
               "description": "UUID of the analysis.",
               "title": "Analysis Id"
@@ -423,16 +562,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/StatusOnlyResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/StatusOnlyResponse"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -445,7 +590,11 @@
         "summary": "Podorc.Cleanup",
         "description": "Delete specific types of resources.\n\nShould be a comma separated combination of the following entries:\n'all', 'analyzes', 'services', 'mb', 'rs', 'keycloak'",
         "operationId": "podorc_cleanup_po_cleanup__cleanup_type__delete",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "cleanup_type",
@@ -463,16 +612,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/CleanupPodResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/CleanupPodResponse"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -501,21 +656,31 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/StatusOnlyResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/StatusOnlyResponse"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
         },
-        "security": [{ "JWT": [] }]
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/analysis/terminate/{analysis_id}": {
@@ -524,7 +689,11 @@
         "summary": "Meta.Terminate",
         "description": "Perform the required checks to stop an analysis and delete it and its components.\n\nThis method will first delete the kong consumer and then send the delete command to the PO.",
         "operationId": "meta_terminate_analysis_terminate__analysis_id__delete",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "analysis_id",
@@ -532,8 +701,13 @@
             "required": true,
             "schema": {
               "anyOf": [
-                { "type": "string" },
-                { "type": "string", "format": "uuid" }
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uuid"
+                }
               ],
               "description": "Analysis UUID that should be terminated",
               "title": "Analysis Id"
@@ -546,16 +720,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/StatusOnlyResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/StatusOnlyResponse"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -573,13 +753,21 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/UserSettings" }
+                "schema": {
+                  "$ref": "#/components/schemas/UserSettings"
+                }
               }
             }
           },
-          "404": { "description": "Not found" }
+          "404": {
+            "description": "Not found"
+          }
         },
-        "security": [{ "JWT": [] }]
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "post": {
         "tags": ["Node"],
@@ -602,21 +790,31 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/UserSettings" }
+                "schema": {
+                  "$ref": "#/components/schemas/UserSettings"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
         },
-        "security": [{ "JWT": [] }]
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/projects": {
@@ -631,16 +829,24 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "items": { "$ref": "#/components/schemas/Project" },
+                  "items": {
+                    "$ref": "#/components/schemas/Project"
+                  },
                   "type": "array",
                   "title": "Response Hub Project Get Projects Get"
                 }
               }
             }
           },
-          "404": { "description": "Not found" }
+          "404": {
+            "description": "Not found"
+          }
         },
-        "security": [{ "JWT": [] }]
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/projects/{project_id}": {
@@ -649,7 +855,11 @@
         "summary": "List a specific project",
         "description": "List project for a given UUID.",
         "operationId": "hub_project_get_projects__project_id__get",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "project_id",
@@ -657,8 +867,13 @@
             "required": true,
             "schema": {
               "anyOf": [
-                { "type": "string", "format": "uuid" },
-                { "type": "string" }
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string"
+                }
               ],
               "description": "Project UUID.",
               "title": "Project Id"
@@ -671,16 +886,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Project" }
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -693,7 +914,11 @@
         "summary": "List all of the project proposals",
         "description": "List project proposals.",
         "operationId": "hub_project_node_get_project_nodes_get",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "force_refresh",
@@ -713,18 +938,24 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/ProjectNode" },
+                  "items": {
+                    "$ref": "#/components/schemas/ProjectNode"
+                  },
                   "title": "Response Hub Project Node Get Project Nodes Get"
                 }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -737,7 +968,11 @@
         "summary": "List a specific project proposal",
         "description": "Set the approval status of a project proposal.",
         "operationId": "hub_project_node_get_project_nodes__project_node_id__get",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "project_node_id",
@@ -745,8 +980,13 @@
             "required": true,
             "schema": {
               "anyOf": [
-                { "type": "string", "format": "uuid" },
-                { "type": "string" }
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string"
+                }
               ],
               "description": "Proposal object UUID.",
               "title": "Project Node Id"
@@ -759,16 +999,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ProjectNode" }
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectNode"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -779,7 +1025,11 @@
         "summary": "Update a specific project proposal",
         "description": "Set the approval status of a project proposal.",
         "operationId": "hub_project_node_update_project_nodes__project_node_id__post",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "project_node_id",
@@ -787,8 +1037,13 @@
             "required": true,
             "schema": {
               "anyOf": [
-                { "type": "string", "format": "uuid" },
-                { "type": "string" }
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string"
+                }
               ],
               "description": "Proposal object UUID.",
               "title": "Project Node Id"
@@ -811,16 +1066,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ProjectNode" }
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectNode"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -833,7 +1094,11 @@
         "summary": "List all of the analysis proposals",
         "description": "List all analysis nodes for give node.",
         "operationId": "hub_analysis_node_get_analysis_nodes_get",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "force_refresh",
@@ -853,18 +1118,24 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/AnalysisNode" },
+                  "items": {
+                    "$ref": "#/components/schemas/AnalysisNode"
+                  },
                   "title": "Response Hub Analysis Node Get Analysis Nodes Get"
                 }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -877,7 +1148,11 @@
         "summary": "List a specific analysis node",
         "description": "List a specific analysis node.",
         "operationId": "hub_analysis_node_get_analysis_nodes__analysis_node_id__get",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "analysis_node_id",
@@ -885,8 +1160,13 @@
             "required": true,
             "schema": {
               "anyOf": [
-                { "type": "string", "format": "uuid" },
-                { "type": "string" }
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string"
+                }
               ],
               "description": "Analysis Node UUID.",
               "title": "Analysis Node Id"
@@ -899,16 +1179,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AnalysisNode" }
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisNode"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -919,7 +1205,11 @@
         "summary": "Update a specific analysis proposal",
         "description": "Set the approval status of an analysis proposal.",
         "operationId": "hub_analysis_node_update_analysis_nodes__analysis_node_id__post",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "analysis_node_id",
@@ -927,8 +1217,13 @@
             "required": true,
             "schema": {
               "anyOf": [
-                { "type": "string", "format": "uuid" },
-                { "type": "string" }
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string"
+                }
               ],
               "description": "Analysis Node UUID (not analysis_id).",
               "title": "Analysis Node Id"
@@ -951,16 +1246,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AnalysisNode" }
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisNode"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -979,16 +1280,24 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "items": { "$ref": "#/components/schemas/Analysis" },
+                  "items": {
+                    "$ref": "#/components/schemas/Analysis"
+                  },
                   "type": "array",
                   "title": "Response Hub Analysis Get Analyses Get"
                 }
               }
             }
           },
-          "404": { "description": "Not found" }
+          "404": {
+            "description": "Not found"
+          }
         },
-        "security": [{ "JWT": [] }]
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/analyses/{analysis_id}": {
@@ -997,7 +1306,11 @@
         "summary": "List a specific analysis",
         "description": "List a specific analysis.",
         "operationId": "hub_analysis_get_analyses__analysis_id__get",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "analysis_id",
@@ -1005,8 +1318,13 @@
             "required": true,
             "schema": {
               "anyOf": [
-                { "type": "string", "format": "uuid" },
-                { "type": "string" }
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string"
+                }
               ],
               "description": "Analysis UUID.",
               "title": "Analysis Id"
@@ -1019,16 +1337,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Analysis" }
+                "schema": {
+                  "$ref": "#/components/schemas/Analysis"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -1039,7 +1363,11 @@
         "summary": "Update a specific analysis proposal",
         "description": "Update analysis with a given UUID.",
         "operationId": "hub_analysis_update_analyses__analysis_id__post",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "analysis_id",
@@ -1047,8 +1375,13 @@
             "required": true,
             "schema": {
               "anyOf": [
-                { "type": "string", "format": "uuid" },
-                { "type": "string" }
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string"
+                }
               ],
               "description": "Analysis UUID.",
               "title": "Analysis Id"
@@ -1073,16 +1406,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/DetailedAnalysis" }
+                "schema": {
+                  "$ref": "#/components/schemas/DetailedAnalysis"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -1101,16 +1440,24 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "items": { "$ref": "#/components/schemas/Node" },
+                  "items": {
+                    "$ref": "#/components/schemas/Node"
+                  },
                   "type": "array",
                   "title": "Response Hub Node Get Nodes Get"
                 }
               }
             }
           },
-          "404": { "description": "Not found" }
+          "404": {
+            "description": "Not found"
+          }
         },
-        "security": [{ "JWT": [] }]
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/nodes/{node_id}": {
@@ -1119,7 +1466,11 @@
         "summary": "List a specific node",
         "description": "List a specific node.",
         "operationId": "hub_node_get_nodes__node_id__get",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "node_id",
@@ -1127,8 +1478,13 @@
             "required": true,
             "schema": {
               "anyOf": [
-                { "type": "string", "format": "uuid" },
-                { "type": "string" }
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string"
+                }
               ],
               "description": "Node UUID.",
               "title": "Node Id"
@@ -1141,16 +1497,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Node" }
+                "schema": {
+                  "$ref": "#/components/schemas/Node"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -1168,13 +1530,21 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/NodeTypeResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/NodeTypeResponse"
+                }
               }
             }
           },
-          "404": { "description": "Not found" }
+          "404": {
+            "description": "Not found"
+          }
         },
-        "security": [{ "JWT": [] }]
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/registry-projects/{registry_project_id}": {
@@ -1183,7 +1553,11 @@
         "summary": "Get registry project",
         "description": "List registry data for a project.",
         "operationId": "hub_registry_metadata_get_registry_projects__registry_project_id__get",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "registry_project_id",
@@ -1191,8 +1565,13 @@
             "required": true,
             "schema": {
               "anyOf": [
-                { "type": "string", "format": "uuid" },
-                { "type": "string" }
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string"
+                }
               ],
               "description": "Registry project UUID.",
               "title": "Registry Project Id"
@@ -1205,16 +1584,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/RegistryProject" }
+                "schema": {
+                  "$ref": "#/components/schemas/RegistryProject"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -1242,21 +1627,31 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AnalysisImageUrl" }
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisImageUrl"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
         },
-        "security": [{ "JWT": [] }]
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/analysis-buckets": {
@@ -1268,11 +1663,21 @@
         "responses": {
           "200": {
             "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           },
-          "404": { "description": "Not found" }
+          "404": {
+            "description": "Not found"
+          }
         },
-        "security": [{ "JWT": [] }]
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/analysis-buckets/{analysis_bucket_id}": {
@@ -1281,7 +1686,11 @@
         "summary": "List a specific analysis bucket",
         "description": "List a specific analysis bucket.",
         "operationId": "hub_analysis_bucket_get_analysis_buckets__analysis_bucket_id__get",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "analysis_bucket_id",
@@ -1289,8 +1698,13 @@
             "required": true,
             "schema": {
               "anyOf": [
-                { "type": "string", "format": "uuid" },
-                { "type": "string" }
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string"
+                }
               ],
               "description": "Bucket UUID.",
               "title": "Analysis Bucket Id"
@@ -1303,16 +1717,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AnalysisBucket" }
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisBucket"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -1328,11 +1748,21 @@
         "responses": {
           "200": {
             "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           },
-          "404": { "description": "Not found" }
+          "404": {
+            "description": "Not found"
+          }
         },
-        "security": [{ "JWT": [] }]
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/analysis-bucket-files/{analysis_bucket_file_id}": {
@@ -1341,7 +1771,11 @@
         "summary": "List partial analysis bucket files.",
         "description": "List specific partial analysis bucket file.",
         "operationId": "hub_analysis_bucket_file_get_analysis_bucket_files__analysis_bucket_file_id__get",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "analysis_bucket_file_id",
@@ -1349,8 +1783,13 @@
             "required": true,
             "schema": {
               "anyOf": [
-                { "type": "string", "format": "uuid" },
-                { "type": "string" }
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string"
+                }
               ],
               "description": "Bucket file UUID.",
               "title": "Analysis Bucket File Id"
@@ -1361,14 +1800,22 @@
         "responses": {
           "200": {
             "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -1381,7 +1828,11 @@
         "summary": "Storage.Local.Delete",
         "description": "Delete all objects in MinIO and all Postgres database entries related to the specified project.\n\nReturns a 200 on success, a 400 if the project is still available on the Hub and a 403 if it is not the\nHub Adapter client that sends the request. In both error cases nothing is deleted at all.",
         "operationId": "storage_local_delete_local_delete",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "project_id",
@@ -1389,8 +1840,13 @@
             "required": true,
             "schema": {
               "anyOf": [
-                { "type": "string", "format": "uuid" },
-                { "type": "string" }
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string"
+                }
               ],
               "description": "UUID of the associated project.",
               "title": "Project Id"
@@ -1401,14 +1857,22 @@
         "responses": {
           "200": {
             "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -1421,7 +1885,11 @@
         "summary": "Kong.Datastore.Get",
         "description": "List all available data stores (referred to as services by kong).",
         "operationId": "kong_datastore_get_kong_datastore_get",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "detailed",
@@ -1441,18 +1909,50 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ListServices" }
+                "schema": {
+                  "$ref": "#/components/schemas/ListServices"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Kong"],
+        "summary": "Kong.Datastore.Delete Orphaned",
+        "description": "Delete all data stores (services) that have no associated project (route).",
+        "operationId": "kong_datastore_delete_orphaned_kong_datastore_delete",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteService"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
           }
         }
       },
@@ -1461,7 +1961,11 @@
         "summary": "Kong.Datastore.Create",
         "description": "Create a datastore (referred to as services by kong) by providing necessary metadata.",
         "operationId": "kong_datastore_create_kong_datastore_post",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -1477,16 +1981,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Service" }
+                "schema": {
+                  "$ref": "#/components/schemas/Service"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -1499,7 +2009,11 @@
         "summary": "Kong.Datastore.Get",
         "description": "Retrieve a specific data store using the project UUID",
         "operationId": "kong_datastore_get_kong_datastore__project_id__get",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "project_id",
@@ -1507,8 +2021,13 @@
             "required": true,
             "schema": {
               "anyOf": [
-                { "type": "string", "format": "uuid" },
-                { "type": "string" }
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string"
+                }
               ],
               "description": "UUID of the associated project.",
               "title": "Project Id"
@@ -1533,16 +2052,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ListServices" }
+                "schema": {
+                  "$ref": "#/components/schemas/ListServices"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -1555,7 +2080,11 @@
         "summary": "Kong.Datastore.Delete",
         "description": "Delete the listed data store (referred to as services by kong).",
         "operationId": "kong_datastore_delete_kong_datastore__data_store_name__delete",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "data_store_name",
@@ -1572,14 +2101,22 @@
         "responses": {
           "200": {
             "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -1592,7 +2129,11 @@
         "summary": "Kong.Project.Get",
         "description": "List all projects (referred to as routes by kong) available, can be filtered by project_id.\n\nSet \"detailed\" to True to include detailed information on the linked kong service.",
         "operationId": "kong_project_get_kong_project_get",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "detailed",
@@ -1612,16 +2153,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ListRoutes" }
+                "schema": {
+                  "$ref": "#/components/schemas/ListRoutes"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -1632,7 +2179,11 @@
         "summary": "Kong.Project.Create",
         "description": "Connect a project to a data store (referred to as a route by kong).",
         "operationId": "kong_project_create_kong_project_post",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -1654,12 +2205,16 @@
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -1672,7 +2227,11 @@
         "summary": "Kong.Project.Get",
         "description": "List a specific projects (referred to as routes by kong) using the project UUID.\n\nSet \"detailed\" to True to include detailed information on the linked kong service.",
         "operationId": "kong_project_get_kong_project__project_id__get",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "project_id",
@@ -1680,8 +2239,13 @@
             "required": true,
             "schema": {
               "anyOf": [
-                { "type": "string", "format": "uuid" },
-                { "type": "string" }
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string"
+                }
               ],
               "description": "UUID of the associated project.",
               "title": "Project Id"
@@ -1706,16 +2270,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ListRoutes" }
+                "schema": {
+                  "$ref": "#/components/schemas/ListRoutes"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -1749,17 +2319,25 @@
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
         },
-        "security": [{ "JWT": [] }]
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/kong/project/{project_route_id}": {
@@ -1768,7 +2346,11 @@
         "summary": "Kong.Project.Delete",
         "description": "Disconnect a project (route) from all data stores (services) and delete associated analyses (consumers).",
         "operationId": "kong_project_delete_kong_project__project_route_id__delete",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "project_route_id",
@@ -1787,16 +2369,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/DeleteProject" }
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteProject"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -1809,14 +2397,25 @@
         "summary": "Kong.Analysis.Get",
         "description": "List all analyses (referred to as consumers by kong) available. Can be filtered by project UUID using tag.",
         "operationId": "kong_analysis_get_kong_analysis_get",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "tag",
             "in": "query",
             "required": false,
             "schema": {
-              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
               "description": "Filter consumers by project using the project UUID",
               "title": "Tag"
             },
@@ -1828,16 +2427,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ListConsumers" }
+                "schema": {
+                  "$ref": "#/components/schemas/ListConsumers"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -1848,7 +2453,11 @@
         "summary": "Kong.Analysis.Create",
         "description": "Create a new analysis and link it to a project.",
         "operationId": "kong_analysis_create_kong_analysis_post",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -1864,16 +2473,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/LinkProjectAnalysis" }
+                "schema": {
+                  "$ref": "#/components/schemas/LinkProjectAnalysis"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -1886,7 +2501,11 @@
         "summary": "Kong.Analysis.Get",
         "description": "List all analyses (referred to as consumers by kong) available.",
         "operationId": "kong_analysis_get_kong_analysis__analysis_id__get",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "analysis_id",
@@ -1894,9 +2513,16 @@
             "required": true,
             "schema": {
               "anyOf": [
-                { "type": "string", "format": "uuid" },
-                { "type": "string" },
-                { "type": "null" }
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
               ],
               "description": "UUID of the analysis.",
               "title": "Analysis Id"
@@ -1908,7 +2534,14 @@
             "in": "query",
             "required": false,
             "schema": {
-              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
               "description": "Filter consumers by project using the project UUID",
               "title": "Tag"
             },
@@ -1920,16 +2553,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ListConsumers" }
+                "schema": {
+                  "$ref": "#/components/schemas/ListConsumers"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -1940,14 +2579,26 @@
         "summary": "Kong.Analysis.Delete",
         "description": "Delete the listed analysis.",
         "operationId": "kong_analysis_delete_kong_analysis__analysis_id__delete",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "analysis_id",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              ],
               "description": "UUID or unique name of the analysis.",
               "title": "Analysis Id"
             },
@@ -1957,14 +2608,22 @@
         "responses": {
           "200": {
             "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -1977,7 +2636,11 @@
         "summary": "Kong.Probe",
         "description": "Test whether Kong can read the requested data source.\n\nBecause we use the key-auth plugin, a consumer is required for pinging the data service.",
         "operationId": "kong_probe_kong_project__project_id___ds_type__health_get",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "project_id",
@@ -1985,8 +2648,13 @@
             "required": true,
             "schema": {
               "anyOf": [
-                { "type": "string" },
-                { "type": "string", "format": "uuid" }
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uuid"
+                }
               ],
               "description": "UUID or unique name of the project.",
               "title": "Project Id"
@@ -2007,14 +2675,22 @@
         "responses": {
           "200": {
             "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -2032,7 +2708,9 @@
             "description": "Return HTTP Status Code 200 (OK)",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HealthCheck" }
+                "schema": {
+                  "$ref": "#/components/schemas/HealthCheck"
+                }
               }
             }
           }
@@ -2080,16 +2758,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Token" }
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -2102,14 +2786,25 @@
         "summary": "Events.Get",
         "description": "Retrieve a selection of logged events.",
         "operationId": "events_get_events_get",
-        "security": [{ "JWT": [] }],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "limit",
             "in": "query",
             "required": false,
             "schema": {
-              "anyOf": [{ "type": "integer" }, { "type": "null" }],
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
               "description": "Maximum number of events to return",
               "title": "Limit"
             },
@@ -2120,7 +2815,14 @@
             "in": "query",
             "required": false,
             "schema": {
-              "anyOf": [{ "type": "integer" }, { "type": "null" }],
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
               "description": "Number of events to offset by",
               "default": 0,
               "title": "Offset"
@@ -2132,7 +2834,14 @@
             "in": "query",
             "required": false,
             "schema": {
-              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
               "description": "Filter events by service tag",
               "title": "Service Tag"
             },
@@ -2143,7 +2852,14 @@
             "in": "query",
             "required": false,
             "schema": {
-              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
               "description": "Filter events by event name",
               "title": "Event Name"
             },
@@ -2154,7 +2870,14 @@
             "in": "query",
             "required": false,
             "schema": {
-              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
               "description": "Filter events by username",
               "title": "Username"
             },
@@ -2166,8 +2889,13 @@
             "required": false,
             "schema": {
               "anyOf": [
-                { "type": "string", "format": "date-time" },
-                { "type": "null" }
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
               ],
               "description": "Filter events by start date using ISO8601 format",
               "title": "Start Date"
@@ -2180,8 +2908,13 @@
             "required": false,
             "schema": {
               "anyOf": [
-                { "type": "string", "format": "date-time" },
-                { "type": "null" }
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
               ],
               "description": "Filter events by end date using ISO8601 format",
               "title": "End Date"
@@ -2194,16 +2927,22 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/EventLogResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/EventLogResponse"
+                }
               }
             }
           },
-          "404": { "description": "Not found" },
+          "404": {
+            "description": "Not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -2219,11 +2958,21 @@
         "responses": {
           "201": {
             "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           },
-          "404": { "description": "Not found" }
+          "404": {
+            "description": "Not found"
+          }
         },
-        "security": [{ "JWT": [] }]
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/events/signout": {
@@ -2235,11 +2984,21 @@
         "responses": {
           "201": {
             "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           },
-          "404": { "description": "Not found" }
+          "404": {
+            "description": "Not found"
+          }
         },
-        "security": [{ "JWT": [] }]
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     }
   },
@@ -2249,28 +3008,60 @@
         "properties": {
           "consumer": {
             "anyOf": [
-              { "$ref": "#/components/schemas/ACLConsumer" },
-              { "type": "null" }
+              {
+                "$ref": "#/components/schemas/ACLConsumer"
+              },
+              {
+                "type": "null"
+              }
             ]
           },
           "created_at": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Created At",
             "description": "Unix epoch when the resource was created."
           },
           "id": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Id"
           },
           "group": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Group",
             "description": "The group that this ACL represents."
           },
           "tags": {
             "anyOf": [
-              { "items": { "type": "string" }, "type": "array" },
-              { "type": "null" }
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Tags",
             "description": "An optional set of strings associated with the ACL for grouping and filtering."
@@ -2283,7 +3074,14 @@
       "ACLConsumer": {
         "properties": {
           "id": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Id"
           }
         },
@@ -2294,11 +3092,25 @@
       "Analysis": {
         "properties": {
           "description": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Description"
           },
           "name": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Name"
           },
           "project_id": {
@@ -2308,15 +3120,25 @@
           },
           "master_image_id": {
             "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "null" }
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Master Image Id"
           },
           "registry_id": {
             "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "null" }
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Registry Id"
           },
@@ -2327,9 +3149,19 @@
             "type": "array",
             "title": "Image Command Arguments"
           },
-          "id": { "type": "string", "format": "uuid", "title": "Id" },
-          "nodes": { "type": "integer", "title": "Nodes" },
-          "nodes_approved": { "type": "integer", "title": "Nodes Approved" },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "nodes": {
+            "type": "integer",
+            "title": "Nodes"
+          },
+          "nodes_approved": {
+            "type": "integer",
+            "title": "Nodes Approved"
+          },
           "configuration_locked": {
             "type": "boolean",
             "title": "Configuration Locked"
@@ -2368,7 +3200,9 @@
                   "failed"
                 ]
               },
-              { "type": "null" }
+              {
+                "type": "null"
+              }
             ],
             "title": "Build Status"
           },
@@ -2377,19 +3211,47 @@
             "title": "Build Nodes Valid"
           },
           "build_progress": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Build Progress"
           },
           "build_hash": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Build Hash"
           },
           "build_os": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Build Os"
           },
           "build_size": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Build Size"
           },
           "distribution_status": {
@@ -2406,12 +3268,21 @@
                   "failed"
                 ]
               },
-              { "type": "null" }
+              {
+                "type": "null"
+              }
             ],
             "title": "Distribution Status"
           },
           "distribution_progress": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Distribution Progress"
           },
           "execution_status": {
@@ -2428,12 +3299,21 @@
                   "failed"
                 ]
               },
-              { "type": "null" }
+              {
+                "type": "null"
+              }
             ],
             "title": "Execution Status"
           },
           "execution_progress": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Execution Progress"
           },
           "created_at": {
@@ -2448,8 +3328,12 @@
           },
           "registry": {
             "anyOf": [
-              { "$ref": "#/components/schemas/Registry" },
-              { "type": "null" }
+              {
+                "$ref": "#/components/schemas/Registry"
+              },
+              {
+                "type": "null"
+              }
             ]
           },
           "realm_id": {
@@ -2457,12 +3341,22 @@
             "format": "uuid",
             "title": "Realm Id"
           },
-          "user_id": { "type": "string", "format": "uuid", "title": "User Id" },
-          "project": { "$ref": "#/components/schemas/Project" },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id"
+          },
+          "project": {
+            "$ref": "#/components/schemas/Project"
+          },
           "master_image": {
             "anyOf": [
-              { "$ref": "#/components/schemas/MasterImage" },
-              { "type": "null" }
+              {
+                "$ref": "#/components/schemas/MasterImage"
+              },
+              {
+                "type": "null"
+              }
             ]
           }
         },
@@ -2501,7 +3395,9 @@
       },
       "AnalysisBucket": {
         "properties": {
-          "type": { "$ref": "#/components/schemas/AnalysisBucketType" },
+          "type": {
+            "$ref": "#/components/schemas/AnalysisBucketType"
+          },
           "bucket_id": {
             "type": "string",
             "format": "uuid",
@@ -2512,7 +3408,11 @@
             "format": "uuid",
             "title": "Analysis Id"
           },
-          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
@@ -2523,7 +3423,9 @@
             "format": "date-time",
             "title": "Updated At"
           },
-          "analysis": { "$ref": "#/components/schemas/Analysis" },
+          "analysis": {
+            "$ref": "#/components/schemas/Analysis"
+          },
           "realm_id": {
             "type": "string",
             "format": "uuid",
@@ -2549,23 +3451,60 @@
       },
       "AnalysisImageUrl": {
         "properties": {
-          "image_url": { "type": "string", "title": "Image Url" },
+          "image_url": {
+            "type": "string",
+            "title": "Image Url"
+          },
           "project_id": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Project Id"
           },
           "kong_token": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Kong Token"
           },
-          "analysis_id": { "type": "string", "title": "Analysis Id" },
-          "registry_url": { "type": "string", "title": "Registry Url" },
+          "analysis_id": {
+            "type": "string",
+            "title": "Analysis Id"
+          },
+          "registry_url": {
+            "type": "string",
+            "title": "Registry Url"
+          },
           "registry_user": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Registry User"
           },
           "registry_password": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Registry Password"
           }
         },
@@ -2580,12 +3519,25 @@
             "format": "uuid",
             "title": "Analysis Id"
           },
-          "node_id": { "type": "string", "format": "uuid", "title": "Node Id" },
-          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "node_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Node Id"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
           "approval_status": {
             "anyOf": [
-              { "type": "string", "enum": ["rejected", "approved"] },
-              { "type": "null" }
+              {
+                "type": "string",
+                "enum": ["rejected", "approved"]
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Approval Status"
           },
@@ -2603,24 +3555,54 @@
                   "failed"
                 ]
               },
-              { "type": "null" }
+              {
+                "type": "null"
+              }
             ],
             "title": "Execution Status"
           },
           "execution_progress": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Execution Progress"
           },
           "comment": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Comment"
           },
           "artifact_tag": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Artifact Tag"
           },
           "artifact_digest": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Artifact Digest"
           },
           "created_at": {
@@ -2633,8 +3615,12 @@
             "format": "date-time",
             "title": "Updated At"
           },
-          "analysis": { "$ref": "#/components/schemas/Analysis" },
-          "node": { "$ref": "#/components/schemas/Node" },
+          "analysis": {
+            "$ref": "#/components/schemas/Analysis"
+          },
+          "node": {
+            "$ref": "#/components/schemas/Node"
+          },
           "analysis_realm_id": {
             "type": "string",
             "format": "uuid",
@@ -2666,9 +3652,18 @@
       },
       "AnalysisStatus": {
         "properties": {
-          "status": { "$ref": "#/components/schemas/PodStatus" },
+          "status": {
+            "$ref": "#/components/schemas/PodStatus"
+          },
           "progress": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Progress"
           }
         },
@@ -2680,12 +3675,26 @@
       "AutostartSettings": {
         "properties": {
           "enabled": {
-            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Enabled",
             "default": false
           },
           "interval": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Interval",
             "default": 60
           }
@@ -2716,16 +3725,26 @@
         "properties": {
           "analysis_id": {
             "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "string" }
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "string"
+              }
             ],
             "title": "Analysis Id",
             "description": "Analysis UUID"
           },
           "project_id": {
             "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "string" }
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "string"
+              }
             ],
             "title": "Project Id",
             "description": "Project UUID"
@@ -2737,8 +3756,13 @@
           },
           "node_id": {
             "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "string" }
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "string"
+              }
             ],
             "title": "Node Id",
             "description": "Node UUID"
@@ -2778,16 +3802,26 @@
         "properties": {
           "project_id": {
             "anyOf": [
-              { "type": "string" },
-              { "type": "string", "format": "uuid" }
+              {
+                "type": "string"
+              },
+              {
+                "type": "string",
+                "format": "uuid"
+              }
             ],
             "title": "Project Id",
             "description": "UUID or name of the project"
           },
           "analysis_id": {
             "anyOf": [
-              { "type": "string" },
-              { "type": "string", "format": "uuid" }
+              {
+                "type": "string"
+              },
+              {
+                "type": "string",
+                "format": "uuid"
+              }
             ],
             "title": "Analysis Id",
             "description": "UUID or name of the analysis"
@@ -2810,8 +3844,12 @@
           },
           "minio_config": {
             "anyOf": [
-              { "$ref": "#/components/schemas/MinioConfig" },
-              { "type": "null" }
+              {
+                "$ref": "#/components/schemas/MinioConfig"
+              },
+              {
+                "type": "null"
+              }
             ],
             "description": "Minio configuration"
           }
@@ -2824,14 +3862,21 @@
         "properties": {
           "project_id": {
             "anyOf": [
-              { "type": "string" },
-              { "type": "string", "format": "uuid" }
+              {
+                "type": "string"
+              },
+              {
+                "type": "string",
+                "format": "uuid"
+              }
             ],
             "title": "Project Id",
             "description": "UUID of the project"
           },
           "protocols": {
-            "items": { "$ref": "#/components/schemas/ProtocolCode" },
+            "items": {
+              "$ref": "#/components/schemas/ProtocolCode"
+            },
             "type": "array",
             "title": "Protocols",
             "description": "List of acceptable transfer protocols. A combo of 'http', 'grpc', 'grpcs', 'tls', 'tcp'",
@@ -2848,8 +3893,12 @@
           },
           "minio_config": {
             "anyOf": [
-              { "$ref": "#/components/schemas/MinioConfig" },
-              { "type": "null" }
+              {
+                "$ref": "#/components/schemas/MinioConfig"
+              },
+              {
+                "type": "null"
+              }
             ],
             "description": "Minio configuration"
           }
@@ -2862,16 +3911,26 @@
         "properties": {
           "data_store_id": {
             "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "string" }
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "string"
+              }
             ],
             "title": "Data Store Id",
             "description": "UUID of the data store or 'service'"
           },
           "project_id": {
             "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "string" }
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "string"
+              }
             ],
             "title": "Project Id",
             "description": "UUID of the project"
@@ -2879,10 +3938,14 @@
           "methods": {
             "anyOf": [
               {
-                "items": { "$ref": "#/components/schemas/HttpMethodCode" },
+                "items": {
+                  "$ref": "#/components/schemas/HttpMethodCode"
+                },
                 "type": "array"
               },
-              { "type": "null" }
+              {
+                "type": "null"
+              }
             ],
             "title": "Methods",
             "description": "List of acceptable HTTP methods"
@@ -2890,10 +3953,14 @@
           "protocols": {
             "anyOf": [
               {
-                "items": { "$ref": "#/components/schemas/ProtocolCode" },
+                "items": {
+                  "$ref": "#/components/schemas/ProtocolCode"
+                },
                 "type": "array"
               },
-              { "type": "null" }
+              {
+                "type": "null"
+              }
             ],
             "title": "Protocols",
             "description": "List of acceptable transfer protocols. A combo of 'http', 'grpc', 'grpcs', 'tls', 'tcp'"
@@ -2912,16 +3979,26 @@
         "properties": {
           "analysis_id": {
             "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "string" }
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "string"
+              }
             ],
             "title": "Analysis Id",
             "description": "Analysis UUID"
           },
           "project_id": {
             "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "string" }
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "string"
+              }
             ],
             "title": "Project Id",
             "description": "Project UUID"
@@ -2933,8 +4010,13 @@
           },
           "node_id": {
             "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "string" }
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "string"
+              }
             ],
             "title": "Node Id",
             "description": "Node UUID"
@@ -2961,27 +4043,69 @@
       "CleanupPodResponse": {
         "properties": {
           "all": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "All"
           },
           "analyzes": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Analyzes"
           },
           "services": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Services"
           },
           "mb": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Mb"
           },
           "rs": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Rs"
           },
           "zombies": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Zombies"
           }
         },
@@ -2992,29 +4116,64 @@
       "Consumer": {
         "properties": {
           "created_at": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Created At",
             "description": "Unix epoch when the resource was created."
           },
           "custom_id": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Custom Id",
             "description": "Field for storing an existing unique ID for the Consumer - useful for mapping Kong with users in your existing database. You must send either this field or `username` with the request."
           },
           "id": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Id"
           },
           "tags": {
             "anyOf": [
-              { "items": { "type": "string" }, "type": "array" },
-              { "type": "null" }
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Tags",
             "description": "An optional set of strings associated with the Consumer for grouping and filtering."
           },
           "username": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Username",
             "description": "The unique username of the Consumer. You must send either this field or `custom_id` with the request."
           }
@@ -3026,7 +4185,14 @@
       "CreateServiceRequestClientCertificate": {
         "properties": {
           "id": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Id"
           }
         },
@@ -3044,12 +4210,23 @@
         "properties": {
           "removed": {
             "anyOf": [
-              { "$ref": "#/components/schemas/Route" },
-              { "type": "null" }
+              {
+                "$ref": "#/components/schemas/Route"
+              },
+              {
+                "type": "null"
+              }
             ]
           },
           "status": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Status"
           }
         },
@@ -3058,14 +4235,48 @@
         "title": "DeleteProject",
         "description": "Response from disconnecting a project from a datastore."
       },
+      "DeleteService": {
+        "properties": {
+          "deleted": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Deleted"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          }
+        },
+        "type": "object",
+        "required": ["deleted", "count"],
+        "title": "DeleteService",
+        "description": "Response for deleting orphaned services."
+      },
       "DetailedAnalysis": {
         "properties": {
           "description": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Description"
           },
           "name": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Name"
           },
           "project_id": {
@@ -3075,15 +4286,25 @@
           },
           "master_image_id": {
             "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "null" }
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Master Image Id"
           },
           "registry_id": {
             "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "null" }
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Registry Id"
           },
@@ -3094,9 +4315,19 @@
             "type": "array",
             "title": "Image Command Arguments"
           },
-          "id": { "type": "string", "format": "uuid", "title": "Id" },
-          "nodes": { "type": "integer", "title": "Nodes" },
-          "nodes_approved": { "type": "integer", "title": "Nodes Approved" },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "nodes": {
+            "type": "integer",
+            "title": "Nodes"
+          },
+          "nodes_approved": {
+            "type": "integer",
+            "title": "Nodes Approved"
+          },
           "configuration_locked": {
             "type": "boolean",
             "title": "Configuration Locked"
@@ -3135,7 +4366,9 @@
                   "failed"
                 ]
               },
-              { "type": "null" }
+              {
+                "type": "null"
+              }
             ],
             "title": "Build Status"
           },
@@ -3144,19 +4377,47 @@
             "title": "Build Nodes Valid"
           },
           "build_progress": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Build Progress"
           },
           "build_hash": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Build Hash"
           },
           "build_os": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Build Os"
           },
           "build_size": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Build Size"
           },
           "distribution_status": {
@@ -3173,12 +4434,21 @@
                   "failed"
                 ]
               },
-              { "type": "null" }
+              {
+                "type": "null"
+              }
             ],
             "title": "Distribution Status"
           },
           "distribution_progress": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Distribution Progress"
           },
           "execution_status": {
@@ -3195,12 +4465,21 @@
                   "failed"
                 ]
               },
-              { "type": "null" }
+              {
+                "type": "null"
+              }
             ],
             "title": "Execution Status"
           },
           "execution_progress": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Execution Progress"
           },
           "created_at": {
@@ -3215,8 +4494,12 @@
           },
           "registry": {
             "anyOf": [
-              { "$ref": "#/components/schemas/Registry" },
-              { "type": "null" }
+              {
+                "$ref": "#/components/schemas/Registry"
+              },
+              {
+                "type": "null"
+              }
             ]
           },
           "realm_id": {
@@ -3224,17 +4507,29 @@
             "format": "uuid",
             "title": "Realm Id"
           },
-          "user_id": { "type": "string", "format": "uuid", "title": "User Id" },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id"
+          },
           "project": {
             "anyOf": [
-              { "$ref": "#/components/schemas/Project" },
-              { "type": "null" }
+              {
+                "$ref": "#/components/schemas/Project"
+              },
+              {
+                "type": "null"
+              }
             ]
           },
           "master_image": {
             "anyOf": [
-              { "$ref": "#/components/schemas/MasterImage" },
-              { "type": "null" }
+              {
+                "$ref": "#/components/schemas/MasterImage"
+              },
+              {
+                "type": "null"
+              }
             ]
           }
         },
@@ -3275,7 +4570,14 @@
       "DetailedRoute": {
         "properties": {
           "created_at": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Created At",
             "description": "Unix epoch when the resource was created."
           },
@@ -3287,108 +4589,212 @@
                 },
                 "type": "array"
               },
-              { "type": "null" }
+              {
+                "type": "null"
+              }
             ],
             "title": "Destinations",
             "description": "A list of IP destinations of incoming connections that match this route when using stream routing. Each entry is an object with fields \"ip\" (optionally in CIDR range notation) and/or \"port\"."
           },
           "headers": {
             "anyOf": [
-              { "additionalProperties": true, "type": "object" },
-              { "type": "null" }
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Headers",
             "description": "One or more lists of values indexed by header name that will cause this route to match if present in the request. The `Host` header cannot be used with this hosts should be specified using the `hosts` attribute. When `headers` contains only one value and that value starts with the special prefix `~*`, the value is interpreted as a regular expression."
           },
           "hosts": {
             "anyOf": [
-              { "items": { "type": "string" }, "type": "array" },
-              { "type": "null" }
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Hosts",
             "description": "A list of domain names that match this route. Note that the hosts value is case sensitive."
           },
           "https_redirect_status_code": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Https Redirect Status Code",
             "description": "The status code Kong responds with when all properties of a route match except the protocol i.e. if the protocol of the request is `HTTP` instead of `HTTPS`. `Location` header is injected by Kong if the field is set to 301, 302, 307 or 308. This config applies only if the route is configured to only accept the `https` protocol.",
             "default": 426
           },
           "id": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Id"
           },
           "methods": {
             "anyOf": [
-              { "items": { "type": "string" }, "type": "array" },
-              { "type": "null" }
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Methods",
             "description": "A list of HTTP methods that match this route."
           },
           "name": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Name",
             "description": "The name of the route. Route names must be unique, and they are case sensitive. For example, there can be two different routes named \"test\" and \"Test\"."
           },
           "path_handling": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Path Handling",
             "description": "Controls how the service path, route path and requested path are combined when sending a request to the upstream. See above for a detailed description of each behavior.",
             "default": "v0"
           },
           "paths": {
             "anyOf": [
-              { "items": { "type": "string" }, "type": "array" },
-              { "type": "null" }
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Paths",
             "description": "A list of paths that match this route."
           },
           "preserve_host": {
-            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Preserve Host",
             "description": "When matching a route via one of the `hosts` domain names, use the request `Host` header in the upstream request headers. If set to `false`, the upstream `Host` header will be that of the services `host`.",
             "default": false
           },
           "protocols": {
             "anyOf": [
-              { "items": { "type": "string" }, "type": "array" },
-              { "type": "null" }
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Protocols",
             "description": "An array of the protocols this route should allow. See the [route Object](#route-object) section for a list of accepted protocols. When set to only `\"https\"`, HTTP requests are answered with an upgrade error. When set to only `\"http\"`, HTTPS requests are answered with an error."
           },
           "regex_priority": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Regex Priority",
             "description": "A number used to choose which route resolves a given request when several routes match it using regexes simultaneously. When two routes match the path and have the same `regex_priority`, the older one (lowest `created_at`) is used. Note that the priority for non-regex routes is different (longer non-regex routes are matched before shorter ones).",
             "default": 0
           },
           "request_buffering": {
-            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Request Buffering",
             "description": "Whether to enable request body buffering or not. With HTTP 1.1, it may make sense to turn this off on services that receive data with chunked transfer encoding.",
             "default": true
           },
           "response_buffering": {
-            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Response Buffering",
             "description": "Whether to enable response body buffering or not. With HTTP 1.1, it may make sense to turn this off on services that send data with chunked transfer encoding.",
             "default": true
           },
           "service": {
             "anyOf": [
-              { "$ref": "#/components/schemas/Service" },
-              { "$ref": "#/components/schemas/RouteService" },
-              { "type": "null" }
+              {
+                "$ref": "#/components/schemas/Service"
+              },
+              {
+                "$ref": "#/components/schemas/RouteService"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Service"
           },
           "snis": {
             "anyOf": [
-              { "items": { "type": "string" }, "type": "array" },
-              { "type": "null" }
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Snis",
             "description": "A list of SNIs that match this route when using stream routing."
@@ -3401,27 +4807,50 @@
                 },
                 "type": "array"
               },
-              { "type": "null" }
+              {
+                "type": "null"
+              }
             ],
             "title": "Sources",
             "description": "A list of IP sources of incoming connections that match this route when using stream routing. Each entry is an object with fields \"ip\" (optionally in CIDR range notation) and/or \"port\"."
           },
           "strip_path": {
-            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Strip Path",
             "description": "When matching a route via one of the `paths`, strip the matching prefix from the upstream request URL.",
             "default": true
           },
           "tags": {
             "anyOf": [
-              { "items": { "type": "string" }, "type": "array" },
-              { "type": "null" }
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Tags",
             "description": "An optional set of strings associated with the route for grouping and filtering."
           },
           "updated_at": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Updated At",
             "description": "Unix epoch when the resource was last updated."
           }
@@ -3434,108 +4863,238 @@
         "properties": {
           "ca_certificates": {
             "anyOf": [
-              { "items": { "type": "string" }, "type": "array" },
-              { "type": "null" }
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Ca Certificates",
             "description": "Array of `CA Certificate` object UUIDs that are used to build the trust store while verifying upstream server's TLS certificate. If set to `null` when Nginx default is respected. If default CA list in Nginx are not specified and TLS verification is enabled, then handshake with upstream server will always fail (because no CA are trusted)."
           },
           "client_certificate": {
             "anyOf": [
-              { "$ref": "#/components/schemas/ServiceClientCertificate" },
-              { "type": "null" }
+              {
+                "$ref": "#/components/schemas/ServiceClientCertificate"
+              },
+              {
+                "type": "null"
+              }
             ]
           },
           "connect_timeout": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Connect Timeout",
             "description": "The timeout in milliseconds for establishing a connection to the upstream server.",
             "default": 60000
           },
           "created_at": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Created At",
             "description": "Unix epoch when the resource was created."
           },
           "enabled": {
-            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Enabled",
             "description": "Whether the service is active. If set to `false`, the proxy behavior will be as if any routes attached to it do not exist (404).",
             "default": true
           },
           "host": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Host",
             "description": "The host of the upstream server. Note that the host value is case sensitive."
           },
           "id": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Id"
           },
           "name": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Name",
             "description": "The service name."
           },
           "path": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Path",
             "description": "The path to be used in requests to the upstream server."
           },
           "port": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Port",
             "description": "The upstream server port.",
             "default": 80
           },
           "protocol": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Protocol",
             "description": "The protocol used to communicate with the upstream.",
             "default": "http"
           },
           "read_timeout": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Read Timeout",
             "description": "The timeout in milliseconds between two successive read operations for transmitting a request to the upstream server.",
             "default": 60000
           },
           "retries": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Retries",
             "description": "The number of retries to execute upon failure to proxy.",
             "default": 5
           },
           "tags": {
             "anyOf": [
-              { "items": { "type": "string" }, "type": "array" },
-              { "type": "null" }
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Tags",
             "description": "An optional set of strings associated with the service for grouping and filtering."
           },
           "tls_verify": {
-            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Tls Verify",
             "description": "Whether to enable verification of upstream server TLS certificate. If set to `null`, then the Nginx default is respected."
           },
           "tls_verify_depth": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Tls Verify Depth",
             "description": "Maximum depth of chain while verifying Upstream server's TLS certificate. If set to `null`, then the Nginx default is respected.'"
           },
           "updated_at": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Updated At",
             "description": "Unix epoch when the resource was last updated."
           },
           "url": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Url",
             "description": "Helper field to set `protocol`, `host`, `port` and `path` using a URL. This field is write-only and is not returned in responses."
           },
           "write_timeout": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Write Timeout",
             "description": "The timeout in milliseconds between two successive write operations for transmitting a request to the upstream server.",
             "default": 60000
@@ -3543,10 +5102,14 @@
           "routes": {
             "anyOf": [
               {
-                "items": { "$ref": "#/components/schemas/Route" },
+                "items": {
+                  "$ref": "#/components/schemas/Route"
+                },
                 "type": "array"
               },
-              { "type": "null" }
+              {
+                "type": "null"
+              }
             ],
             "title": "Routes",
             "default": []
@@ -3560,22 +5123,34 @@
         "properties": {
           "po": {
             "anyOf": [
-              { "$ref": "#/components/schemas/HealthCheck" },
-              { "type": "string" }
+              {
+                "$ref": "#/components/schemas/HealthCheck"
+              },
+              {
+                "type": "string"
+              }
             ],
             "title": "Po"
           },
           "storage": {
             "anyOf": [
-              { "$ref": "#/components/schemas/HealthCheck" },
-              { "type": "string" }
+              {
+                "$ref": "#/components/schemas/HealthCheck"
+              },
+              {
+                "type": "string"
+              }
             ],
             "title": "Storage"
           },
           "kong": {
             "anyOf": [
-              { "$ref": "#/components/schemas/HealthCheck" },
-              { "type": "string" }
+              {
+                "$ref": "#/components/schemas/HealthCheck"
+              },
+              {
+                "type": "string"
+              }
             ],
             "title": "Kong"
           }
@@ -3587,15 +5162,27 @@
       },
       "EventLog": {
         "properties": {
-          "id": { "type": "integer", "title": "Id" },
-          "event_name": { "type": "string", "title": "Event Name" },
-          "service_name": { "type": "string", "title": "Service Name" },
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "event_name": {
+            "type": "string",
+            "title": "Event Name"
+          },
+          "service_name": {
+            "type": "string",
+            "title": "Service Name"
+          },
           "timestamp": {
             "type": "string",
             "format": "date-time",
             "title": "Timestamp"
           },
-          "body": { "type": "string", "title": "Body" },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
           "attributes": {
             "additionalProperties": true,
             "type": "object",
@@ -3617,11 +5204,15 @@
       "EventLogResponse": {
         "properties": {
           "data": {
-            "items": { "$ref": "#/components/schemas/EventLog" },
+            "items": {
+              "$ref": "#/components/schemas/EventLog"
+            },
             "type": "array",
             "title": "Data"
           },
-          "meta": { "$ref": "#/components/schemas/Meta" }
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
         },
         "type": "object",
         "required": ["data", "meta"],
@@ -3631,7 +5222,9 @@
       "HTTPValidationError": {
         "properties": {
           "detail": {
-            "items": { "$ref": "#/components/schemas/ValidationError" },
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
             "type": "array",
             "title": "Detail"
           }
@@ -3641,7 +5234,11 @@
       },
       "HealthCheck": {
         "properties": {
-          "status": { "type": "string", "title": "Status", "default": "OK" }
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "OK"
+          }
         },
         "type": "object",
         "title": "HealthCheck",
@@ -3668,15 +5265,25 @@
         "properties": {
           "analysis_id": {
             "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "string" }
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "string"
+              }
             ],
             "title": "Analysis Id"
           },
           "project_id": {
             "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "string" }
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "string"
+              }
             ],
             "title": "Project Id"
           }
@@ -3689,28 +5296,60 @@
         "properties": {
           "consumer": {
             "anyOf": [
-              { "$ref": "#/components/schemas/KeyAuthConsumer" },
-              { "type": "null" }
+              {
+                "$ref": "#/components/schemas/KeyAuthConsumer"
+              },
+              {
+                "type": "null"
+              }
             ]
           },
           "created_at": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Created At",
             "description": "Unix epoch when the resource was created."
           },
           "id": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Id"
           },
           "key": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Key",
             "description": "The key that will be used to authenticate the consumer. If this field is not specified, it will be auto-generated."
           },
           "tags": {
             "anyOf": [
-              { "items": { "type": "string" }, "type": "array" },
-              { "type": "null" }
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Tags",
             "description": "An optional set of strings associated with the Key for grouping and filtering."
@@ -3723,7 +5362,14 @@
       "KeyAuthConsumer": {
         "properties": {
           "id": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Id"
           }
         },
@@ -3733,9 +5379,15 @@
       },
       "LinkDataStoreProject": {
         "properties": {
-          "route": { "$ref": "#/components/schemas/Route" },
-          "keyauth": { "$ref": "#/components/schemas/KeyAuth" },
-          "acl": { "$ref": "#/components/schemas/ACL" }
+          "route": {
+            "$ref": "#/components/schemas/Route"
+          },
+          "keyauth": {
+            "$ref": "#/components/schemas/KeyAuth"
+          },
+          "acl": {
+            "$ref": "#/components/schemas/ACL"
+          }
         },
         "type": "object",
         "required": ["route", "keyauth", "acl"],
@@ -3743,9 +5395,15 @@
       },
       "LinkProjectAnalysis": {
         "properties": {
-          "consumer": { "$ref": "#/components/schemas/Consumer" },
-          "keyauth": { "$ref": "#/components/schemas/KeyAuth" },
-          "acl": { "$ref": "#/components/schemas/ACL" }
+          "consumer": {
+            "$ref": "#/components/schemas/Consumer"
+          },
+          "keyauth": {
+            "$ref": "#/components/schemas/KeyAuth"
+          },
+          "acl": {
+            "$ref": "#/components/schemas/ACL"
+          }
         },
         "type": "object",
         "required": ["consumer", "keyauth", "acl"],
@@ -3756,15 +5414,26 @@
           "data": {
             "anyOf": [
               {
-                "items": { "$ref": "#/components/schemas/Consumer" },
+                "items": {
+                  "$ref": "#/components/schemas/Consumer"
+                },
                 "type": "array"
               },
-              { "type": "null" }
+              {
+                "type": "null"
+              }
             ],
             "title": "Data"
           },
           "offset": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Offset",
             "description": "Offset is used to paginate through the API. Provide this value to the next list operation to fetch the next page"
           }
@@ -3778,15 +5447,26 @@
           "data": {
             "anyOf": [
               {
-                "items": { "$ref": "#/components/schemas/DetailedRoute" },
+                "items": {
+                  "$ref": "#/components/schemas/DetailedRoute"
+                },
                 "type": "array"
               },
-              { "type": "null" }
+              {
+                "type": "null"
+              }
             ],
             "title": "Data"
           },
           "offset": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Offset",
             "description": "Offset is used to paginate through the API. Provide this value to the next list operation to fetch the next page"
           }
@@ -3800,15 +5480,26 @@
           "data": {
             "anyOf": [
               {
-                "items": { "$ref": "#/components/schemas/DetailedService" },
+                "items": {
+                  "$ref": "#/components/schemas/DetailedService"
+                },
                 "type": "array"
               },
-              { "type": "null" }
+              {
+                "type": "null"
+              }
             ],
             "title": "Data"
           },
           "offset": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Offset",
             "description": "Offset is used to paginate through the API. Provide this value to the next list operation to fetch the next page"
           }
@@ -3819,10 +5510,21 @@
       },
       "LogReport": {
         "additionalProperties": {
-          "items": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "type": "array"
         },
-        "propertyNames": { "format": "uuid" },
+        "propertyNames": {
+          "format": "uuid"
+        },
         "type": "object",
         "title": "LogReport",
         "description": "Response with dynamic UUID keys and dynamic analysis log keys"
@@ -3831,14 +5533,22 @@
         "properties": {
           "analysis": {
             "anyOf": [
-              { "$ref": "#/components/schemas/LogReport" },
-              { "type": "null" }
+              {
+                "$ref": "#/components/schemas/LogReport"
+              },
+              {
+                "type": "null"
+              }
             ]
           },
           "nginx": {
             "anyOf": [
-              { "$ref": "#/components/schemas/LogReport" },
-              { "type": "null" }
+              {
+                "$ref": "#/components/schemas/LogReport"
+              },
+              {
+                "type": "null"
+              }
             ]
           }
         },
@@ -3848,12 +5558,26 @@
       },
       "MasterImage": {
         "properties": {
-          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
           "path": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Path"
           },
-          "virtual_path": { "type": "string", "title": "Virtual Path" },
+          "virtual_path": {
+            "type": "string",
+            "title": "Virtual Path"
+          },
           "group_virtual_path": {
             "type": "string",
             "title": "Group Virtual Path"
@@ -3872,17 +5596,36 @@
                   "failed"
                 ]
               },
-              { "type": "null" }
+              {
+                "type": "null"
+              }
             ],
             "title": "Build Status"
           },
           "build_progress": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Build Progress"
           },
-          "name": { "type": "string", "title": "Name" },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
           "command": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Command"
           },
           "command_arguments": {
@@ -3893,7 +5636,9 @@
                 },
                 "type": "array"
               },
-              { "type": "null" }
+              {
+                "type": "null"
+              }
             ],
             "title": "Command Arguments"
           },
@@ -3926,11 +5671,19 @@
       },
       "MasterImageCommandArgument": {
         "properties": {
-          "value": { "type": "string", "title": "Value" },
+          "value": {
+            "type": "string",
+            "title": "Value"
+          },
           "position": {
             "anyOf": [
-              { "type": "string", "enum": ["before", "after"] },
-              { "type": "null" }
+              {
+                "type": "string",
+                "enum": ["before", "after"]
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Position"
           }
@@ -3941,10 +5694,22 @@
       },
       "Meta": {
         "properties": {
-          "count": { "type": "integer", "title": "Count" },
-          "total": { "type": "integer", "title": "Total" },
-          "limit": { "type": "integer", "title": "Limit" },
-          "offset": { "type": "integer", "title": "Offset" }
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
         },
         "type": "object",
         "required": ["count", "total", "limit", "offset"],
@@ -3971,7 +5736,14 @@
             "default": "us-east-1"
           },
           "bucket_name": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Bucket Name"
           },
           "timeout": {
@@ -3980,7 +5752,14 @@
             "default": 100000
           },
           "strip_path_pattern": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Strip Path Pattern"
           }
         },
@@ -3992,71 +5771,140 @@
       "Node": {
         "properties": {
           "external_name": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "External Name"
           },
           "hidden": {
-            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Hidden"
           },
-          "name": { "type": "string", "title": "Name" },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
           "realm_id": {
             "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "null" }
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Realm Id"
           },
           "registry_id": {
             "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "null" }
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Registry Id"
           },
           "type": {
             "anyOf": [
-              { "type": "string", "enum": ["aggregator", "default"] },
-              { "type": "null" }
+              {
+                "type": "string",
+                "enum": ["aggregator", "default"]
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Type"
           },
-          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
           "public_key": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Public Key"
           },
-          "online": { "type": "boolean", "title": "Online" },
+          "online": {
+            "type": "boolean",
+            "title": "Online"
+          },
           "registry": {
             "anyOf": [
-              { "$ref": "#/components/schemas/Registry" },
-              { "type": "null" }
+              {
+                "$ref": "#/components/schemas/Registry"
+              },
+              {
+                "type": "null"
+              }
             ]
           },
           "registry_project_id": {
             "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "null" }
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Registry Project Id"
           },
           "registry_project": {
             "anyOf": [
-              { "$ref": "#/components/schemas/RegistryProject" },
-              { "type": "null" }
+              {
+                "$ref": "#/components/schemas/RegistryProject"
+              },
+              {
+                "type": "null"
+              }
             ]
           },
           "robot_id": {
             "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "null" }
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Robot Id"
           },
           "client_id": {
             "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "null" }
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Client Id"
           },
@@ -4106,17 +5954,30 @@
         "additionalProperties": {
           "$ref": "#/components/schemas/AnalysisStatus"
         },
-        "propertyNames": { "format": "uuid" },
+        "propertyNames": {
+          "format": "uuid"
+        },
         "type": "object",
         "title": "PodProgressResponse",
         "description": "Response with dynamic UUID keys and dynamic analysis keys with progress/status"
       },
       "PodResponse": {
         "additionalProperties": {
-          "items": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "type": "array"
         },
-        "propertyNames": { "format": "uuid" },
+        "propertyNames": {
+          "format": "uuid"
+        },
         "type": "object",
         "title": "PodResponse",
         "description": "Response with a list of running pods for a given analysis ID"
@@ -4141,24 +6002,53 @@
       "Project": {
         "properties": {
           "description": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Description"
           },
           "master_image_id": {
             "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "null" }
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Master Image Id"
           },
-          "name": { "type": "string", "title": "Name" },
-          "id": { "type": "string", "format": "uuid", "title": "Id" },
-          "analyses": { "type": "integer", "title": "Analyses" },
-          "nodes": { "type": "integer", "title": "Nodes" },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "analyses": {
+            "type": "integer",
+            "title": "Analyses"
+          },
+          "nodes": {
+            "type": "integer",
+            "title": "Nodes"
+          },
           "master_image": {
             "anyOf": [
-              { "$ref": "#/components/schemas/MasterImage" },
-              { "type": "null" }
+              {
+                "$ref": "#/components/schemas/MasterImage"
+              },
+              {
+                "type": "null"
+              }
             ]
           },
           "created_at": {
@@ -4178,15 +6068,25 @@
           },
           "user_id": {
             "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "null" }
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "User Id"
           },
           "robot_id": {
             "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "null" }
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Robot Id"
           }
@@ -4209,20 +6109,35 @@
       },
       "ProjectNode": {
         "properties": {
-          "node_id": { "type": "string", "format": "uuid", "title": "Node Id" },
+          "node_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Node Id"
+          },
           "project_id": {
             "type": "string",
             "format": "uuid",
             "title": "Project Id"
           },
-          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
           "approval_status": {
             "type": "string",
             "enum": ["rejected", "approved"],
             "title": "Approval Status"
           },
           "comment": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Comment"
           },
           "created_at": {
@@ -4235,8 +6150,12 @@
             "format": "date-time",
             "title": "Updated At"
           },
-          "node": { "$ref": "#/components/schemas/Node" },
-          "project": { "$ref": "#/components/schemas/Project" },
+          "node": {
+            "$ref": "#/components/schemas/Node"
+          },
+          "project": {
+            "$ref": "#/components/schemas/Project"
+          },
           "project_realm_id": {
             "type": "string",
             "format": "uuid",
@@ -4270,17 +6189,41 @@
       },
       "Registry": {
         "properties": {
-          "name": { "type": "string", "title": "Name" },
-          "host": { "type": "string", "title": "Host" },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "host": {
+            "type": "string",
+            "title": "Host"
+          },
           "account_name": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Account Name"
           },
           "account_secret": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Account Secret"
           },
-          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
@@ -4305,7 +6248,10 @@
       },
       "RegistryProject": {
         "properties": {
-          "name": { "type": "string", "title": "Name" },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
           "type": {
             "type": "string",
             "enum": [
@@ -4323,39 +6269,98 @@
             "format": "uuid",
             "title": "Registry Id"
           },
-          "external_name": { "type": "string", "title": "External Name" },
-          "id": { "type": "string", "format": "uuid", "title": "Id" },
-          "public": { "type": "boolean", "title": "Public" },
+          "external_name": {
+            "type": "string",
+            "title": "External Name"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "public": {
+            "type": "boolean",
+            "title": "Public"
+          },
           "external_id": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "External Id"
           },
           "webhook_name": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Webhook Name"
           },
           "webhook_exists": {
-            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Webhook Exists"
           },
           "realm_id": {
             "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "null" }
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Realm Id"
           },
-          "registry": { "$ref": "#/components/schemas/Registry" },
+          "registry": {
+            "$ref": "#/components/schemas/Registry"
+          },
           "account_id": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Account Id"
           },
           "account_name": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Account Name"
           },
           "account_secret": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Account Secret"
           },
           "created_at": {
@@ -4389,7 +6394,14 @@
       "Route": {
         "properties": {
           "created_at": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Created At",
             "description": "Unix epoch when the resource was created."
           },
@@ -4401,106 +6413,208 @@
                 },
                 "type": "array"
               },
-              { "type": "null" }
+              {
+                "type": "null"
+              }
             ],
             "title": "Destinations",
             "description": "A list of IP destinations of incoming connections that match this route when using stream routing. Each entry is an object with fields \"ip\" (optionally in CIDR range notation) and/or \"port\"."
           },
           "headers": {
             "anyOf": [
-              { "additionalProperties": true, "type": "object" },
-              { "type": "null" }
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Headers",
             "description": "One or more lists of values indexed by header name that will cause this route to match if present in the request. The `Host` header cannot be used with this hosts should be specified using the `hosts` attribute. When `headers` contains only one value and that value starts with the special prefix `~*`, the value is interpreted as a regular expression."
           },
           "hosts": {
             "anyOf": [
-              { "items": { "type": "string" }, "type": "array" },
-              { "type": "null" }
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Hosts",
             "description": "A list of domain names that match this route. Note that the hosts value is case sensitive."
           },
           "https_redirect_status_code": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Https Redirect Status Code",
             "description": "The status code Kong responds with when all properties of a route match except the protocol i.e. if the protocol of the request is `HTTP` instead of `HTTPS`. `Location` header is injected by Kong if the field is set to 301, 302, 307 or 308. This config applies only if the route is configured to only accept the `https` protocol.",
             "default": 426
           },
           "id": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Id"
           },
           "methods": {
             "anyOf": [
-              { "items": { "type": "string" }, "type": "array" },
-              { "type": "null" }
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Methods",
             "description": "A list of HTTP methods that match this route."
           },
           "name": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Name",
             "description": "The name of the route. Route names must be unique, and they are case sensitive. For example, there can be two different routes named \"test\" and \"Test\"."
           },
           "path_handling": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Path Handling",
             "description": "Controls how the service path, route path and requested path are combined when sending a request to the upstream. See above for a detailed description of each behavior.",
             "default": "v0"
           },
           "paths": {
             "anyOf": [
-              { "items": { "type": "string" }, "type": "array" },
-              { "type": "null" }
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Paths",
             "description": "A list of paths that match this route."
           },
           "preserve_host": {
-            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Preserve Host",
             "description": "When matching a route via one of the `hosts` domain names, use the request `Host` header in the upstream request headers. If set to `false`, the upstream `Host` header will be that of the services `host`.",
             "default": false
           },
           "protocols": {
             "anyOf": [
-              { "items": { "type": "string" }, "type": "array" },
-              { "type": "null" }
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Protocols",
             "description": "An array of the protocols this route should allow. See the [route Object](#route-object) section for a list of accepted protocols. When set to only `\"https\"`, HTTP requests are answered with an upgrade error. When set to only `\"http\"`, HTTPS requests are answered with an error."
           },
           "regex_priority": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Regex Priority",
             "description": "A number used to choose which route resolves a given request when several routes match it using regexes simultaneously. When two routes match the path and have the same `regex_priority`, the older one (lowest `created_at`) is used. Note that the priority for non-regex routes is different (longer non-regex routes are matched before shorter ones).",
             "default": 0
           },
           "request_buffering": {
-            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Request Buffering",
             "description": "Whether to enable request body buffering or not. With HTTP 1.1, it may make sense to turn this off on services that receive data with chunked transfer encoding.",
             "default": true
           },
           "response_buffering": {
-            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Response Buffering",
             "description": "Whether to enable response body buffering or not. With HTTP 1.1, it may make sense to turn this off on services that send data with chunked transfer encoding.",
             "default": true
           },
           "service": {
             "anyOf": [
-              { "$ref": "#/components/schemas/RouteService" },
-              { "type": "null" }
+              {
+                "$ref": "#/components/schemas/RouteService"
+              },
+              {
+                "type": "null"
+              }
             ]
           },
           "snis": {
             "anyOf": [
-              { "items": { "type": "string" }, "type": "array" },
-              { "type": "null" }
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Snis",
             "description": "A list of SNIs that match this route when using stream routing."
@@ -4513,27 +6627,50 @@
                 },
                 "type": "array"
               },
-              { "type": "null" }
+              {
+                "type": "null"
+              }
             ],
             "title": "Sources",
             "description": "A list of IP sources of incoming connections that match this route when using stream routing. Each entry is an object with fields \"ip\" (optionally in CIDR range notation) and/or \"port\"."
           },
           "strip_path": {
-            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Strip Path",
             "description": "When matching a route via one of the `paths`, strip the matching prefix from the upstream request URL.",
             "default": true
           },
           "tags": {
             "anyOf": [
-              { "items": { "type": "string" }, "type": "array" },
-              { "type": "null" }
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Tags",
             "description": "An optional set of strings associated with the route for grouping and filtering."
           },
           "updated_at": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Updated At",
             "description": "Unix epoch when the resource was last updated."
           }
@@ -4544,7 +6681,15 @@
       },
       "RouteDestinationsInner": {
         "properties": {
-          "default": { "anyOf": [{}, { "type": "null" }], "title": "Default" }
+          "default": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default"
+          }
         },
         "type": "object",
         "title": "RouteDestinationsInner",
@@ -4553,7 +6698,14 @@
       "RouteService": {
         "properties": {
           "id": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Id"
           }
         },
@@ -4565,108 +6717,238 @@
         "properties": {
           "ca_certificates": {
             "anyOf": [
-              { "items": { "type": "string" }, "type": "array" },
-              { "type": "null" }
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Ca Certificates",
             "description": "Array of `CA Certificate` object UUIDs that are used to build the trust store while verifying upstream server's TLS certificate. If set to `null` when Nginx default is respected. If default CA list in Nginx are not specified and TLS verification is enabled, then handshake with upstream server will always fail (because no CA are trusted)."
           },
           "client_certificate": {
             "anyOf": [
-              { "$ref": "#/components/schemas/ServiceClientCertificate" },
-              { "type": "null" }
+              {
+                "$ref": "#/components/schemas/ServiceClientCertificate"
+              },
+              {
+                "type": "null"
+              }
             ]
           },
           "connect_timeout": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Connect Timeout",
             "description": "The timeout in milliseconds for establishing a connection to the upstream server.",
             "default": 60000
           },
           "created_at": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Created At",
             "description": "Unix epoch when the resource was created."
           },
           "enabled": {
-            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Enabled",
             "description": "Whether the service is active. If set to `false`, the proxy behavior will be as if any routes attached to it do not exist (404).",
             "default": true
           },
           "host": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Host",
             "description": "The host of the upstream server. Note that the host value is case sensitive."
           },
           "id": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Id"
           },
           "name": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Name",
             "description": "The service name."
           },
           "path": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Path",
             "description": "The path to be used in requests to the upstream server."
           },
           "port": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Port",
             "description": "The upstream server port.",
             "default": 80
           },
           "protocol": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Protocol",
             "description": "The protocol used to communicate with the upstream.",
             "default": "http"
           },
           "read_timeout": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Read Timeout",
             "description": "The timeout in milliseconds between two successive read operations for transmitting a request to the upstream server.",
             "default": 60000
           },
           "retries": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Retries",
             "description": "The number of retries to execute upon failure to proxy.",
             "default": 5
           },
           "tags": {
             "anyOf": [
-              { "items": { "type": "string" }, "type": "array" },
-              { "type": "null" }
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Tags",
             "description": "An optional set of strings associated with the service for grouping and filtering."
           },
           "tls_verify": {
-            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Tls Verify",
             "description": "Whether to enable verification of upstream server TLS certificate. If set to `null`, then the Nginx default is respected."
           },
           "tls_verify_depth": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Tls Verify Depth",
             "description": "Maximum depth of chain while verifying Upstream server's TLS certificate. If set to `null`, then the Nginx default is respected.'"
           },
           "updated_at": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Updated At",
             "description": "Unix epoch when the resource was last updated."
           },
           "url": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Url",
             "description": "Helper field to set `protocol`, `host`, `port` and `path` using a URL. This field is write-only and is not returned in responses."
           },
           "write_timeout": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Write Timeout",
             "description": "The timeout in milliseconds between two successive write operations for transmitting a request to the upstream server.",
             "default": 60000
@@ -4679,7 +6961,14 @@
       "ServiceClientCertificate": {
         "properties": {
           "id": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Id"
           }
         },
@@ -4690,18 +6979,39 @@
       "ServiceRequest": {
         "properties": {
           "name": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Name",
             "description": "The service name. "
           },
           "retries": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Retries",
             "description": "The number of retries to execute upon failure to proxy. Default:`5`. ",
             "default": 5
           },
           "protocol": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Protocol",
             "default": "http"
           },
@@ -4711,33 +7021,71 @@
             "description": "The host of the upstream server. Note that the host value is case sensitive. "
           },
           "port": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Port",
             "default": 80
           },
-          "path": { "type": "string", "title": "Path" },
+          "path": {
+            "type": "string",
+            "title": "Path"
+          },
           "connect_timeout": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Connect Timeout",
             "description": "The timeout in milliseconds for establishing a connection to the upstream server.",
             "default": 6000
           },
           "write_timeout": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Write Timeout",
             "description": "The timeout in milliseconds between two successive write operations for transmitting a request to the upstream server. Default: `60000`. ",
             "default": 6000
           },
           "read_timeout": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Read Timeout",
             "description": "The timeout in milliseconds between two successive read operations for transmitting a request to the upstream server. Default: `60000`. ",
             "default": 6000
           },
           "tags": {
             "anyOf": [
-              { "items": { "type": "string" }, "type": "array" },
-              { "type": "null" }
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Tags",
             "description": "An optional set of strings associated with the service for grouping and filtering. "
@@ -4747,26 +7095,53 @@
               {
                 "$ref": "#/components/schemas/CreateServiceRequestClientCertificate"
               },
-              { "type": "null" }
+              {
+                "type": "null"
+              }
             ]
           },
           "tls_verify": {
-            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Tls Verify"
           },
           "tls_verify_depth": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Tls Verify Depth",
             "description": "Maximum depth of chain while verifying Upstream server's TLS certificate. If set to null, then the Nginx default is respected. Default: null. "
           },
           "ca_certificates": {
             "anyOf": [
-              { "items": { "type": "string" }, "type": "array" },
-              { "type": "null" }
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
             ],
             "title": "Ca Certificates"
           },
-          "enabled": { "type": "boolean", "title": "Enabled", "default": true }
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": true
+          }
         },
         "type": "object",
         "required": ["host", "path"],
@@ -4789,23 +7164,50 @@
         ]
       },
       "StatusOnlyResponse": {
-        "additionalProperties": { "$ref": "#/components/schemas/PodStatus" },
-        "propertyNames": { "format": "uuid" },
+        "additionalProperties": {
+          "$ref": "#/components/schemas/PodStatus"
+        },
+        "propertyNames": {
+          "format": "uuid"
+        },
         "type": "object",
         "title": "StatusOnlyResponse",
         "description": "Response with dynamic UUID keys and dynamic analysis keys"
       },
       "Token": {
         "properties": {
-          "access_token": { "type": "string", "title": "Access Token" },
-          "token_type": { "type": "string", "title": "Token Type" },
-          "expires_in": { "type": "integer", "title": "Expires In" },
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type"
+          },
+          "expires_in": {
+            "type": "integer",
+            "title": "Expires In"
+          },
           "refresh_token": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Refresh Token"
           },
           "refresh_expires_in": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Refresh Expires In"
           }
         },
@@ -4817,16 +7219,30 @@
       "UserSettings": {
         "properties": {
           "require_data_store": {
-            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Require Data Store",
             "default": true
           },
           "autostart": {
             "anyOf": [
-              { "$ref": "#/components/schemas/AutostartSettings" },
-              { "type": "null" }
+              {
+                "$ref": "#/components/schemas/AutostartSettings"
+              },
+              {
+                "type": "null"
+              }
             ],
-            "default": { "enabled": false, "interval": 60 }
+            "default": {
+              "enabled": false,
+              "interval": 60
+            }
           }
         },
         "additionalProperties": false,
@@ -4837,14 +7253,34 @@
       "ValidationError": {
         "properties": {
           "loc": {
-            "items": { "anyOf": [{ "type": "string" }, { "type": "integer" }] },
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
             "type": "array",
             "title": "Location"
           },
-          "msg": { "type": "string", "title": "Message" },
-          "type": { "type": "string", "title": "Error Type" },
-          "input": { "title": "Input" },
-          "ctx": { "type": "object", "title": "Context" }
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
         },
         "type": "object",
         "required": ["loc", "msg", "type"],
