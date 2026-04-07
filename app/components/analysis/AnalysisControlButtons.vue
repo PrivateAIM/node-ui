@@ -6,7 +6,7 @@ import { ProcessStatus } from "~/types/analysis";
 import {
   type PodProgressResponse,
   PodStatus,
-  type StatusOnlyResponse,
+  type StatusOnlyResponse
 } from "~/services/Api";
 
 type ToastSeverity = "success" | "info" | "warn" | "error" | undefined;
@@ -22,41 +22,73 @@ const props = defineProps({
   analysisBuildStatus: [String, null],
   analysisExecutionStatus: {
     type: [String, null],
-    required: true,
+    required: true
   },
   analysisDistributionStatus: {
     type: [String, null],
-    required: true,
+    required: true
   },
   analysisNodeId: {
     type: String,
-    required: true,
+    required: true
   },
   analysisId: {
     type: String,
-    required: true,
+    required: true
   },
   projectId: {
     type: String,
-    required: true,
+    required: true
   },
   nodeId: {
     type: String,
-    required: true,
+    required: true
   },
   datastore: {
     type: Boolean,
-    required: true,
+    required: true
   },
   requireDatastore: {
     type: Boolean,
-    required: true,
-  },
+    required: true
+  }
 });
 
 const emit = defineEmits(["updateAnalysisRow", "missingDataStore"]);
 const toast = useToast();
 const loading = ref(false);
+// Needed in order to distinguish in-flight request from stored
+const loadingRestoredFromStorage = ref(false);
+
+const loadingStorageKey = computed(
+  () => `analysis-start-loading-${props.analysisId}`
+);
+
+onMounted(() => {
+  if (
+    localStorage.getItem(loadingStorageKey.value) === "true" &&
+    playButtonActiveStates.includes(props.analysisExecutionStatus)
+  ) {
+    loading.value = true;
+    loadingRestoredFromStorage.value = true;
+  } else {
+    localStorage.removeItem(loadingStorageKey.value);
+  }
+});
+
+watch(
+  () => props.analysisExecutionStatus,
+  (newStatus) => {
+    if (
+      loadingRestoredFromStorage.value &&
+      !playButtonActiveStates.includes(newStatus)
+    ) {
+      localStorage.removeItem(loadingStorageKey.value);
+      loading.value = false;
+      loadingRestoredFromStorage.value = false;
+    }
+  }
+);
 
 // API Constants
 const NOT_FOUND_STATUS = 404;
@@ -68,14 +100,14 @@ const rerunButtonActiveStates: Array<string | null | undefined> = [
   PodStatus.Executed,
   PodStatus.Finished, // Deprecated
   PodStatus.Stopped,
-  PodStatus.Stopping,
+  PodStatus.Stopping
 ];
 const stopButtonActiveStates: Array<string | null | undefined> = [
   PodStatus.Executing,
   PodStatus.Running, // Deprecated
   PodStatus.Starting,
   PodStatus.Started,
-  PodStatus.Stopping,
+  PodStatus.Stopping
 ];
 const deleteButtonActiveStates: Array<string | null | undefined> = [
   PodStatus.Failed,
@@ -84,7 +116,7 @@ const deleteButtonActiveStates: Array<string | null | undefined> = [
   PodStatus.Executing,
   PodStatus.Running, // Deprecated
   PodStatus.Starting,
-  PodStatus.Started,
+  PodStatus.Started
 ];
 
 function getButtonStatuses(podStatus: string | null | undefined) {
@@ -92,21 +124,21 @@ function getButtonStatuses(podStatus: string | null | undefined) {
     playActive: playButtonActiveStates.includes(podStatus),
     rerunActive: rerunButtonActiveStates.includes(podStatus),
     stopActive: stopButtonActiveStates.includes(podStatus),
-    deleteActive: deleteButtonActiveStates.includes(podStatus),
+    deleteActive: deleteButtonActiveStates.includes(podStatus)
   };
 }
 
 const buttonStatuses = computed<ButtonStates>(
-  () => getButtonStatuses(props.analysisExecutionStatus), // Changes buttons when new status update comes in
+  () => getButtonStatuses(props.analysisExecutionStatus) // Changes buttons when new status update comes in
 );
 
 function updatePodStatus(
   podStatus: string | null | undefined,
-  progressUpdate?: number | null | undefined,
+  progressUpdate?: number | null | undefined
 ) {
   const analysisUpdate = {
     status: podStatus,
-    progress: progressUpdate,
+    progress: progressUpdate
   };
   emit("updateAnalysisRow", props.analysisId, analysisUpdate);
 }
@@ -116,7 +148,7 @@ const showToast = (severity: ToastSeverity, summary: string, msg: string) => {
     severity: severity,
     summary: summary,
     detail: msg,
-    life: 5000,
+    life: 5000
   });
 };
 
@@ -124,14 +156,14 @@ const showStatusUnknownToast = () => {
   showToast(
     "warn",
     "Status unknown",
-    "Pod was not found, but the stop command was still issued",
+    "Pod was not found, but the stop command was still issued"
   );
 };
 
 async function checkPodStatus(): Promise<boolean> {
   const podStatus: PodProgressResponse = (await useNuxtApp()
     .$hubApi(`/po/status/${props.analysisId}`, {
-      method: "GET",
+      method: "GET"
     })
     .catch(() => null)) as PodProgressResponse; // Set the response to undefined if an error occurs
 
@@ -144,7 +176,7 @@ async function checkPodStatus(): Promise<boolean> {
       showToast(
         "warn",
         "Analysis already running",
-        "The analysis is already running on this node, the controls have been updated",
+        "The analysis is already running on this node, the controls have been updated"
       );
       updatePodStatus(currentPodStatus, currentPodProgress); // Grab the first status update
       return true;
@@ -160,6 +192,8 @@ async function onRerunAnalysis() {
 
 async function onStartAnalysis() {
   loading.value = true;
+  loadingRestoredFromStorage.value = false;
+  localStorage.setItem(loadingStorageKey.value, "true");
   const originalExecutionStatus = props.analysisExecutionStatus;
   updatePodStatus(PodStatus.Starting);
   let analysisProps = new FormData();
@@ -170,7 +204,7 @@ async function onStartAnalysis() {
   let startPodResp: StatusOnlyResponse = (await useNuxtApp()
     .$hubApi("/analysis/initialize", {
       method: "POST",
-      body: analysisProps,
+      body: analysisProps
     })
     .catch((e) => {
       updatePodStatus(null);
@@ -181,7 +215,7 @@ async function onStartAnalysis() {
           "info",
           "Analysis submitted",
           "The PodOrc did not respond in time, but the request was sent to start the analysis. " +
-            "The timeout was likely due to a large image being pulled.",
+          "The timeout was likely due to a large image being pulled."
         );
       } else if (e.status === NOT_FOUND_STATUS) {
         emit("missingDataStore");
@@ -206,6 +240,7 @@ async function onStartAnalysis() {
     updatePodStatus(originalExecutionStatus);
   }
 
+  localStorage.removeItem(loadingStorageKey.value);
   loading.value = false;
 }
 
@@ -216,13 +251,13 @@ async function onStopAnalysis() {
 
   const stopResp: StatusOnlyResponse = (await useNuxtApp()
     .$hubApi(`/po/stop/${props.analysisId}`, {
-      method: "PUT",
+      method: "PUT"
     })
     .catch(() => {
       showToast(
         "error",
         "Stop failure",
-        "Failed to stop the analysis container",
+        "Failed to stop the analysis container"
       );
     })) as StatusOnlyResponse;
 
@@ -232,7 +267,7 @@ async function onStopAnalysis() {
       showToast(
         "success",
         "Stop success",
-        "Successfully stopped the container",
+        "Successfully stopped the container"
       );
     } else {
       // No pod statuses returned from PO for analysis
@@ -252,13 +287,13 @@ async function onDeleteAnalysis() {
 
   const deleteResp: StatusOnlyResponse = (await useNuxtApp()
     .$hubApi(`/analysis/terminate/${props.analysisId}`, {
-      method: "DELETE",
+      method: "DELETE"
     })
     .catch(() => {
       showToast(
         "error",
         "Terminate request failure",
-        "Failed to terminate the analysis",
+        "Failed to terminate the analysis"
       );
     })) as StatusOnlyResponse;
 
@@ -268,7 +303,7 @@ async function onDeleteAnalysis() {
       showToast(
         "success",
         "Delete success",
-        "Successfully removed the container",
+        "Successfully removed the container"
       );
     } else {
       showStatusUnknownToast();
