@@ -6,8 +6,9 @@ import { ProcessStatus } from "~/types/analysis";
 import {
   type PodProgressResponse,
   PodStatus,
-  type StatusOnlyResponse
+  type StatusOnlyResponse,
 } from "~/services/Api";
+import { ApprovalStatus } from "~/types/node";
 
 type ToastSeverity = "success" | "info" | "warn" | "error" | undefined;
 
@@ -22,40 +23,40 @@ const props = defineProps({
   analysisBuildStatus: [String, null],
   approvalStatus: {
     type: [String, null],
-    default: null
+    default: null,
   },
   analysisExecutionStatus: {
     type: [String, null],
-    required: true
+    required: true,
   },
   analysisDistributionStatus: {
     type: [String, null],
-    required: true
+    required: true,
   },
   analysisNodeId: {
     type: String,
-    required: true
+    required: true,
   },
   analysisId: {
     type: String,
-    required: true
+    required: true,
   },
   projectId: {
     type: String,
-    required: true
+    required: true,
   },
   nodeId: {
     type: String,
-    required: true
+    required: true,
   },
   datastore: {
     type: Boolean,
-    required: true
+    required: true,
   },
   requireDatastore: {
     type: Boolean,
-    required: true
-  }
+    required: true,
+  },
 });
 
 const emit = defineEmits(["updateAnalysisRow", "missingDataStore"]);
@@ -65,7 +66,7 @@ const loading = ref(false);
 const loadingRestoredFromStorage = ref(false);
 
 const loadingStorageKey = computed(
-  () => `analysis-start-loading-${props.analysisId}`
+  () => `analysis-start-loading-${props.analysisId}`,
 );
 
 onMounted(() => {
@@ -91,7 +92,7 @@ watch(
       loading.value = false;
       loadingRestoredFromStorage.value = false;
     }
-  }
+  },
 );
 
 // API Constants
@@ -104,14 +105,14 @@ const rerunButtonActiveStates: Array<string | null | undefined> = [
   PodStatus.Executed,
   PodStatus.Finished, // Deprecated
   PodStatus.Stopped,
-  PodStatus.Stopping
+  PodStatus.Stopping,
 ];
 const stopButtonActiveStates: Array<string | null | undefined> = [
   PodStatus.Executing,
   PodStatus.Running, // Deprecated
   PodStatus.Starting,
   PodStatus.Started,
-  PodStatus.Stopping
+  PodStatus.Stopping,
 ];
 const deleteButtonActiveStates: Array<string | null | undefined> = [
   PodStatus.Failed,
@@ -120,7 +121,7 @@ const deleteButtonActiveStates: Array<string | null | undefined> = [
   PodStatus.Executing,
   PodStatus.Running, // Deprecated
   PodStatus.Starting,
-  PodStatus.Started
+  PodStatus.Started,
 ];
 
 function getButtonStatuses(podStatus: string | null | undefined) {
@@ -128,25 +129,26 @@ function getButtonStatuses(podStatus: string | null | undefined) {
     playActive: playButtonActiveStates.includes(podStatus),
     rerunActive: rerunButtonActiveStates.includes(podStatus),
     stopActive: stopButtonActiveStates.includes(podStatus),
-    deleteActive: deleteButtonActiveStates.includes(podStatus)
+    deleteActive: deleteButtonActiveStates.includes(podStatus),
   };
 }
 
 const buttonStatuses = computed<ButtonStates>(
-  () => getButtonStatuses(props.analysisExecutionStatus) // Changes buttons when new status update comes in
+  () => getButtonStatuses(props.analysisExecutionStatus), // Changes buttons when new status update comes in
 );
 
 const notApproved = computed(
-  () => !props.approvalStatus || props.approvalStatus === "rejected"
+  () =>
+    !props.approvalStatus || props.approvalStatus === ApprovalStatus.Rejected,
 );
 
 function updatePodStatus(
   podStatus: string | null | undefined,
-  progressUpdate?: number | null | undefined
+  progressUpdate?: number | null | undefined,
 ) {
   const analysisUpdate = {
     status: podStatus,
-    progress: progressUpdate
+    progress: progressUpdate,
   };
   emit("updateAnalysisRow", props.analysisId, analysisUpdate);
 }
@@ -156,7 +158,7 @@ const showToast = (severity: ToastSeverity, summary: string, msg: string) => {
     severity: severity,
     summary: summary,
     detail: msg,
-    life: 5000
+    life: 5000,
   });
 };
 
@@ -164,14 +166,14 @@ const showStatusUnknownToast = () => {
   showToast(
     "warn",
     "Status unknown",
-    "Pod was not found, but the stop command was still issued"
+    "Pod was not found, but the stop command was still issued",
   );
 };
 
 async function checkPodStatus(): Promise<boolean> {
   const podStatus: PodProgressResponse = (await useNuxtApp()
     .$hubApi(`/po/status/${props.analysisId}`, {
-      method: "GET"
+      method: "GET",
     })
     .catch(() => null)) as PodProgressResponse; // Set the response to undefined if an error occurs
 
@@ -184,7 +186,7 @@ async function checkPodStatus(): Promise<boolean> {
       showToast(
         "warn",
         "Analysis already running",
-        "The analysis is already running on this node, the controls have been updated"
+        "The analysis is already running on this node, the controls have been updated",
       );
       updatePodStatus(currentPodStatus, currentPodProgress); // Grab the first status update
       return true;
@@ -212,7 +214,7 @@ async function onStartAnalysis() {
   let startPodResp: StatusOnlyResponse = (await useNuxtApp()
     .$hubApi("/analysis/initialize", {
       method: "POST",
-      body: analysisProps
+      body: analysisProps,
     })
     .catch((e) => {
       updatePodStatus(null);
@@ -223,7 +225,7 @@ async function onStartAnalysis() {
           "info",
           "Analysis submitted",
           "The PodOrc did not respond in time, but the request was sent to start the analysis. " +
-          "The timeout was likely due to a large image being pulled."
+            "The timeout was likely due to a large image being pulled.",
         );
       } else if (e.status === NOT_FOUND_STATUS) {
         emit("missingDataStore");
@@ -259,13 +261,13 @@ async function onStopAnalysis() {
 
   const stopResp: StatusOnlyResponse = (await useNuxtApp()
     .$hubApi(`/po/stop/${props.analysisId}`, {
-      method: "PUT"
+      method: "PUT",
     })
     .catch(() => {
       showToast(
         "error",
         "Stop failure",
-        "Failed to stop the analysis container"
+        "Failed to stop the analysis container",
       );
     })) as StatusOnlyResponse;
 
@@ -275,7 +277,7 @@ async function onStopAnalysis() {
       showToast(
         "success",
         "Stop success",
-        "Successfully stopped the container"
+        "Successfully stopped the container",
       );
     } else {
       // No pod statuses returned from PO for analysis
@@ -295,13 +297,13 @@ async function onDeleteAnalysis() {
 
   const deleteResp: StatusOnlyResponse = (await useNuxtApp()
     .$hubApi(`/analysis/terminate/${props.analysisId}`, {
-      method: "DELETE"
+      method: "DELETE",
     })
     .catch(() => {
       showToast(
         "error",
         "Terminate request failure",
-        "Failed to terminate the analysis"
+        "Failed to terminate the analysis",
       );
     })) as StatusOnlyResponse;
 
@@ -311,7 +313,7 @@ async function onDeleteAnalysis() {
       showToast(
         "success",
         "Delete success",
-        "Successfully removed the container"
+        "Successfully removed the container",
       );
     } else {
       showStatusUnknownToast();
@@ -326,101 +328,92 @@ async function onDeleteAnalysis() {
 </script>
 
 <template>
-  <span
-    v-tooltip.top="
-      notApproved ? 'Analysis is not approved' : undefined
-    "
-    style="display: contents"
-  >
-    <div class="analysis-buttons">
+  <div class="analysis-buttons">
+    <Button
+      v-show="buttonStatuses.playActive"
+      v-tooltip.top="notApproved ? undefined : 'Start the analysis'"
+      :disabled="
+        notApproved ||
+        !buttonStatuses.playActive ||
+        !(props.analysisBuildStatus === ProcessStatus.Executed) ||
+        !(props.analysisDistributionStatus === ProcessStatus.Executed) ||
+        (!props.datastore && props.requireDatastore)
+      "
+      :loading="loading"
+      aria-label="Start"
+      class="start-analysis-btn"
+      icon="pi pi-play"
+      severity="success"
+      @click="onStartAnalysis()"
+    />
+    <Button
+      v-show="!buttonStatuses.playActive"
+      v-tooltip.top="notApproved ? undefined : 'Rerun the analysis'"
+      :disabled="
+        notApproved ||
+        !buttonStatuses.rerunActive ||
+        !(props.analysisBuildStatus === ProcessStatus.Executed) ||
+        !(props.analysisDistributionStatus === ProcessStatus.Executed) ||
+        (!props.datastore && props.requireDatastore)
+      "
+      :loading="loading"
+      aria-label="Rerun"
+      class="rerun-analysis-btn"
+      icon="pi pi-replay"
+      severity="success"
+      @click="onRerunAnalysis()"
+    />
+    <Button
+      v-tooltip.top="notApproved ? undefined : 'Stop the analysis'"
+      :disabled="
+        !buttonStatuses.stopActive ||
+        !(props.analysisBuildStatus === ProcessStatus.Executed) ||
+        !(props.analysisDistributionStatus === ProcessStatus.Executed) ||
+        (!props.datastore && props.requireDatastore)
+      "
+      :loading="loading"
+      aria-label="Stop"
+      class="stop-analysis-btn"
+      icon="pi pi-stop"
+      severity="warn"
+      @click="onStopAnalysis()"
+    />
+    <Button
+      v-tooltip.top="notApproved ? undefined : 'Delete the analysis container'"
+      :disabled="
+        !buttonStatuses.deleteActive ||
+        !(props.analysisBuildStatus === ProcessStatus.Executed) ||
+        !(props.analysisDistributionStatus === ProcessStatus.Executed) ||
+        (!props.datastore && props.requireDatastore)
+      "
+      :loading="loading"
+      aria-label="Delete"
+      class="delete-analysis-btn"
+      icon="pi pi-trash"
+      severity="danger"
+      @click="onDeleteAnalysis()"
+    />
+    <NuxtLink
+      :to="{
+        name: 'analyses-id',
+        params: { id: props.analysisId },
+      }"
+      target="_blank"
+    >
       <Button
-        v-show="buttonStatuses.playActive"
-        v-tooltip.top="notApproved ? undefined : 'Start the analysis'"
-        :disabled="
-          notApproved ||
-          !buttonStatuses.playActive ||
-          !(props.analysisBuildStatus === ProcessStatus.Executed) ||
-          !(props.analysisDistributionStatus === ProcessStatus.Executed) ||
-          (!props.datastore && props.requireDatastore)
-        "
-        :loading="loading"
-        aria-label="Start"
-        class="start-analysis-btn"
-        icon="pi pi-play"
-        severity="success"
-        @click="onStartAnalysis()"
+        v-tooltip.top="'View the logs'"
+        :disabled="buttonStatuses.playActive"
+        aria-label="Logs"
+        class="logs-analysis-btn"
+        icon="pi pi-bars"
+        severity="contrast"
       />
-      <Button
-        v-show="!buttonStatuses.playActive"
-        v-tooltip.top="notApproved ? undefined : 'Rerun the analysis'"
-        :disabled="
-          notApproved ||
-          !buttonStatuses.rerunActive ||
-          !(props.analysisBuildStatus === ProcessStatus.Executed) ||
-          !(props.analysisDistributionStatus === ProcessStatus.Executed) ||
-          (!props.datastore && props.requireDatastore)
-        "
-        :loading="loading"
-        aria-label="Rerun"
-        class="rerun-analysis-btn"
-        icon="pi pi-replay"
-        severity="success"
-        @click="onRerunAnalysis()"
-      />
-      <Button
-        v-tooltip.top="notApproved ? undefined : 'Stop the analysis'"
-        :disabled="
-          notApproved ||
-          !buttonStatuses.stopActive ||
-          !(props.analysisBuildStatus === ProcessStatus.Executed) ||
-          !(props.analysisDistributionStatus === ProcessStatus.Executed) ||
-          (!props.datastore && props.requireDatastore)
-        "
-        :loading="loading"
-        aria-label="Stop"
-        class="stop-analysis-btn"
-        icon="pi pi-stop"
-        severity="warn"
-        @click="onStopAnalysis()"
-      />
-      <Button
-        v-tooltip.top="notApproved ? undefined : 'Delete the analysis container'"
-        :disabled="
-          notApproved ||
-          !buttonStatuses.deleteActive ||
-          !(props.analysisBuildStatus === ProcessStatus.Executed) ||
-          !(props.analysisDistributionStatus === ProcessStatus.Executed) ||
-          (!props.datastore && props.requireDatastore)
-        "
-        :loading="loading"
-        aria-label="Delete"
-        class="delete-analysis-btn"
-        icon="pi pi-trash"
-        severity="danger"
-        @click="onDeleteAnalysis()"
-      />
-      <NuxtLink
-        :to="{
-          name: 'analyses-id',
-          params: { id: props.analysisId },
-        }"
-        target="_blank"
-      >
-        <Button
-          v-tooltip.top="'View the logs'"
-          :disabled="buttonStatuses.playActive"
-          aria-label="Logs"
-          class="logs-analysis-btn"
-          icon="pi pi-bars"
-          severity="contrast"
-        />
-      </NuxtLink>
-      <AnalysisUpdateButton
-        :analysisId="props.analysisId"
-        @updateAnalysisRunStatus="updatePodStatus"
-      />
-    </div>
-  </span>
+    </NuxtLink>
+    <AnalysisUpdateButton
+      :analysisId="props.analysisId"
+      @updateAnalysisRunStatus="updatePodStatus"
+    />
+  </div>
 </template>
 
 <style lang="scss" scoped>
