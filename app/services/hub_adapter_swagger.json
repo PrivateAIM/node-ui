@@ -16,6 +16,9 @@
   },
   "servers": [
     {
+      "url": "/api"
+    },
+    {
       "url": "http://localhost:5000",
       "description": "api"
     }
@@ -67,173 +70,6 @@
             "JWT": []
           }
         ]
-      }
-    },
-    "/po/logs": {
-      "get": {
-        "tags": ["PodOrc"],
-        "summary": "Podorc.Logs.Get",
-        "description": "Get all analysis pod logs.",
-        "operationId": "podorc_logs_get_po_logs_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LogResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found"
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
-      }
-    },
-    "/po/logs/{analysis_id}": {
-      "get": {
-        "tags": ["PodOrc"],
-        "summary": "Podorc.Logs.Get",
-        "description": "Get the analysis pod logs.",
-        "operationId": "podorc_logs_get_po_logs__analysis_id__get",
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "analysis_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "description": "UUID of the analysis.",
-              "title": "Analysis Id"
-            },
-            "description": "UUID of the analysis."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LogResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found"
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/po/history": {
-      "get": {
-        "tags": ["PodOrc"],
-        "summary": "Podorc.History.Get",
-        "description": "Get all previous analysis pod logs.",
-        "operationId": "podorc_history_get_po_history_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LogResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found"
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
-      }
-    },
-    "/po/history/{analysis_id}": {
-      "get": {
-        "tags": ["PodOrc"],
-        "summary": "Podorc.History.Get",
-        "description": "Get the previous analysis pod logs.",
-        "operationId": "podorc_history_get_po_history__analysis_id__get",
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "analysis_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "format": "uuid"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "UUID of the analysis.",
-              "title": "Analysis Id"
-            },
-            "description": "UUID of the analysis."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LogResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found"
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/po/status": {
@@ -1204,7 +1040,7 @@
         "tags": ["Hub"],
         "summary": "Update a specific analysis proposal",
         "description": "Set the approval status of an analysis proposal.",
-        "operationId": "hub_analysis_node_update_analysis_nodes__analysis_node_id__post",
+        "operationId": "hub_analysis_update_analysis_nodes__analysis_node_id__post",
         "security": [
           {
             "JWT": []
@@ -1236,7 +1072,7 @@
           "content": {
             "application/x-www-form-urlencoded": {
               "schema": {
-                "$ref": "#/components/schemas/Body_hub_analysis_node_update_analysis_nodes__analysis_node_id__post"
+                "$ref": "#/components/schemas/Body_hub_analysis_update_analysis_nodes__analysis_node_id__post"
               }
             }
           }
@@ -1362,7 +1198,7 @@
         "tags": ["Hub"],
         "summary": "Update a specific analysis proposal",
         "description": "Update analysis with a given UUID.",
-        "operationId": "hub_analysis_update_analyses__analysis_id__post",
+        "operationId": "hub_analysis_node_update_analyses__analysis_id__post",
         "security": [
           {
             "JWT": []
@@ -1552,7 +1388,7 @@
         "tags": ["Hub"],
         "summary": "Get registry project",
         "description": "List registry data for a project.",
-        "operationId": "hub_registry_metadata_get_registry_projects__registry_project_id__get",
+        "operationId": "get_registry_metadata_for_project_registry_projects__registry_project_id__get",
         "security": [
           {
             "JWT": []
@@ -2742,12 +2578,12 @@
         "tags": ["Auth"],
         "summary": "Get a token from the IDP",
         "description": "Get a JWT from the IDP by passing a valid username and password.\n\nThis token can then be used to authenticate\nyourself with this API. If no client ID/secret is provided, it will be autofilled using the hub adapter.",
-        "operationId": "auth_token_get_token_post",
+        "operationId": "get_token_token_post",
         "requestBody": {
           "content": {
             "application/x-www-form-urlencoded": {
               "schema": {
-                "$ref": "#/components/schemas/Body_auth_token_get_token_post"
+                "$ref": "#/components/schemas/Body_get_token_token_post"
               }
             }
           },
@@ -2782,15 +2618,10 @@
     },
     "/events": {
       "get": {
-        "tags": ["Events"],
-        "summary": "Events.Get",
+        "tags": ["Logs"],
+        "summary": "Logs.Events.Get",
         "description": "Retrieve a selection of logged events.",
-        "operationId": "events_get_events_get",
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
+        "operationId": "logs_events_get_events_get",
         "parameters": [
           {
             "name": "limit",
@@ -2824,7 +2655,6 @@
                 }
               ],
               "description": "Number of events to offset by",
-              "default": 0,
               "title": "Offset"
             },
             "description": "Number of events to offset by"
@@ -2836,7 +2666,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "type": "string"
+                  "$ref": "#/components/schemas/ServiceTag"
                 },
                 {
                   "type": "null"
@@ -2846,24 +2676,6 @@
               "title": "Service Tag"
             },
             "description": "Filter events by service tag"
-          },
-          {
-            "name": "event_name",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Filter events by event name",
-              "title": "Event Name"
-            },
-            "description": "Filter events by event name"
           },
           {
             "name": "username",
@@ -2951,7 +2763,7 @@
     },
     "/events/signin": {
       "post": {
-        "tags": ["Events"],
+        "tags": ["Logs"],
         "summary": "Auth.User.Signin",
         "description": "Create a log event that a user signed in. Username is extracted from the JWT required to call this endpoint.",
         "operationId": "auth_user_signin_events_signin_post",
@@ -2967,17 +2779,12 @@
           "404": {
             "description": "Not found"
           }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
+        }
       }
     },
     "/events/signout": {
       "post": {
-        "tags": ["Events"],
+        "tags": ["Logs"],
         "summary": "Auth.User.Signout",
         "description": "Create a log event that a user signed out. Username is extracted from the JWT required to call this endpoint.",
         "operationId": "auth_user_signout_events_signout_post",
@@ -2993,12 +2800,7 @@
           "404": {
             "description": "Not found"
           }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
+        }
       }
     }
   },
@@ -3704,7 +3506,7 @@
         "title": "AutostartSettings",
         "description": "Autostart Settings."
       },
-      "Body_auth_token_get_token_post": {
+      "Body_get_token_token_post": {
         "properties": {
           "username": {
             "type": "string",
@@ -3719,7 +3521,7 @@
         },
         "type": "object",
         "required": ["username", "password"],
-        "title": "Body_auth_token_get_token_post"
+        "title": "Body_get_token_token_post"
       },
       "Body_hub_analysis_image_get_analysis_image_post": {
         "properties": {
@@ -3772,7 +3574,7 @@
         "required": ["analysis_id", "project_id", "node_id"],
         "title": "Body_hub_analysis_image_get_analysis_image_post"
       },
-      "Body_hub_analysis_node_update_analysis_nodes__analysis_node_id__post": {
+      "Body_hub_analysis_update_analysis_nodes__analysis_node_id__post": {
         "properties": {
           "approval_status": {
             "type": "string",
@@ -3783,7 +3585,7 @@
         },
         "type": "object",
         "required": ["approval_status"],
-        "title": "Body_hub_analysis_node_update_analysis_nodes__analysis_node_id__post"
+        "title": "Body_hub_analysis_update_analysis_nodes__analysis_node_id__post"
       },
       "Body_hub_project_node_update_project_nodes__project_node_id__post": {
         "properties": {
@@ -5162,41 +4964,56 @@
       },
       "EventLog": {
         "properties": {
-          "id": {
-            "type": "integer",
-            "title": "Id"
+          "image": {
+            "type": "string",
+            "title": "Image"
+          },
+          "component": {
+            "type": "string",
+            "title": "Component"
           },
           "event_name": {
             "type": "string",
             "title": "Event Name"
           },
-          "service_name": {
+          "service": {
             "type": "string",
-            "title": "Service Name"
+            "title": "Service"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
           },
           "timestamp": {
             "type": "string",
             "format": "date-time",
             "title": "Timestamp"
           },
-          "body": {
+          "message": {
             "type": "string",
-            "title": "Body"
+            "title": "Message"
           },
-          "attributes": {
-            "additionalProperties": true,
-            "type": "object",
-            "title": "Attributes"
+          "user": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User"
           }
         },
         "type": "object",
         "required": [
-          "id",
+          "image",
+          "component",
           "event_name",
-          "service_name",
+          "service",
+          "level",
           "timestamp",
-          "body",
-          "attributes"
+          "message"
         ],
         "title": "EventLog",
         "description": "Event log response model."
@@ -5507,54 +5324,6 @@
         "type": "object",
         "title": "ListServices",
         "description": "Custom route list response model."
-      },
-      "LogReport": {
-        "additionalProperties": {
-          "items": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "type": "array"
-        },
-        "propertyNames": {
-          "format": "uuid"
-        },
-        "type": "object",
-        "title": "LogReport",
-        "description": "Response with dynamic UUID keys and dynamic analysis log keys"
-      },
-      "LogResponse": {
-        "properties": {
-          "analysis": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/LogReport"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "nginx": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/LogReport"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          }
-        },
-        "type": "object",
-        "title": "LogResponse",
-        "description": "Response for log endpoint"
       },
       "MasterImage": {
         "properties": {
@@ -6125,8 +5894,15 @@
             "title": "Id"
           },
           "approval_status": {
-            "type": "string",
-            "enum": ["rejected", "approved"],
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": ["rejected", "approved"]
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Approval Status"
           },
           "comment": {
@@ -6207,17 +5983,6 @@
               }
             ],
             "title": "Account Name"
-          },
-          "account_secret": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Account Secret"
           },
           "id": {
             "type": "string",
@@ -6329,39 +6094,6 @@
           },
           "registry": {
             "$ref": "#/components/schemas/Registry"
-          },
-          "account_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Account Id"
-          },
-          "account_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Account Name"
-          },
-          "account_secret": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Account Secret"
           },
           "created_at": {
             "type": "string",
@@ -7163,6 +6895,26 @@
           }
         ]
       },
+      "ServiceTag": {
+        "type": "string",
+        "enum": [
+          "Auth",
+          "Autostart",
+          "Logs",
+          "Health",
+          "Hub",
+          "Hub Adapter",
+          "Kong",
+          "Meta",
+          "Node",
+          "PodOrc",
+          "Storage",
+          "IDP",
+          "Unknown"
+        ],
+        "title": "ServiceTag",
+        "description": "Service tags."
+      },
       "StatusOnlyResponse": {
         "additionalProperties": {
           "$ref": "#/components/schemas/PodStatus"
@@ -7245,7 +6997,6 @@
             }
           }
         },
-        "additionalProperties": false,
         "type": "object",
         "title": "UserSettings",
         "description": "Node configuration settings set by the user."
@@ -7301,8 +7052,8 @@
       "description": "Endpoints for authorization specific tasks."
     },
     {
-      "name": "Events",
-      "description": "Gateway endpoints for interacting with logged events."
+      "name": "Logs",
+      "description": "Retrieval of logs and events."
     },
     {
       "name": "Hub",

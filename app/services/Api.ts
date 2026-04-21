@@ -11,6 +11,26 @@
  */
 
 /**
+ * ServiceTag
+ * Service tags.
+ */
+export enum ServiceTag {
+  Auth = "Auth",
+  Autostart = "Autostart",
+  Logs = "Logs",
+  Health = "Health",
+  Hub = "Hub",
+  HubAdapter = "Hub Adapter",
+  Kong = "Kong",
+  Meta = "Meta",
+  Node = "Node",
+  PodOrc = "PodOrc",
+  Storage = "Storage",
+  IDP = "IDP",
+  Unknown = "Unknown",
+}
+
+/**
  * ProtocolCode
  * Protocol codes.
  */
@@ -370,8 +390,8 @@ export interface AutostartSettings {
   interval?: number | null;
 }
 
-/** Body_auth_token_get_token_post */
-export interface BodyAuthTokenGetTokenPost {
+/** Body_get_token_token_post */
+export interface BodyGetTokenTokenPost {
   /**
    * Username
    * Keycloak username
@@ -408,8 +428,8 @@ export interface BodyHubAnalysisImageGetAnalysisImagePost {
   node_id: string;
 }
 
-/** Body_hub_analysis_node_update_analysis_nodes__analysis_node_id__post */
-export interface BodyHubAnalysisNodeUpdateAnalysisNodesAnalysisNodeIdPost {
+/** Body_hub_analysis_update_analysis_nodes__analysis_node_id__post */
+export interface BodyHubAnalysisUpdateAnalysisNodesAnalysisNodeIdPost {
   /**
    * Approval Status
    * Set the approval status of project for the node. Either 'rejected' or 'approved'
@@ -956,21 +976,25 @@ export interface DownstreamHealthCheck {
  * Event log response model.
  */
 export interface EventLog {
-  /** Id */
-  id: number;
+  /** Image */
+  image: string;
+  /** Component */
+  component: string;
   /** Event Name */
   event_name: string;
-  /** Service Name */
-  service_name: string;
+  /** Service */
+  service: string;
+  /** Level */
+  level: string;
   /**
    * Timestamp
    * @format date-time
    */
   timestamp: string;
-  /** Body */
-  body: string;
-  /** Attributes */
-  attributes: Record<string, any>;
+  /** Message */
+  message: string;
+  /** User */
+  user?: string | null;
 }
 
 /**
@@ -1104,21 +1128,6 @@ export interface ListServices {
    * Offset is used to paginate through the API. Provide this value to the next list operation to fetch the next page
    */
   offset?: string | null;
-}
-
-/**
- * LogReport
- * Response with dynamic UUID keys and dynamic analysis log keys
- */
-export type LogReport = Record<any, (string | null)[]>;
-
-/**
- * LogResponse
- * Response for log endpoint
- */
-export interface LogResponse {
-  analysis?: LogReport | null;
-  nginx?: LogReport | null;
 }
 
 /** MasterImage */
@@ -1336,7 +1345,7 @@ export interface ProjectNode {
    */
   id: string;
   /** Approval Status */
-  approval_status: "rejected" | "approved";
+  approval_status: "rejected" | "approved" | null;
   /** Comment */
   comment: string | null;
   /**
@@ -1371,8 +1380,6 @@ export interface Registry {
   host: string;
   /** Account Name */
   account_name: string | null;
-  /** Account Secret */
-  account_secret?: string | null;
   /**
    * Id
    * @format uuid
@@ -1425,12 +1432,6 @@ export interface RegistryProject {
   /** Realm Id */
   realm_id: string | null;
   registry?: Registry;
-  /** Account Id */
-  account_id?: string | null;
-  /** Account Name */
-  account_name?: string | null;
-  /** Account Secret */
-  account_secret?: string | null;
   /**
    * Created At
    * @format date-time
@@ -1861,7 +1862,7 @@ export enum ContentType {
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public baseUrl: string = "http://localhost:5000";
+  public baseUrl: string = "/api";
   private securityData: SecurityDataType | null = null;
   private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
   private abortControllers = new Map<CancelToken, AbortController>();
@@ -2067,7 +2068,7 @@ export class HttpClient<SecurityDataType = unknown> {
  * @title FLAME Hub Adapter API
  * @version 0.1.0
  * @license Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0.html)
- * @baseUrl http://localhost:5000
+ * @baseUrl /api
  * @contact Bruce Schultz <bschultz013@gmail.com> (https://docs.privateaim.net/about/team.html)
  *
  * FLAME Hub Adapter gateway API for interacting with downstream services.
@@ -2095,84 +2096,6 @@ export class Api<
         body: data,
         secure: true,
         type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Get all analysis pod logs.
-     *
-     * @tags PodOrc
-     * @name PodorcLogsGetPoLogsGet
-     * @summary Podorc.Logs.Get
-     * @request GET:/po/logs
-     * @secure
-     */
-    podorcLogsGetPoLogsGet: (params: RequestParams = {}) =>
-      this.request<LogResponse, void>({
-        path: `/po/logs`,
-        method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Get the analysis pod logs.
-     *
-     * @tags PodOrc
-     * @name PodorcLogsGetPoLogsAnalysisIdGet
-     * @summary Podorc.Logs.Get
-     * @request GET:/po/logs/{analysis_id}
-     * @secure
-     */
-    podorcLogsGetPoLogsAnalysisIdGet: (
-      analysisId: string,
-      params: RequestParams = {},
-    ) =>
-      this.request<LogResponse, void | HTTPValidationError>({
-        path: `/po/logs/${analysisId}`,
-        method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Get all previous analysis pod logs.
-     *
-     * @tags PodOrc
-     * @name PodorcHistoryGetPoHistoryGet
-     * @summary Podorc.History.Get
-     * @request GET:/po/history
-     * @secure
-     */
-    podorcHistoryGetPoHistoryGet: (params: RequestParams = {}) =>
-      this.request<LogResponse, void>({
-        path: `/po/history`,
-        method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Get the previous analysis pod logs.
-     *
-     * @tags PodOrc
-     * @name PodorcHistoryGetPoHistoryAnalysisIdGet
-     * @summary Podorc.History.Get
-     * @request GET:/po/history/{analysis_id}
-     * @secure
-     */
-    podorcHistoryGetPoHistoryAnalysisIdGet: (
-      analysisId: string | null,
-      params: RequestParams = {},
-    ) =>
-      this.request<LogResponse, void | HTTPValidationError>({
-        path: `/po/history/${analysisId}`,
-        method: "GET",
-        secure: true,
         format: "json",
         ...params,
       }),
@@ -2632,14 +2555,14 @@ export class Api<
      * @description Set the approval status of an analysis proposal.
      *
      * @tags Hub
-     * @name HubAnalysisNodeUpdateAnalysisNodesAnalysisNodeIdPost
+     * @name HubAnalysisUpdateAnalysisNodesAnalysisNodeIdPost
      * @summary Update a specific analysis proposal
      * @request POST:/analysis-nodes/{analysis_node_id}
      * @secure
      */
-    hubAnalysisNodeUpdateAnalysisNodesAnalysisNodeIdPost: (
+    hubAnalysisUpdateAnalysisNodesAnalysisNodeIdPost: (
       analysisNodeId: string,
-      data: BodyHubAnalysisNodeUpdateAnalysisNodesAnalysisNodeIdPost,
+      data: BodyHubAnalysisUpdateAnalysisNodesAnalysisNodeIdPost,
       params: RequestParams = {},
     ) =>
       this.request<AnalysisNode, void | HTTPValidationError>({
@@ -2696,12 +2619,12 @@ export class Api<
      * @description Update analysis with a given UUID.
      *
      * @tags Hub
-     * @name HubAnalysisUpdateAnalysesAnalysisIdPost
+     * @name HubAnalysisNodeUpdateAnalysesAnalysisIdPost
      * @summary Update a specific analysis proposal
      * @request POST:/analyses/{analysis_id}
      * @secure
      */
-    hubAnalysisUpdateAnalysesAnalysisIdPost: (
+    hubAnalysisNodeUpdateAnalysesAnalysisIdPost: (
       analysisId: string,
       data: string,
       params: RequestParams = {},
@@ -2777,12 +2700,12 @@ export class Api<
      * @description List registry data for a project.
      *
      * @tags Hub
-     * @name HubRegistryMetadataGetRegistryProjectsRegistryProjectIdGet
+     * @name GetRegistryMetadataForProjectRegistryProjectsRegistryProjectIdGet
      * @summary Get registry project
      * @request GET:/registry-projects/{registry_project_id}
      * @secure
      */
-    hubRegistryMetadataGetRegistryProjectsRegistryProjectIdGet: (
+    getRegistryMetadataForProjectRegistryProjectsRegistryProjectIdGet: (
       registryProjectId: string,
       params: RequestParams = {},
     ) =>
@@ -3317,12 +3240,12 @@ export class Api<
      * @description Get a JWT from the IDP by passing a valid username and password. This token can then be used to authenticate yourself with this API. If no client ID/secret is provided, it will be autofilled using the hub adapter.
      *
      * @tags Auth
-     * @name AuthTokenGetTokenPost
+     * @name GetTokenTokenPost
      * @summary Get a token from the IDP
      * @request POST:/token
      */
-    authTokenGetTokenPost: (
-      data: BodyAuthTokenGetTokenPost,
+    getTokenTokenPost: (
+      data: BodyGetTokenTokenPost,
       params: RequestParams = {},
     ) =>
       this.request<Token, void | HTTPValidationError>({
@@ -3338,13 +3261,12 @@ export class Api<
     /**
      * @description Retrieve a selection of logged events.
      *
-     * @tags Events
-     * @name EventsGetEventsGet
-     * @summary Events.Get
+     * @tags Logs
+     * @name LogsEventsGetEventsGet
+     * @summary Logs.Events.Get
      * @request GET:/events
-     * @secure
      */
-    eventsGetEventsGet: (
+    logsEventsGetEventsGet: (
       query?: {
         /**
          * Limit
@@ -3354,19 +3276,13 @@ export class Api<
         /**
          * Offset
          * Number of events to offset by
-         * @default 0
          */
         offset?: number | null;
         /**
          * Service Tag
          * Filter events by service tag
          */
-        service_tag?: string | null;
-        /**
-         * Event Name
-         * Filter events by event name
-         */
-        event_name?: string | null;
+        service_tag?: ServiceTag | null;
         /**
          * Username
          * Filter events by username
@@ -3389,7 +3305,6 @@ export class Api<
         path: `/events`,
         method: "GET",
         query: query,
-        secure: true,
         format: "json",
         ...params,
       }),
@@ -3397,17 +3312,15 @@ export class Api<
     /**
      * @description Create a log event that a user signed in. Username is extracted from the JWT required to call this endpoint.
      *
-     * @tags Events
+     * @tags Logs
      * @name AuthUserSigninEventsSigninPost
      * @summary Auth.User.Signin
      * @request POST:/events/signin
-     * @secure
      */
     authUserSigninEventsSigninPost: (params: RequestParams = {}) =>
       this.request<any, void>({
         path: `/events/signin`,
         method: "POST",
-        secure: true,
         format: "json",
         ...params,
       }),
@@ -3415,17 +3328,15 @@ export class Api<
     /**
      * @description Create a log event that a user signed out. Username is extracted from the JWT required to call this endpoint.
      *
-     * @tags Events
+     * @tags Logs
      * @name AuthUserSignoutEventsSignoutPost
      * @summary Auth.User.Signout
      * @request POST:/events/signout
-     * @secure
      */
     authUserSignoutEventsSignoutPost: (params: RequestParams = {}) =>
       this.request<any, void>({
         path: `/events/signout`,
         method: "POST",
-        secure: true,
         format: "json",
         ...params,
       }),
