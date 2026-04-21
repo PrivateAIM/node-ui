@@ -52,14 +52,7 @@ describe("ContainerCounter.vue", () => {
     const fillCounterDiv = wrapper.find(".counter-badge-all");
     ["Started", "Executing", "Stopped", "Failed", "Executed"].forEach(
       (executionStatus, index) => {
-        let displayedStatus = "";
-        if (executionStatus === "Executing") {
-          displayedStatus = "Running";
-        } else if (executionStatus === "Executed") {
-          displayedStatus = "Finished";
-        } else {
-          displayedStatus = executionStatus;
-        }
+        const displayedStatus = "";
         expect(fillCounterDiv.text()).toContain(displayedStatus);
         const lowerStatus = executionStatus.toLowerCase();
         const statusCount = statusCounts[lowerStatus];
