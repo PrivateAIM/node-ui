@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.5.4](https://github.com/PrivateAIM/node-ui/compare/v0.5.3...v0.5.4) (2026-04-21)
+
+
+### Features
+
+* **analysis:** persistent analysis start loading indicator ([cb1bfdf](https://github.com/PrivateAIM/node-ui/commit/cb1bfdf97281a42434015ec8f671feda6057eef6))
+* **cleanup:** add kong service cleanup endpoint to menu options ([df6089f](https://github.com/PrivateAIM/node-ui/commit/df6089f89f63eb726ea3212755cb47648597dbe2))
+* **data-stores:** add DataStoreHelpPanel sub-component ([5f3fbdb](https://github.com/PrivateAIM/node-ui/commit/5f3fbdbdfbebe90c6ff9d08ace0e5b6f3303b70f))
+* **data-stores:** extract useDataStoreList composable ([64098dd](https://github.com/PrivateAIM/node-ui/commit/64098dd6f95e4074690eb0d2ea2ba4178d359b3c))
+
+
+### Bug Fixes
+
+* **analyses:** disable analysis control buttons if image not distributed ([a91115e](https://github.com/PrivateAIM/node-ui/commit/a91115e8714686928b46d96fc5100929208523b1))
+* **analysis:** render buttons if approval_status is null ([cb0aa11](https://github.com/PrivateAIM/node-ui/commit/cb0aa11f674f8d1458072fb3b7a6b6a0df1fbb55))
+* **data-stores:** add computed to explicit vue imports in DataStoreProjectInitializer ([ea25658](https://github.com/PrivateAIM/node-ui/commit/ea25658a74b6745f8a5a8d5db16c152e5f31722a))
+* **data-stores:** clear loading flag on any completed fetch status ([2bb21e8](https://github.com/PrivateAIM/node-ui/commit/2bb21e84059ff6f52b7a90d0cfa114d79e7e5d75))
+
 ## [0.5.3](https://github.com/PrivateAIM/node-ui/compare/v0.5.2...v0.5.3) (2026-03-18)
 
 
