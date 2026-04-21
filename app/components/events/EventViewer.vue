@@ -7,7 +7,12 @@ import MeterGroup from "primevue/metergroup";
 import Chip from "primevue/chip";
 import { EventLogLevelTag, type EventTag } from "~/types/eventTag";
 import TagFilterSidePanel from "~/components/events/TagFilterSidePanel.vue";
-import { ServiceTag, type EventLog, type EventLogResponse, type Meta } from "~/services/Api";
+import {
+  type EventLog,
+  type EventLogResponse,
+  type Meta,
+  ServiceTag,
+} from "~/services/Api";
 import DateFilterGraph from "~/components/events/DateFilterGraph.vue";
 
 const toast = useToast();
@@ -46,8 +51,6 @@ const dateTimeFormat = new Intl.DateTimeFormat(undefined, {
   timeStyle: "long",
 });
 
-// --- Filtering ---
-
 const selectedLevelFilters = computed(() =>
   appliedFilters.value
     .filter((f) =>
@@ -82,8 +85,6 @@ const displayedEvents = computed(() => {
 
 const allLoaded = computed(() => events.value.length >= meta.value.total);
 
-// --- Pagination / API ---
-
 function formatDate(date: Date): string {
   return date.toISOString().slice(0, 16);
 }
@@ -104,13 +105,22 @@ async function fetchEvents(offset: number, reset: boolean) {
       method: "GET",
       query: buildQuery(offset),
     })
-    .catch(() => {
-      toast.add({
-        severity: "error",
-        summary: "Event Fetch Failed",
-        detail: "Unable to fetch events from the server",
-        life: 5000,
-      });
+    .catch((e) => {
+      if (e?.status === 503) {
+        toast.add({
+          severity: "error",
+          summary: "Event Log Unavailable",
+          detail: "The event log service is not configured on this node",
+          life: 5000,
+        });
+      } else {
+        toast.add({
+          severity: "error",
+          summary: "Event Fetch Failed",
+          detail: "Unable to fetch events from the server",
+          life: 5000,
+        });
+      }
       return undefined;
     })) as EventLogResponse | undefined;
 
@@ -234,7 +244,7 @@ const eventCountDisplay = computed(() => displayedEvents.value.length);
             @applyDateFilter="handleDateFilterApply"
           />
         </div>
-        <div class="log-distribution-meter">
+        <div v-if="eventCountDisplay > 0" class="log-distribution-meter">
           <MeterGroup :value="logLevelDistributions" :max="eventCountDisplay" />
         </div>
         <div class="table-header-row">
