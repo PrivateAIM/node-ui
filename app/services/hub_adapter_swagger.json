@@ -16,9 +16,6 @@
   },
   "servers": [
     {
-      "url": "/api"
-    },
-    {
       "url": "http://localhost:5000",
       "description": "api"
     }

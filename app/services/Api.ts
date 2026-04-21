@@ -1862,7 +1862,7 @@ export enum ContentType {
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public baseUrl: string = "/api";
+  public baseUrl: string = "http://localhost:5000";
   private securityData: SecurityDataType | null = null;
   private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
   private abortControllers = new Map<CancelToken, AbortController>();
@@ -2068,7 +2068,7 @@ export class HttpClient<SecurityDataType = unknown> {
  * @title FLAME Hub Adapter API
  * @version 0.1.0
  * @license Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0.html)
- * @baseUrl /api
+ * @baseUrl http://localhost:5000
  * @contact Bruce Schultz <bschultz013@gmail.com> (https://docs.privateaim.net/about/team.html)
  *
  * FLAME Hub Adapter gateway API for interacting with downstream services.
