@@ -130,7 +130,7 @@ function onApplyExecutionStatusFilter(executionStatus: PodStatus) {
               size="xlarge"
               @click="onApplyExecutionStatusFilter(PodStatus.Executed)"
             />
-            <span class="counter-id-txt">Finished</span>
+            <span class="counter-id-txt">Executed</span>
           </div>
         </div>
       </template>
