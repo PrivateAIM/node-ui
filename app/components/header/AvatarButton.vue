@@ -40,6 +40,14 @@ const menuItems = computed(() => [
         target: "_blank",
       },
       {
+        label: "VictoriaLogs",
+        icon: "pi pi-book",
+        url: `${baseUrl}/logs/select/vmui`,
+        target: "_blank",
+        visible: isAuthenticated.value,
+        disabled: !isAuthenticated.value,
+      },
+      {
         label: "Clean Up Resources",
         icon: "pi pi-eject",
         command: () => {
