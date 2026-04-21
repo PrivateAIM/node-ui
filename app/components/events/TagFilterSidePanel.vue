@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import {
-  EventLogLevelTag,
-  EventServiceTag,
-  type EventTag,
-} from "~/types/eventTag";
+import { EventLogLevelTag, type EventTag } from "~/types/eventTag";
+import { ServiceTag } from "~/services/Api";
 import Panel from "primevue/panel";
 import PanelMenu from "primevue/panelmenu";
 import Checkbox from "primevue/checkbox";
@@ -11,13 +8,13 @@ import Checkbox from "primevue/checkbox";
 const modelValue = defineModel<EventTag[]>({ default: [] });
 const emit = defineEmits(["clearTagFilter"]);
 
-const serviceTags = Object.values(EventServiceTag);
+const serviceTags = Object.values(ServiceTag);
 const logLevelTags = Object.values(EventLogLevelTag);
 const tagFilterMenuItems = ref([
   {
     label: "Services",
     icon: "pi pi-file",
-    items: serviceTags.map((tag: EventServiceTag) => ({ label: tag })),
+    items: serviceTags.map((tag: ServiceTag) => ({ label: tag })),
   },
   {
     label: "Log Level",

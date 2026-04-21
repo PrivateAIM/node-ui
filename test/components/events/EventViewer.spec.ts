@@ -1,23 +1,21 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
 import EventViewer from "~/components/events/EventViewer.vue";
-import { type DefineComponent, defineComponent, ref } from "vue";
-import { fakeEventResponse } from "@/test/components/events/constants";
-import { getEvents } from "~/composables/useAPIFetch";
-import type { EventLogResponse } from "~/services/Api";
-
-vi.mock("~/composables/useAPIFetch", () => ({
-  getEvents: vi.fn(),
-}));
+import { type DefineComponent, defineComponent } from "vue";
+import { http, HttpResponse } from "msw";
+import { testServer } from "@/test/mockapi/setup";
+import { useToast } from "primevue/usetoast";
 
 describe("EventViewer.vue", () => {
   let EventViewerComponent: DefineComponent<typeof EventViewer>;
+  let mockToastAdd: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     vi.restoreAllMocks();
+    mockToastAdd = vi.fn();
+    vi.mocked(useToast).mockReturnValue({ add: mockToastAdd } as any);
   });
 
-  // Render the component with the fake params
   beforeAll(async () => {
     EventViewerComponent = defineComponent({
       components: { EventViewer },
@@ -26,59 +24,57 @@ describe("EventViewer.vue", () => {
   });
 
   it("Loads events into table", async () => {
-    vi.mocked(getEvents).mockResolvedValue({
-      data: ref(fakeEventResponse),
-      pending: ref(false),
-      error: ref(undefined),
-      status: ref("success"),
-      refresh: vi.fn(),
-      execute: vi.fn(),
-      clear: vi.fn(),
-    });
-
     const wrapper = mount(EventViewerComponent);
 
-    // Wait for async setup to resolve
     await flushPromises();
-    expect(wrapper.text()).toContain("Event Viewer"); // Title of the page
+    expect(wrapper.text()).toContain("Event Viewer");
     expect(wrapper.text()).toContain("1 event");
 
-    // Find header and check content
     const headerRow = wrapper.findAll("thead tr th");
-    expect(headerRow[0]!.text()).toBe("DateTime"); // First col
-    expect(headerRow[1]!.text()).toBe("Event"); // Second col
+    expect(headerRow[0]!.text()).toBe("DateTime");
+    expect(headerRow[1]!.text()).toBe("Event");
 
-    // Find row and check content
     const rows = wrapper.findAll("tbody tr");
     expect(rows.length).toBe(1);
 
     const rowCells = rows[0]!.findAll("td");
-    expect(rowCells[0]!.text()).toContain("2/19/26"); // Datetime, limit to date due to TZ issues in runner
+    expect(rowCells[0]!.text()).toContain("2/19/26");
     expect(rowCells[1]!.text()).toBe(
-      "NODE-SETTINGS-GET-SUCCESSHub AdapterNodeInfoA user fetched the node's configurations settings",
+      "NODE-SETTINGS-GET-SUCCESSInfoHub AdapterA user fetched the node's configurations settings",
     );
   });
 
   it("No events in response", async () => {
-    vi.mocked(getEvents).mockResolvedValue({
-      data: ref<EventLogResponse>({
-        data: [],
-        meta: { count: 0, total: 0, limit: 0, offset: 0 },
-      }),
-      pending: ref(false),
-      error: ref(undefined),
-      status: ref("success"),
-      refresh: vi.fn(),
-      execute: vi.fn(),
-      clear: vi.fn(),
-    });
+    testServer.use(
+      http.get("/events", () =>
+        HttpResponse.json({
+          data: [],
+          meta: { count: 0, total: 0, limit: 50, offset: 0 },
+        }),
+      ),
+    );
 
     const wrapper = mount(EventViewerComponent);
 
-    // Wait for async setup to resolve
     await flushPromises();
 
     expect(wrapper.text()).toContain("No events found");
     expect(wrapper.text()).toContain("0 events");
+  });
+
+  it("Shows service not configured error on 503", async () => {
+    testServer.use(
+      http.get("/events", () => new HttpResponse(null, { status: 503 })),
+    );
+
+    mount(EventViewerComponent);
+    await flushPromises();
+
+    expect(mockToastAdd).toHaveBeenCalledWith(
+      expect.objectContaining({
+        severity: "error",
+        summary: "Event Log Unavailable",
+      }),
+    );
   });
 });
