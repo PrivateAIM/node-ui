@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.0](https://github.com/PrivateAIM/node-ui/compare/v0.5.4...v0.6.0) (2026-04-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* finalize victorialog parsing
+
+### Features
+
+* **events:** update event response parsing ([9e2f49e](https://github.com/PrivateAIM/node-ui/commit/9e2f49e9b421d7827c0cd70f8407f6a9e3d65119))
+* finalize victorialog parsing ([4740b55](https://github.com/PrivateAIM/node-ui/commit/4740b55ce37a00cc95b6e380b0989b8b06e88e98))
+
 ## [0.5.4](https://github.com/PrivateAIM/node-ui/compare/v0.5.3...v0.5.4) (2026-04-21)
 
 
