@@ -2634,6 +2634,7 @@
                 }
               ],
               "description": "Maximum number of events to return",
+              "default": 50,
               "title": "Limit"
             },
             "description": "Maximum number of events to return"
@@ -4974,8 +4975,7 @@
             "title": "Event Name"
           },
           "service": {
-            "type": "string",
-            "title": "Service"
+            "$ref": "#/components/schemas/ServiceTag"
           },
           "level": {
             "type": "string",

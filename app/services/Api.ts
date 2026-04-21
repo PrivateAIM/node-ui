@@ -982,8 +982,8 @@ export interface EventLog {
   component: string;
   /** Event Name */
   event_name: string;
-  /** Service */
-  service: string;
+  /** Service tags. */
+  service: ServiceTag;
   /** Level */
   level: string;
   /**
@@ -3271,6 +3271,7 @@ export class Api<
         /**
          * Limit
          * Maximum number of events to return
+         * @default 50
          */
         limit?: number | null;
         /**
