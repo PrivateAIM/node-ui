@@ -12,6 +12,7 @@ import {
 } from "../components/data-stores/constants";
 import { fakeProposalsResp } from "../components/projects/constants";
 import { fakeProjects } from "../components/analysis/constants";
+import { fakeEventResponse } from "../components/events/constants";
 
 export const fakeValidProposalId = "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483";
 export const fakeInvalidProposalId = "15518efa-5146-4290-a7cb-95d27f41d991";
@@ -312,6 +313,10 @@ export const handlers = [
       },
     });
   }),
+  http.get("/events", () => {
+    return HttpResponse.json(fakeEventResponse);
+  }),
+
   http.post(`/kong/initialize`, async ({ request }) => {
     const body = (await request.json()) as BodyKongInitializeKongInitializePost;
     const projectId = body.project_id;
