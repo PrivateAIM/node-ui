@@ -26,12 +26,22 @@ export function useAPIFetch<T>(
 }
 
 // Event endpoints
-export function getEvents(opts?) {
+export function getEvents(
+  query: {
+    limit?: number;
+    offset?: number;
+    start_date?: string;
+    end_date?: string;
+    service_tag?: string;
+  } = {},
+  opts?,
+) {
   return useAPIFetch<EventLogResponse>("/events", {
     ...opts,
     method: "GET",
     query: {
-      limit: 100,
+      limit: 50,
+      ...query,
     },
   });
 }

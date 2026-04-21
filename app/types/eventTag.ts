@@ -1,21 +1,11 @@
-export const EventServiceTag = {
-  Hub: "Hub",
-  HubAdapter: "Hub Adapter",
-  PodOrchestrator: "Pod Orchestrator",
-  Storage: "Storage",
-  Kong: "Kong",
-  Authentication: "Authentication",
-  Autostart: "Autostart",
-};
+import { type ServiceTag } from "~/services/Api";
 
 export const EventLogLevelTag = {
   Info: "Info",
   Warning: "Warning",
   Error: "Error",
-};
+} as const;
 
-export type EventServiceTag =
-  (typeof EventServiceTag)[keyof typeof EventServiceTag];
 export type EventLogLevelTag =
   (typeof EventLogLevelTag)[keyof typeof EventLogLevelTag];
-export type EventTag = EventServiceTag | EventLogLevelTag;
+export type EventTag = ServiceTag | EventLogLevelTag;

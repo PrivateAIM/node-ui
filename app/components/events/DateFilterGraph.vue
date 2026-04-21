@@ -1,55 +1,26 @@
 <script setup lang="ts">
-import { useNuxtApp } from "nuxt/app";
 import DatePicker from "primevue/datepicker";
 import Toolbar from "primevue/toolbar";
 import FloatLabel from "primevue/floatlabel";
-import { useToast } from "primevue/usetoast";
-import type { EventLogResponse } from "~/services/Api";
 
-const props = defineProps({
-  eventCount: Number,
-});
+const props = defineProps<{
+  eventCount: number;
+  loading: boolean;
+}>();
 
-const toast = useToast();
-
-const loading = ref<boolean>(false);
+const emit = defineEmits<{
+  applyDateFilter: [startDate: Date | undefined, endDate: Date | undefined];
+}>();
 
 const startDate = ref<Date>();
 const endDate = ref<Date>();
 
-const emit = defineEmits(["showRequestedEvents"]);
+const isInvalidRange = computed(
+  () => !!(startDate.value && endDate.value && endDate.value < startDate.value),
+);
 
-function formatDate(date: Date | undefined): string | undefined {
-  if (!date) {
-    return undefined;
-  } else {
-    return date.toISOString().slice(0, 16); // cut off unnecessary stuff
-  }
-}
-
-async function requestEvents() {
-  loading.value = true;
-  const eventResp = await useNuxtApp()
-    .$hubApi("/events", {
-      method: "GET",
-      query: {
-        ...(startDate.value && { start_date: formatDate(startDate.value) }), // the ... checks before adding to query
-        ...(endDate.value && { end_date: formatDate(endDate.value) }),
-      },
-    })
-    .catch(() => {
-      toast.add({
-        severity: "error",
-        summary: "Event Fetch Failed",
-        detail: "Unable to fetch events from database",
-        life: 5000,
-      });
-      return undefined;
-    });
-  loading.value = false;
-  if (eventResp) {
-    emit("showRequestedEvents", eventResp as EventLogResponse);
-  }
+function applyFilter() {
+  emit("applyDateFilter", startDate.value, endDate.value);
 }
 </script>
 
@@ -69,7 +40,7 @@ async function requestEvents() {
                 <DatePicker
                   inputId="startdate_label"
                   v-model="startDate"
-                  :invalid="startDate && endDate && endDate < startDate"
+                  :invalid="isInvalidRange"
                   showIcon
                   showTime
                   hourFormat="24"
@@ -87,7 +58,7 @@ async function requestEvents() {
                 <DatePicker
                   inputId="enddate_label"
                   v-model="endDate"
-                  :invalid="startDate && endDate && endDate < startDate"
+                  :invalid="isInvalidRange"
                   showIcon
                   showTime
                   hourFormat="24"
@@ -100,9 +71,9 @@ async function requestEvents() {
             <div class="custom-date-filter-submit-btn">
               <Button
                 label="Apply"
-                :loading="loading"
-                :disabled="startDate && endDate && endDate < startDate"
-                @click="requestEvents()"
+                :loading="props.loading"
+                :disabled="isInvalidRange"
+                @click="applyFilter()"
               />
             </div>
           </div>
@@ -111,15 +82,12 @@ async function requestEvents() {
       <template #end>
         <div class="custom-filter-header-end">
           <span
-            v-if="eventCount !== 1"
+            v-if="props.eventCount !== 1"
             v-tooltip.left="'Total number of events currently shown'"
           >
             <b> {{ props.eventCount }} events </b>
           </span>
-          <span
-            v-else
-            v-tooltip.left="'Total number of events currently shown'"
-          >
+          <span v-else v-tooltip.left="'Total number of events currently shown'">
             <b> {{ props.eventCount }} event </b>
           </span>
         </div>
@@ -140,7 +108,7 @@ async function requestEvents() {
 }
 
 .custom-filter-date-separator {
-  margin: 0 1rem 0 1rem; // Left and right
+  margin: 0 1rem 0 1rem;
   font-weight: bold;
   font-size: 1.25rem;
 }
