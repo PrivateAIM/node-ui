@@ -98,6 +98,21 @@ watch(
 // API Constants
 const NOT_FOUND_STATUS = 404;
 const CONFLICT_STATUS = 409;
+const OPERATION_TIMEOUT_MS = 60_000;
+
+class OperationTimeoutError extends Error {}
+
+function raceWithTimeout<T>(promise: Promise<T>): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      setTimeout(
+        () => reject(new OperationTimeoutError()),
+        OPERATION_TIMEOUT_MS,
+      ),
+    ),
+  ]);
+}
 
 const playButtonActiveStates = [null, "", undefined];
 const rerunButtonActiveStates: Array<string | null | undefined> = [
@@ -206,19 +221,22 @@ async function onStartAnalysis() {
   localStorage.setItem(loadingStorageKey.value, "true");
   const originalExecutionStatus = props.analysisExecutionStatus;
   updatePodStatus(PodStatus.Starting);
-  let analysisProps = new FormData();
+  const analysisProps = new FormData();
 
   analysisProps.append("analysis_id", props.analysisId!);
   analysisProps.append("project_id", props.projectId!);
 
-  let startPodResp: StatusOnlyResponse = (await useNuxtApp()
-    .$hubApi("/analysis/initialize", {
-      method: "POST",
-      body: analysisProps,
-    })
-    .catch((e) => {
+  try {
+    const startPodResp: StatusOnlyResponse = (await raceWithTimeout(
+      useNuxtApp().$hubApi("/analysis/initialize", {
+        method: "POST",
+        body: analysisProps,
+      }),
+    ).catch((e) => {
       updatePodStatus(null);
-      if (e.status == 408) {
+      if (e instanceof OperationTimeoutError) {
+        showToast("error", "Start failure", "The request timed out");
+      } else if (e.status == 408) {
         // Timed out waiting for image to pull
         updatePodStatus(PodStatus.Started);
         showToast(
@@ -242,16 +260,17 @@ async function onStartAnalysis() {
       }
     })) as StatusOnlyResponse;
 
-  if (startPodResp && props.analysisId in startPodResp) {
-    const currentExecutionStatus = startPodResp[props.analysisId];
-    updatePodStatus(currentExecutionStatus);
-    showToast("success", "Start success", "Successfully started the container");
-  } else {
-    updatePodStatus(originalExecutionStatus);
+    if (startPodResp && props.analysisId in startPodResp) {
+      const currentExecutionStatus = startPodResp[props.analysisId];
+      updatePodStatus(currentExecutionStatus);
+      showToast("success", "Start success", "Successfully started the container");
+    } else {
+      updatePodStatus(originalExecutionStatus);
+    }
+  } finally {
+    localStorage.removeItem(loadingStorageKey.value);
+    loading.value = false;
   }
-
-  localStorage.removeItem(loadingStorageKey.value);
-  loading.value = false;
 }
 
 async function onStopAnalysis() {
@@ -259,35 +278,34 @@ async function onStopAnalysis() {
   const originalExecutionStatus = props.analysisExecutionStatus;
   updatePodStatus(PodStatus.Stopping);
 
-  const stopResp: StatusOnlyResponse = (await useNuxtApp()
-    .$hubApi(`/po/stop/${props.analysisId}`, {
-      method: "PUT",
-    })
-    .catch(() => {
-      showToast(
-        "error",
-        "Stop failure",
-        "Failed to stop the analysis container",
-      );
+  try {
+    const stopResp: StatusOnlyResponse = (await raceWithTimeout(
+      useNuxtApp().$hubApi(`/po/stop/${props.analysisId}`, {
+        method: "PUT",
+      }),
+    ).catch((e) => {
+      if (e instanceof OperationTimeoutError) {
+        showToast("error", "Stop failure", "The request timed out");
+      } else {
+        showToast("error", "Stop failure", "Failed to stop the analysis container");
+      }
     })) as StatusOnlyResponse;
 
-  // stopResp is undefined if error occurred
-  if (stopResp) {
-    if (props.analysisId in stopResp) {
-      showToast(
-        "success",
-        "Stop success",
-        "Successfully stopped the container",
-      );
+    // stopResp is undefined if error occurred
+    if (stopResp) {
+      if (props.analysisId in stopResp) {
+        showToast("success", "Stop success", "Successfully stopped the container");
+      } else {
+        // No pod statuses returned from PO for analysis
+        showStatusUnknownToast();
+      }
+      updatePodStatus(PodStatus.Stopped);
     } else {
-      // No pod statuses returned from PO for analysis
-      showStatusUnknownToast();
+      updatePodStatus(originalExecutionStatus);
     }
-    updatePodStatus(PodStatus.Stopped);
-  } else {
-    updatePodStatus(originalExecutionStatus);
+  } finally {
+    loading.value = false;
   }
-  loading.value = false;
 }
 
 async function onDeleteAnalysis() {
@@ -295,35 +313,33 @@ async function onDeleteAnalysis() {
   const originalExecutionStatus = props.analysisExecutionStatus;
   updatePodStatus(PodStatus.Stopping);
 
-  const deleteResp: StatusOnlyResponse = (await useNuxtApp()
-    .$hubApi(`/analysis/terminate/${props.analysisId}`, {
-      method: "DELETE",
-    })
-    .catch(() => {
-      showToast(
-        "error",
-        "Terminate request failure",
-        "Failed to terminate the analysis",
-      );
+  try {
+    const deleteResp: StatusOnlyResponse = (await raceWithTimeout(
+      useNuxtApp().$hubApi(`/analysis/terminate/${props.analysisId}`, {
+        method: "DELETE",
+      }),
+    ).catch((e) => {
+      if (e instanceof OperationTimeoutError) {
+        showToast("error", "Terminate request failure", "The request timed out");
+      } else {
+        showToast("error", "Terminate request failure", "Failed to terminate the analysis");
+      }
     })) as StatusOnlyResponse;
 
-  // deleteResp is undefined if error occurred
-  if (deleteResp) {
-    if (props.analysisId in deleteResp) {
-      showToast(
-        "success",
-        "Delete success",
-        "Successfully removed the container",
-      );
+    // deleteResp is undefined if error occurred
+    if (deleteResp) {
+      if (props.analysisId in deleteResp) {
+        showToast("success", "Delete success", "Successfully removed the container");
+      } else {
+        showStatusUnknownToast();
+      }
+      updatePodStatus(null);
     } else {
-      showStatusUnknownToast();
+      updatePodStatus(originalExecutionStatus);
     }
-    updatePodStatus(null);
-  } else {
-    updatePodStatus(originalExecutionStatus);
+  } finally {
+    loading.value = false;
   }
-
-  loading.value = false;
 }
 </script>
 
