@@ -835,10 +835,7 @@ const onCloseNavToast = () => {
               </span>
             </template>
             <template #body="slotProps">
-              <div
-                v-if="slotProps.data.approval_status === 'approved'"
-                class="control-buttons"
-              >
+              <div class="control-buttons">
                 <AnalysisControlButtons
                   :analysisBuildStatus="slotProps.data.analysis.build_status"
                   :analysisDistributionStatus="
@@ -847,6 +844,7 @@ const onCloseNavToast = () => {
                   :analysisId="slotProps.data.analysis_id"
                   :analysisNodeId="slotProps.data.id"
                   :analysisExecutionStatus="slotProps.data.execution_status"
+                  :approvalStatus="slotProps.data.approval_status"
                   :datastore="slotProps.data.datastore"
                   :nodeId="slotProps.data.node_id"
                   :requireDatastore="datastoreRequired!"

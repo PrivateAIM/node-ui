@@ -20,6 +20,10 @@ interface ButtonStates {
 
 const props = defineProps({
   analysisBuildStatus: [String, null],
+  approvalStatus: {
+    type: [String, null],
+    default: null
+  },
   analysisExecutionStatus: {
     type: [String, null],
     required: true
@@ -130,6 +134,10 @@ function getButtonStatuses(podStatus: string | null | undefined) {
 
 const buttonStatuses = computed<ButtonStates>(
   () => getButtonStatuses(props.analysisExecutionStatus) // Changes buttons when new status update comes in
+);
+
+const notApproved = computed(
+  () => !props.approvalStatus || props.approvalStatus === "rejected"
 );
 
 function updatePodStatus(
@@ -318,90 +326,101 @@ async function onDeleteAnalysis() {
 </script>
 
 <template>
-  <div class="analysis-buttons">
-    <Button
-      v-show="buttonStatuses.playActive"
-      v-tooltip.top="'Start the analysis'"
-      :disabled="
-        !buttonStatuses.playActive ||
-        !(props.analysisBuildStatus === ProcessStatus.Executed) ||
-        !(props.analysisDistributionStatus === ProcessStatus.Executed) ||
-        (!props.datastore && props.requireDatastore)
-      "
-      :loading="loading"
-      aria-label="Start"
-      class="start-analysis-btn"
-      icon="pi pi-play"
-      severity="success"
-      @click="onStartAnalysis()"
-    />
-    <Button
-      v-show="!buttonStatuses.playActive"
-      v-tooltip.top="'Rerun the analysis'"
-      :disabled="
-        !buttonStatuses.rerunActive ||
-        !(props.analysisBuildStatus === ProcessStatus.Executed) ||
-        !(props.analysisDistributionStatus === ProcessStatus.Executed) ||
-        (!props.datastore && props.requireDatastore)
-      "
-      :loading="loading"
-      aria-label="Rerun"
-      class="rerun-analysis-btn"
-      icon="pi pi-replay"
-      severity="success"
-      @click="onRerunAnalysis()"
-    />
-    <Button
-      v-tooltip.top="'Stop the analysis'"
-      :disabled="
-        !buttonStatuses.stopActive ||
-        !(props.analysisBuildStatus === ProcessStatus.Executed) ||
-        !(props.analysisDistributionStatus === ProcessStatus.Executed) ||
-        (!props.datastore && props.requireDatastore)
-      "
-      :loading="loading"
-      aria-label="Stop"
-      class="stop-analysis-btn"
-      icon="pi pi-stop"
-      severity="warn"
-      @click="onStopAnalysis()"
-    />
-    <Button
-      v-tooltip.top="'Delete the analysis container'"
-      :disabled="
-        !buttonStatuses.deleteActive ||
-        !(props.analysisBuildStatus === ProcessStatus.Executed) ||
-        !(props.analysisDistributionStatus === ProcessStatus.Executed) ||
-        (!props.datastore && props.requireDatastore)
-      "
-      :loading="loading"
-      aria-label="Delete"
-      class="delete-analysis-btn"
-      icon="pi pi-trash"
-      severity="danger"
-      @click="onDeleteAnalysis()"
-    />
-    <NuxtLink
-      :to="{
-        name: 'analyses-id',
-        params: { id: props.analysisId },
-      }"
-      target="_blank"
-    >
+  <span
+    v-tooltip.top="
+      notApproved ? 'Analysis is not approved' : undefined
+    "
+    style="display: contents"
+  >
+    <div class="analysis-buttons">
       <Button
-        v-tooltip.top="'View the logs'"
-        :disabled="buttonStatuses.playActive"
-        aria-label="Logs"
-        class="logs-analysis-btn"
-        icon="pi pi-bars"
-        severity="contrast"
+        v-show="buttonStatuses.playActive"
+        v-tooltip.top="notApproved ? undefined : 'Start the analysis'"
+        :disabled="
+          notApproved ||
+          !buttonStatuses.playActive ||
+          !(props.analysisBuildStatus === ProcessStatus.Executed) ||
+          !(props.analysisDistributionStatus === ProcessStatus.Executed) ||
+          (!props.datastore && props.requireDatastore)
+        "
+        :loading="loading"
+        aria-label="Start"
+        class="start-analysis-btn"
+        icon="pi pi-play"
+        severity="success"
+        @click="onStartAnalysis()"
       />
-    </NuxtLink>
-    <AnalysisUpdateButton
-      :analysisId="props.analysisId"
-      @updateAnalysisRunStatus="updatePodStatus"
-    />
-  </div>
+      <Button
+        v-show="!buttonStatuses.playActive"
+        v-tooltip.top="notApproved ? undefined : 'Rerun the analysis'"
+        :disabled="
+          notApproved ||
+          !buttonStatuses.rerunActive ||
+          !(props.analysisBuildStatus === ProcessStatus.Executed) ||
+          !(props.analysisDistributionStatus === ProcessStatus.Executed) ||
+          (!props.datastore && props.requireDatastore)
+        "
+        :loading="loading"
+        aria-label="Rerun"
+        class="rerun-analysis-btn"
+        icon="pi pi-replay"
+        severity="success"
+        @click="onRerunAnalysis()"
+      />
+      <Button
+        v-tooltip.top="notApproved ? undefined : 'Stop the analysis'"
+        :disabled="
+          notApproved ||
+          !buttonStatuses.stopActive ||
+          !(props.analysisBuildStatus === ProcessStatus.Executed) ||
+          !(props.analysisDistributionStatus === ProcessStatus.Executed) ||
+          (!props.datastore && props.requireDatastore)
+        "
+        :loading="loading"
+        aria-label="Stop"
+        class="stop-analysis-btn"
+        icon="pi pi-stop"
+        severity="warn"
+        @click="onStopAnalysis()"
+      />
+      <Button
+        v-tooltip.top="notApproved ? undefined : 'Delete the analysis container'"
+        :disabled="
+          notApproved ||
+          !buttonStatuses.deleteActive ||
+          !(props.analysisBuildStatus === ProcessStatus.Executed) ||
+          !(props.analysisDistributionStatus === ProcessStatus.Executed) ||
+          (!props.datastore && props.requireDatastore)
+        "
+        :loading="loading"
+        aria-label="Delete"
+        class="delete-analysis-btn"
+        icon="pi pi-trash"
+        severity="danger"
+        @click="onDeleteAnalysis()"
+      />
+      <NuxtLink
+        :to="{
+          name: 'analyses-id',
+          params: { id: props.analysisId },
+        }"
+        target="_blank"
+      >
+        <Button
+          v-tooltip.top="'View the logs'"
+          :disabled="buttonStatuses.playActive"
+          aria-label="Logs"
+          class="logs-analysis-btn"
+          icon="pi pi-bars"
+          severity="contrast"
+        />
+      </NuxtLink>
+      <AnalysisUpdateButton
+        :analysisId="props.analysisId"
+        @updateAnalysisRunStatus="updatePodStatus"
+      />
+    </div>
+  </span>
 </template>
 
 <style lang="scss" scoped>
