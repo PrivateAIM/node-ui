@@ -90,7 +90,7 @@ export const handlers = [
   }),
 
   // Analysis logs
-  http.get(`/po/logs/${fakeAnalysisId}`, () => {
+  http.get(`/logs/${fakeAnalysisId}`, () => {
     return HttpResponse.json({
       status: 200,
       data: {
@@ -106,7 +106,7 @@ export const handlers = [
     });
   }),
 
-  http.get(`/po/history/${fakeAnalysisId}`, () => {
+  http.get(`/history/${fakeAnalysisId}`, () => {
     return HttpResponse.json({
       status: 200,
       data: {

@@ -1,4 +1,5 @@
 import type {
+  AnalysisLogsResponse,
   AnalysisNode,
   DeleteProject,
   DetailedAnalysis,
@@ -156,7 +157,7 @@ export function deleteAnalysisFromKong(analysisId: string, opts?) {
 
 // PodOrc endpoints
 export function getAnalysisLogs(analysisId: string, opts?) {
-  return useAPIFetch(`/po/logs/${analysisId}`, {
+  return useAPIFetch<AnalysisLogsResponse>(`/logs/${analysisId}`, {
     ...opts,
     method: "GET",
   });
