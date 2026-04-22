@@ -29,10 +29,22 @@ onUpdated(() => {
   scrollToBottom(analysisLogBottom.value);
 });
 
+function formatTimestamp(ts: string): string {
+  const d = new Date(ts);
+  if (isNaN(d.getTime())) return ts;
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return (
+    `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}` +
+    ` ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}`
+  );
+}
+
 function formatLogs(logs: PodLog[] | undefined, timestamps: boolean): string {
   if (!logs?.length) return "";
   return logs
-    .map((entry) => (timestamps ? `${entry.timestamp}  ${entry.message}` : entry.message))
+    .map((entry) =>
+      timestamps ? `${formatTimestamp(entry.timestamp)}  ${entry.message}` : entry.message,
+    )
     .join("\n");
 }
 
