@@ -2619,6 +2619,11 @@
         "summary": "Logs.Events.Get",
         "description": "Retrieve a selection of logged events.",
         "operationId": "logs_events_get_events_get",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "limit",
@@ -2777,7 +2782,12 @@
           "404": {
             "description": "Not found"
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/events/signout": {
@@ -2797,6 +2807,115 @@
           },
           "404": {
             "description": "Not found"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/logs/{analysis_id}": {
+      "get": {
+        "tags": ["Logs"],
+        "summary": "Logs.Analysis.Live.Get",
+        "description": "Get the latest logs for both containers of an analysis (highest run number).",
+        "operationId": "logs_analysis_live_get_logs__analysis_id__get",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "analysis_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "UUID of the analysis.",
+              "title": "Analysis Id"
+            },
+            "description": "UUID of the analysis."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisLogsResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/history/{analysis_id}": {
+      "get": {
+        "tags": ["Logs"],
+        "summary": "Logs.Analysis.History.Get",
+        "description": "Get logs for all runs of an analysis, sorted by run number ascending.",
+        "operationId": "logs_analysis_history_get_history__analysis_id__get",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "analysis_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "UUID of the analysis.",
+              "title": "Analysis Id"
+            },
+            "description": "UUID of the analysis."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisLogHistoryResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
           }
         }
       }
@@ -3311,6 +3430,62 @@
         "type": "object",
         "required": ["image_url", "analysis_id", "registry_url"],
         "title": "AnalysisImageUrl"
+      },
+      "AnalysisLogHistoryResponse": {
+        "properties": {
+          "analysis_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Analysis Id"
+          },
+          "runs": {
+            "items": {
+              "$ref": "#/components/schemas/RunLogs"
+            },
+            "type": "array",
+            "title": "Runs"
+          }
+        },
+        "type": "object",
+        "required": ["analysis_id", "runs"],
+        "title": "AnalysisLogHistoryResponse",
+        "description": "Logs for all runs of an analysis."
+      },
+      "AnalysisLogsResponse": {
+        "properties": {
+          "analysis_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Analysis Id"
+          },
+          "run_number": {
+            "type": "integer",
+            "title": "Run Number"
+          },
+          "nginx_logs": {
+            "items": {
+              "$ref": "#/components/schemas/PodLog"
+            },
+            "type": "array",
+            "title": "Nginx Logs"
+          },
+          "analysis_logs": {
+            "items": {
+              "$ref": "#/components/schemas/PodLog"
+            },
+            "type": "array",
+            "title": "Analysis Logs"
+          }
+        },
+        "type": "object",
+        "required": [
+          "analysis_id",
+          "run_number",
+          "nginx_logs",
+          "analysis_logs"
+        ],
+        "title": "AnalysisLogsResponse",
+        "description": "Latest logs for an analysis (most recent run)."
       },
       "AnalysisNode": {
         "properties": {
@@ -5716,6 +5891,22 @@
         "required": ["type"],
         "title": "NodeTypeResponse"
       },
+      "PodLog": {
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": ["timestamp", "message"],
+        "title": "PodLog",
+        "description": "A single log line from a pod container."
+      },
       "PodProgressResponse": {
         "additionalProperties": {
           "$ref": "#/components/schemas/AnalysisStatus"
@@ -5981,6 +6172,17 @@
             ],
             "title": "Account Name"
           },
+          "account_secret": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account Secret"
+          },
           "id": {
             "type": "string",
             "format": "uuid",
@@ -6035,6 +6237,28 @@
             "type": "string",
             "title": "External Name"
           },
+          "account_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account Name"
+          },
+          "account_secret": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account Secret"
+          },
           "id": {
             "type": "string",
             "format": "uuid",
@@ -6054,6 +6278,17 @@
               }
             ],
             "title": "External Id"
+          },
+          "account_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account Id"
           },
           "webhook_name": {
             "anyOf": [
@@ -6109,9 +6344,11 @@
           "type",
           "registry_id",
           "external_name",
+          "account_name",
           "id",
           "public",
           "external_id",
+          "account_id",
           "webhook_name",
           "webhook_exists",
           "realm_id",
@@ -6441,6 +6678,32 @@
         "type": "object",
         "title": "RouteService",
         "description": "The service this route is associated to. This is where the route proxies traffic to."
+      },
+      "RunLogs": {
+        "properties": {
+          "run_number": {
+            "type": "integer",
+            "title": "Run Number"
+          },
+          "nginx_logs": {
+            "items": {
+              "$ref": "#/components/schemas/PodLog"
+            },
+            "type": "array",
+            "title": "Nginx Logs"
+          },
+          "analysis_logs": {
+            "items": {
+              "$ref": "#/components/schemas/PodLog"
+            },
+            "type": "array",
+            "title": "Analysis Logs"
+          }
+        },
+        "type": "object",
+        "required": ["run_number", "nginx_logs", "analysis_logs"],
+        "title": "RunLogs",
+        "description": "Logs for a single analysis run."
       },
       "Service": {
         "properties": {
@@ -6914,7 +7177,14 @@
       },
       "StatusOnlyResponse": {
         "additionalProperties": {
-          "$ref": "#/components/schemas/PodStatus"
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/PodStatus"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "propertyNames": {
           "format": "uuid"
