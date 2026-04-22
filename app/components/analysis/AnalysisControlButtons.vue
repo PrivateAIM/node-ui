@@ -231,6 +231,7 @@ async function onStartAnalysis() {
       useNuxtApp().$hubApi("/analysis/initialize", {
         method: "POST",
         body: analysisProps,
+        timeout: 0,
       }),
     ).catch((e) => {
       updatePodStatus(null);
