@@ -63,6 +63,18 @@ export const showDownstreamConnectionErrorToast = (
   console.warn(`The ${service} service is unreachable`);
 };
 
+export const showProxyErrorToast = (toast: ToastServiceMethods) => {
+  showConnectionErrorToast(toast, {
+    severity: "error",
+    summary: "Connection error",
+    detail:
+      "Unable to contact the Hub, this is likely a proxy configuration issue",
+  });
+  console.warn(
+    "Hub is currently unreachable, likely due to proxy configuration",
+  );
+};
+
 // Kong error toasts
 
 export const showKongConnectionErrorToast = (toast: ToastServiceMethods) => {

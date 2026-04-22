@@ -12,6 +12,7 @@ import {
   showKongMissingHealthConsumerErrorToast,
   showKongS3BucketErrorToast,
   showNotAuthenticatedToast,
+  showProxyErrorToast,
   showRbacPermissionError,
   showWrongRobotIdToast,
 } from "~/composables/connectionErrorToast";
@@ -40,6 +41,7 @@ export default defineNuxtPlugin(() => {
 
   const hubApi = $fetch.create({
     baseURL: baseUrl,
+    timeout: 30000,
     async onRequest({ options }) {
       const sessionData = await getSession();
 
@@ -64,6 +66,9 @@ export default defineNuxtPlugin(() => {
     },
     onRequestError({ error }) {
       console.error(error);
+      if (error.name === "TimeoutError" || error.name === "AbortError") {
+        showProxyErrorToast(toast);
+      }
     },
     async onResponseError({ request, response }) {
       // Handle the response errors
