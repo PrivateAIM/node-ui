@@ -264,7 +264,11 @@ async function onStartAnalysis() {
     if (startPodResp && props.analysisId in startPodResp) {
       const currentExecutionStatus = startPodResp[props.analysisId];
       updatePodStatus(currentExecutionStatus);
-      showToast("success", "Start success", "Successfully started the container");
+      showToast(
+        "success",
+        "Start success",
+        "Successfully started the container",
+      );
     } else {
       updatePodStatus(originalExecutionStatus);
     }
@@ -283,19 +287,28 @@ async function onStopAnalysis() {
     const stopResp: StatusOnlyResponse = (await raceWithTimeout(
       useNuxtApp().$hubApi(`/po/stop/${props.analysisId}`, {
         method: "PUT",
+        timeout: 0,
       }),
     ).catch((e) => {
       if (e instanceof OperationTimeoutError) {
         showToast("error", "Stop failure", "The request timed out");
       } else {
-        showToast("error", "Stop failure", "Failed to stop the analysis container");
+        showToast(
+          "error",
+          "Stop failure",
+          "Failed to stop the analysis container",
+        );
       }
     })) as StatusOnlyResponse;
 
     // stopResp is undefined if error occurred
     if (stopResp) {
       if (props.analysisId in stopResp) {
-        showToast("success", "Stop success", "Successfully stopped the container");
+        showToast(
+          "success",
+          "Stop success",
+          "Successfully stopped the container",
+        );
       } else {
         // No pod statuses returned from PO for analysis
         showStatusUnknownToast();
@@ -318,19 +331,32 @@ async function onDeleteAnalysis() {
     const deleteResp: StatusOnlyResponse = (await raceWithTimeout(
       useNuxtApp().$hubApi(`/analysis/terminate/${props.analysisId}`, {
         method: "DELETE",
+        timeout: 0,
       }),
     ).catch((e) => {
       if (e instanceof OperationTimeoutError) {
-        showToast("error", "Terminate request failure", "The request timed out");
+        showToast(
+          "error",
+          "Terminate request failure",
+          "The request timed out",
+        );
       } else {
-        showToast("error", "Terminate request failure", "Failed to terminate the analysis");
+        showToast(
+          "error",
+          "Terminate request failure",
+          "Failed to terminate the analysis",
+        );
       }
     })) as StatusOnlyResponse;
 
     // deleteResp is undefined if error occurred
     if (deleteResp) {
       if (props.analysisId in deleteResp) {
-        showToast("success", "Delete success", "Successfully removed the container");
+        showToast(
+          "success",
+          "Delete success",
+          "Successfully removed the container",
+        );
       } else {
         showStatusUnknownToast();
       }
