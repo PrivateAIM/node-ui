@@ -39,12 +39,33 @@ function formatTimestamp(ts: string): string {
   );
 }
 
+function logLevelClass(level?: string | null): string {
+  switch (level?.toUpperCase()) {
+    case "ERROR":
+    case "CRITICAL":
+    case "FATAL":
+      return "log-level-error";
+    case "WARN":
+    case "WARNING":
+      return "log-level-warn";
+    case "INFO":
+      return "log-level-info";
+    case "DEBUG":
+    case "TRACE":
+      return "log-level-debug";
+    default:
+      return "log-level-default";
+  }
+}
+
 function formatLogs(logs: PodLog[] | undefined, timestamps: boolean): string {
   if (!logs?.length) return "";
   return logs
-    .map((entry) =>
-      timestamps ? `${formatTimestamp(entry.timestamp)}  ${entry.message}` : entry.message,
-    )
+    .map((entry) => {
+      const prefix = timestamps ? `${formatTimestamp(entry.timestamp)}  ` : "";
+      const line = `${prefix}${entry.message}`;
+      return entry.stacktrace ? `${line}\n${entry.stacktrace}` : line;
+    })
     .join("\n");
 }
 
@@ -108,7 +129,7 @@ const copyToClipboard = async (analysisLogs: boolean) => {
       <template #title>
         <div class="log-header-row">
           <div class="log-header-row-title">Nginx Logs</div>
-          <div class="log-btns" v-if="formattedNginxLogs">
+          <div class="log-btns" v-if="nginxLogs?.length">
             <div class="log-download-btn log-btn">
               <Button
                 icon="pi pi-download"
@@ -133,9 +154,14 @@ const copyToClipboard = async (analysisLogs: boolean) => {
       <template #content>
         <div class="card nginx-log-content">
           <ScrollPanel class="log-scroll-panel">
-            <span v-if="formattedNginxLogs">
-              {{ formattedNginxLogs }}
-            </span>
+            <template v-if="nginxLogs?.length">
+              <div v-for="(entry, i) in nginxLogs" :key="i" class="log-entry">
+                <span :class="['log-message', logLevelClass(entry.level)]">
+                  <span v-if="showTimestamps" class="log-timestamp">{{ formatTimestamp(entry.timestamp) }}&nbsp;&nbsp;</span>{{ entry.message }}
+                </span>
+                <pre v-if="entry.stacktrace" class="log-stacktrace">{{ entry.stacktrace }}</pre>
+              </div>
+            </template>
             <span v-else>No logs found...</span>
             <div ref="nginxLogBottom"></div>
           </ScrollPanel>
@@ -146,7 +172,7 @@ const copyToClipboard = async (analysisLogs: boolean) => {
       <template #title>
         <div class="log-header-row">
           <div class="log-header-row-title">Analysis Logs</div>
-          <div class="log-btns" v-if="formattedAnalysisLogs">
+          <div class="log-btns" v-if="analysisLogs?.length">
             <div class="log-download-btn log-btn">
               <Button
                 icon="pi pi-download"
@@ -170,9 +196,14 @@ const copyToClipboard = async (analysisLogs: boolean) => {
       </template>
       <template #content>
         <ScrollPanel class="log-scroll-panel">
-          <span v-if="formattedAnalysisLogs">
-            {{ formattedAnalysisLogs }}
-          </span>
+          <template v-if="analysisLogs?.length">
+            <div v-for="(entry, i) in analysisLogs" :key="i" class="log-entry">
+              <span :class="['log-message', logLevelClass(entry.level)]">
+                <span v-if="showTimestamps" class="log-timestamp">{{ formatTimestamp(entry.timestamp) }}&nbsp;&nbsp;</span>{{ entry.message }}
+              </span>
+              <pre v-if="entry.stacktrace" class="log-stacktrace">{{ entry.stacktrace }}</pre>
+            </div>
+          </template>
           <span v-else>No logs found...</span>
           <div ref="analysisLogBottom"></div>
         </ScrollPanel>
@@ -268,5 +299,37 @@ const copyToClipboard = async (analysisLogs: boolean) => {
   padding: 0;
   width: auto;
   border-width: 0;
+}
+
+.log-entry {
+  margin-bottom: 0.1em;
+}
+
+.log-message {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.log-timestamp {
+  opacity: 0.7;
+}
+
+.log-level-error   { color: #f87171; } /* red-400   */
+.log-level-warn    { color: #fbbf24; } /* amber-400 */
+.log-level-info    { color: #38bdf8; } /* sky-400   */
+.log-level-debug   { color: #a3e635; } /* lime-400  */
+.log-level-default { color: #e2e8f0; } /* slate-200 */
+
+.log-stacktrace {
+  margin: 0.15em 0 0.25em 1.5em;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: #fca5a5; /* red-300 — distinct from the message, clearly an error trace */
+  border-left: 2px solid #f87171;
+  padding-left: 0.5em;
 }
 </style>
