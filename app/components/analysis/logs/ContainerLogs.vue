@@ -43,10 +43,10 @@ async function gatherPreviousLogs() {
     .catch(() => undefined)) as AnalysisLogHistoryResponse | undefined;
 
   if (historyResp?.runs) {
-    // Sort descending so that largest run_number (newest) is first
-    prevLogs.value = [...historyResp.runs].sort(
-      (a, b) => b.run_number - a.run_number,
-    );
+    const currentRunNumber = currentLogs.value?.run_number;
+    prevLogs.value = [...historyResp.runs]
+      .filter((r) => currentRunNumber === undefined || r.run_number !== currentRunNumber)
+      .sort((a, b) => b.run_number - a.run_number);
   }
 }
 
@@ -62,6 +62,12 @@ async function refreshLogs() {
   await refresh();
   gatherCurrentLogs();
 }
+
+const previousRunsList = computed(() =>
+  !currentLogs.value && prevLogs.value.length > 0
+    ? prevLogs.value.slice(1)
+    : prevLogs.value,
+);
 
 function onRefreshToggle() {
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -106,9 +112,9 @@ function onRefreshToggle() {
       </div>
       <div class="log-container previous-logs-collection-card">
         <Fieldset :toggleable="true" legend="All Previous Runs">
-          <div v-if="prevLogs.length > 0" class="previous-logs-card">
+          <div v-if="previousRunsList.length > 0" class="previous-logs-card">
             <Fieldset
-              v-for="run in prevLogs"
+              v-for="run in previousRunsList"
               :key="run.run_number"
               :collapsed="true"
               :legend="`Run ${run.run_number}`"

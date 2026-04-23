@@ -1,6 +1,6 @@
 import { mount } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { fakeLogs } from "../constants";
+import { fakeLogs, fakePodLogs } from "../constants";
 import AnalysisLogCardContent from "~/components/analysis/logs/AnalysisLogCardContent.vue";
 import { useToast } from "primevue/usetoast";
 import Button from "primevue/button";
@@ -36,7 +36,7 @@ describe("AnalysisLogCardContent.vue", () => {
 
   test("Render the logs", () => {
     const wrapper = mount(AnalysisLogCardContent, {
-      props: { nginxLogs: fakeLogs, analysisLogs: fakeLogs },
+      props: { nginxLogs: fakePodLogs, analysisLogs: fakePodLogs },
     });
     expect(wrapper.text()).toContain("Starting FlameCoreSDK");
 
@@ -54,7 +54,7 @@ describe("AnalysisLogCardContent.vue", () => {
 
   test("Download the logs", async () => {
     const wrapper = mount(AnalysisLogCardContent, {
-      props: { nginxLogs: fakeLogs, analysisLogs: fakeLogs },
+      props: { nginxLogs: fakePodLogs, analysisLogs: fakePodLogs },
       global: {
         stubs: {
           Toast: true, // prevent PrimeVue Toast from mounting a portal
@@ -84,7 +84,7 @@ describe("AnalysisLogCardContent.vue", () => {
 
   test("Copy the logs", async () => {
     const wrapper = mount(AnalysisLogCardContent, {
-      props: { nginxLogs: fakeLogs, analysisLogs: fakeLogs },
+      props: { nginxLogs: fakePodLogs, analysisLogs: fakePodLogs },
       global: {
         stubs: {
           Toast: true, // prevent PrimeVue Toast from mounting a portal
