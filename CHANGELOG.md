@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.6.1](https://github.com/PrivateAIM/node-ui/compare/v0.6.0...v0.6.1) (2026-04-23)
+
+
+### Features
+
+* **api:** add 30s timeout request in case of misconfigured proxy ([1806e61](https://github.com/PrivateAIM/node-ui/commit/1806e61cde8dd68c6859dea025b22a0caa95ebe8))
+* **avatar:** add link to victorialogs ([f8ce2cb](https://github.com/PrivateAIM/node-ui/commit/f8ce2cb8d525ea601713864650cd972ed6df4b08))
+* **logs:** parse new victorialogs response ([ef1d7f5](https://github.com/PrivateAIM/node-ui/commit/ef1d7f5e8945b1137832b6a28efd8bec824c0a1e))
+
+
+### Bug Fixes
+
+* **analysis:** add timeout to button loading ([fd310c7](https://github.com/PrivateAIM/node-ui/commit/fd310c7edef8ad5b41637e55b1573c9da801e6e1))
+* **analysis:** allow stop and delete longer timeout ([6559cfa](https://github.com/PrivateAIM/node-ui/commit/6559cfa677a399605c1449771132730527e6fe00))
+
 ## [0.6.0](https://github.com/PrivateAIM/node-ui/compare/v0.5.4...v0.6.0) (2026-04-21)
 
 
