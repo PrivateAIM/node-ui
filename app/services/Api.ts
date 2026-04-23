@@ -1317,6 +1317,8 @@ export interface PodLog {
   timestamp: string;
   /** Message */
   message: string;
+  /** Level */
+  level?: string | null;
   /** Stacktrace */
   stacktrace?: string | null;
 }

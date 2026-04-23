@@ -5901,6 +5901,17 @@
             "type": "string",
             "title": "Message"
           },
+          "level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
           "stacktrace": {
             "anyOf": [
               {
