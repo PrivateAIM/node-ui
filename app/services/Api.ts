@@ -301,6 +301,38 @@ export interface AnalysisImageUrl {
   registry_password?: string | null;
 }
 
+/**
+ * AnalysisLogHistoryResponse
+ * Logs for all runs of an analysis.
+ */
+export interface AnalysisLogHistoryResponse {
+  /**
+   * Analysis Id
+   * @format uuid
+   */
+  analysis_id: string;
+  /** Runs */
+  runs: RunLogs[];
+}
+
+/**
+ * AnalysisLogsResponse
+ * Latest logs for an analysis (most recent run).
+ */
+export interface AnalysisLogsResponse {
+  /**
+   * Analysis Id
+   * @format uuid
+   */
+  analysis_id: string;
+  /** Run Number */
+  run_number: number;
+  /** Nginx Logs */
+  nginx_logs: PodLog[];
+  /** Analysis Logs */
+  analysis_logs: PodLog[];
+}
+
 /** AnalysisNode */
 export interface AnalysisNode {
   /**
@@ -1277,6 +1309,17 @@ export interface NodeTypeResponse {
 }
 
 /**
+ * PodLog
+ * A single log line from a pod container.
+ */
+export interface PodLog {
+  /** Timestamp */
+  timestamp: string;
+  /** Message */
+  message: string;
+}
+
+/**
  * PodProgressResponse
  * Response with dynamic UUID keys and dynamic analysis keys with progress/status
  */
@@ -1380,6 +1423,8 @@ export interface Registry {
   host: string;
   /** Account Name */
   account_name: string | null;
+  /** Account Secret */
+  account_secret?: string | null;
   /**
    * Id
    * @format uuid
@@ -1416,6 +1461,10 @@ export interface RegistryProject {
   registry_id: string;
   /** External Name */
   external_name: string;
+  /** Account Name */
+  account_name: string | null;
+  /** Account Secret */
+  account_secret?: string | null;
   /**
    * Id
    * @format uuid
@@ -1425,6 +1474,8 @@ export interface RegistryProject {
   public: boolean;
   /** External Id */
   external_id: string | null;
+  /** Account Id */
+  account_id: string | null;
   /** Webhook Name */
   webhook_name: string | null;
   /** Webhook Exists */
@@ -1572,6 +1623,19 @@ export interface RouteDestinationsInner {
 export interface RouteService {
   /** Id */
   id?: string | null;
+}
+
+/**
+ * RunLogs
+ * Logs for a single analysis run.
+ */
+export interface RunLogs {
+  /** Run Number */
+  run_number: number;
+  /** Nginx Logs */
+  nginx_logs: PodLog[];
+  /** Analysis Logs */
+  analysis_logs: PodLog[];
 }
 
 /**
@@ -1762,7 +1826,7 @@ export interface ServiceRequest {
  * StatusOnlyResponse
  * Response with dynamic UUID keys and dynamic analysis keys
  */
-export type StatusOnlyResponse = Record<any, PodStatus>;
+export type StatusOnlyResponse = Record<any, PodStatus | null>;
 
 /**
  * Token
@@ -3265,6 +3329,7 @@ export class Api<
      * @name LogsEventsGetEventsGet
      * @summary Logs.Events.Get
      * @request GET:/events
+     * @secure
      */
     logsEventsGetEventsGet: (
       query?: {
@@ -3306,6 +3371,7 @@ export class Api<
         path: `/events`,
         method: "GET",
         query: query,
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -3317,11 +3383,13 @@ export class Api<
      * @name AuthUserSigninEventsSigninPost
      * @summary Auth.User.Signin
      * @request POST:/events/signin
+     * @secure
      */
     authUserSigninEventsSigninPost: (params: RequestParams = {}) =>
       this.request<any, void>({
         path: `/events/signin`,
         method: "POST",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -3333,11 +3401,57 @@ export class Api<
      * @name AuthUserSignoutEventsSignoutPost
      * @summary Auth.User.Signout
      * @request POST:/events/signout
+     * @secure
      */
     authUserSignoutEventsSignoutPost: (params: RequestParams = {}) =>
       this.request<any, void>({
         path: `/events/signout`,
         method: "POST",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+  };
+  logs = {
+    /**
+     * @description Get the latest logs for both containers of an analysis (highest run number).
+     *
+     * @tags Logs
+     * @name LogsAnalysisLiveGetLogsAnalysisIdGet
+     * @summary Logs.Analysis.Live.Get
+     * @request GET:/logs/{analysis_id}
+     * @secure
+     */
+    logsAnalysisLiveGetLogsAnalysisIdGet: (
+      analysisId: string,
+      params: RequestParams = {},
+    ) =>
+      this.request<AnalysisLogsResponse, void | HTTPValidationError>({
+        path: `/logs/${analysisId}`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+  };
+  history = {
+    /**
+     * @description Get logs for all runs of an analysis, sorted by run number ascending.
+     *
+     * @tags Logs
+     * @name LogsAnalysisHistoryGetHistoryAnalysisIdGet
+     * @summary Logs.Analysis.History.Get
+     * @request GET:/history/{analysis_id}
+     * @secure
+     */
+    logsAnalysisHistoryGetHistoryAnalysisIdGet: (
+      analysisId: string,
+      params: RequestParams = {},
+    ) =>
+      this.request<AnalysisLogHistoryResponse, void | HTTPValidationError>({
+        path: `/history/${analysisId}`,
+        method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),

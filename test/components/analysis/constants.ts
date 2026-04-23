@@ -2,11 +2,16 @@ import {
   type Analysis,
   type AnalysisNode,
   type Node,
+  type PodLog,
   type Project,
 } from "~/services/Api";
 
 export const fakeLogs =
   'Starting FlameCoreSDK\n\tExtracting node config\n\tConnecting to nginx...success\n\tConnecting to MessageBroker...success\n\tConnecting to ResultService...success\n\tConnecting to DataApi...success\n\tStarting FlameApi thread...success\nFlameCoreSDK ready\nINFO:     Started server process [1]\nINFO:     Waiting for application startup.\nINFO:     Application startup complete.\nINFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)\nfinished: False, False\nINFO:     10.1.30.117:44596 - "GET /healthz HTTP/1.0" 200 OK\n';
+
+export const fakePodLogs: PodLog[] = [
+  { timestamp: "2025-01-01T00:00:00Z", message: fakeLogs },
+];
 
 const fakeProjectId: string = "5833b9b8-ad5c-4db4-a3d2-297517c74511";
 

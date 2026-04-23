@@ -1,15 +1,17 @@
 <script lang="ts" setup>
 import { Card, ScrollPanel } from "primevue";
-import { onMounted, onUpdated, ref } from "vue";
+import { computed, onMounted, onUpdated, ref } from "vue";
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
+import type { PodLog } from "~/services/Api";
 
 const props = defineProps<{
-  nginxLogs?: string;
-  analysisLogs?: string;
+  nginxLogs?: PodLog[];
+  analysisLogs?: PodLog[];
 }>();
 const nginxLogBottom = ref();
 const analysisLogBottom = ref();
+const showTimestamps = ref(false);
 
 const toast = useToast();
 
@@ -23,35 +25,56 @@ onMounted(() => {
 });
 
 onUpdated(() => {
-  // When refresh is toggled on
   scrollToBottom(nginxLogBottom.value);
   scrollToBottom(analysisLogBottom.value);
 });
 
+function formatTimestamp(ts: string): string {
+  const d = new Date(ts);
+  if (isNaN(d.getTime())) return ts;
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return (
+    `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}` +
+    ` ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}`
+  );
+}
+
+function formatLogs(logs: PodLog[] | undefined, timestamps: boolean): string {
+  if (!logs?.length) return "";
+  return logs
+    .map((entry) =>
+      timestamps ? `${formatTimestamp(entry.timestamp)}  ${entry.message}` : entry.message,
+    )
+    .join("\n");
+}
+
+const formattedNginxLogs = computed(() =>
+  formatLogs(props.nginxLogs, showTimestamps.value),
+);
+const formattedAnalysisLogs = computed(() =>
+  formatLogs(props.analysisLogs, showTimestamps.value),
+);
+
 const downloadLogs = (analysisLogs: boolean) => {
   const prefix = analysisLogs ? "analysis" : "nginx";
   const filename = `${prefix}-logs-${Date.now()}`;
-  const logs = analysisLogs ? props.analysisLogs : props.nginxLogs;
+  const logs = analysisLogs ? formattedAnalysisLogs.value : formattedNginxLogs.value;
 
   if (logs) {
     const blob = new Blob([logs], { type: "text/plain" });
-
     const url = URL.createObjectURL(blob);
-
     const link = document.createElement("a");
     link.href = url;
     link.download = filename;
     document.body.appendChild(link);
     link.click();
-
-    // Remove temp DOM components
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   }
 };
 
 const copyToClipboard = async (analysisLogs: boolean) => {
-  const logs = analysisLogs ? props.analysisLogs : props.nginxLogs;
+  const logs = analysisLogs ? formattedAnalysisLogs.value : formattedNginxLogs.value;
   if (logs) {
     try {
       await navigator.clipboard.writeText(logs);
@@ -59,7 +82,7 @@ const copyToClipboard = async (analysisLogs: boolean) => {
         severity: "contrast",
         summary: "Copied to clipboard!",
         life: 3000,
-        group: "copiedLogs"
+        group: "copiedLogs",
       });
     } catch (err) {
       console.error("Failed to copy: ", err);
@@ -70,12 +93,22 @@ const copyToClipboard = async (analysisLogs: boolean) => {
 
 <template>
   <Toast group="copiedLogs" position="top-center" class="copy-toast" />
+  <div class="log-content-toolbar">
+    <ToggleButton
+      v-model="showTimestamps"
+      onLabel="Timestamps On"
+      offLabel="Timestamps Off"
+      onIcon="pi pi-clock"
+      offIcon="pi pi-clock"
+      class="log-timestamp-toggle"
+    />
+  </div>
   <div class="card analysis-logs">
     <Card class="log-card nginx-log-card">
       <template #title>
         <div class="log-header-row">
           <div class="log-header-row-title">Nginx Logs</div>
-          <div class="log-btns" v-if="props.nginxLogs">
+          <div class="log-btns" v-if="formattedNginxLogs">
             <div class="log-download-btn log-btn">
               <Button
                 icon="pi pi-download"
@@ -100,8 +133,8 @@ const copyToClipboard = async (analysisLogs: boolean) => {
       <template #content>
         <div class="card nginx-log-content">
           <ScrollPanel class="log-scroll-panel">
-            <span v-if="props.nginxLogs">
-              {{ props.nginxLogs }}
+            <span v-if="formattedNginxLogs">
+              {{ formattedNginxLogs }}
             </span>
             <span v-else>No logs found...</span>
             <div ref="nginxLogBottom"></div>
@@ -113,7 +146,7 @@ const copyToClipboard = async (analysisLogs: boolean) => {
       <template #title>
         <div class="log-header-row">
           <div class="log-header-row-title">Analysis Logs</div>
-          <div class="log-btns" v-if="props.analysisLogs">
+          <div class="log-btns" v-if="formattedAnalysisLogs">
             <div class="log-download-btn log-btn">
               <Button
                 icon="pi pi-download"
@@ -137,8 +170,8 @@ const copyToClipboard = async (analysisLogs: boolean) => {
       </template>
       <template #content>
         <ScrollPanel class="log-scroll-panel">
-          <span v-if="props.analysisLogs">
-            {{ props.analysisLogs }}
+          <span v-if="formattedAnalysisLogs">
+            {{ formattedAnalysisLogs }}
           </span>
           <span v-else>No logs found...</span>
           <div ref="analysisLogBottom"></div>
@@ -149,6 +182,16 @@ const copyToClipboard = async (analysisLogs: boolean) => {
 </template>
 
 <style lang="scss">
+.log-content-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5em;
+}
+
+.log-timestamp-toggle {
+  font-size: 0.8em;
+}
+
 .analysis-logs {
   display: flex;
   justify-content: space-between;

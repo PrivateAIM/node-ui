@@ -1,23 +1,21 @@
 <script lang="ts" setup>
-import { useRoute } from "#vue-router";
+import { useRoute } from "vue-router";
 import { Card, Fieldset } from "primevue";
 import { useIntervalFn } from "@vueuse/core";
 import { getAnalysisLogs } from "~/composables/useAPIFetch";
 import RefreshSwitch from "~/components/analysis/logs/RefreshSwitch.vue";
 import AnalysisLogCardContent from "~/components/analysis/logs/AnalysisLogCardContent.vue";
 import { useNuxtApp } from "nuxt/app";
-import type { LogResponse } from "~/services/Api";
-
-interface logEntry {
-  podId: string;
-  analysis: string | undefined;
-  nginx: string | undefined;
-}
+import type {
+  AnalysisLogHistoryResponse,
+  AnalysisLogsResponse,
+  RunLogs,
+} from "~/services/Api";
 
 const route = useRoute();
 const analysisId = route.params.id as string;
-const currentLogs = ref([] as logEntry[]);
-const prevLogs = ref([] as logEntry[]);
+const currentLogs = ref<AnalysisLogsResponse | null>(null);
+const prevLogs = ref<RunLogs[]>([]);
 
 const {
   data: response,
@@ -29,42 +27,26 @@ const {
 gatherCurrentLogs();
 await gatherPreviousLogs();
 
-function parseLogs(logResp: LogResponse | undefined): logEntry[] {
-  const analysisLogs = logResp?.analysis;
-  const nginxLogs = logResp?.nginx;
-  let compiledLogs: logEntry[] = [];
-  if (analysisLogs) {
-    const analysisPodIds = Object.keys(analysisLogs);
-    analysisPodIds.forEach((analysisPodId: string) => {
-      const newLogEntry: logEntry = {
-        podId: analysisPodId,
-        analysis: analysisLogs[analysisPodId][0] ?? undefined,
-        nginx: nginxLogs![analysisPodId][0] ?? undefined,
-      };
-      compiledLogs.push(newLogEntry);
-    });
-  }
-  return compiledLogs;
-}
-
 function gatherCurrentLogs() {
   if (status.value === "success") {
-    currentLogs.value = parseLogs(response.value as LogResponse);
+    currentLogs.value = response.value ?? null;
   } else if (status.value === "error" && error.value?.statusCode === 403) {
     navigateTo("/error/403");
   }
 }
 
-// Previous logs
 async function gatherPreviousLogs() {
-  const prevLogResp: LogResponse = (await useNuxtApp()
-    .$hubApi(`/po/history/${analysisId}`, {
+  const historyResp = (await useNuxtApp()
+    .$hubApi(`/history/${analysisId}`, {
       method: "GET",
     })
-    .catch(() => undefined)) as LogResponse;
+    .catch(() => undefined)) as AnalysisLogHistoryResponse | undefined;
 
-  if (prevLogResp) {
-    prevLogs.value = parseLogs(prevLogResp);
+  if (historyResp?.runs) {
+    const currentRunNumber = currentLogs.value?.run_number;
+    prevLogs.value = [...historyResp.runs]
+      .filter((r) => currentRunNumber === undefined || r.run_number !== currentRunNumber)
+      .sort((a, b) => b.run_number - a.run_number);
   }
 }
 
@@ -73,13 +55,19 @@ const { pause, resume, isActive } = useIntervalFn(
     refreshLogs();
   },
   5000,
-  { immediate: currentLogs.value.length > 0 },
+  { immediate: currentLogs.value !== null },
 );
 
 async function refreshLogs() {
   await refresh();
   gatherCurrentLogs();
 }
+
+const previousRunsList = computed(() =>
+  !currentLogs.value && prevLogs.value.length > 0
+    ? prevLogs.value.slice(1)
+    : prevLogs.value,
+);
 
 function onRefreshToggle() {
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -94,8 +82,8 @@ function onRefreshToggle() {
       <div class="table-header-row">
         <span>{{ analysisId }}</span>
         <RefreshSwitch
-          :disabled="!currentLogs.length"
-          :startEnabled="currentLogs.length > 0"
+          :disabled="!currentLogs"
+          :startEnabled="currentLogs !== null"
           @change="onRefreshToggle"
         />
       </div>
@@ -103,56 +91,38 @@ function onRefreshToggle() {
     <template #content>
       <div class="log-container current-logs-card">
         <Fieldset
-          v-if="!currentLogs.length && prevLogs.length > 0"
+          v-if="!currentLogs && prevLogs.length > 0"
           :toggleable="true"
           class="log-card-failed-fs"
           legend="Most Recent Run"
         >
           <div class="log-card-failed">
             <AnalysisLogCardContent
-              :analysisLogs="prevLogs[0].analysis"
-              :nginxLogs="prevLogs[0].nginx"
+              :analysisLogs="prevLogs[0]!.analysis_logs"
+              :nginxLogs="prevLogs[0]!.nginx_logs"
             />
           </div>
         </Fieldset>
         <Fieldset v-else :toggleable="true" legend="Current Run">
-          <div v-if="currentLogs.length > 1">
-            <Fieldset
-              v-for="currentLog in currentLogs"
-              :key="currentLog.podId"
-              :collapsed="true"
-              :legend="currentLog.podId"
-              :toggleable="true"
-            >
-              <AnalysisLogCardContent
-                :analysisLogs="currentLog.analysis"
-                :nginxLogs="currentLog.nginx"
-              />
-            </Fieldset>
-          </div>
-          <div v-else class="log-card-single">
-            <AnalysisLogCardContent
-              :analysisLogs="
-                currentLogs.length > 0 ? currentLogs[0].analysis : ''
-              "
-              :nginxLogs="currentLogs.length > 0 ? currentLogs[0].nginx : ''"
-            />
-          </div>
+          <AnalysisLogCardContent
+            :analysisLogs="currentLogs?.analysis_logs ?? []"
+            :nginxLogs="currentLogs?.nginx_logs ?? []"
+          />
         </Fieldset>
       </div>
       <div class="log-container previous-logs-collection-card">
         <Fieldset :toggleable="true" legend="All Previous Runs">
-          <div v-if="prevLogs.length > 0" class="previous-logs-card">
+          <div v-if="previousRunsList.length > 0" class="previous-logs-card">
             <Fieldset
-              v-for="log in prevLogs"
-              :key="log.podId"
+              v-for="run in previousRunsList"
+              :key="run.run_number"
               :collapsed="true"
-              :legend="log.podId"
+              :legend="`Run ${run.run_number}`"
               :toggleable="true"
             >
               <AnalysisLogCardContent
-                :analysisLogs="log.analysis"
-                :nginxLogs="log.nginx"
+                :analysisLogs="run.analysis_logs"
+                :nginxLogs="run.nginx_logs"
               />
             </Fieldset>
           </div>
@@ -169,8 +139,4 @@ function onRefreshToggle() {
 .previous-logs-collection-card {
   margin-top: 2em;
 }
-
-//.log-card-failed-fs .p-fieldset-toggle-button {
-//  background: red;
-//}
 </style>

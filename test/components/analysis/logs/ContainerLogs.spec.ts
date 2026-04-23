@@ -2,7 +2,6 @@ import { defineComponent, ref } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import ContainerLogs from "~/components/analysis/logs/ContainerLogs.vue";
-import { fakeLogs } from "@/test/components/analysis/constants";
 import { getAnalysisLogs } from "~/composables/useAPIFetch";
 import { fakeAnalysisId } from "@/test/mockapi/handlers";
 
@@ -34,12 +33,10 @@ describe("ContainerLogs.vue", () => {
 
   test("Parse returned analysis logs", async () => {
     const mockedResp = {
-      analysis: {
-        [fakeAnalysisId]: [fakeLogs],
-      },
-      nginx: {
-        [fakeAnalysisId]: [fakeLogs],
-      },
+      analysis_id: fakeAnalysisId,
+      run_number: 1,
+      analysis_logs: [{ timestamp: "2025-01-01T00:00:00Z", message: "Starting FlameCoreSDK" }],
+      nginx_logs: [],
     };
     vi.mocked(getAnalysisLogs).mockResolvedValue({
       data: ref(mockedResp),
@@ -62,10 +59,8 @@ describe("ContainerLogs.vue", () => {
   });
 
   test("Empty analysis logs", async () => {
-    // Mock useFetch
-    const emptyResp = { analysis: {}, nginx: {} };
     vi.mocked(getAnalysisLogs).mockResolvedValue({
-      data: ref(emptyResp),
+      data: ref(null),
       pending: ref(false),
       error: ref(undefined),
       status: ref("success"),
