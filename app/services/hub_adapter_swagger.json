@@ -5900,6 +5900,17 @@
           "message": {
             "type": "string",
             "title": "Message"
+          },
+          "stacktrace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stacktrace"
           }
         },
         "type": "object",
