@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { Card, ScrollPanel } from "primevue";
-import { computed, onMounted, onUpdated, ref } from "vue";
+import { computed, onBeforeUpdate, onMounted, onUpdated, ref } from "vue";
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
 import type { PodLog } from "~/services/Api";
@@ -15,18 +15,42 @@ const showTimestamps = ref(false);
 
 const toast = useToast();
 
-const scrollToBottom = (element) => {
-  element.scrollIntoView({ behavior: "smooth", block: "nearest" });
-};
+const getScrollContainer = (bottomEl: HTMLElement): HTMLElement | null =>
+  bottomEl?.parentElement ?? null;
+
+const isAtBottom = (container: HTMLElement): boolean =>
+  container.scrollTop + container.clientHeight >= container.scrollHeight - 10;
+
+let nginxWasAtBottom = true;
+let analysisWasAtBottom = true;
+
+onBeforeUpdate(() => {
+  if (nginxLogBottom.value) {
+    const c = getScrollContainer(nginxLogBottom.value);
+    nginxWasAtBottom = c ? isAtBottom(c) : true;
+  }
+  if (analysisLogBottom.value) {
+    const c = getScrollContainer(analysisLogBottom.value);
+    analysisWasAtBottom = c ? isAtBottom(c) : true;
+  }
+});
 
 onMounted(() => {
-  scrollToBottom(nginxLogBottom.value);
-  scrollToBottom(analysisLogBottom.value);
+  [nginxLogBottom, analysisLogBottom].forEach(({ value }) => {
+    const c = getScrollContainer(value);
+    if (c) c.scrollTop = c.scrollHeight;
+  });
 });
 
 onUpdated(() => {
-  scrollToBottom(nginxLogBottom.value);
-  scrollToBottom(analysisLogBottom.value);
+  if (nginxWasAtBottom && nginxLogBottom.value) {
+    const c = getScrollContainer(nginxLogBottom.value);
+    if (c) c.scrollTop = c.scrollHeight;
+  }
+  if (analysisWasAtBottom && analysisLogBottom.value) {
+    const c = getScrollContainer(analysisLogBottom.value);
+    if (c) c.scrollTop = c.scrollHeight;
+  }
 });
 
 function formatTimestamp(ts: string): string {
