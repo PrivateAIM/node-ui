@@ -182,10 +182,7 @@ function setProgress(analysis: ModifiedAnalysisNode): ModifiedAnalysisNode {
   if (currentRunStatus) {
     if (currentRunStatus === PodStatus.Failed) {
       analysis.execution_progress = 0;
-    } else if (
-      currentRunStatus === PodStatus.Executed ||
-      currentRunStatus === PodStatus.Finished // deprecated
-    ) {
+    } else if (currentRunStatus === PodStatus.Executed) {
       analysis.execution_progress = 100;
     }
   }
@@ -220,14 +217,9 @@ function parseAnalysis(
     analysisEntry.project_name = projMap.has(projId) ? projMap.get(projId) : "";
     analysisEntry.datastore = kongRoutes.value.has(projId);
   }
-  // If PodOrc status update returns undefined -> use hub info since it's all we have
-  // If status from PodOrc -> use it
-  // If no run status reported by PodOrc, and it's not failed/finished -> set to null (wrong hub info)
-  // REMEMBER: PO sends running/finished instead of executing/executed
   const acceptableHubStatuses: Array<PodStatus | null | undefined> = [
     PodStatus.Failed,
     PodStatus.Executed,
-    PodStatus.Finished, // Deprecated but still returned by PO
   ];
   if (executionStatuses && analysisId in executionStatuses) {
     const podStatus = executionStatuses[analysisId]!;
