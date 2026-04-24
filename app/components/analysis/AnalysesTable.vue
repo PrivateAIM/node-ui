@@ -81,9 +81,7 @@ const approvalStatuses = Object.values(ApprovalStatus);
 const processStatuses = Object.values(ProcessStatus);
 const podStatuses = Object.values(PodStatus);
 
-// Stable sort function for distribution status column — maps to binary value so
-// rows group by badge (executed = '1', everything else = '0') rather than sorting
-// alphabetically across the many possible status strings.
+// Stable sort function for distribution status column maps to binary value
 const distributionStatusSortFn = (row: ModifiedAnalysisNode) =>
   row.analysis?.distribution_status === "executed" ? "1" : "0";
 
@@ -159,17 +157,6 @@ async function getExecutionStatusesFromPodOrc(): Promise<
     })) as PodProgressResponse;
   podOrcUnreacheable.value = !podOrcResponse;
   return podOrcResponse;
-}
-
-async function checkForUpdatesFromPodOrc() {
-  if (!podOrcUnreacheable.value) {
-    const newStatuses = await getExecutionStatusesFromPodOrc();
-    if (newStatuses) {
-      for (const [analysisId, progressData] of Object.entries(newStatuses)) {
-        updateAnalysisRun(analysisId, progressData);
-      }
-    }
-  }
 }
 
 function setProgress(analysis: ModifiedAnalysisNode): ModifiedAnalysisNode {
@@ -272,7 +259,6 @@ async function compileAnalysisTable(
   tableLoading.value = false;
 }
 
-let pollIntervalId: ReturnType<typeof setInterval> | undefined;
 let tableRefreshIntervalId: ReturnType<typeof setInterval> | undefined;
 
 async function pollTableData() {
@@ -282,12 +268,10 @@ async function pollTableData() {
 
 onMounted(() => {
   compileAnalysisTable(status.value, analysisNodeResp.value);
-  pollIntervalId = setInterval(checkForUpdatesFromPodOrc, 15000);
   tableRefreshIntervalId = setInterval(pollTableData, 15000);
 });
 
 onUnmounted(() => {
-  if (pollIntervalId) clearInterval(pollIntervalId);
   if (tableRefreshIntervalId) clearInterval(tableRefreshIntervalId);
 });
 
