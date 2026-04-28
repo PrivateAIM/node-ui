@@ -440,6 +440,7 @@ async function onDeleteAnalysis() {
       :to="{
         name: 'analyses-id',
         params: { id: props.analysisId },
+        query: { nodeId: props.analysisNodeId },
       }"
       target="_blank"
     >
