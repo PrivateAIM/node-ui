@@ -1,3 +1,4 @@
+import CredentialsProvider from "next-auth/providers/credentials";
 import KeycloakProvider from "next-auth/providers/keycloak";
 import AuthentikProvider from "next-auth/providers/authentik";
 import OktaProvider from "next-auth/providers/okta";
@@ -36,6 +37,8 @@ function compileEndpoints() {
 function buildProvider() {
   const idpProvider = process.env.NUXT_PUBLIC_IDP_PROVIDER ?? "keycloak";
   const endPoints = compileEndpoints();
+  const clientIssuer =
+    process.env.NUXT_PUBLIC_IDP_ISSUER ?? "http://localhost:8080/realms/flame";
 
   const providers = [];
 
@@ -58,6 +61,46 @@ function buildProvider() {
           ...endPoints,
         });
       providers.push(authentikProvider);
+      break;
+    }
+
+    case "hub": {
+      // Hub requires the password grant — use CredentialsProvider so we can build the token request body ourselves.
+      const hubProvider =
+        // @ts-expect-error default is an option
+        CredentialsProvider.default({
+          id: "hub",
+          name: "Hub",
+          credentials: {
+            username: { label: "Username", type: "text" },
+            password: { label: "Password", type: "password" },
+          },
+          async authorize(credentials: { username: string; password: string }) {
+            if (!credentials?.username || !credentials?.password) return null;
+
+            const response = await fetch(`${clientIssuer}/token`, {
+              method: "POST",
+              headers: { "Content-Type": "application/x-www-form-urlencoded" },
+              body: new URLSearchParams({
+                grant_type: "password",
+                username: credentials.username,
+                password: credentials.password,
+              }),
+            });
+
+            if (!response.ok) return null;
+
+            const token = await response.json();
+            return {
+              id: credentials.username,
+              name: credentials.username,
+              access_token: token.access_token,
+              refresh_token: token.refresh_token,
+              expires_at: Date.now() + token.expires_in * 1000,
+            };
+          },
+        });
+      providers.push(hubProvider);
       break;
     }
 
@@ -183,6 +226,20 @@ export default NuxtAuthHandler({
     /* on JWT token creation or mutation */
     async jwt({ token, account, user }) {
       if (account && user) {
+        if (account.type === "credentials") {
+          // CredentialsProvider (Hub password grant): tokens live on the user object
+          const u = user as {
+            access_token?: string;
+            refresh_token?: string;
+            expires_at?: number;
+          };
+          return {
+            ...token,
+            access_token: u.access_token,
+            expires_at: u.expires_at,
+            refresh_token: u.refresh_token,
+          };
+        }
         return {
           ...token,
           access_token: account.access_token,
