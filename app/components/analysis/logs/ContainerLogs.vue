@@ -9,13 +9,17 @@ import { useNuxtApp } from "nuxt/app";
 import type {
   AnalysisLogHistoryResponse,
   AnalysisLogsResponse,
+  AnalysisNode,
   RunLogs,
 } from "~/services/Api";
+import { ProcessStatus } from "~/types/analysis";
 
 const route = useRoute();
 const analysisId = route.params.id as string;
+const analysisNodeId = route.query.nodeId as string | undefined;
 const currentLogs = ref<AnalysisLogsResponse | null>(null);
 const prevLogs = ref<RunLogs[]>([]);
+const analysis = ref<AnalysisNode | null>(null);
 
 const {
   data: response,
@@ -25,13 +29,27 @@ const {
 } = await getAnalysisLogs(analysisId);
 
 gatherCurrentLogs();
-await gatherPreviousLogs();
+await Promise.all([gatherPreviousLogs(), fetchAnalysis()]);
 
 function gatherCurrentLogs() {
   if (status.value === "success") {
     currentLogs.value = response.value ?? null;
   } else if (status.value === "error" && error.value?.statusCode === 403) {
     navigateTo("/error/403");
+  }
+}
+
+async function fetchAnalysis() {
+  const result = (await useNuxtApp()
+    .$hubApi(`/analysis-nodes/${analysisNodeId}`, {
+      method: "GET",
+      query: {
+        include: "analysis",
+      },
+    })
+    .catch(() => undefined)) as AnalysisNode | undefined;
+  if (result) {
+    analysis.value = result;
   }
 }
 
@@ -45,7 +63,10 @@ async function gatherPreviousLogs() {
   if (historyResp?.runs) {
     const currentRunNumber = currentLogs.value?.run_number;
     prevLogs.value = [...historyResp.runs]
-      .filter((r) => currentRunNumber === undefined || r.run_number !== currentRunNumber)
+      .filter(
+        (r) =>
+          currentRunNumber === undefined || r.run_number !== currentRunNumber,
+      )
       .sort((a, b) => b.run_number - a.run_number);
   }
 }
@@ -55,7 +76,7 @@ const { pause, resume, isActive } = useIntervalFn(
     refreshLogs();
   },
   5000,
-  { immediate: currentLogs.value !== null },
+  { immediate: analysis.value!.execution_status === ProcessStatus.Executing },
 );
 
 async function refreshLogs() {
@@ -82,8 +103,8 @@ function onRefreshToggle() {
       <div class="table-header-row">
         <span>{{ analysisId }}</span>
         <RefreshSwitch
-          :disabled="!currentLogs"
-          :startEnabled="currentLogs !== null"
+          :disabled="analysis?.execution_status !== ProcessStatus.Executing"
+          :startEnabled="analysis?.execution_status === ProcessStatus.Executing"
           @change="onRefreshToggle"
         />
       </div>
