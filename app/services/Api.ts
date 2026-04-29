@@ -406,6 +406,19 @@ export interface AnalysisStatus {
 }
 
 /**
+ * ApiRequestCountResponse
+ * Response for the API request count endpoint.
+ *
+ * data maps endpoint path → {method: count, ..., "total": count}.
+ */
+export interface ApiRequestCountResponse {
+  /** Total */
+  total: number;
+  /** Data */
+  data: Record<string, Record<string, number>>;
+}
+
+/**
  * AutostartSettings
  * Autostart Settings.
  */
@@ -1162,6 +1175,40 @@ export interface ListServices {
   offset?: string | null;
 }
 
+/**
+ * LogQLQueryRequest
+ * Request body for a raw LogQL query.
+ */
+export interface LogQLQueryRequest {
+  /** Query */
+  query: string;
+  /**
+   * Limit
+   * @default 50
+   */
+  limit?: number;
+  /**
+   * Offset
+   * @default 0
+   */
+  offset?: number;
+  /** Start */
+  start?: string | null;
+  /** End */
+  end?: string | null;
+}
+
+/**
+ * LogQLQueryResponse
+ * Response for a raw LogQL query.
+ */
+export interface LogQLQueryResponse {
+  /** Data */
+  data: Record<string, any>[];
+  /** Event log metadata model. */
+  meta: Meta;
+}
+
 /** MasterImage */
 export interface MasterImage {
   /**
@@ -1225,7 +1272,7 @@ export interface Meta {
   /** Limit */
   limit: number;
   /** Offset */
-  offset: number;
+  offset?: number | null;
 }
 
 /**
@@ -1257,6 +1304,48 @@ export interface MinioConfig {
   timeout?: number;
   /** Strip Path Pattern */
   strip_path_pattern?: string | null;
+}
+
+/** NetStatResponse */
+export interface NetStatResponse {
+  /** Data */
+  data: NetStatTotal[];
+  /** Event log metadata model. */
+  meta: Meta;
+}
+
+/** NetStatRun */
+export interface NetStatRun {
+  /**
+   * Timestamp
+   * @format date-time
+   */
+  timestamp: string;
+  /** Container */
+  container: string;
+  /** Run Number */
+  run_number: number;
+  /** Pod */
+  pod: string;
+  /** Bytes In */
+  bytes_in: number;
+  /** Bytes Out */
+  bytes_out: number;
+}
+
+/** NetStatTotal */
+export interface NetStatTotal {
+  /**
+   * Analysis Id
+   * @format uuid
+   */
+  analysis_id: string;
+  /** Bytes In */
+  bytes_in: number;
+  /** Bytes Out */
+  bytes_out: number;
+  /** Runs */
+  runs: NetStatRun[];
 }
 
 /** Node */
@@ -3428,12 +3517,60 @@ export class Api<
      */
     logsAnalysisLiveGetLogsAnalysisIdGet: (
       analysisId: string,
+      query?: {
+        /**
+         * Start Date
+         * Filter logs from this timestamp using ISO8601 format
+         */
+        start_date?: string | null;
+        /**
+         * End Date
+         * Filter logs up to this timestamp using ISO8601 format
+         */
+        end_date?: string | null;
+        /**
+         * Limit
+         * Maximum number of log lines to return per container
+         * @default 1000
+         */
+        limit?: number | null;
+        /**
+         * Offset
+         * Number of log lines to skip per container
+         * @default 0
+         */
+        offset?: number | null;
+      },
       params: RequestParams = {},
     ) =>
       this.request<AnalysisLogsResponse, void | HTTPValidationError>({
         path: `/logs/${analysisId}`,
         method: "GET",
+        query: query,
         secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Execute a raw LogQL query against VictoriaLogs. Admin only.
+     *
+     * @tags Logs
+     * @name LogsQueryRawLogsQueryPost
+     * @summary Logs.Query.Raw
+     * @request POST:/logs/query
+     * @secure
+     */
+    logsQueryRawLogsQueryPost: (
+      data: LogQLQueryRequest,
+      params: RequestParams = {},
+    ) =>
+      this.request<LogQLQueryResponse, void | HTTPValidationError>({
+        path: `/logs/query`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
         format: "json",
         ...params,
       }),
@@ -3450,11 +3587,125 @@ export class Api<
      */
     logsAnalysisHistoryGetHistoryAnalysisIdGet: (
       analysisId: string,
+      query?: {
+        /**
+         * Start Date
+         * Filter logs from this timestamp using ISO8601 format
+         */
+        start_date?: string | null;
+        /**
+         * End Date
+         * Filter logs up to this timestamp using ISO8601 format
+         */
+        end_date?: string | null;
+        /**
+         * Limit
+         * Maximum number of log lines to return per container
+         * @default 1000
+         */
+        limit?: number;
+        /**
+         * Offset
+         * Number of log lines to skip per container
+         * @default 0
+         */
+        offset?: number;
+      },
       params: RequestParams = {},
     ) =>
       this.request<AnalysisLogHistoryResponse, void | HTTPValidationError>({
         path: `/history/${analysisId}`,
         method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+  };
+  netstats = {
+    /**
+     * @description Retrieve network traffic statistics from netstats log events.
+     *
+     * @tags Logs
+     * @name LogsNetstatsGetNetstatsGet
+     * @summary Logs.Netstats.Get
+     * @request GET:/netstats
+     * @secure
+     */
+    logsNetstatsGetNetstatsGet: (
+      query?: {
+        /**
+         * Analysis Id
+         * Filter by analysis UUID
+         */
+        analysis_id?: string | null;
+        /**
+         * Start Date
+         * Filter by start date using ISO8601 format
+         */
+        start_date?: string | null;
+        /**
+         * End Date
+         * Filter by end date using ISO8601 format
+         */
+        end_date?: string | null;
+        /**
+         * Limit
+         * Maximum number of raw log entries to return
+         * @default 1000
+         */
+        limit?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<NetStatResponse, void | HTTPValidationError>({
+        path: `/netstats`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+  };
+  requests = {
+    /**
+     * @description Get total API request count and a per-endpoint breakdown grouped by HTTP method and path.
+     *
+     * @tags Logs
+     * @name LogsRequestsGetRequestsGet
+     * @summary Logs.Requests.Get
+     * @request GET:/requests
+     * @secure
+     */
+    logsRequestsGetRequestsGet: (
+      query?: {
+        /**
+         * Start Date
+         * Filter requests from this timestamp using ISO8601 format
+         */
+        start_date?: string | null;
+        /**
+         * End Date
+         * Filter requests up to this timestamp using ISO8601 format
+         */
+        end_date?: string | null;
+        /**
+         * Endpoint
+         * Filter breakdown to paths starting with this prefix
+         */
+        endpoint?: string | null;
+        /**
+         * Method
+         * Filter breakdown to a specific HTTP method (e.g. GET, POST, DELETE)
+         */
+        method?: string | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ApiRequestCountResponse, void | HTTPValidationError>({
+        path: `/requests`,
+        method: "GET",
+        query: query,
         secure: true,
         format: "json",
         ...params,

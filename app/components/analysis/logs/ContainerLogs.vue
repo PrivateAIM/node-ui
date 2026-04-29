@@ -23,10 +23,11 @@ const analysis = ref<AnalysisNode | null>(null);
 
 const {
   data: response,
-  refresh,
   status,
   error,
-} = await getAnalysisLogs(analysisId);
+} = await getAnalysisLogs(analysisId, { limit: null });
+
+const lastFetchedAt = ref<string | null>(null);
 
 gatherCurrentLogs();
 await Promise.all([gatherPreviousLogs(), fetchAnalysis()]);
@@ -34,6 +35,9 @@ await Promise.all([gatherPreviousLogs(), fetchAnalysis()]);
 function gatherCurrentLogs() {
   if (status.value === "success") {
     currentLogs.value = response.value ?? null;
+    if (currentLogs.value) {
+      lastFetchedAt.value = new Date().toISOString();
+    }
   } else if (status.value === "error" && error.value?.statusCode === 403) {
     navigateTo("/error/403");
   }
@@ -57,6 +61,9 @@ async function gatherPreviousLogs() {
   const historyResp = (await useNuxtApp()
     .$hubApi(`/history/${analysisId}`, {
       method: "GET",
+      query: {
+        limit: null,
+      },
     })
     .catch(() => undefined)) as AnalysisLogHistoryResponse | undefined;
 
@@ -80,8 +87,39 @@ const { pause, resume, isActive } = useIntervalFn(
 );
 
 async function refreshLogs() {
-  await refresh();
-  gatherCurrentLogs();
+  if (!lastFetchedAt.value) {
+    const fetchTime = new Date().toISOString();
+    const result = await useNuxtApp()
+      .$hubApi<AnalysisLogsResponse>(`/logs/${analysisId}`, {
+        method: "GET",
+        query: { limit: null },
+      })
+      .catch(() => undefined);
+    if (result) {
+      currentLogs.value = result;
+      lastFetchedAt.value = fetchTime;
+    }
+    return;
+  }
+
+  const fetchTime = new Date().toISOString();
+  const result = await useNuxtApp()
+    .$hubApi<AnalysisLogsResponse>(`/logs/${analysisId}`, {
+      method: "GET",
+      query: { start_date: lastFetchedAt.value },
+    })
+    .catch(() => undefined);
+  if (result && currentLogs.value) {
+    currentLogs.value = {
+      ...currentLogs.value,
+      analysis_logs: [
+        ...currentLogs.value.analysis_logs,
+        ...result.analysis_logs,
+      ],
+      nginx_logs: [...currentLogs.value.nginx_logs, ...result.nginx_logs],
+    };
+  }
+  lastFetchedAt.value = fetchTime;
 }
 
 const previousRunsList = computed(() =>
