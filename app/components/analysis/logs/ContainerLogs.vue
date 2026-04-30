@@ -44,6 +44,7 @@ function gatherCurrentLogs() {
 }
 
 async function fetchAnalysis() {
+  if (!analysisNodeId) return;
   const result = (await useNuxtApp()
     .$hubApi(`/analysis-nodes/${analysisNodeId}`, {
       method: "GET",

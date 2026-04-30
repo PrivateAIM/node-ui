@@ -147,13 +147,17 @@ async function getExecutionStatusesFromPodOrc(): Promise<
       method: "GET",
     })
     .catch(() => {
-      showConnectionErrorToast(toast, {
-        severity: "warn",
-        summary: "Missing PO Status Update",
-        detail:
-          "Unable to retrieve pod statuses from the PO, relying on information from the Hub",
-        life: 3000,
-      });
+      if (!podOrcUnreacheable.value) {
+        podOrcUnreacheable.value = true;
+        showConnectionErrorToast(toast, {
+          severity: "warn",
+          summary: "Missing PO Status Update",
+          detail:
+            "Unable to retrieve pod statuses from the PO, relying on information from the Hub",
+          life: 3000,
+        });
+      }
+      return undefined;
     })) as PodProgressResponse;
   podOrcUnreacheable.value = !podOrcResponse;
   return podOrcResponse;
@@ -260,10 +264,17 @@ async function compileAnalysisTable(
 }
 
 let tableRefreshIntervalId: ReturnType<typeof setInterval> | undefined;
+let isPolling = false;
 
 async function pollTableData() {
-  await refresh();
-  await compileAnalysisTable(status.value, analysisNodeResp.value, true);
+  if (isPolling) return;
+  isPolling = true;
+  try {
+    await refresh();
+    await compileAnalysisTable(status.value, analysisNodeResp.value, true);
+  } finally {
+    isPolling = false;
+  }
 }
 
 onMounted(() => {
