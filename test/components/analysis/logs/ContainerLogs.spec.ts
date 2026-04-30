@@ -1,13 +1,19 @@
 import { defineComponent, ref } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
+import { http, HttpResponse } from "msw";
 import ContainerLogs from "~/components/analysis/logs/ContainerLogs.vue";
 import { getAnalysisLogs } from "~/composables/useAPIFetch";
-import { fakeAnalysisId } from "@/test/mockapi/handlers";
+import {
+  fakeAnalysisId,
+  fakeAnalysisNodeId,
+} from "@/test/mockapi/handlers";
+import { testServer } from "@/test/mockapi/setup";
 
 vi.mock("vue-router", () => ({
   useRoute: () => ({
     params: { id: fakeAnalysisId },
+    query: { nodeId: fakeAnalysisNodeId },
   }),
 }));
 
@@ -59,6 +65,12 @@ describe("ContainerLogs.vue", () => {
   });
 
   test("Empty analysis logs", async () => {
+    testServer.use(
+      http.get(`/analysis-nodes/${fakeAnalysisNodeId}`, () =>
+        new HttpResponse(null, { status: 404 }),
+      ),
+    );
+
     vi.mocked(getAnalysisLogs).mockResolvedValue({
       data: ref(null),
       pending: ref(false),

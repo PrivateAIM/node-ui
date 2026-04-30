@@ -83,7 +83,7 @@ const { pause, resume, isActive } = useIntervalFn(
     refreshLogs();
   },
   5000,
-  { immediate: analysis.value!.execution_status === ProcessStatus.Executing },
+  { immediate: analysis.value?.execution_status === ProcessStatus.Executing },
 );
 
 async function refreshLogs() {
