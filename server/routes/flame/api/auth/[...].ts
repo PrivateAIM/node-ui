@@ -1,4 +1,3 @@
-import CredentialsProvider from "next-auth/providers/credentials";
 import KeycloakProvider from "next-auth/providers/keycloak";
 import AuthentikProvider from "next-auth/providers/authentik";
 import OktaProvider from "next-auth/providers/okta";
@@ -65,41 +64,34 @@ function buildProvider() {
     }
 
     case "hub": {
-      // Hub requires the password grant — use CredentialsProvider so we can build the token request body ourselves.
-      const hubProvider =
-        // @ts-expect-error default is an option
-        CredentialsProvider.default({
-          id: "hub",
-          name: "Hub",
-          credentials: {
-            username: { label: "Username", type: "text" },
-            password: { label: "Password", type: "password" },
+      const clientId = process.env.NUXT_IDP_CLIENT_ID ?? "node-ui";
+      const clientSecret = process.env.NUXT_IDP_CLIENT_SECRET;
+      const hubProvider = {
+        id: "hub",
+        name: "Hub",
+        type: "oauth",
+        idToken: false,
+        clientId: clientId,
+        clientSecret: clientSecret,
+        wellKnown: `${clientIssuer}/.well-known/openid-configuration`,
+        authorization: {
+          params: {
+            scope: "global",
           },
-          async authorize(credentials: { username: string; password: string }) {
-            if (!credentials?.username || !credentials?.password) return null;
-
-            const response = await fetch(`${clientIssuer}/token`, {
-              method: "POST",
-              headers: { "Content-Type": "application/x-www-form-urlencoded" },
-              body: new URLSearchParams({
-                grant_type: "password",
-                username: credentials.username,
-                password: credentials.password,
-              }),
-            });
-
-            if (!response.ok) return null;
-
-            const token = await response.json();
-            return {
-              id: credentials.username,
-              name: credentials.username,
-              access_token: token.access_token,
-              refresh_token: token.refresh_token,
-              expires_at: Date.now() + token.expires_in * 1000,
-            };
-          },
-        });
+        },
+        profile(profile: {
+          id: string;
+          name: string | undefined;
+          first_name: string | undefined;
+          last_name: string | undefined;
+          display_name: string | undefined;
+        }) {
+          return {
+            id: profile.id,
+            name: profile.name ?? profile.display_name,
+          };
+        },
+      };
       providers.push(hubProvider);
       break;
     }
@@ -154,10 +146,10 @@ async function refreshAccessToken(token: JWT) {
   const clientIssuer =
     process.env.NUXT_PUBLIC_IDP_ISSUER ?? "http://localhost:8080/realms/flame";
 
-  const internalEndpoint =
-    process.env.NUXT_PUBLIC_INTERNAL_KEYCLOAK_URL ?? clientIssuer;
-
-  const tokenEndpoint = `${internalEndpoint}/protocol/openid-connect/token`; // Assumes OIDC
+  const discovery = await fetch(
+    `${clientIssuer}/.well-known/openid-configuration`,
+  ).then((r) => r.json());
+  const tokenEndpoint: string = discovery.token_endpoint;
 
   const response = await fetch(tokenEndpoint, {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },

@@ -25,7 +25,7 @@ const idpNameCapitalized: string =
         class="idp-auth-success"
         outlined
         severity="success"
-        @click="idpProvider === 'hub' ? navigateTo('/auth/hub') : signIn(idpProvider)"
+        @click="signIn(idpProvider)"
         >Login with {{ idpNameCapitalized }}
       </Button>
     </div>
