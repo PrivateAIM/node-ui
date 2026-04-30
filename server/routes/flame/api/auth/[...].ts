@@ -36,6 +36,8 @@ function compileEndpoints() {
 function buildProvider() {
   const idpProvider = process.env.NUXT_PUBLIC_IDP_PROVIDER ?? "keycloak";
   const endPoints = compileEndpoints();
+  const clientIssuer =
+    process.env.NUXT_PUBLIC_IDP_ISSUER ?? "http://localhost:8080/realms/flame";
 
   const providers = [];
 
@@ -58,6 +60,39 @@ function buildProvider() {
           ...endPoints,
         });
       providers.push(authentikProvider);
+      break;
+    }
+
+    case "hub": {
+      const clientId = process.env.NUXT_IDP_CLIENT_ID ?? "node-ui";
+      const clientSecret = process.env.NUXT_IDP_CLIENT_SECRET;
+      const hubProvider = {
+        id: "hub",
+        name: "Hub",
+        type: "oauth",
+        idToken: false,
+        clientId: clientId,
+        clientSecret: clientSecret,
+        wellKnown: `${clientIssuer}/.well-known/openid-configuration`,
+        authorization: {
+          params: {
+            scope: "global",
+          },
+        },
+        profile(profile: {
+          id: string;
+          name: string | undefined;
+          first_name: string | undefined;
+          last_name: string | undefined;
+          display_name: string | undefined;
+        }) {
+          return {
+            id: profile.id,
+            name: profile.name ?? profile.display_name,
+          };
+        },
+      };
+      providers.push(hubProvider);
       break;
     }
 
@@ -111,10 +146,10 @@ async function refreshAccessToken(token: JWT) {
   const clientIssuer =
     process.env.NUXT_PUBLIC_IDP_ISSUER ?? "http://localhost:8080/realms/flame";
 
-  const internalEndpoint =
-    process.env.NUXT_PUBLIC_INTERNAL_KEYCLOAK_URL ?? clientIssuer;
-
-  const tokenEndpoint = `${internalEndpoint}/protocol/openid-connect/token`; // Assumes OIDC
+  const discovery = await fetch(
+    `${clientIssuer}/.well-known/openid-configuration`,
+  ).then((r) => r.json());
+  const tokenEndpoint: string = discovery.token_endpoint;
 
   const response = await fetch(tokenEndpoint, {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -183,6 +218,20 @@ export default NuxtAuthHandler({
     /* on JWT token creation or mutation */
     async jwt({ token, account, user }) {
       if (account && user) {
+        if (account.type === "credentials") {
+          // CredentialsProvider (Hub password grant): tokens live on the user object
+          const u = user as {
+            access_token?: string;
+            refresh_token?: string;
+            expires_at?: number;
+          };
+          return {
+            ...token,
+            access_token: u.access_token,
+            expires_at: u.expires_at,
+            refresh_token: u.refresh_token,
+          };
+        }
         return {
           ...token,
           access_token: account.access_token,

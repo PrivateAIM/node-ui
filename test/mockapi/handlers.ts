@@ -11,13 +11,17 @@ import {
   fakeParsedProjects,
 } from "../components/data-stores/constants";
 import { fakeProposalsResp } from "../components/projects/constants";
-import { fakeProjects } from "../components/analysis/constants";
+import {
+  fakeBaseAnalysisNode,
+  fakeProjects,
+} from "../components/analysis/constants";
 import { fakeEventResponse } from "../components/events/constants";
 
 export const fakeValidProposalId = "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483";
 export const fakeInvalidProposalId = "15518efa-5146-4290-a7cb-95d27f41d991";
 
 export const fakeAnalysisId = "15518efa-5146-4290-a7cb-95d27f41d991";
+export const fakeAnalysisNodeId = "4c4b9b2e-85de-4319-8d68-bcc8247464eb";
 export const fakeMissingAnalysisId = "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483";
 export const fakeBrokenAnalysisId = "ab1fbc92-3dc8-4bdd-9d51-3b571c2d7aaa";
 export const fakeInvalidRoleAnalysisId = "1a29aee7-538b-4a02-9fab-b184b1dcdc2a";
@@ -92,17 +96,19 @@ export const handlers = [
   // Analysis logs
   http.get(`/logs/${fakeAnalysisId}`, () => {
     return HttpResponse.json({
-      status: 200,
-      data: {
-        analysis: {
-          [fakeAnalysisId]: ["Starting FlameCoreSDK"],
-        },
-        nginx: {
-          [fakeAnalysisId]: [
-            "/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty",
-          ],
-        },
-      },
+      analysis_id: fakeAnalysisId,
+      run_number: 1,
+      analysis_logs: [
+        { timestamp: "2025-01-01T00:00:00Z", message: "Starting FlameCoreSDK" },
+      ],
+      nginx_logs: [],
+    });
+  }),
+
+  http.get(`/analysis-nodes/${fakeAnalysisNodeId}`, () => {
+    return HttpResponse.json({
+      ...fakeBaseAnalysisNode,
+      execution_status: "executing",
     });
   }),
 

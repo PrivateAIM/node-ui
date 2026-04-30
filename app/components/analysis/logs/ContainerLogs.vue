@@ -9,29 +9,52 @@ import { useNuxtApp } from "nuxt/app";
 import type {
   AnalysisLogHistoryResponse,
   AnalysisLogsResponse,
+  AnalysisNode,
   RunLogs,
 } from "~/services/Api";
+import { ProcessStatus } from "~/types/analysis";
 
 const route = useRoute();
 const analysisId = route.params.id as string;
+const analysisNodeId = route.query.nodeId as string | undefined;
 const currentLogs = ref<AnalysisLogsResponse | null>(null);
 const prevLogs = ref<RunLogs[]>([]);
+const analysis = ref<AnalysisNode | null>(null);
 
 const {
   data: response,
-  refresh,
   status,
   error,
-} = await getAnalysisLogs(analysisId);
+} = await getAnalysisLogs(analysisId, { limit: null });
+
+const lastFetchedAt = ref<string | null>(null);
 
 gatherCurrentLogs();
-await gatherPreviousLogs();
+await Promise.all([gatherPreviousLogs(), fetchAnalysis()]);
 
 function gatherCurrentLogs() {
   if (status.value === "success") {
     currentLogs.value = response.value ?? null;
+    if (currentLogs.value) {
+      lastFetchedAt.value = new Date().toISOString();
+    }
   } else if (status.value === "error" && error.value?.statusCode === 403) {
     navigateTo("/error/403");
+  }
+}
+
+async function fetchAnalysis() {
+  if (!analysisNodeId) return;
+  const result = (await useNuxtApp()
+    .$hubApi(`/analysis-nodes/${analysisNodeId}`, {
+      method: "GET",
+      query: {
+        include: "analysis",
+      },
+    })
+    .catch(() => undefined)) as AnalysisNode | undefined;
+  if (result) {
+    analysis.value = result;
   }
 }
 
@@ -39,13 +62,19 @@ async function gatherPreviousLogs() {
   const historyResp = (await useNuxtApp()
     .$hubApi(`/history/${analysisId}`, {
       method: "GET",
+      query: {
+        limit: null,
+      },
     })
     .catch(() => undefined)) as AnalysisLogHistoryResponse | undefined;
 
   if (historyResp?.runs) {
     const currentRunNumber = currentLogs.value?.run_number;
     prevLogs.value = [...historyResp.runs]
-      .filter((r) => currentRunNumber === undefined || r.run_number !== currentRunNumber)
+      .filter(
+        (r) =>
+          currentRunNumber === undefined || r.run_number !== currentRunNumber,
+      )
       .sort((a, b) => b.run_number - a.run_number);
   }
 }
@@ -55,12 +84,43 @@ const { pause, resume, isActive } = useIntervalFn(
     refreshLogs();
   },
   5000,
-  { immediate: currentLogs.value !== null },
+  { immediate: analysis.value?.execution_status === ProcessStatus.Executing },
 );
 
 async function refreshLogs() {
-  await refresh();
-  gatherCurrentLogs();
+  if (!lastFetchedAt.value) {
+    const fetchTime = new Date().toISOString();
+    const result = await useNuxtApp()
+      .$hubApi<AnalysisLogsResponse>(`/logs/${analysisId}`, {
+        method: "GET",
+        query: { limit: null },
+      })
+      .catch(() => undefined);
+    if (result) {
+      currentLogs.value = result;
+      lastFetchedAt.value = fetchTime;
+    }
+    return;
+  }
+
+  const fetchTime = new Date().toISOString();
+  const result = await useNuxtApp()
+    .$hubApi<AnalysisLogsResponse>(`/logs/${analysisId}`, {
+      method: "GET",
+      query: { start_date: lastFetchedAt.value },
+    })
+    .catch(() => undefined);
+  if (result && currentLogs.value) {
+    currentLogs.value = {
+      ...currentLogs.value,
+      analysis_logs: [
+        ...currentLogs.value.analysis_logs,
+        ...result.analysis_logs,
+      ],
+      nginx_logs: [...currentLogs.value.nginx_logs, ...result.nginx_logs],
+    };
+  }
+  lastFetchedAt.value = fetchTime;
 }
 
 const previousRunsList = computed(() =>
@@ -82,8 +142,8 @@ function onRefreshToggle() {
       <div class="table-header-row">
         <span>{{ analysisId }}</span>
         <RefreshSwitch
-          :disabled="!currentLogs"
-          :startEnabled="currentLogs !== null"
+          :disabled="analysis?.execution_status !== ProcessStatus.Executing"
+          :startEnabled="analysis?.execution_status === ProcessStatus.Executing"
           @change="onRefreshToggle"
         />
       </div>

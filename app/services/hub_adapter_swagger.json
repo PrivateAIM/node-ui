@@ -2839,6 +2839,82 @@
               "title": "Analysis Id"
             },
             "description": "UUID of the analysis."
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter logs from this timestamp using ISO8601 format",
+              "title": "Start Date"
+            },
+            "description": "Filter logs from this timestamp using ISO8601 format"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter logs up to this timestamp using ISO8601 format",
+              "title": "End Date"
+            },
+            "description": "Filter logs up to this timestamp using ISO8601 format"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Maximum number of log lines to return per container",
+              "default": 1000,
+              "title": "Limit"
+            },
+            "description": "Maximum number of log lines to return per container"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Number of log lines to skip per container",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Number of log lines to skip per container"
           }
         ],
         "responses": {
@@ -2891,6 +2967,68 @@
               "title": "Analysis Id"
             },
             "description": "UUID of the analysis."
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter logs from this timestamp using ISO8601 format",
+              "title": "Start Date"
+            },
+            "description": "Filter logs from this timestamp using ISO8601 format"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter logs up to this timestamp using ISO8601 format",
+              "title": "End Date"
+            },
+            "description": "Filter logs up to this timestamp using ISO8601 format"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "Maximum number of log lines to return per container",
+              "default": 1000,
+              "title": "Limit"
+            },
+            "description": "Maximum number of log lines to return per container"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "Number of log lines to skip per container",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Number of log lines to skip per container"
           }
         ],
         "responses": {
@@ -2900,6 +3038,277 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AnalysisLogHistoryResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/netstats": {
+      "get": {
+        "tags": ["Logs"],
+        "summary": "Logs.Netstats.Get",
+        "description": "Retrieve network traffic statistics from netstats log events.",
+        "operationId": "logs_netstats_get_netstats_get",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "analysis_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by analysis UUID",
+              "title": "Analysis Id"
+            },
+            "description": "Filter by analysis UUID"
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by start date using ISO8601 format",
+              "title": "Start Date"
+            },
+            "description": "Filter by start date using ISO8601 format"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by end date using ISO8601 format",
+              "title": "End Date"
+            },
+            "description": "Filter by end date using ISO8601 format"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "Maximum number of raw log entries to return",
+              "default": 1000,
+              "title": "Limit"
+            },
+            "description": "Maximum number of raw log entries to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NetStatResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/logs/query": {
+      "post": {
+        "tags": ["Logs"],
+        "summary": "Logs.Query.Raw",
+        "description": "Execute a raw LogQL query against VictoriaLogs. Admin only.",
+        "operationId": "logs_query_raw_logs_query_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogQLQueryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogQLQueryResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/requests": {
+      "get": {
+        "tags": ["Logs"],
+        "summary": "Logs.Requests.Get",
+        "description": "Get total API request count and a per-endpoint breakdown grouped by HTTP method and path.",
+        "operationId": "logs_requests_get_requests_get",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter requests from this timestamp using ISO8601 format",
+              "title": "Start Date"
+            },
+            "description": "Filter requests from this timestamp using ISO8601 format"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter requests up to this timestamp using ISO8601 format",
+              "title": "End Date"
+            },
+            "description": "Filter requests up to this timestamp using ISO8601 format"
+          },
+          {
+            "name": "endpoint",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter breakdown to paths starting with this prefix",
+              "title": "Endpoint"
+            },
+            "description": "Filter breakdown to paths starting with this prefix"
+          },
+          {
+            "name": "method",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter breakdown to a specific HTTP method (e.g. GET, POST, DELETE)",
+              "title": "Method"
+            },
+            "description": "Filter breakdown to a specific HTTP method (e.g. GET, POST, DELETE)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiRequestCountResponse"
                 }
               }
             }
@@ -3646,6 +4055,28 @@
         "required": ["status"],
         "title": "AnalysisStatus",
         "description": "Status report for an analysis from the PodOrchestrator"
+      },
+      "ApiRequestCountResponse": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "data": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "type": "integer"
+              },
+              "type": "object"
+            },
+            "type": "object",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": ["total", "data"],
+        "title": "ApiRequestCountResponse",
+        "description": "Response for the API request count endpoint.\n\ndata maps endpoint path → {method: count, ..., \"total\": count}."
       },
       "AutostartSettings": {
         "properties": {
@@ -5497,6 +5928,71 @@
         "title": "ListServices",
         "description": "Custom route list response model."
       },
+      "LogQLQueryRequest": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "title": "Query"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit",
+            "default": 50
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset",
+            "default": 0
+          },
+          "start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          }
+        },
+        "type": "object",
+        "required": ["query"],
+        "title": "LogQLQueryRequest",
+        "description": "Request body for a raw LogQL query."
+      },
+      "LogQLQueryResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "type": "object",
+        "required": ["data", "meta"],
+        "title": "LogQLQueryResponse",
+        "description": "Response for a raw LogQL query."
+      },
       "MasterImage": {
         "properties": {
           "id": {
@@ -5648,12 +6144,19 @@
             "title": "Limit"
           },
           "offset": {
-            "type": "integer",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Offset"
           }
         },
         "type": "object",
-        "required": ["count", "total", "limit", "offset"],
+        "required": ["count", "total", "limit"],
         "title": "Meta",
         "description": "Event log metadata model."
       },
@@ -5708,6 +6211,89 @@
         "required": ["minio_access_key", "minio_secret_key"],
         "title": "MinioConfig",
         "description": "Credentials for accessing a private S3 bucket hosted on MinIO."
+      },
+      "NetStatResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/NetStatTotal"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "type": "object",
+        "required": ["data", "meta"],
+        "title": "NetStatResponse"
+      },
+      "NetStatRun": {
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "container": {
+            "type": "string",
+            "title": "Container"
+          },
+          "run_number": {
+            "type": "integer",
+            "title": "Run Number"
+          },
+          "pod": {
+            "type": "string",
+            "title": "Pod"
+          },
+          "bytes_in": {
+            "type": "integer",
+            "title": "Bytes In"
+          },
+          "bytes_out": {
+            "type": "integer",
+            "title": "Bytes Out"
+          }
+        },
+        "type": "object",
+        "required": [
+          "timestamp",
+          "container",
+          "run_number",
+          "pod",
+          "bytes_in",
+          "bytes_out"
+        ],
+        "title": "NetStatRun"
+      },
+      "NetStatTotal": {
+        "properties": {
+          "analysis_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Analysis Id"
+          },
+          "bytes_in": {
+            "type": "integer",
+            "title": "Bytes In"
+          },
+          "bytes_out": {
+            "type": "integer",
+            "title": "Bytes Out"
+          },
+          "runs": {
+            "items": {
+              "$ref": "#/components/schemas/NetStatRun"
+            },
+            "type": "array",
+            "title": "Runs"
+          }
+        },
+        "type": "object",
+        "required": ["analysis_id", "bytes_in", "bytes_out", "runs"],
+        "title": "NetStatTotal"
       },
       "Node": {
         "properties": {

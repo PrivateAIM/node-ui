@@ -25,7 +25,7 @@ const idpNameCapitalized: string =
         class="idp-auth-success"
         outlined
         severity="success"
-        @click="signIn(`${idpProvider}`)"
+        @click="signIn(idpProvider)"
         >Login with {{ idpNameCapitalized }}
       </Button>
     </div>

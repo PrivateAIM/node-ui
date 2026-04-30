@@ -30,7 +30,9 @@ const menuItems = computed(() => [
         icon: isAuthenticated.value ? "pi pi-sign-out" : "pi pi-sign-in",
         command: () => {
           // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-          isAuthenticated.value ? signOut() : signIn(`${idpProvider}`);
+          isAuthenticated.value
+            ? signOut({ callbackUrl: "/" })
+            : signIn(`${idpProvider}`);
         },
       },
       {
