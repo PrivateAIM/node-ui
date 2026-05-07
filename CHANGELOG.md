@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.6.2](https://github.com/PrivateAIM/node-ui/compare/v0.6.1...v0.6.2) (2026-04-30)
+
+
+### Features
+
+* **analyses:** add periodic hub table update ([413640d](https://github.com/PrivateAIM/node-ui/commit/413640da05d7d04e33d387f5d3bf5660c32cd268))
+* **auth:** add hub user signin ([ab31a56](https://github.com/PrivateAIM/node-ui/commit/ab31a5610235fbd65e0a6923fed0388a2e6127cf))
+* **auth:** hub login fully operational ([0092ee0](https://github.com/PrivateAIM/node-ui/commit/0092ee05d5f7e136d02bacef26c75ca43cd3c3f1))
+* **logs:** add log level colors ([e61b058](https://github.com/PrivateAIM/node-ui/commit/e61b0580a0bdd7247780e1e8b636b46419b5d114))
+
+
+### Bug Fixes
+
+* **logs:** make scroll to bottom less aggressive ([17512e8](https://github.com/PrivateAIM/node-ui/commit/17512e88f8e5aed49681f6fb0bfaa207394efa9d))
+* **logs:** use local time instead of UTC in log timestamps ([2e0540b](https://github.com/PrivateAIM/node-ui/commit/2e0540b88f8b4710292d929126e214017aa7b996))
+
+
+### Performance Improvements
+
+* **analyses:** analysis table peroidcally refreshes ([4d5eda5](https://github.com/PrivateAIM/node-ui/commit/4d5eda59c439de6d79163fca6393ffae153eb372))
+* **logs:** improve log fetching ([248a5fe](https://github.com/PrivateAIM/node-ui/commit/248a5fe9b0289ff95d3fb0b6bd76d9d68e75afe3))
+
 ## [0.6.1](https://github.com/PrivateAIM/node-ui/compare/v0.6.0...v0.6.1) (2026-04-23)
 
 
