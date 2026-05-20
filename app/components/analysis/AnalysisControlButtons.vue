@@ -181,7 +181,7 @@ const showStatusUnknownToast = () => {
   showToast(
     "warn",
     "Status unknown",
-    "Pod was not found, but the stop command was still issued",
+    "Pod was not found, but the command was still issued",
   );
 };
 
@@ -211,7 +211,7 @@ async function checkPodStatus(): Promise<boolean> {
 }
 
 async function onRerunAnalysis() {
-  await onDeleteAnalysis();
+  await onDeleteAnalysis(true);
   await onStartAnalysis();
 }
 
@@ -322,7 +322,7 @@ async function onStopAnalysis() {
   }
 }
 
-async function onDeleteAnalysis() {
+async function onDeleteAnalysis(silent: boolean = false) {
   loading.value = true;
   const originalExecutionStatus = props.analysisExecutionStatus;
   updatePodStatus(PodStatus.Stopping);
@@ -357,7 +357,7 @@ async function onDeleteAnalysis() {
           "Delete success",
           "Successfully removed the container",
         );
-      } else {
+      } else if (!silent) {
         showStatusUnknownToast();
       }
       updatePodStatus(null);
