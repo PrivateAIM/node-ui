@@ -229,6 +229,7 @@ async function compileAnalysisTable(
   respStatus: string,
   respData: AnalysisNode[] | undefined,
   silent = false,
+  merge = false,
 ) {
   if (!silent) tableLoading.value = true;
   await parseProjects();
@@ -258,7 +259,11 @@ async function compileAnalysisTable(
         parseAnalysis(analysisEntry, currentExecutionStatuses),
       );
     });
-    analysesMap.value = parsedAnalyses;
+    if (merge) {
+      parsedAnalyses.forEach((value, key) => analysesMap.value.set(key, value));
+    } else {
+      analysesMap.value = parsedAnalyses;
+    }
   }
   tableLoading.value = false;
 }
@@ -325,7 +330,7 @@ async function getNextPage() {
       allResultsRetrieved = true;
     }
     currentOffset += queryLimit; // Increment offset value
-    await compileAnalysisTable("success", nextSetResults);
+    await compileAnalysisTable("success", nextSetResults, true, true);
   } else {
     // No results returned means all were retrieved
     allResultsRetrieved = true;
