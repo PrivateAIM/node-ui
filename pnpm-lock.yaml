@@ -5293,8 +5293,8 @@ packages:
       jsdom:
         optional: true
 
-  vm2@3.10.5:
-    resolution: {integrity: sha512-3P/2QDccVFBcujfCOeP8vVNuGfuBJHEuvGR8eMmI10p/iwLL2UwF5PDaNaoOS2pRGQEDmJRyeEcc8kmm2Z59RA==}
+  vm2@3.11.5:
+    resolution: {integrity: sha512-RSrkBiwrj6FRU+QdqNs6KG0XdlvJCjpQ4GXiqmMbrhmwfu5k/XIMpAer0L8f6iuf0uJ3a4T1xJN126Q8yf0VIA==}
     engines: {node: '>=6.0'}
     hasBin: true
 
@@ -8085,7 +8085,7 @@ snapshots:
       ast-types: 0.13.4
       escodegen: 1.14.3
       esprima: 4.0.1
-      vm2: 3.10.5
+      vm2: 3.11.5
 
   denque@2.1.0: {}
 
@@ -11058,7 +11058,7 @@ snapshots:
       - tsx
       - yaml
 
-  vm2@3.10.5:
+  vm2@3.11.5:
     dependencies:
       acorn: 8.16.0
       acorn-walk: 8.3.5
