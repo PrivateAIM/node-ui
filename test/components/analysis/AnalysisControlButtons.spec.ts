@@ -176,7 +176,7 @@ describe("AnalysisControlButtons.vue", () => {
       ".stop-analysis-btn",
       "warn",
       "Status unknown",
-      "Pod was not found, but the stop command was still issued",
+      "Pod was not found, but the command was still issued",
       fakeMissingAnalysisId,
       {
         playActive: false,
@@ -230,7 +230,7 @@ describe("AnalysisControlButtons.vue", () => {
       ".delete-analysis-btn",
       "warn",
       "Status unknown",
-      "Pod was not found, but the stop command was still issued",
+      "Pod was not found, but the command was still issued",
       fakeMissingAnalysisId,
       {
         playActive: true,
