@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.6.3](https://github.com/PrivateAIM/node-ui/compare/v0.6.2...v0.6.3) (2026-05-22)
+
+
+### Bug Fixes
+
+* **analysis:** make pagination great again ([97acd43](https://github.com/PrivateAIM/node-ui/commit/97acd43333756313622f41e269c0587464f6e9fc))
+* **jwt:** add proxy patches to all fetch calls ([5cdca6a](https://github.com/PrivateAIM/node-ui/commit/5cdca6a98848129e2f2c48c45551c3c061aa8341))
+* **jwt:** patch proxy gap in fetch ([18303d2](https://github.com/PrivateAIM/node-ui/commit/18303d2f5c8924c45ea622438a223d836d7234de))
+* **logs:** remove malformed request ([f11f069](https://github.com/PrivateAIM/node-ui/commit/f11f069752ca171046e6552f351b82fc5ba0d584))
+
 ## [0.6.2](https://github.com/PrivateAIM/node-ui/compare/v0.6.1...v0.6.2) (2026-04-30)
 
 

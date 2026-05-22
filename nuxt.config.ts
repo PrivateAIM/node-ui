@@ -2,6 +2,10 @@
 import { defineNuxtConfig } from "nuxt/config";
 import { Flame } from "./app/assets/primevue/flame-preset";
 import tailwindcss from "@tailwindcss/vite";
+import { fileURLToPath } from "node:url";
+import { join } from "node:path";
+
+const projectRoot = fileURLToPath(new URL(".", import.meta.url));
 
 export default defineNuxtConfig({
   ssr: false,
@@ -69,8 +73,14 @@ export default defineNuxtConfig({
     "~/assets/css/preferences.css",
   ],
 
+  // @ts-expect-error nitro is a valid config key not fully typed in this nuxt version
+  nitro: {
+    alias: {
+      "node-fetch-native/proxy": join(projectRoot, "node_modules/node-fetch-native/dist/proxy.cjs"),
+    },
+  },
+
   vite: {
-    // @ts-expect-error plugin complaint
     plugins: [tailwindcss()],
   },
 
