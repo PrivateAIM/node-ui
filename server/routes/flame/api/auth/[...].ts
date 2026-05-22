@@ -189,6 +189,7 @@ export default NuxtAuthHandler({
       const signInEndpoint = `${hubAdapterApi.replace(/\/$/, "")}/events/signin`;
       try {
         await fetch(signInEndpoint, {
+          ...createProxy(),
           headers: { Authorization: `Bearer ${account.access_token}` },
           method: "POST",
         });
@@ -203,6 +204,7 @@ export default NuxtAuthHandler({
       const signOutEndpoint = `${hubAdapterApi.replace(/\/$/, "")}/events/signout`;
       try {
         await fetch(signOutEndpoint, {
+          ...createProxy(),
           headers: { Authorization: `Bearer ${token.access_token}` },
           method: "POST",
         });
