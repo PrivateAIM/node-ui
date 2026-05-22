@@ -22,7 +22,7 @@ jobs:
       packages: write
       pull-requests: write
     steps:
-      - uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@v5
         name: release-please
         id: release
         with:
@@ -43,7 +43,7 @@ jobs:
       packages: write
     steps:
       - name: Checkout  # required for finding action
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: check-version
         run: |
@@ -67,7 +67,7 @@ jobs:
       packages: write
     steps:
       - name: Checkout  # required for finding action
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Build canary image
         uses: ./.github/actions/build-docker-image
