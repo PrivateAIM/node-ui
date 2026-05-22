@@ -25,7 +25,7 @@ const {
   data: response,
   status,
   error,
-} = await getAnalysisLogs(analysisId, { limit: null });
+} = await getAnalysisLogs(analysisId);
 
 const lastFetchedAt = ref<string | null>(null);
 
@@ -93,7 +93,6 @@ async function refreshLogs() {
     const result = await useNuxtApp()
       .$hubApi<AnalysisLogsResponse>(`/logs/${analysisId}`, {
         method: "GET",
-        query: { limit: null },
       })
       .catch(() => undefined);
     if (result) {
