@@ -1,8 +1,10 @@
+import { createProxy } from "node-fetch-native/proxy";
 import KeycloakProvider from "next-auth/providers/keycloak";
 import AuthentikProvider from "next-auth/providers/authentik";
 import OktaProvider from "next-auth/providers/okta";
 import OneLoginProvider from "next-auth/providers/onelogin";
 import ZitadelProvider from "next-auth/providers/zitadel";
+import type { Account, Session, User } from "next-auth";
 import type { JWT } from "next-auth/jwt";
 
 import { NuxtAuthHandler } from "#auth";
@@ -146,12 +148,16 @@ async function refreshAccessToken(token: JWT) {
   const clientIssuer =
     process.env.NUXT_PUBLIC_IDP_ISSUER ?? "http://localhost:8080/realms/flame";
 
+  const proxy = createProxy();
+
   const discovery = await fetch(
     `${clientIssuer}/.well-known/openid-configuration`,
+    proxy as RequestInit,
   ).then((r) => r.json());
   const tokenEndpoint: string = discovery.token_endpoint;
 
   const response = await fetch(tokenEndpoint, {
+    ...(proxy as RequestInit),
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     method: "POST",
     body: new URLSearchParams({
@@ -177,13 +183,14 @@ async function refreshAccessToken(token: JWT) {
 export default NuxtAuthHandler({
   secret: useRuntimeConfig().authSecret,
   events: {
-    async signIn({ account }) {
+    async signIn({ account }: { account: Account | null }) {
       // After successful sign in
       const hubAdapterApi = process.env.NUXT_PUBLIC_HUB_ADAPTER_URL;
       if (!hubAdapterApi || !account?.access_token) return;
       const signInEndpoint = `${hubAdapterApi.replace(/\/$/, "")}/events/signin`;
       try {
         await fetch(signInEndpoint, {
+          ...(createProxy() as RequestInit),
           headers: { Authorization: `Bearer ${account.access_token}` },
           method: "POST",
         });
@@ -191,13 +198,14 @@ export default NuxtAuthHandler({
         console.error("Failed to log sign-in event:", error);
       }
     },
-    async signOut({ token }) {
+    async signOut({ token }: { session: Session; token: JWT }) {
       // After successful sign out
       const hubAdapterApi = process.env.NUXT_PUBLIC_HUB_ADAPTER_URL;
       if (!hubAdapterApi || !token?.access_token) return;
       const signOutEndpoint = `${hubAdapterApi.replace(/\/$/, "")}/events/signout`;
       try {
         await fetch(signOutEndpoint, {
+          ...(createProxy() as RequestInit),
           headers: { Authorization: `Bearer ${token.access_token}` },
           method: "POST",
         });
@@ -208,7 +216,7 @@ export default NuxtAuthHandler({
   },
   callbacks: {
     /* on session retrieval */
-    async session({ session, token }) {
+    async session({ session, token }: { session: Session; token: JWT }) {
       return {
         ...session,
         accessToken: token.access_token,
@@ -216,7 +224,15 @@ export default NuxtAuthHandler({
       };
     },
     /* on JWT token creation or mutation */
-    async jwt({ token, account, user }) {
+    async jwt({
+      token,
+      account,
+      user,
+    }: {
+      token: JWT;
+      account: Account | null;
+      user: User;
+    }) {
       if (account && user) {
         if (account.type === "credentials") {
           // CredentialsProvider (Hub password grant): tokens live on the user object
