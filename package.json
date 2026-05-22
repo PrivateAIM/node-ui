@@ -33,6 +33,7 @@
     "chart.js": "^4.5.1",
     "globals": "^15.15.0",
     "next-auth": "~4.21.1",
+    "node-fetch-native": "^1.6.7",
     "nuxt": "^4.4.6",
     "pinia": "^3.0.4",
     "prettier": "^3.6.2",

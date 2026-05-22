@@ -1,3 +1,4 @@
+import { createProxy } from "node-fetch-native/proxy";
 import KeycloakProvider from "next-auth/providers/keycloak";
 import AuthentikProvider from "next-auth/providers/authentik";
 import OktaProvider from "next-auth/providers/okta";
@@ -146,12 +147,16 @@ async function refreshAccessToken(token: JWT) {
   const clientIssuer =
     process.env.NUXT_PUBLIC_IDP_ISSUER ?? "http://localhost:8080/realms/flame";
 
+  const proxy = createProxy();
+
   const discovery = await fetch(
     `${clientIssuer}/.well-known/openid-configuration`,
+    { ...proxy },
   ).then((r) => r.json());
   const tokenEndpoint: string = discovery.token_endpoint;
 
   const response = await fetch(tokenEndpoint, {
+    ...proxy,
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     method: "POST",
     body: new URLSearchParams({
