@@ -1,14 +1,28 @@
-import { defineComponent, ref } from "vue";
+import { defineComponent, h, ref } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { http, HttpResponse } from "msw";
 import ContainerLogs from "~/components/analysis/logs/ContainerLogs.vue";
-import { getAnalysisLogs } from "~/composables/useAPIFetch";
 import {
   fakeAnalysisId,
   fakeAnalysisNodeId,
 } from "@/test/mockapi/handlers";
 import { testServer } from "@/test/mockapi/setup";
+
+// Stub VirtualScroller to render all items in tests (no DOM dimensions needed)
+const VirtualScrollerStub = defineComponent({
+  name: "VirtualScroller",
+  props: { items: Array },
+  setup(props, { slots }) {
+    return () =>
+      h(
+        "div",
+        (props.items ?? []).map((item) =>
+          slots.item ? slots.item({ item }) : null,
+        ),
+      );
+  },
+});
 
 vi.mock("vue-router", () => ({
   useRoute: () => ({
@@ -17,9 +31,33 @@ vi.mock("vue-router", () => ({
   }),
 }));
 
-vi.mock("~/composables/useAPIFetch", () => ({
-  getAnalysisLogs: vi.fn(),
+// Mock useLogChunks so tests control the chunk state without hitting MSW for logs
+vi.mock("~/composables/useLogChunks", () => ({
+  useLogChunks: vi.fn(),
 }));
+
+// navigateTo is a Nuxt auto-import; provide a no-op global stub for tests
+globalThis.navigateTo = vi.fn();
+
+import { useLogChunks } from "~/composables/useLogChunks";
+
+function makeLogChunksMock(overrides: Record<string, unknown> = {}) {
+  return {
+    nginxLines: ref([]),
+    analysisLines: ref([]),
+    oldestTimestamp: ref(null),
+    hasOlder: ref(false),
+    isLoading: ref(false),
+    initialized: ref(true),
+    httpError: ref(null),
+    runNumber: ref(1),
+    initialize: vi.fn().mockResolvedValue(undefined),
+    loadOlderChunk: vi.fn().mockResolvedValue(undefined),
+    appendPolled: vi.fn(),
+    reset: vi.fn(),
+    ...overrides,
+  };
+}
 
 describe("ContainerLogs.vue", () => {
   let wrapper;
@@ -38,23 +76,24 @@ describe("ContainerLogs.vue", () => {
   });
 
   test("Parse returned analysis logs", async () => {
-    const mockedResp = {
-      analysis_id: fakeAnalysisId,
-      run_number: 1,
-      analysis_logs: [{ timestamp: "2025-01-01T00:00:00Z", message: "Starting FlameCoreSDK" }],
-      nginx_logs: [],
-    };
-    vi.mocked(getAnalysisLogs).mockResolvedValue({
-      data: ref(mockedResp),
-      pending: ref(false),
-      error: ref(undefined),
-      status: ref("success"),
-      refresh: vi.fn(),
-      execute: vi.fn(),
-      clear: vi.fn(),
+    const mockChunks = makeLogChunksMock({
+      nginxLines: ref([]),
+      analysisLines: ref([
+        {
+          content: "Starting FlameCoreSDK",
+          level: "INFO",
+          timestamp: "2025-01-01T00:00:00Z",
+          isStacktrace: false,
+        },
+      ]),
+      initialized: ref(true),
+      runNumber: ref(1),
     });
+    vi.mocked(useLogChunks).mockReturnValue(mockChunks);
 
-    wrapper = mount(LogTestComponent);
+    wrapper = mount(LogTestComponent, {
+      global: { stubs: { VirtualScroller: VirtualScrollerStub } },
+    });
     await flushPromises();
 
     expect(LogTestComponent).toBeTruthy();
@@ -71,17 +110,17 @@ describe("ContainerLogs.vue", () => {
       ),
     );
 
-    vi.mocked(getAnalysisLogs).mockResolvedValue({
-      data: ref(null),
-      pending: ref(false),
-      error: ref(undefined),
-      status: ref("success"),
-      refresh: vi.fn(),
-      execute: vi.fn(),
-      clear: vi.fn(),
+    const mockChunks = makeLogChunksMock({
+      nginxLines: ref([]),
+      analysisLines: ref([]),
+      initialized: ref(true),
+      runNumber: ref(null),
     });
+    vi.mocked(useLogChunks).mockReturnValue(mockChunks);
 
-    wrapper = mount(LogTestComponent);
+    wrapper = mount(LogTestComponent, {
+      global: { stubs: { VirtualScroller: VirtualScrollerStub } },
+    });
     await flushPromises();
 
     expect(LogTestComponent).toBeTruthy();

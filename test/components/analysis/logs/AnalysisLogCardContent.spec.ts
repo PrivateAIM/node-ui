@@ -1,9 +1,35 @@
+import { defineComponent, h } from "vue";
 import { mount } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { fakeLogs, fakePodLogs } from "../constants";
+import { fakeLogs } from "../constants";
 import AnalysisLogCardContent from "~/components/analysis/logs/AnalysisLogCardContent.vue";
 import { useToast } from "primevue/usetoast";
 import Button from "primevue/button";
+import type { FlatLogLine } from "~/types/logs";
+
+// Stub VirtualScroller to render all items in tests (no DOM dimensions needed)
+const VirtualScrollerStub = defineComponent({
+  name: "VirtualScroller",
+  props: { items: Array },
+  setup(props, { slots }) {
+    return () =>
+      h(
+        "div",
+        (props.items ?? []).map((item) =>
+          slots.item ? slots.item({ item }) : null,
+        ),
+      );
+  },
+});
+
+const fakeFlatLines: FlatLogLine[] = [
+  {
+    content: fakeLogs,
+    level: undefined,
+    timestamp: "2025-01-01T00:00:00Z",
+    isStacktrace: false,
+  },
+];
 
 describe("AnalysisLogCardContent.vue", () => {
   let mockToast;
@@ -36,7 +62,10 @@ describe("AnalysisLogCardContent.vue", () => {
 
   test("Render the logs", () => {
     const wrapper = mount(AnalysisLogCardContent, {
-      props: { nginxLogs: fakePodLogs, analysisLogs: fakePodLogs },
+      props: { nginxLines: fakeFlatLines, analysisLines: fakeFlatLines },
+      global: {
+        stubs: { VirtualScroller: VirtualScrollerStub },
+      },
     });
     expect(wrapper.text()).toContain("Starting FlameCoreSDK");
 
@@ -45,7 +74,9 @@ describe("AnalysisLogCardContent.vue", () => {
   });
 
   test("Report no logs found", () => {
-    const wrapper = mount(AnalysisLogCardContent, {});
+    const wrapper = mount(AnalysisLogCardContent, {
+      props: { nginxLines: [], analysisLines: [] },
+    });
     expect(wrapper.text()).toContain("No logs found");
 
     const logBtns = wrapper.findAll(".log-btn");
@@ -54,7 +85,7 @@ describe("AnalysisLogCardContent.vue", () => {
 
   test("Download the logs", async () => {
     const wrapper = mount(AnalysisLogCardContent, {
-      props: { nginxLogs: fakePodLogs, analysisLogs: fakePodLogs },
+      props: { nginxLines: fakeFlatLines, analysisLines: fakeFlatLines },
       global: {
         stubs: {
           Toast: true, // prevent PrimeVue Toast from mounting a portal
@@ -84,7 +115,7 @@ describe("AnalysisLogCardContent.vue", () => {
 
   test("Copy the logs", async () => {
     const wrapper = mount(AnalysisLogCardContent, {
-      props: { nginxLogs: fakePodLogs, analysisLogs: fakePodLogs },
+      props: { nginxLines: fakeFlatLines, analysisLines: fakeFlatLines },
       global: {
         stubs: {
           Toast: true, // prevent PrimeVue Toast from mounting a portal
@@ -106,6 +137,63 @@ describe("AnalysisLogCardContent.vue", () => {
       summary: "Copied to clipboard!",
       life: 3000,
       group: "copiedLogs",
+    });
+  });
+
+  describe("scroll load-older trigger", () => {
+    function makeScrollEvent(scrollTop: number, clientHeight: number, scrollHeight: number): Event {
+      const el = document.createElement("div");
+      Object.defineProperty(el, "scrollTop", { value: scrollTop, configurable: true });
+      Object.defineProperty(el, "clientHeight", { value: clientHeight, configurable: true });
+      Object.defineProperty(el, "scrollHeight", { value: scrollHeight, configurable: true });
+      const event = new Event("scroll");
+      Object.defineProperty(event, "target", { value: el, configurable: true });
+      return event;
+    }
+
+    test("onNginxScroll calls onLoadOlderNginx when near top with nginxHasOlder=true and nginxLoading=false", async () => {
+      const onLoadOlderNginx = vi.fn().mockResolvedValue(undefined);
+      const wrapper = mount(AnalysisLogCardContent, {
+        props: {
+          nginxLines: fakeFlatLines,
+          analysisLines: fakeFlatLines,
+          nginxHasOlder: true,
+          nginxLoading: false,
+          onLoadOlderNginx,
+        },
+        global: {
+          stubs: { VirtualScroller: VirtualScrollerStub },
+        },
+      });
+
+      // Scrolled to near top: scrollTop=30 <= 50 ✓
+      const event = makeScrollEvent(30, 100, 1000);
+      (wrapper.vm as unknown as Record<string, (e: Event) => void>).onNginxScroll(event);
+      await wrapper.vm.$nextTick();
+
+      expect(onLoadOlderNginx).toHaveBeenCalledOnce();
+    });
+
+    test("onNginxScroll does NOT call onLoadOlderNginx when scrolled to bottom, even if nginxHasOlder=true", () => {
+      const onLoadOlderNginx = vi.fn().mockResolvedValue(undefined);
+      const wrapper = mount(AnalysisLogCardContent, {
+        props: {
+          nginxLines: fakeFlatLines,
+          analysisLines: fakeFlatLines,
+          nginxHasOlder: true,
+          nginxLoading: false,
+          onLoadOlderNginx,
+        },
+        global: {
+          stubs: { VirtualScroller: VirtualScrollerStub },
+        },
+      });
+
+      // Scrolled to bottom: scrollTop=900, well past the 50px threshold ✗
+      const event = makeScrollEvent(900, 100, 1000);
+      (wrapper.vm as unknown as Record<string, (e: Event) => void>).onNginxScroll(event);
+
+      expect(onLoadOlderNginx).not.toHaveBeenCalled();
     });
   });
 });

@@ -100,4 +100,5 @@ sw.*
 
 # Claude
 .claude/
+.playwright-mcp/
 docs/

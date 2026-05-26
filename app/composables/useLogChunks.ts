@@ -1,27 +1,33 @@
 import { ref } from "vue";
 import { useNuxtApp } from "nuxt/app";
-import type { AnalysisLogsResponse } from "~/services/Api";
+import type { AnalysisLogsResponse, PodLog } from "~/services/Api";
 import { flattenLogs, type FlatLogLine } from "~/types/logs";
 
 const CHUNK_SIZE = 300;
 
+function oldestTimestampOf(a: PodLog[], b: PodLog[]): string | null {
+  const candidates = [a[0]?.timestamp, b[0]?.timestamp].filter(Boolean) as string[];
+  if (candidates.length === 0) return null;
+  return candidates.reduce((min, t) => (t < min ? t : min));
+}
+
 export function useLogChunks(analysisId: string) {
   const nginxLines = ref<FlatLogLine[]>([]);
   const analysisLines = ref<FlatLogLine[]>([]);
-  const offset = ref(0);
-  const hasMore = ref(false);
+  const oldestTimestamp = ref<string | null>(null);
+  const hasOlder = ref(false);
   const isLoading = ref(false);
   const initialized = ref(false);
   const httpError = ref<number | null>(null);
   const runNumber = ref<number | null>(null);
 
   async function fetchChunk(
-    chunkOffset: number,
+    query: { end_date?: string },
   ): Promise<AnalysisLogsResponse | undefined> {
     return useNuxtApp()
       .$hubApi<AnalysisLogsResponse>(`/logs/${analysisId}`, {
         method: "GET",
-        query: { limit: CHUNK_SIZE, offset: chunkOffset },
+        query: { limit: CHUNK_SIZE, ...query },
       })
       .catch((err: any) => {
         httpError.value = err?.statusCode ?? err?.status ?? null;
@@ -34,12 +40,12 @@ export function useLogChunks(analysisId: string) {
     httpError.value = null;
     isLoading.value = true;
     try {
-      const result = await fetchChunk(0);
+      const result = await fetchChunk({ end_date: new Date().toISOString() });
       if (result) {
         nginxLines.value = flattenLogs(result.nginx_logs);
         analysisLines.value = flattenLogs(result.analysis_logs);
-        offset.value = CHUNK_SIZE;
-        hasMore.value =
+        oldestTimestamp.value = oldestTimestampOf(result.nginx_logs, result.analysis_logs);
+        hasOlder.value =
           result.nginx_logs.length === CHUNK_SIZE ||
           result.analysis_logs.length === CHUNK_SIZE;
         initialized.value = true;
@@ -50,19 +56,18 @@ export function useLogChunks(analysisId: string) {
     }
   }
 
-  async function loadNextChunk(): Promise<void> {
-    if (isLoading.value || !hasMore.value) return;
+  async function loadOlderChunk(): Promise<void> {
+    if (isLoading.value || !hasOlder.value || !oldestTimestamp.value) return;
     isLoading.value = true;
     try {
-      const result = await fetchChunk(offset.value);
+      const result = await fetchChunk({ end_date: oldestTimestamp.value });
       if (result) {
-        nginxLines.value = [...nginxLines.value, ...flattenLogs(result.nginx_logs)];
-        analysisLines.value = [
-          ...analysisLines.value,
-          ...flattenLogs(result.analysis_logs),
-        ];
-        offset.value += CHUNK_SIZE;
-        hasMore.value =
+        const newNginx = flattenLogs(result.nginx_logs);
+        const newAnalysis = flattenLogs(result.analysis_logs);
+        nginxLines.value = [...newNginx, ...nginxLines.value];
+        analysisLines.value = [...newAnalysis, ...analysisLines.value];
+        oldestTimestamp.value = oldestTimestampOf(result.nginx_logs, result.analysis_logs);
+        hasOlder.value =
           result.nginx_logs.length === CHUNK_SIZE ||
           result.analysis_logs.length === CHUNK_SIZE;
       }
@@ -82,8 +87,8 @@ export function useLogChunks(analysisId: string) {
   function reset(): void {
     nginxLines.value = [];
     analysisLines.value = [];
-    offset.value = 0;
-    hasMore.value = false;
+    oldestTimestamp.value = null;
+    hasOlder.value = false;
     isLoading.value = false;
     initialized.value = false;
     httpError.value = null;
@@ -93,14 +98,14 @@ export function useLogChunks(analysisId: string) {
   return {
     nginxLines,
     analysisLines,
-    offset,
-    hasMore,
+    oldestTimestamp,
+    hasOlder,
     isLoading,
     initialized,
     httpError,
     runNumber,
     initialize,
-    loadNextChunk,
+    loadOlderChunk,
     appendPolled,
     reset,
   };
