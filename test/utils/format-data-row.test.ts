@@ -1,5 +1,6 @@
 // Test the format-data-row functions
-import { expect, test } from "vitest";
+import { expect, test, describe } from "vitest";
+import { isRef } from "vue";
 import { formatDataRow, parseUnixTimestamp } from "~/utils/format-data-row";
 import { fakeAnalysisNodes } from "@/test/components/analysis/constants";
 import type { ModifiedAnalysisNode } from "~/services/modifiedApiInterfaces";
@@ -59,4 +60,57 @@ test("Format returned analysis data", () => {
     date: new Date("2025-03-18T09:11:14.000Z"),
     timestamp: 1742289074,
   });
+});
+
+test("formatDataRow returns null when passed null", () => {
+  expect(formatDataRow(null, [], [])).toBeNull();
+});
+
+test("formatDataRow returns undefined when passed undefined", () => {
+  expect(formatDataRow(undefined, [], [])).toBeUndefined();
+});
+
+describe("formatDataRow with rowExpansionKeys", () => {
+  test("moves specified keys into expand object", () => {
+    const rows = formatDataRow(
+      fakeAnalysisNodes,
+      [],
+      ["execution_status"],
+    ) as ModifiedAnalysisNode[];
+
+    const row = rows[0]!;
+    expect(row.expand).toHaveProperty("execution_status", "started");
+    expect(Object.prototype.hasOwnProperty.call(row, "execution_status")).toBe(false);
+  });
+
+  test("ignores rowExpansionKeys that are not present on the row", () => {
+    const rows = formatDataRow(
+      fakeAnalysisNodes,
+      [],
+      ["nonexistent_key"],
+    ) as ModifiedAnalysisNode[];
+
+    expect(rows[0]!.expand).toStrictEqual({});
+  });
+
+  test("moves multiple keys into a single expand object", () => {
+    const rows = formatDataRow(
+      fakeAnalysisNodes,
+      [],
+      ["execution_status", "approval_status"],
+    ) as ModifiedAnalysisNode[];
+
+    const expand = rows[0]!.expand;
+    expect(expand).toHaveProperty("execution_status");
+    expect(expand).toHaveProperty("approval_status");
+  });
+});
+
+test("parseUnixTimestamp uses timeAgo ref for a date less than one week old", () => {
+  const recentDate = new Date(Date.now() - 24 * 60 * 60 * 1000); // 1 day ago
+  const node = { ...fakeAnalysisNodes[0]!, created_at: recentDate.toISOString() };
+  const result = parseUnixTimestamp(node, ["created_at"]);
+  // For recent dates, short is a Vue ComputedRef (timeAgo), not a plain string
+  expect(isRef(result.created_at.short)).toBe(true);
+  expect(result.created_at.date).toEqual(recentDate);
 });

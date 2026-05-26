@@ -16,6 +16,15 @@ const makePodLog = (
   stacktrace: null,
 });
 
+// Each log gets a unique timestamp (base + index seconds) so the dedup filter
+// in loadOlderChunk (which removes logs matching the boundary timestamp) doesn't
+// accidentally drop an entire chunk when all logs share the same timestamp.
+function makeTimestamp(secondsOffset: number): string {
+  return new Date(
+    Date.UTC(2024, 0, 1) + secondsOffset * 1000,
+  ).toISOString();
+}
+
 function makeLogsResponse(
   count: number,
   messageOffset = 0,
@@ -24,10 +33,16 @@ function makeLogsResponse(
     analysis_id: ANALYSIS_ID,
     run_number: 1,
     nginx_logs: Array.from({ length: count }, (_, i) =>
-      makePodLog(`nginx-${messageOffset + i}`),
+      makePodLog(
+        `nginx-${messageOffset + i}`,
+        makeTimestamp(messageOffset + i),
+      ),
     ),
     analysis_logs: Array.from({ length: count }, (_, i) =>
-      makePodLog(`analysis-${messageOffset + i}`),
+      makePodLog(
+        `analysis-${messageOffset + i}`,
+        makeTimestamp(messageOffset + i),
+      ),
     ),
   };
 }
@@ -136,8 +151,12 @@ describe("useLogChunks", () => {
       testServer.use(
         http.get(`/logs/${ANALYSIS_ID}`, () => {
           callCount++;
+          // First call: 300 logs at offsets 50-349 (boundary = T+50s)
+          // Second call: 50 logs at offsets 0-49 (all < boundary → no dedup)
           return HttpResponse.json(
-            makeLogsResponse(callCount === 1 ? 300 : 50),
+            callCount === 1
+              ? makeLogsResponse(300, 50)
+              : makeLogsResponse(50, 0),
           );
         }),
       );
@@ -157,6 +176,75 @@ describe("useLogChunks", () => {
       const lineCountBefore = chunks.nginxLines.value.length;
       await chunks.loadOlderChunk();
       expect(chunks.nginxLines.value).toHaveLength(lineCountBefore);
+    });
+  });
+
+  describe("initialize guard", () => {
+    it("ignores a concurrent initialize call while one is already in progress", async () => {
+      let callCount = 0;
+      testServer.use(
+        http.get(`/logs/${ANALYSIS_ID}`, async () => {
+          callCount++;
+          return HttpResponse.json(makeLogsResponse(5));
+        }),
+      );
+      const chunks = useLogChunks(ANALYSIS_ID);
+      // Fire two calls without awaiting between them; second should be a no-op
+      const p1 = chunks.initialize();
+      const p2 = chunks.initialize();
+      await Promise.all([p1, p2]);
+      expect(callCount).toBe(1);
+      expect(chunks.nginxLines.value).toHaveLength(5);
+    });
+  });
+
+  describe("oldestTimestamp selection", () => {
+    it("picks analysis timestamp when it is older than nginx timestamp", async () => {
+      testServer.use(
+        http.get(`/logs/${ANALYSIS_ID}`, () =>
+          HttpResponse.json({
+            analysis_id: ANALYSIS_ID,
+            run_number: 1,
+            nginx_logs: [makePodLog("nginx-0", "2024-01-01T00:01:00Z")],
+            analysis_logs: [makePodLog("analysis-0", "2024-01-01T00:00:00Z")],
+          }),
+        ),
+      );
+      const chunks = useLogChunks(ANALYSIS_ID);
+      await chunks.initialize();
+      expect(chunks.oldestTimestamp.value).toBe("2024-01-01T00:00:00Z");
+    });
+
+    it("picks nginx timestamp when it is older than analysis timestamp", async () => {
+      testServer.use(
+        http.get(`/logs/${ANALYSIS_ID}`, () =>
+          HttpResponse.json({
+            analysis_id: ANALYSIS_ID,
+            run_number: 1,
+            nginx_logs: [makePodLog("nginx-0", "2024-01-01T00:00:00Z")],
+            analysis_logs: [makePodLog("analysis-0", "2024-01-01T00:01:00Z")],
+          }),
+        ),
+      );
+      const chunks = useLogChunks(ANALYSIS_ID);
+      await chunks.initialize();
+      expect(chunks.oldestTimestamp.value).toBe("2024-01-01T00:00:00Z");
+    });
+
+    it("returns null when both log arrays are empty", async () => {
+      testServer.use(
+        http.get(`/logs/${ANALYSIS_ID}`, () =>
+          HttpResponse.json({
+            analysis_id: ANALYSIS_ID,
+            run_number: 1,
+            nginx_logs: [],
+            analysis_logs: [],
+          }),
+        ),
+      );
+      const chunks = useLogChunks(ANALYSIS_ID);
+      await chunks.initialize();
+      expect(chunks.oldestTimestamp.value).toBeNull();
     });
   });
 

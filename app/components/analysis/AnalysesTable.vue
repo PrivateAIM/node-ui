@@ -492,7 +492,7 @@ const onCloseNavToast = () => {
           <div class="card flex justify-content-center refresh-switch">
             <Button
               v-tooltip.top="'Refresh table'"
-              :loading="status === 'pending'"
+              :loading="status.value === 'pending'"
               aria-label="Filter"
               class="table-refresh-btn"
               icon="pi pi-refresh"
