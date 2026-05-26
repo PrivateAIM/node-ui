@@ -59,13 +59,7 @@ test("Analysis run status severity tag", () => {
 });
 
 test("Data store type status severity tag", () => {
-  const expectations = {
-    s3: "info",
-    fhir: "danger",
-  };
-  for (const dsType in ["s3", "fhir"]) {
-    expect(getDataStoreTypeSeverity(dsType)).toStrictEqual(
-      expectations[dsType],
-    );
-  }
+  expect(getDataStoreTypeSeverity("s3")).toBe("info");
+  expect(getDataStoreTypeSeverity("fhir")).toBe("warn");
+  expect(getDataStoreTypeSeverity("unknown")).toBeUndefined();
 });

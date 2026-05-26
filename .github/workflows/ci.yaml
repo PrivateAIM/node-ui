@@ -33,7 +33,7 @@ jobs:
 
   run-tests:
     needs: changed
-    name: 'Build & Test: node-${{ matrix.node_version }}, ${{ matrix.os }}'
+    name: 'Build & Test'
     # if: needs.changed.outputs.should_skip != 'true'
     runs-on: ${{ matrix.os }}
 
@@ -50,7 +50,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Harden Runner
-        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf  # tag=v2.11.2
+        uses: step-security/harden-runner@v2.19.4
         with:
           disable-sudo: true
           egress-policy: audit

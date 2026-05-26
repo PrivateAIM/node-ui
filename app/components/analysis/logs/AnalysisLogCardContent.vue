@@ -1,57 +1,98 @@
 <script lang="ts" setup>
-import { Card, ScrollPanel } from "primevue";
-import { computed, onBeforeUpdate, onMounted, onUpdated, ref } from "vue";
+import { Card, VirtualScroller } from "primevue";
+import { nextTick, onMounted, ref, watch } from "vue";
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
-import type { PodLog } from "~/services/Api";
+import type { FlatLogLine } from "~/types/logs";
 
 const props = defineProps<{
-  nginxLogs?: PodLog[];
-  analysisLogs?: PodLog[];
+  nginxLines: FlatLogLine[];
+  analysisLines: FlatLogLine[];
+  showTimestamps?: boolean;
+  nginxHasOlder?: boolean;
+  analysisHasOlder?: boolean;
+  nginxLoading?: boolean;
+  analysisLoading?: boolean;
+  onLoadOlderNginx?: () => Promise<void>;
+  onLoadOlderAnalysis?: () => Promise<void>;
 }>();
-const nginxLogBottom = ref();
-const analysisLogBottom = ref();
-const showTimestamps = ref(false);
 
 const toast = useToast();
 
-const getScrollContainer = (bottomEl: HTMLElement): HTMLElement | null =>
-  bottomEl?.parentElement ?? null;
+function isNearBottom(el: HTMLElement): boolean {
+  return el.scrollTop >= el.scrollHeight - el.clientHeight - 50;
+}
 
-const isAtBottom = (container: HTMLElement): boolean =>
-  container.scrollTop + container.clientHeight >= container.scrollHeight - 10;
+function createScrollState(
+  getLines: () => FlatLogLine[],
+  getHasOlder: () => boolean | undefined,
+  getLoading: () => boolean | undefined,
+  getLoadFn: () => (() => Promise<void>) | undefined,
+) {
+  const scrollerRef = ref<{ $el: HTMLElement } | null>(null);
+  let atBottom = false;
 
-let nginxWasAtBottom = true;
-let analysisWasAtBottom = true;
-
-onBeforeUpdate(() => {
-  if (nginxLogBottom.value) {
-    const c = getScrollContainer(nginxLogBottom.value);
-    nginxWasAtBottom = c ? isAtBottom(c) : true;
-  }
-  if (analysisLogBottom.value) {
-    const c = getScrollContainer(analysisLogBottom.value);
-    analysisWasAtBottom = c ? isAtBottom(c) : true;
-  }
-});
-
-onMounted(() => {
-  [nginxLogBottom, analysisLogBottom].forEach(({ value }) => {
-    const c = getScrollContainer(value);
-    if (c) c.scrollTop = c.scrollHeight;
+  onMounted(async () => {
+    await nextTick();
+    const el = scrollerRef.value?.$el;
+    if (el && getLines().length > 0) {
+      el.scrollTop = el.scrollHeight;
+      atBottom = true;
+    }
   });
-});
 
-onUpdated(() => {
-  if (nginxWasAtBottom && nginxLogBottom.value) {
-    const c = getScrollContainer(nginxLogBottom.value);
-    if (c) c.scrollTop = c.scrollHeight;
+  // Auto-scroll on polling appends; prepends have a different first-item timestamp
+  watch(
+    getLines,
+    (newLines, oldLines) => {
+      if (!oldLines || newLines.length <= oldLines.length) return;
+      if (newLines[0]?.timestamp === oldLines[0]?.timestamp && atBottom) {
+        nextTick().then(() => {
+          const el = scrollerRef.value?.$el;
+          if (el) el.scrollTop = el.scrollHeight;
+        });
+      }
+    },
+    { flush: "post" },
+  );
+
+  async function loadOlder() {
+    const loadFn = getLoadFn();
+    if (!loadFn || getLoading()) return;
+    const el = scrollerRef.value?.$el as HTMLElement | null;
+    const prevScrollHeight = el?.scrollHeight ?? 0;
+    const prevScrollTop = el?.scrollTop ?? 0;
+    await loadFn();
+    await nextTick();
+    if (el) el.scrollTop = prevScrollTop + (el.scrollHeight - prevScrollHeight);
   }
-  if (analysisWasAtBottom && analysisLogBottom.value) {
-    const c = getScrollContainer(analysisLogBottom.value);
-    if (c) c.scrollTop = c.scrollHeight;
+
+  function onScroll(e: Event) {
+    const el = e.target as HTMLElement;
+    atBottom = isNearBottom(el);
+    if (el.scrollTop <= 50 && getHasOlder() && !getLoading()) {
+      loadOlder();
+    }
   }
-});
+
+  return { scrollerRef, onScroll };
+}
+
+const { scrollerRef: nginxScrollerRef, onScroll: onNginxScroll } =
+  createScrollState(
+    () => props.nginxLines,
+    () => props.nginxHasOlder,
+    () => props.nginxLoading,
+    () => props.onLoadOlderNginx,
+  );
+
+const { scrollerRef: analysisScrollerRef, onScroll: onAnalysisScroll } =
+  createScrollState(
+    () => props.analysisLines,
+    () => props.analysisHasOlder,
+    () => props.analysisLoading,
+    () => props.onLoadOlderAnalysis,
+  );
 
 function formatTimestamp(ts: string): string {
   const d = new Date(ts);
@@ -82,29 +123,24 @@ function logLevelClass(level?: string | null): string {
   }
 }
 
-function formatLogs(logs: PodLog[] | undefined, timestamps: boolean): string {
-  if (!logs?.length) return "";
-  return logs
-    .map((entry) => {
-      const prefix = timestamps ? `${formatTimestamp(entry.timestamp)}  ` : "";
-      const line = `${prefix}${entry.message}`;
-      return entry.stacktrace ? `${line}\n${entry.stacktrace}` : line;
+function formatFlatLines(lines: FlatLogLine[]): string {
+  return lines
+    .map((line) => {
+      const prefix = props.showTimestamps
+        ? `${formatTimestamp(line.timestamp)}  `
+        : "";
+      const indent = line.isStacktrace ? "  " : "";
+      return `${prefix}${indent}${line.content}`;
     })
     .join("\n");
 }
 
-const formattedNginxLogs = computed(() =>
-  formatLogs(props.nginxLogs, showTimestamps.value),
-);
-const formattedAnalysisLogs = computed(() =>
-  formatLogs(props.analysisLogs, showTimestamps.value),
-);
-
-const downloadLogs = (analysisLogs: boolean) => {
-  const prefix = analysisLogs ? "analysis" : "nginx";
+function downloadLogs(isAnalysis: boolean) {
+  const prefix = isAnalysis ? "analysis" : "nginx";
   const filename = `${prefix}-logs-${Date.now()}`;
-  const logs = analysisLogs ? formattedAnalysisLogs.value : formattedNginxLogs.value;
-
+  const logs = formatFlatLines(
+    isAnalysis ? props.analysisLines : props.nginxLines,
+  );
   if (logs) {
     const blob = new Blob([logs], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
@@ -116,10 +152,12 @@ const downloadLogs = (analysisLogs: boolean) => {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   }
-};
+}
 
-const copyToClipboard = async (analysisLogs: boolean) => {
-  const logs = analysisLogs ? formattedAnalysisLogs.value : formattedNginxLogs.value;
+async function copyToClipboard(isAnalysis: boolean) {
+  const logs = formatFlatLines(
+    isAnalysis ? props.analysisLines : props.nginxLines,
+  );
   if (logs) {
     try {
       await navigator.clipboard.writeText(logs);
@@ -133,27 +171,19 @@ const copyToClipboard = async (analysisLogs: boolean) => {
       console.error("Failed to copy: ", err);
     }
   }
-};
+}
+
+
 </script>
 
 <template>
   <Toast group="copiedLogs" position="top-center" class="copy-toast" />
-  <div class="log-content-toolbar">
-    <ToggleButton
-      v-model="showTimestamps"
-      onLabel="Timestamps On"
-      offLabel="Timestamps Off"
-      onIcon="pi pi-clock"
-      offIcon="pi pi-clock"
-      class="log-timestamp-toggle"
-    />
-  </div>
   <div class="card analysis-logs">
     <Card class="log-card nginx-log-card">
       <template #title>
         <div class="log-header-row">
           <div class="log-header-row-title">Nginx Logs</div>
-          <div class="log-btns" v-if="nginxLogs?.length">
+          <div class="log-btns" v-if="nginxLines.length">
             <div class="log-download-btn log-btn">
               <Button
                 icon="pi pi-download"
@@ -177,18 +207,32 @@ const copyToClipboard = async (analysisLogs: boolean) => {
       </template>
       <template #content>
         <div class="card nginx-log-content">
-          <ScrollPanel class="log-scroll-panel">
-            <template v-if="nginxLogs?.length">
-              <div v-for="(entry, i) in nginxLogs" :key="i" class="log-entry">
-                <span :class="['log-message', logLevelClass(entry.level)]">
-                  <span v-if="showTimestamps" class="log-timestamp">{{ formatTimestamp(entry.timestamp) }}&nbsp;&nbsp;</span>{{ entry.message }}
+          <VirtualScroller
+            v-if="nginxLines.length"
+            ref="nginxScrollerRef"
+            :items="nginxLines"
+            :itemSize="20"
+            style="height: 30em"
+            class="log-scroll-panel"
+            @scroll="onNginxScroll"
+          >
+            <template #item="{ item }: { item: FlatLogLine }">
+              <div class="log-entry">
+                <span v-if="showTimestamps" class="log-timestamp">
+                  {{ formatTimestamp(item.timestamp) }}&nbsp;&nbsp;
                 </span>
-                <pre v-if="entry.stacktrace" class="log-stacktrace">{{ entry.stacktrace }}</pre>
+                <span
+                  :class="
+                    item.isStacktrace
+                      ? 'log-stacktrace-line'
+                      : ['log-message', logLevelClass(item.level)]
+                  "
+                  >{{ item.content }}</span
+                >
               </div>
             </template>
-            <span v-else>No logs found...</span>
-            <div ref="nginxLogBottom"></div>
-          </ScrollPanel>
+          </VirtualScroller>
+          <span v-else>No logs found...</span>
         </div>
       </template>
     </Card>
@@ -196,7 +240,7 @@ const copyToClipboard = async (analysisLogs: boolean) => {
       <template #title>
         <div class="log-header-row">
           <div class="log-header-row-title">Analysis Logs</div>
-          <div class="log-btns" v-if="analysisLogs?.length">
+          <div class="log-btns" v-if="analysisLines.length">
             <div class="log-download-btn log-btn">
               <Button
                 icon="pi pi-download"
@@ -219,34 +263,38 @@ const copyToClipboard = async (analysisLogs: boolean) => {
         </div>
       </template>
       <template #content>
-        <ScrollPanel class="log-scroll-panel">
-          <template v-if="analysisLogs?.length">
-            <div v-for="(entry, i) in analysisLogs" :key="i" class="log-entry">
-              <span :class="['log-message', logLevelClass(entry.level)]">
-                <span v-if="showTimestamps" class="log-timestamp">{{ formatTimestamp(entry.timestamp) }}&nbsp;&nbsp;</span>{{ entry.message }}
+        <VirtualScroller
+          v-if="analysisLines.length"
+          ref="analysisScrollerRef"
+          :items="analysisLines"
+          :itemSize="20"
+          style="height: 30em"
+          class="log-scroll-panel"
+          @scroll="onAnalysisScroll"
+        >
+          <template #item="{ item }: { item: FlatLogLine }">
+            <div class="log-entry">
+              <span v-if="showTimestamps" class="log-timestamp">
+                {{ formatTimestamp(item.timestamp) }}&nbsp;&nbsp;
               </span>
-              <pre v-if="entry.stacktrace" class="log-stacktrace">{{ entry.stacktrace }}</pre>
+              <span
+                :class="
+                  item.isStacktrace
+                    ? 'log-stacktrace-line'
+                    : ['log-message', logLevelClass(item.level)]
+                "
+                >{{ item.content }}</span
+              >
             </div>
           </template>
-          <span v-else>No logs found...</span>
-          <div ref="analysisLogBottom"></div>
-        </ScrollPanel>
+        </VirtualScroller>
+        <span v-else>No logs found...</span>
       </template>
     </Card>
   </div>
 </template>
 
 <style lang="scss">
-.log-content-toolbar {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 0.5em;
-}
-
-.log-timestamp-toggle {
-  font-size: 0.8em;
-}
-
 .analysis-logs {
   display: flex;
   justify-content: space-between;
@@ -269,13 +317,11 @@ const copyToClipboard = async (analysisLogs: boolean) => {
 }
 
 .log-scroll-panel {
-  font-family: Roboto Mono Regular,
-  monospace;
+  font-family:
+    Roboto Mono Regular,
+    monospace;
   font-size: 0.8em;
   height: 30em;
-  padding: 1em;
-  white-space: pre-wrap;
-  word-break: break-word;
 }
 
 .flame-dark .log-scroll-panel {
@@ -326,33 +372,51 @@ const copyToClipboard = async (analysisLogs: boolean) => {
 }
 
 .log-entry {
-  margin-bottom: 0.1em;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  padding: 0 0.75rem;
+  overflow: hidden;
 }
 
 .log-message {
   display: block;
-  white-space: pre-wrap;
-  word-break: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .log-timestamp {
   opacity: 0.7;
+  flex-shrink: 0;
 }
 
-.log-level-error   { color: #f87171; } /* red-400   */
-.log-level-warn    { color: #fbbf24; } /* amber-400 */
-.log-level-info    { color: #38bdf8; } /* sky-400   */
-.log-level-debug   { color: #a3e635; } /* lime-400  */
-.log-level-default { color: #e2e8f0; } /* slate-200 */
+.log-level-error {
+  color: #f87171;
+}
 
-.log-stacktrace {
-  margin: 0.15em 0 0.25em 1.5em;
-  padding: 0;
-  font-family: inherit;
-  font-size: inherit;
-  white-space: pre-wrap;
-  word-break: break-word;
-  color: #fca5a5; /* red-300 — distinct from the message, clearly an error trace */
+.log-level-warn {
+  color: #fbbf24;
+}
+
+.log-level-info {
+  color: #38bdf8;
+}
+
+.log-level-debug {
+  color: #a3e635;
+}
+
+.log-level-default {
+  color: #e2e8f0;
+}
+
+.log-stacktrace-line {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #fca5a5;
   border-left: 2px solid #f87171;
   padding-left: 0.5em;
 }

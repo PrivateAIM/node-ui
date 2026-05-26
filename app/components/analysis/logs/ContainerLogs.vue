@@ -2,7 +2,9 @@
 import { useRoute } from "vue-router";
 import { Card, Fieldset } from "primevue";
 import { useIntervalFn } from "@vueuse/core";
-import { getAnalysisLogs } from "~/composables/useAPIFetch";
+import { useLogChunks } from "~/composables/useLogChunks";
+import type { FlatLogLine } from "~/types/logs";
+import { flattenLogs } from "~/types/logs";
 import RefreshSwitch from "~/components/analysis/logs/RefreshSwitch.vue";
 import AnalysisLogCardContent from "~/components/analysis/logs/AnalysisLogCardContent.vue";
 import { useNuxtApp } from "nuxt/app";
@@ -10,37 +12,44 @@ import type {
   AnalysisLogHistoryResponse,
   AnalysisLogsResponse,
   AnalysisNode,
-  RunLogs,
 } from "~/services/Api";
 import { ProcessStatus } from "~/types/analysis";
+
+type FlatRunLogs = {
+  run_number: number;
+  nginxLines: FlatLogLine[];
+  analysisLines: FlatLogLine[];
+};
 
 const route = useRoute();
 const analysisId = route.params.id as string;
 const analysisNodeId = route.query.nodeId as string | undefined;
-const currentLogs = ref<AnalysisLogsResponse | null>(null);
-const prevLogs = ref<RunLogs[]>([]);
+const prevLogs = ref<FlatRunLogs[]>([]);
 const analysis = ref<AnalysisNode | null>(null);
 
-const {
-  data: response,
-  status,
-  error,
-} = await getAnalysisLogs(analysisId);
-
+const logChunks = useLogChunks(analysisId);
 const lastFetchedAt = ref<string | null>(null);
+const showTimestamps = ref(false);
 
-gatherCurrentLogs();
-await Promise.all([gatherPreviousLogs(), fetchAnalysis()]);
-
-function gatherCurrentLogs() {
-  if (status.value === "success") {
-    currentLogs.value = response.value ?? null;
-    if (currentLogs.value) {
-      lastFetchedAt.value = new Date().toISOString();
-    }
-  } else if (status.value === "error" && error.value?.statusCode === 403) {
-    navigateTo("/error/403");
+await logChunks.initialize();
+if (logChunks.httpError.value === 403) {
+  await navigateTo("/error/403");
+} else {
+  if (logChunks.initialized.value) {
+    const allLines = [
+      ...logChunks.nginxLines.value,
+      ...logChunks.analysisLines.value,
+    ];
+    lastFetchedAt.value =
+      allLines.length > 0
+        ? allLines.reduce(
+            (max, l) => (l.timestamp > max ? l.timestamp : max),
+            allLines[0]!.timestamp,
+          )
+        : new Date().toISOString();
   }
+
+  await Promise.all([gatherPreviousLogs(), fetchAnalysis()]);
 }
 
 async function fetchAnalysis() {
@@ -48,9 +57,7 @@ async function fetchAnalysis() {
   const result = (await useNuxtApp()
     .$hubApi(`/analysis-nodes/${analysisNodeId}`, {
       method: "GET",
-      query: {
-        include: "analysis",
-      },
+      query: { include: "analysis" },
     })
     .catch(() => undefined)) as AnalysisNode | undefined;
   if (result) {
@@ -62,20 +69,21 @@ async function gatherPreviousLogs() {
   const historyResp = (await useNuxtApp()
     .$hubApi(`/history/${analysisId}`, {
       method: "GET",
-      query: {
-        limit: null,
-      },
     })
     .catch(() => undefined)) as AnalysisLogHistoryResponse | undefined;
 
   if (historyResp?.runs) {
-    const currentRunNumber = currentLogs.value?.run_number;
+    const currentRunNumber = logChunks.runNumber.value;
     prevLogs.value = [...historyResp.runs]
       .filter(
-        (r) =>
-          currentRunNumber === undefined || r.run_number !== currentRunNumber,
+        (r) => currentRunNumber === null || r.run_number !== currentRunNumber,
       )
-      .sort((a, b) => b.run_number - a.run_number);
+      .sort((a, b) => b.run_number - a.run_number)
+      .map((r) => ({
+        run_number: r.run_number,
+        nginxLines: flattenLogs(r.nginx_logs),
+        analysisLines: flattenLogs(r.analysis_logs),
+      }));
   }
 }
 
@@ -88,20 +96,7 @@ const { pause, resume, isActive } = useIntervalFn(
 );
 
 async function refreshLogs() {
-  if (!lastFetchedAt.value) {
-    const fetchTime = new Date().toISOString();
-    const result = await useNuxtApp()
-      .$hubApi<AnalysisLogsResponse>(`/logs/${analysisId}`, {
-        method: "GET",
-      })
-      .catch(() => undefined);
-    if (result) {
-      currentLogs.value = result;
-      lastFetchedAt.value = fetchTime;
-    }
-    return;
-  }
-
+  if (!lastFetchedAt.value) return;
   const fetchTime = new Date().toISOString();
   const result = await useNuxtApp()
     .$hubApi<AnalysisLogsResponse>(`/logs/${analysisId}`, {
@@ -109,21 +104,21 @@ async function refreshLogs() {
       query: { start_date: lastFetchedAt.value },
     })
     .catch(() => undefined);
-  if (result && currentLogs.value) {
-    currentLogs.value = {
-      ...currentLogs.value,
-      analysis_logs: [
-        ...currentLogs.value.analysis_logs,
-        ...result.analysis_logs,
-      ],
-      nginx_logs: [...currentLogs.value.nginx_logs, ...result.nginx_logs],
-    };
+  if (result) {
+    logChunks.appendPolled(result);
+    const allLogs = [...result.nginx_logs, ...result.analysis_logs];
+    lastFetchedAt.value =
+      allLogs.length > 0
+        ? allLogs.reduce(
+            (max, l) => (l.timestamp > max ? l.timestamp : max),
+            allLogs[0]!.timestamp,
+          )
+        : fetchTime;
   }
-  lastFetchedAt.value = fetchTime;
 }
 
 const previousRunsList = computed(() =>
-  !currentLogs.value && prevLogs.value.length > 0
+  !logChunks.initialized.value && prevLogs.value.length > 0
     ? prevLogs.value.slice(1)
     : prevLogs.value,
 );
@@ -139,35 +134,55 @@ function onRefreshToggle() {
     <template #title>Analysis</template>
     <template #subtitle>
       <div class="table-header-row">
-        <span>{{ analysisId }}</span>
-        <RefreshSwitch
-          :disabled="analysis?.execution_status !== ProcessStatus.Executing"
-          :startEnabled="analysis?.execution_status === ProcessStatus.Executing"
-          @change="onRefreshToggle"
-        />
+        <div class="analysis-subtitle">
+          <span v-if="analysis?.analysis?.name" class="analysis-name">{{
+            analysis.analysis.name
+          }}</span>
+          <span class="analysis-id">{{ analysisId }}</span>
+        </div>
+        <div class="log-header-controls">
+          <ToggleButton
+            v-model="showTimestamps"
+            onLabel="Timestamps On"
+            offLabel="Timestamps Off"
+            onIcon="pi pi-clock"
+            offIcon="pi pi-clock"
+            class="log-timestamp-toggle"
+          />
+          <RefreshSwitch
+            :disabled="analysis?.execution_status !== ProcessStatus.Executing"
+            :startEnabled="
+              analysis?.execution_status === ProcessStatus.Executing
+            "
+            @change="onRefreshToggle"
+          />
+        </div>
       </div>
     </template>
     <template #content>
       <div class="log-container current-logs-card">
-        <Fieldset
-          v-if="!currentLogs && prevLogs.length > 0"
-          :toggleable="true"
-          class="log-card-failed-fs"
-          legend="Most Recent Run"
+        <div
+          v-if="!logChunks.initialized.value && prevLogs.length > 0"
+          class="log-card-failed"
         >
-          <div class="log-card-failed">
-            <AnalysisLogCardContent
-              :analysisLogs="prevLogs[0]!.analysis_logs"
-              :nginxLogs="prevLogs[0]!.nginx_logs"
-            />
-          </div>
-        </Fieldset>
-        <Fieldset v-else :toggleable="true" legend="Current Run">
           <AnalysisLogCardContent
-            :analysisLogs="currentLogs?.analysis_logs ?? []"
-            :nginxLogs="currentLogs?.nginx_logs ?? []"
+            :nginxLines="prevLogs[0]!.nginxLines"
+            :analysisLines="prevLogs[0]!.analysisLines"
+            :showTimestamps="showTimestamps"
           />
-        </Fieldset>
+        </div>
+        <AnalysisLogCardContent
+          v-else
+          :nginxLines="logChunks.nginxLines.value"
+          :analysisLines="logChunks.analysisLines.value"
+          :showTimestamps="showTimestamps"
+          :nginxHasOlder="logChunks.hasOlder.value"
+          :analysisHasOlder="logChunks.hasOlder.value"
+          :nginxLoading="logChunks.isLoading.value"
+          :analysisLoading="logChunks.isLoading.value"
+          :onLoadOlderNginx="logChunks.loadOlderChunk"
+          :onLoadOlderAnalysis="logChunks.loadOlderChunk"
+        />
       </div>
       <div class="log-container previous-logs-collection-card">
         <Fieldset :toggleable="true" legend="All Previous Runs">
@@ -180,8 +195,9 @@ function onRefreshToggle() {
               :toggleable="true"
             >
               <AnalysisLogCardContent
-                :analysisLogs="run.analysis_logs"
-                :nginxLogs="run.nginx_logs"
+                :nginxLines="run.nginxLines"
+                :analysisLines="run.analysisLines"
+                :showTimestamps="showTimestamps"
               />
             </Fieldset>
           </div>
@@ -197,5 +213,31 @@ function onRefreshToggle() {
 <style lang="scss">
 .previous-logs-collection-card {
   margin-top: 2em;
+}
+
+.analysis-subtitle {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1em;
+}
+
+.analysis-name {
+  font-weight: 600;
+  font-size: 1em;
+}
+
+.analysis-id {
+  font-size: 0.85em;
+  opacity: 0.7;
+}
+
+.log-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+}
+
+.log-timestamp-toggle {
+  font-size: 0.8em;
 }
 </style>

@@ -1,5 +1,5 @@
 import { afterAll, afterEach, beforeAll, vi } from "vitest";
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, readonly, ref, watch } from "vue";
 
 import { config } from "@vue/test-utils";
 import { setupServer } from "msw/node";
@@ -20,13 +20,15 @@ import MultiSelect from "primevue/multiselect";
 import InputIcon from "primevue/inputicon";
 import InputText from "primevue/inputtext";
 import IconField from "primevue/iconfield";
+import VirtualScroller from "primevue/virtualscroller";
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 const globalThis = global as any;
-globalThis.ref = ref; // Ensures `ref()` can be used in tests
+globalThis.ref = ref;
 globalThis.computed = computed;
 globalThis.onMounted = onMounted;
 globalThis.watch = watch;
+globalThis.readonly = readonly;
 
 // Register PrimeVue components globally for testing
 config.global.plugins = [PrimeVue];
@@ -46,6 +48,7 @@ config.global.components = {
   InputIcon,
   InputText,
   IconField,
+  VirtualScroller,
 };
 
 // Stub NuxtLink via stubs (matches by component `name` property) rather than
