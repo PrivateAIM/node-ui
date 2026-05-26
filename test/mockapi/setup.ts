@@ -20,6 +20,7 @@ import MultiSelect from "primevue/multiselect";
 import InputIcon from "primevue/inputicon";
 import InputText from "primevue/inputtext";
 import IconField from "primevue/iconfield";
+import VirtualScroller from "primevue/virtualscroller";
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 const globalThis = global as any;
@@ -46,6 +47,7 @@ config.global.components = {
   InputIcon,
   InputText,
   IconField,
+  VirtualScroller,
 };
 
 // Stub NuxtLink via stubs (matches by component `name` property) rather than
