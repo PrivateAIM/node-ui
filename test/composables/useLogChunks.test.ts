@@ -98,7 +98,7 @@ describe("useLogChunks", () => {
       expect(chunks.runNumber.value).toBe(7);
     });
 
-    it("redirects to 403 page when server returns 403", async () => {
+    it("sets httpError to 403 when server returns 403", async () => {
       testServer.use(
         http.get(`/logs/${ANALYSIS_ID}`, () =>
           HttpResponse.json({ detail: "forbidden" }, { status: 403 }),

@@ -30,6 +30,8 @@ export function useLogChunks(analysisId: string) {
   }
 
   async function initialize(): Promise<void> {
+    if (isLoading.value) return;
+    httpError.value = null;
     isLoading.value = true;
     try {
       const result = await fetchChunk(0);
