@@ -1,12 +1,14 @@
 import { ref } from "vue";
 import { useNuxtApp } from "nuxt/app";
 import type { AnalysisLogsResponse, PodLog } from "~/services/Api";
-import { flattenLogs, type FlatLogLine } from "~/types/logs";
+import { type FlatLogLine, flattenLogs } from "~/types/logs";
 
 const CHUNK_SIZE = 300;
 
 function oldestTimestampOf(a: PodLog[], b: PodLog[]): string | null {
-  const candidates = [a[0]?.timestamp, b[0]?.timestamp].filter(Boolean) as string[];
+  const candidates = [a[0]?.timestamp, b[0]?.timestamp].filter(
+    Boolean,
+  ) as string[];
   if (candidates.length === 0) return null;
   return candidates.reduce((min, t) => (t < min ? t : min));
 }
@@ -21,15 +23,15 @@ export function useLogChunks(analysisId: string) {
   const httpError = ref<number | null>(null);
   const runNumber = ref<number | null>(null);
 
-  async function fetchChunk(
-    query: { end_date?: string },
-  ): Promise<AnalysisLogsResponse | undefined> {
+  async function fetchChunk(query: {
+    end_date?: string;
+  }): Promise<AnalysisLogsResponse | undefined> {
     return useNuxtApp()
       .$hubApi<AnalysisLogsResponse>(`/logs/${analysisId}`, {
         method: "GET",
         query: { limit: CHUNK_SIZE, ...query },
       })
-      .catch((err: any) => {
+      .catch((err) => {
         httpError.value = err?.statusCode ?? err?.status ?? null;
         return undefined;
       });
@@ -44,7 +46,10 @@ export function useLogChunks(analysisId: string) {
       if (result) {
         nginxLines.value = flattenLogs(result.nginx_logs);
         analysisLines.value = flattenLogs(result.analysis_logs);
-        oldestTimestamp.value = oldestTimestampOf(result.nginx_logs, result.analysis_logs);
+        oldestTimestamp.value = oldestTimestampOf(
+          result.nginx_logs,
+          result.analysis_logs,
+        );
         hasOlder.value =
           result.nginx_logs.length === CHUNK_SIZE ||
           result.analysis_logs.length === CHUNK_SIZE;
@@ -66,7 +71,10 @@ export function useLogChunks(analysisId: string) {
         const newAnalysis = flattenLogs(result.analysis_logs);
         nginxLines.value = [...newNginx, ...nginxLines.value];
         analysisLines.value = [...newAnalysis, ...analysisLines.value];
-        oldestTimestamp.value = oldestTimestampOf(result.nginx_logs, result.analysis_logs);
+        oldestTimestamp.value = oldestTimestampOf(
+          result.nginx_logs,
+          result.analysis_logs,
+        );
         hasOlder.value =
           result.nginx_logs.length === CHUNK_SIZE ||
           result.analysis_logs.length === CHUNK_SIZE;
