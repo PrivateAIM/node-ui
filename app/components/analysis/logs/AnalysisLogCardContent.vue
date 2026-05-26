@@ -19,62 +19,80 @@ const props = defineProps<{
 
 const toast = useToast();
 
-const nginxScrollerRef = ref<{ $el: HTMLElement } | null>(null);
-const analysisScrollerRef = ref<{ $el: HTMLElement } | null>(null);
-
-// Plain booleans (not reactive) — updated on every scroll event, read in watchers
-let atNginxBottom = false;
-let atAnalysisBottom = false;
-
 function isNearBottom(el: HTMLElement): boolean {
   return el.scrollTop >= el.scrollHeight - el.clientHeight - 50;
 }
 
-onMounted(async () => {
-  await nextTick();
-  const nginxEl = nginxScrollerRef.value?.$el;
-  if (nginxEl && props.nginxLines.length > 0) {
-    nginxEl.scrollTop = nginxEl.scrollHeight;
-    atNginxBottom = true;
-  }
-  const analysisEl = analysisScrollerRef.value?.$el;
-  if (analysisEl && props.analysisLines.length > 0) {
-    analysisEl.scrollTop = analysisEl.scrollHeight;
-    atAnalysisBottom = true;
-  }
-});
+function createScrollState(
+  getLines: () => FlatLogLine[],
+  getHasOlder: () => boolean | undefined,
+  getLoading: () => boolean | undefined,
+  getLoadFn: () => (() => Promise<void>) | undefined,
+) {
+  const scrollerRef = ref<{ $el: HTMLElement } | null>(null);
+  let atBottom = false;
 
-// Auto-scroll on polling appends: if user was at the bottom and items were appended
-// (not prepended — prepends have a different first-item timestamp)
-watch(
-  () => props.nginxLines,
-  (newLines, oldLines) => {
-    if (!oldLines || newLines.length <= oldLines.length) return;
-    const wasAppend = newLines[0]?.timestamp === oldLines[0]?.timestamp;
-    if (wasAppend && atNginxBottom) {
-      nextTick().then(() => {
-        const el = nginxScrollerRef.value?.$el;
-        if (el) el.scrollTop = el.scrollHeight;
-      });
+  onMounted(async () => {
+    await nextTick();
+    const el = scrollerRef.value?.$el;
+    if (el && getLines().length > 0) {
+      el.scrollTop = el.scrollHeight;
+      atBottom = true;
     }
-  },
-  { flush: "post" },
-);
+  });
 
-watch(
-  () => props.analysisLines,
-  (newLines, oldLines) => {
-    if (!oldLines || newLines.length <= oldLines.length) return;
-    const wasAppend = newLines[0]?.timestamp === oldLines[0]?.timestamp;
-    if (wasAppend && atAnalysisBottom) {
-      nextTick().then(() => {
-        const el = analysisScrollerRef.value?.$el;
-        if (el) el.scrollTop = el.scrollHeight;
-      });
+  // Auto-scroll on polling appends; prepends have a different first-item timestamp
+  watch(
+    getLines,
+    (newLines, oldLines) => {
+      if (!oldLines || newLines.length <= oldLines.length) return;
+      if (newLines[0]?.timestamp === oldLines[0]?.timestamp && atBottom) {
+        nextTick().then(() => {
+          const el = scrollerRef.value?.$el;
+          if (el) el.scrollTop = el.scrollHeight;
+        });
+      }
+    },
+    { flush: "post" },
+  );
+
+  async function loadOlder() {
+    const loadFn = getLoadFn();
+    if (!loadFn || getLoading()) return;
+    const el = scrollerRef.value?.$el as HTMLElement | null;
+    const prevScrollHeight = el?.scrollHeight ?? 0;
+    const prevScrollTop = el?.scrollTop ?? 0;
+    await loadFn();
+    await nextTick();
+    if (el) el.scrollTop = prevScrollTop + (el.scrollHeight - prevScrollHeight);
+  }
+
+  function onScroll(e: Event) {
+    const el = e.target as HTMLElement;
+    atBottom = isNearBottom(el);
+    if (el.scrollTop <= 50 && getHasOlder() && !getLoading()) {
+      loadOlder();
     }
-  },
-  { flush: "post" },
-);
+  }
+
+  return { scrollerRef, onScroll };
+}
+
+const { scrollerRef: nginxScrollerRef, onScroll: onNginxScroll } =
+  createScrollState(
+    () => props.nginxLines,
+    () => props.nginxHasOlder,
+    () => props.nginxLoading,
+    () => props.onLoadOlderNginx,
+  );
+
+const { scrollerRef: analysisScrollerRef, onScroll: onAnalysisScroll } =
+  createScrollState(
+    () => props.analysisLines,
+    () => props.analysisHasOlder,
+    () => props.analysisLoading,
+    () => props.onLoadOlderAnalysis,
+  );
 
 function formatTimestamp(ts: string): string {
   const d = new Date(ts);
@@ -155,41 +173,7 @@ async function copyToClipboard(isAnalysis: boolean) {
   }
 }
 
-function onNginxScroll(e: Event) {
-  const el = e.target as HTMLElement;
-  atNginxBottom = isNearBottom(el);
-  if (el.scrollTop <= 50 && props.nginxHasOlder && !props.nginxLoading) {
-    handleLoadOlderNginx();
-  }
-}
 
-function onAnalysisScroll(e: Event) {
-  const el = e.target as HTMLElement;
-  atAnalysisBottom = isNearBottom(el);
-  if (el.scrollTop <= 50 && props.analysisHasOlder && !props.analysisLoading) {
-    handleLoadOlderAnalysis();
-  }
-}
-
-async function handleLoadOlderNginx() {
-  if (!props.onLoadOlderNginx || props.nginxLoading) return;
-  const el = nginxScrollerRef.value?.$el as HTMLElement | null;
-  const prevScrollHeight = el?.scrollHeight ?? 0;
-  const prevScrollTop = el?.scrollTop ?? 0;
-  await props.onLoadOlderNginx();
-  await nextTick();
-  if (el) el.scrollTop = prevScrollTop + (el.scrollHeight - prevScrollHeight);
-}
-
-async function handleLoadOlderAnalysis() {
-  if (!props.onLoadOlderAnalysis || props.analysisLoading) return;
-  const el = analysisScrollerRef.value?.$el as HTMLElement | null;
-  const prevScrollHeight = el?.scrollHeight ?? 0;
-  const prevScrollTop = el?.scrollTop ?? 0;
-  await props.onLoadOlderAnalysis();
-  await nextTick();
-  if (el) el.scrollTop = prevScrollTop + (el.scrollHeight - prevScrollHeight);
-}
 </script>
 
 <template>
@@ -338,8 +322,6 @@ async function handleLoadOlderAnalysis() {
     monospace;
   font-size: 0.8em;
   height: 30em;
-  white-space: pre-wrap;
-  word-break: break-word;
 }
 
 .flame-dark .log-scroll-panel {
@@ -390,16 +372,18 @@ async function handleLoadOlderAnalysis() {
 }
 
 .log-entry {
-  margin-bottom: 0.1em;
+  height: 20px;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   padding: 0 0.75rem;
+  overflow: hidden;
 }
 
 .log-message {
   display: block;
-  white-space: pre-wrap;
-  word-break: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .log-timestamp {
@@ -429,8 +413,9 @@ async function handleLoadOlderAnalysis() {
 
 .log-stacktrace-line {
   display: block;
-  white-space: pre-wrap;
-  word-break: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: #fca5a5;
   border-left: 2px solid #f87171;
   padding-left: 0.5em;

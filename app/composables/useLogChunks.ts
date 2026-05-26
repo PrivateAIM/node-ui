@@ -64,20 +64,25 @@ export function useLogChunks(analysisId: string) {
   async function loadOlderChunk(): Promise<void> {
     if (isLoading.value || !hasOlder.value || !oldestTimestamp.value) return;
     isLoading.value = true;
+    const boundary = oldestTimestamp.value;
     try {
-      const result = await fetchChunk({ end_date: oldestTimestamp.value });
+      const result = await fetchChunk({ end_date: boundary });
       if (result) {
-        const newNginx = flattenLogs(result.nginx_logs);
-        const newAnalysis = flattenLogs(result.analysis_logs);
-        nginxLines.value = [...newNginx, ...nginxLines.value];
-        analysisLines.value = [...newAnalysis, ...analysisLines.value];
-        oldestTimestamp.value = oldestTimestampOf(
-          result.nginx_logs,
-          result.analysis_logs,
+        const dedupedNginx = result.nginx_logs.filter(
+          (l) => l.timestamp !== boundary,
         );
+        const dedupedAnalysis = result.analysis_logs.filter(
+          (l) => l.timestamp !== boundary,
+        );
+        nginxLines.value = [...flattenLogs(dedupedNginx), ...nginxLines.value];
+        analysisLines.value = [
+          ...flattenLogs(dedupedAnalysis),
+          ...analysisLines.value,
+        ];
+        oldestTimestamp.value = oldestTimestampOf(dedupedNginx, dedupedAnalysis);
         hasOlder.value =
-          result.nginx_logs.length === CHUNK_SIZE ||
-          result.analysis_logs.length === CHUNK_SIZE;
+          dedupedNginx.length === CHUNK_SIZE ||
+          dedupedAnalysis.length === CHUNK_SIZE;
       }
     } finally {
       isLoading.value = false;

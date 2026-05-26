@@ -36,7 +36,17 @@ if (logChunks.httpError.value === 403) {
   await navigateTo("/error/403");
 } else {
   if (logChunks.initialized.value) {
-    lastFetchedAt.value = new Date().toISOString();
+    const allLines = [
+      ...logChunks.nginxLines.value,
+      ...logChunks.analysisLines.value,
+    ];
+    lastFetchedAt.value =
+      allLines.length > 0
+        ? allLines.reduce(
+            (max, l) => (l.timestamp > max ? l.timestamp : max),
+            allLines[0]!.timestamp,
+          )
+        : new Date().toISOString();
   }
 
   await Promise.all([gatherPreviousLogs(), fetchAnalysis()]);
@@ -96,7 +106,14 @@ async function refreshLogs() {
     .catch(() => undefined);
   if (result) {
     logChunks.appendPolled(result);
-    lastFetchedAt.value = fetchTime;
+    const allLogs = [...result.nginx_logs, ...result.analysis_logs];
+    lastFetchedAt.value =
+      allLogs.length > 0
+        ? allLogs.reduce(
+            (max, l) => (l.timestamp > max ? l.timestamp : max),
+            allLogs[0]!.timestamp,
+          )
+        : fetchTime;
   }
 }
 
