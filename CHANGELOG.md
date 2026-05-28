@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.6.4](https://github.com/PrivateAIM/node-ui/compare/v0.6.3...v0.6.4) (2026-05-28)
+
+
+### Features
+
+* add FlatLogLine type and flattenLogs utility ([ce60862](https://github.com/PrivateAIM/node-ui/commit/ce60862976aab80f3783a8bd8fd82fe1e96ff457))
+* add useLogChunks composable for chunked log fetching ([c7dc982](https://github.com/PrivateAIM/node-ui/commit/c7dc98226a6783afd99151497be0fa08bbd5c10e))
+* **logs:** lazy load logs for active run ([286f2df](https://github.com/PrivateAIM/node-ui/commit/286f2dff8afd0699f31db6bb4b9de6f41502aa9c))
+
+
+### Bug Fixes
+
+* add isLoading guard and clear httpError on initialize in useLogChunks ([8f6e21d](https://github.com/PrivateAIM/node-ui/commit/8f6e21d4422d1bf9d5220fc8fc8d61e70b972926))
+* **logs:** isolate stream boundaries ([f970adb](https://github.com/PrivateAIM/node-ui/commit/f970adb808d495062b2a67cd9036bba941a532d3))
+
 ## [0.6.3](https://github.com/PrivateAIM/node-ui/compare/v0.6.2...v0.6.3) (2026-05-22)
 
 
