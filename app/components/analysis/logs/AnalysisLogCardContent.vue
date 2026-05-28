@@ -297,37 +297,31 @@ async function copyToClipboard(isAnalysis: boolean) {
 <style lang="scss">
 .analysis-logs {
   display: flex;
-  justify-content: space-between;
+  gap: 1rem;
 }
 
+/* Always-dark terminal card — intentional regardless of app theme */
 .log-card {
-  border: 1px solid grey;
-  height: 50%;
-  background: var(--p-slate-800);
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--p-surface-300);
+  background: #1e293b; /* slate-800 */
   color: #f1f5f9;
-}
-
-.nginx-log-card {
-  margin-right: 1em;
-  width: 50%;
-}
-
-.analysis-log-card {
-  width: 50%;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 .log-scroll-panel {
-  font-family:
-    Roboto Mono Regular,
-    monospace;
-  font-size: 0.8em;
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Monaco,
+    "Courier New", monospace;
+  font-size: 0.8125rem;
   height: 30em;
 }
 
 .flame-dark .log-scroll-panel {
-  background: #000;
+  background: #0f172a; /* slate-900 */
   color: #e2e8f0;
-  border-top: white solid 1px;
+  border-top: 1px solid #334155;
 }
 
 .log-header-row {
@@ -335,8 +329,8 @@ async function copyToClipboard(isAnalysis: boolean) {
   align-items: center;
   background: var(--p-highlight-background);
   color: var(--p-highlight-color);
-  padding: 0.5em;
-  border-radius: 6px;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
 }
 
 .log-btns {
@@ -345,24 +339,20 @@ async function copyToClipboard(isAnalysis: boolean) {
 }
 
 .log-btn {
-  padding-left: 0.2em;
+  padding-left: 0.25rem;
 }
 
 .analysis-logs .p-card-body {
   padding: 0;
 }
 
-.p-card-title {
+/* Scoped to log cards only — prevents bleeding to other card titles */
+.analysis-logs .p-card-title {
   margin-bottom: 0 !important;
 }
 
 .log-card .p-card-body {
   gap: 0;
-}
-
-.log-card {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
 }
 
 .copy-toast {
@@ -418,6 +408,6 @@ async function copyToClipboard(isAnalysis: boolean) {
   text-overflow: ellipsis;
   color: #fca5a5;
   border-left: 2px solid #f87171;
-  padding-left: 0.5em;
+  padding-left: 0.5rem;
 }
 </style>

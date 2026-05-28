@@ -1,16 +1,18 @@
 .settings-field {
     display: flex;
     justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
 }
 
 .settings-description-title {
-    font-weight: bold;
-    padding-bottom: 1em;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
 }
 
 .setting-description-text {
-    font-size: 0.85em;
-    color: gray;
+    font-size: 0.875rem;
+    color: var(--p-text-muted-color);
 }
 
 .settings-control {
@@ -22,15 +24,15 @@
 .preferences-update-btn {
     display: flex;
     justify-content: flex-end;
-    margin-top: 1em;
+    margin-top: 1rem;
 }
 
 .preferences-dialog-header .p-dialog-header {
-    padding-bottom: 0
+    padding-bottom: 0;
 }
 
 .autostart-interval-input {
     min-width: unset;
-    height: 2.5em;
-    width: 8em;
+    height: 2.5rem;
+    width: 8rem;
 }

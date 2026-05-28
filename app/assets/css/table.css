@@ -1,15 +1,16 @@
 .table-header-row {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     width: 100%;
-    margin-bottom: 1em;
-    margin-top: 2em;
+    margin-bottom: 1rem;
+    gap: 1rem;
 }
 
 .search-bar {
     display: flex;
     width: 50%;
-    justify-content: left;
+    gap: 0.5rem;
 }
 
 .refresh-switch {
@@ -23,6 +24,6 @@
 }
 
 .rounded-table {
-    border-radius: 12px;
+    border-radius: 0.75rem;
     overflow: hidden;
 }

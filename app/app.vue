@@ -5,12 +5,24 @@ import Footer from "~/components/Footer.vue";
 
 <template>
   <Toast position="top-right" />
-  <NuxtLoadingIndicator />
+  <NuxtLoadingIndicator color="var(--p-primary-color)" />
   <MenuHeader />
   <NuxtLayout>
-    <NuxtPage />
+    <main class="page-content">
+      <NuxtPage />
+    </main>
   </NuxtLayout>
   <Footer />
 </template>
 
-<style lang="scss"></style>
+<style>
+.page-content {
+  padding: var(--page-padding-y) var(--page-padding-x);
+}
+
+@media (max-width: 768px) {
+  .page-content {
+    padding: 1rem;
+  }
+}
+</style>

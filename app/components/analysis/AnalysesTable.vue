@@ -7,7 +7,7 @@ import { getAnalysisNodes } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
 import {
   showCacheWarningToast,
-  showConnectionErrorToast
+  showConnectionErrorToast,
 } from "~/composables/connectionErrorToast";
 import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
@@ -15,7 +15,7 @@ import AnalysisControlButtons from "./AnalysisControlButtons.vue";
 import {
   getApprovalStatusSeverity,
   getBuildStatusSeverity,
-  getExecutionStatusSeverity
+  getExecutionStatusSeverity,
 } from "~/utils/status-tag-severity";
 import {
   type AnalysisNode,
@@ -24,7 +24,7 @@ import {
   type PodProgressResponse,
   PodStatus,
   type Project,
-  type Route
+  type Route,
 } from "~/services/Api";
 import { ApprovalStatus } from "~/types/node";
 import ContainerCounter from "~/components/analysis/ContainerCounter.vue";
@@ -40,12 +40,12 @@ const { nodeType, requireDataStore: datastoreRequired } =
   useDatastoreRequirement();
 
 const datastoreBadgeSeverity = computed(() =>
-  datastoreRequired.value ? "danger" : "secondary"
+  datastoreRequired.value ? "danger" : "secondary",
 );
 const datastoreBadgeTooltip = computed(() =>
   datastoreRequired.value
     ? "Data store missing!"
-    : "Data store missing, but not required"
+    : "Data store missing, but not required",
 );
 
 const analysesMap = ref<Map<string, ModifiedAnalysisNode>>(new Map());
@@ -61,11 +61,11 @@ const filters = ref();
 // Cache
 const analysisCache = useState<AnalysisNode[] | undefined>(
   "analysisCache",
-  () => undefined
+  () => undefined,
 );
 const projectCache = useState<Project[] | undefined>(
   "projectCache",
-  () => undefined
+  () => undefined,
 );
 const podOrcUnreacheable = ref(false);
 
@@ -93,8 +93,8 @@ async function getProjects() {
       method: "GET",
       query: {
         sort: "-updated_at",
-        fields: "id,name"
-      }
+        fields: "id,name",
+      },
     })
     .catch(() => undefined)) as Project[];
 }
@@ -102,7 +102,7 @@ async function getProjects() {
 async function getKongRoutes() {
   const kongRoutesResp = (await useNuxtApp()
     .$hubApi("/kong/project", {
-      method: "GET"
+      method: "GET",
     })
     .catch(() => undefined)) as ListRoutes;
   if (kongRoutesResp && kongRoutesResp.data) {
@@ -144,7 +144,7 @@ async function getExecutionStatusesFromPodOrc(): Promise<
 > {
   const podOrcResponse = (await useNuxtApp()
     .$hubApi("/po/status", {
-      method: "GET"
+      method: "GET",
     })
     .catch(() => {
       if (!podOrcUnreacheable.value) {
@@ -154,7 +154,7 @@ async function getExecutionStatusesFromPodOrc(): Promise<
           summary: "Missing PO Status Update",
           detail:
             "Unable to retrieve pod statuses from the PO, relying on information from the Hub",
-          life: 3000
+          life: 3000,
         });
       }
       return undefined;
@@ -194,13 +194,13 @@ function determineProgressBarColor(progress: number) {
   }
 
   return {
-    "--p-progressbar-value-background": color
+    "--p-progressbar-value-background": color,
   };
 }
 
 function parseAnalysis(
   analysisEntry: ModifiedAnalysisNode,
-  executionStatuses: PodProgressResponse | undefined
+  executionStatuses: PodProgressResponse | undefined,
 ): ModifiedAnalysisNode {
   const projId = analysisEntry.analysis?.project_id;
   const analysisId = analysisEntry.analysis_id;
@@ -210,7 +210,7 @@ function parseAnalysis(
   }
   const acceptableHubStatuses: Array<PodStatus | null | undefined> = [
     PodStatus.Failed,
-    PodStatus.Executed
+    PodStatus.Executed,
   ];
   if (executionStatuses && analysisId in executionStatuses) {
     const podStatus = executionStatuses[analysisId]!;
@@ -229,7 +229,7 @@ async function compileAnalysisTable(
   respStatus: string,
   respData: AnalysisNode[] | undefined,
   silent = false,
-  merge = false
+  merge = false,
 ) {
   if (!silent) tableLoading.value = true;
   await parseProjects();
@@ -252,13 +252,13 @@ async function compileAnalysisTable(
   const formattedAnalyses = formatDataRow(
     analysisData,
     ["created_at", "updated_at"],
-    expandRowEntries
+    expandRowEntries,
   ) as ModifiedAnalysisNode[];
   if (formattedAnalyses && projMap.size > 0) {
     formattedAnalyses.forEach((analysisEntry: ModifiedAnalysisNode) => {
       parsedAnalyses.set(
         analysisEntry.analysis_id,
-        parseAnalysis(analysisEntry, currentExecutionStatuses)
+        parseAnalysis(analysisEntry, currentExecutionStatuses),
       );
     });
     if (merge) {
@@ -319,11 +319,11 @@ async function getNextPage() {
       query: {
         page: {
           offset: currentOffset,
-          limit: queryLimit
+          limit: queryLimit,
         },
         include: "analysis,node",
-        sort: "-updated_at"
-      }
+        sort: "-updated_at",
+      },
     })
     .catch(() => undefined)) as AnalysisNode[];
   if (nextSetResults.length > 0) {
@@ -344,7 +344,7 @@ const defaultFilters = {
   global: { value: undefined, matchMode: FilterMatchMode.CONTAINS },
   approval_status: { value: undefined, matchMode: FilterMatchMode.EQUALS },
   "analysis.build_status": { value: undefined, matchMode: FilterMatchMode.IN },
-  execution_status: { value: undefined, matchMode: FilterMatchMode.IN }
+  execution_status: { value: undefined, matchMode: FilterMatchMode.IN },
 };
 filters.value = defaultFilters;
 
@@ -352,7 +352,7 @@ function resetFilters() {
   const clearedFilters = {};
   for (const filterKey in defaultFilters) {
     clearedFilters[filterKey] = {
-      ...defaultFilters[filterKey]
+      ...defaultFilters[filterKey],
     };
     clearedFilters[filterKey].value = undefined;
   }
@@ -365,7 +365,7 @@ const updateFilters = (filterText: string) => {
 
 function updateAnalysisRun(
   analysisId: string,
-  newStatusData: AnalysisStatus | undefined
+  newStatusData: AnalysisStatus | undefined,
 ) {
   if (analysesMap.value.has(analysisId)) {
     const analysisToUpdate = analysesMap.value.get(analysisId)!; // Tell typescript we are sure there is a value
@@ -387,7 +387,7 @@ function updateExecutionStatusFilter(filterText: string) {
     if (currentExecutionStatusFilters.includes(filterText)) {
       // If filter already there, then remove it
       const filteredStatuses = currentExecutionStatusFilters.filter(
-        (item) => item !== filterText
+        (item) => item !== filterText,
       );
       if (filteredStatuses.length == 0) {
         // If empty array after filtering then set to null
@@ -410,7 +410,7 @@ const showDataStoreNavToast = () => {
       "Unable to find an associated data store, click the button below " +
       "to create a data store for the project of this analysis",
     group: "datastoreToastLink",
-    life: 10000
+    life: 10000,
   });
 };
 
@@ -457,23 +457,35 @@ const onCloseNavToast = () => {
       <template #content>
         <div class="analysis-description-box">
           <div class="analysis-description">
-            <Message
-              class="control-warning-message"
-              icon="pi pi-exclamation-triangle"
-              severity="warn"
-            >
-              Controls may be disabled!
-            </Message>
-            <p>
-              If the image for the analysis is not yet
-              <Tag
-                :severity="'success'"
-                :value="PodStatus.Running"
-                style="margin-left: 0.5em; margin-right: 0.5em"
-              />
-              (see Build Status) or if a data store does not exist for the
-              associated project, then the analysis cannot be started
-            </p>
+            <span style="margin-bottom: 1rem"
+              >This table provides an overview of the analyses that are
+              registered to run on this node. Approved users can <b>start</b>,
+              <b>stop</b>, or <b>delete</b> analyses, as well as view the logs
+              for both the analysis and associated nginx containers.
+            </span>
+            <span> An analysis can start only if: </span>
+            <div class="analysis-start-criteria">
+              <div class="start-criteria">
+                <b>Approval Status</b>
+                <Tag :severity="'success'" :value="'approved'" />
+              </div>
+              <div class="start-criteria">
+                <b>Build Status</b>
+                <Tag :severity="'success'" :value="PodStatus.Executed" />
+              </div>
+              <div class="start-criteria">
+                <b>Distribution Status</b>
+                <Badge class="w-8 h-8 rounded-full" severity="success">
+                  <i class="pi pi-check"></i>
+                </Badge>
+              </div>
+              <div class="start-criteria">
+                <b>Data Store</b>
+                <Badge class="w-8 h-8 rounded-full" severity="success">
+                  <i class="pi pi-check"></i>
+                </Badge>
+              </div>
+            </div>
           </div>
           <div class="analysis-container-counter">
             <ContainerCounter
@@ -644,15 +656,15 @@ const onCloseNavToast = () => {
                 class="distribution-badge"
               >
                 <Badge class="w-8 h-8 rounded-full" severity="success"
-                ><i v-tooltip.top="'Image available'" class="pi pi-check"></i
+                  ><i v-tooltip.top="'Image available'" class="pi pi-check"></i
                 ></Badge>
               </div>
               <div v-else class="distribution-badge">
                 <Badge class="w-8 h-8 rounded-full" :severity="'danger'"
-                ><i
-                  v-tooltip.top="'Image unavailable'"
-                  class="pi pi-times"
-                ></i
+                  ><i
+                    v-tooltip.top="'Image unavailable'"
+                    class="pi pi-times"
+                  ></i
                 ></Badge>
               </div>
             </template>
@@ -734,17 +746,17 @@ const onCloseNavToast = () => {
             <template #body="{ data }">
               <div v-if="data.datastore" class="datastore-badge">
                 <Badge class="w-8 h-8 rounded-full" severity="success"
-                ><i v-tooltip.top="'Data store found'" class="pi pi-check"></i
+                  ><i v-tooltip.top="'Data store found'" class="pi pi-check"></i
                 ></Badge>
               </div>
               <div v-else class="datastore-badge">
                 <Badge
                   class="w-8 h-8 rounded-full"
                   :severity="datastoreBadgeSeverity"
-                ><i
-                  v-tooltip.top="datastoreBadgeTooltip"
-                  class="pi pi-times"
-                ></i
+                  ><i
+                    v-tooltip.top="datastoreBadgeTooltip"
+                    class="pi pi-times"
+                  ></i
                 ></Badge>
               </div>
             </template>
@@ -847,48 +859,65 @@ const onCloseNavToast = () => {
 </template>
 
 <style>
-.control-warning-message {
-  align-items: center;
-  display: inline-flex;
-  justify-content: center;
-  border: 1px solid #eab308;
-}
-
-.p-tooltip {
-  max-width: none !important;
-  white-space: nowrap !important;
-}
-
-.p-tooltip-text {
-  width: auto !important;
-  display: inline-block;
-}
-
 .nav-btn {
-  margin-top: 10px;
+  margin-top: 0.625rem;
 }
 
 .datastore-badge {
-  margin-left: 2em;
+  display: flex;
+  justify-content: center;
 }
 
 .distribution-badge {
-  margin-left: 4rem;
+  display: flex;
+  justify-content: center;
 }
 
 .analysis-description-box {
   display: flex;
+  flex-wrap: wrap;
   width: 100%;
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
 .analysis-description {
-  flex: 2;
+  flex: 2 1 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.analysis-description ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .analysis-container-counter {
   flex: 1;
   display: flex;
-  justify-content: right;
+  justify-content: flex-end;
   align-items: flex-end;
+}
+
+.analysisTable thead th {
+  padding-inline: 0.5rem;
+}
+
+.analysis-start-criteria {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.start-criteria {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
 }
 </style>

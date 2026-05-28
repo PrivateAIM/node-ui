@@ -23,7 +23,7 @@ const { data } = useAuth();
       </div>
     </div>
     <div v-else class="get-started-container">
-      <h2 style="text-align: center">What would you like to do today?</h2>
+      <h2 class="get-started-heading">What would you like to do today?</h2>
       <div class="get-started-btns">
         <a class="get-started-btn" href="/projects">
           <i class="pi pi-objects-column get-started-btn-icon" />
@@ -54,46 +54,69 @@ const { data } = useAuth();
 }
 
 .get-started-container {
-  margin-top: 5em;
+  margin-top: 3rem;
+}
+
+.get-started-heading {
+  text-align: center;
+  margin-block-start: 0;
+  margin-bottom: 1rem;
 }
 
 .get-started-btns {
-  display: flex;
-  flex-direction: row;
-  justify-content: safe center;
-  margin: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
 }
 
-.get-started-btn {
-  width: 40%;
-  border: solid 2px rgba(gray, 0.2);
-  background: none;
+a.get-started-btn {
+  border: 1px solid var(--p-surface-200);
+  border-radius: 0.5rem;
+  background: var(--p-surface-50);
   text-decoration: none;
   text-align: center;
-  color: deepskyblue;
-  padding: 0.4em;
+  color: var(--p-text-color);
+  padding: 1.25rem 1rem;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+  cursor: pointer;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
 }
 
-.get-started-btn:hover {
-  border-bottom: solid 2px var(--p-button-contrast-border-color);
-  margin-bottom: -2px;
-  background-color: var(--p-button-secondary-hover-background);
+a.get-started-btn:hover {
+  border-color: var(--p-primary-color);
+  background-color: color-mix(in srgb, var(--p-primary-color) 6%, transparent);
+  color: var(--p-primary-color);
 }
 
-.get-started-btn:not(:last-child) {
-  border-right: solid 1px rgba(gray, 0.2);
+// Dark mode: surface-50 resolves to stone-50 (near-white) — swap to a dark surface
+:global(.flame-dark a.get-started-btn) {
+  background: var(--p-surface-800);
+  border-color: var(--p-surface-600);
 }
 
-.get-started-btn:not(:first-child) {
-  border-left: solid 1px rgba(gray, 0.2);
+.get-started-btn p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+  .get-started-btns {
+    grid-template-columns: 1fr;
+  }
 }
 
 .get-started-btn-icon {
-  margin: 0.3em;
-  font-size: 3em;
+  font-size: 2.5rem;
+  color: var(--p-primary-color);
+  margin-bottom: 0.5rem;
 }
 
 .landing-btn {
-  padding: 0.5em;
+  padding: 0.5rem;
 }
 </style>

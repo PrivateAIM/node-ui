@@ -1,1 +1,17 @@
 @import "tailwindcss";
+
+html {
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+:root {
+    --page-padding-x: 0.75rem;
+    --page-padding-y: 1.5rem;
+
+    /* PrimeVue runtime tokens — overridden by PrimeVue at hydration; declared here for IDE resolution */
+    --p-primary-color: #ea580c;
+    --p-text-muted-color: #64748b;
+}

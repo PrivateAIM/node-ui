@@ -73,7 +73,6 @@ const showFailedSubmission = () => {
       class="project-approve-btn"
       icon="pi pi-check"
       severity="success"
-      style="margin-right: 10px"
       @click="onSubmitApproval(true)"
     />
     <Button
@@ -87,4 +86,9 @@ const showFailedSubmission = () => {
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.approvalButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+</style>

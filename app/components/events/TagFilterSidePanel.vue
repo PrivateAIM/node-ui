@@ -122,7 +122,7 @@ function clearFilters() {
 }
 
 .event-viewer-filter-container-filter-item-label {
-  margin-left: 0.5em;
+  margin-left: 0.5rem;
 }
 
 .event-viewer-filter-container-filter-category {

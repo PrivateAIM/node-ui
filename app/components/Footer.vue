@@ -32,17 +32,16 @@ const pkgVersion = config.public.version;
 
 <style lang="scss" scoped>
 .page-footer {
-  padding: 5px 0 5px 0;
-  margin: 20px auto;
-  color: #aeb2b7;
+  padding: 0.625rem 0;
+  color: var(--p-text-muted-color);
   background: var(--p-menubar-background);
-  border: 1px solid var(--p-menubar-border-color);
+  border-top: 1px solid var(--p-menubar-border-color);
 }
 
 .footer-row {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  padding: 2px 10px 2px 10px;
+  padding: 0 var(--page-padding-x);
 }
 
 .copyright {

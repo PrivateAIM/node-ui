@@ -195,6 +195,7 @@ const updateFilters = (filterText: string) => {
       filterDisplay="menu"
       paginator
       tableStyle="min-width: 50rem"
+      class="rounded-table"
     >
       <template #empty> No data stores found.</template>
       <Column
@@ -294,16 +295,14 @@ const updateFilters = (filterText: string) => {
           </span>
         </template>
         <template #body="slotProps">
-          <ConfirmPopup group="dataStoreDelete" style="width: 20em">
+          <ConfirmPopup group="dataStoreDelete" class="ds-confirm-popup">
             <template #message="slotProps">
-              <div
-                class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700 p-4 mb-4 pb-0"
-              >
+              <div class="ds-confirm-message">
                 <i
                   :class="slotProps.message.icon"
                   class="text-6xl text-primary-500"
                 ></i>
-                <p style="padding: 10px">
+                <p class="ds-confirm-text">
                   {{ slotProps.message.message }}
                 </p>
               </div>
@@ -325,10 +324,24 @@ const updateFilters = (filterText: string) => {
 </template>
 
 <style lang="scss" scoped>
-.expand-btns {
+:deep(.ds-confirm-popup) {
+  width: 20rem;
+}
+
+.ds-confirm-message {
   display: flex;
-  justify-content: flex-end;
-  margin-left: auto;
-  margin-right: 0;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 1rem;
+  border-bottom: 1px solid var(--p-surface-200);
+  padding: 1rem 1rem 0;
+  margin-bottom: 1rem;
+}
+
+.ds-confirm-text {
+  padding: 0 0.625rem;
+  margin: 0;
+  text-align: center;
 }
 </style>
