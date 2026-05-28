@@ -39,7 +39,7 @@ function onApplyExecutionStatusFilter(executionStatus: PodStatus) {
   <div class="counter-div">
     <Card class="counter-card">
       <template #title>
-        <span style="font-size: 1.2rem"> Analysis Overview </span>
+        <span class="counter-card-title">Analysis Overview</span>
       </template>
       <template #content>
         <div class="counter-badge-all">
@@ -145,11 +145,14 @@ function onApplyExecutionStatusFilter(executionStatus: PodStatus) {
 }
 
 .counter-card {
-  width: 30em;
+  background: var(--p-menubar-background);
+  min-width: 24rem;
 }
 
-.counter-card {
-  background: var(--p-menubar-background);
+.counter-card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .counter-badge-all {
@@ -176,7 +179,7 @@ function onApplyExecutionStatusFilter(executionStatus: PodStatus) {
 }
 
 .counter-id-txt {
-  font-size: 0.9em;
-  padding-top: 0.3em;
+  font-size: 0.8125rem;
+  padding-top: 0.375rem;
 }
 </style>

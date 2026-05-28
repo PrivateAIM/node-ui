@@ -226,14 +226,4 @@ const updateFilters = (filterText: string) => {
   </div>
 </template>
 
-<style lang="scss">
-.p-tooltip {
-  max-width: none !important;
-  white-space: nowrap !important;
-}
-
-.p-tooltip-text {
-  width: auto !important;
-  display: inline-block;
-}
-</style>
+<style lang="scss"></style>

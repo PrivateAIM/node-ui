@@ -7,7 +7,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <Card style="border: solid">
+  <Card class="metadata-card">
     <template #title>Additional Metadata</template>
     <template #content>
       <p v-for="(value, key) in props.rowMetadata" :key="key">
@@ -19,4 +19,8 @@ const props = defineProps({
   </Card>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.metadata-card {
+  border: 1px solid var(--p-surface-200);
+}
+</style>

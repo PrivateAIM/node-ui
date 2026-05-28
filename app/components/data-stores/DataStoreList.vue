@@ -41,4 +41,3 @@ function onDeleteDataStore(dsName: string) {
   </div>
 </template>
 
-<style lang="scss"></style>

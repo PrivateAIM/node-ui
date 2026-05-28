@@ -50,8 +50,8 @@ const clearFilters = () => {
   </div>
 </template>
 
-<style>
+<style scoped>
 .search-text-bar {
-  margin-right: 10px;
+  margin-right: 0.625rem;
 }
 </style>
