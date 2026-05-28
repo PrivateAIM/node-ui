@@ -324,7 +324,7 @@ const updateFilters = (filterText: string) => {
 </template>
 
 <style lang="scss" scoped>
-.ds-confirm-popup {
+:deep(.ds-confirm-popup) {
   width: 20rem;
 }
 

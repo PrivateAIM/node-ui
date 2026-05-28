@@ -44,7 +44,6 @@ a:not(.p-button):not([class*="p-"]) {
 /* Global tooltip constraints prevent overflow on short tooltips */
 .p-tooltip {
     max-width: none !important;
-    white-space: nowrap !important;
 }
 
 .p-tooltip-text {

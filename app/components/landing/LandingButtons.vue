@@ -104,6 +104,12 @@ a.get-started-btn:hover {
   font-size: 0.875rem;
 }
 
+@media (max-width: 768px) {
+  .get-started-btns {
+    grid-template-columns: 1fr;
+  }
+}
+
 .get-started-btn-icon {
   font-size: 2.5rem;
   color: var(--p-primary-color);
