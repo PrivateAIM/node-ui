@@ -14,6 +14,7 @@ const showPreferencesDialog = ref(false);
 const config = useRuntimeConfig();
 const baseUrl = new URL(config.public.baseUrl as string).origin;
 const idpProvider = config.public.idpProvider;
+const victoriaLogsUrl = config.public.victoriaLogs as string;
 
 const isAuthenticated = computed(() => authStatus.value === "authenticated");
 
@@ -44,9 +45,9 @@ const menuItems = computed(() => [
       {
         label: "VictoriaLogs",
         icon: "pi pi-book",
-        url: `${baseUrl}/logs/select/vmui`,
+        url: victoriaLogsUrl,
         target: "_blank",
-        visible: isAuthenticated.value,
+        visible: isAuthenticated.value && !!victoriaLogsUrl,
         disabled: !isAuthenticated.value,
       },
       {

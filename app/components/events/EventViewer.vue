@@ -17,10 +17,10 @@ import DateFilterGraph from "~/components/events/DateFilterGraph.vue";
 
 const toast = useToast();
 
-const FETCH_LIMIT = 50;
+const fetchLimit = ref(50);
 
 const events = ref<EventLog[]>([]);
-const meta = ref<Meta>({ count: 0, total: 0, limit: FETCH_LIMIT, offset: 0 });
+const meta = ref<Meta>({ count: 0, total: 0, limit: fetchLimit.value, offset: 0 });
 const loading = ref(false);
 
 const startDate = ref<Date>();
@@ -46,10 +46,8 @@ const filters = ref<{
   global: { value: undefined, matchMode: FilterMatchMode.CONTAINS },
 });
 
-const dateTimeFormat = new Intl.DateTimeFormat(undefined, {
-  dateStyle: "short",
-  timeStyle: "long",
-});
+const dateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: "short" });
+const timeFormatter = new Intl.DateTimeFormat(undefined, { timeStyle: "long" });
 
 const selectedLevelFilters = computed(() =>
   appliedFilters.value
@@ -91,7 +89,7 @@ function formatDate(date: Date): string {
 
 function buildQuery(offset: number) {
   return {
-    limit: FETCH_LIMIT,
+    limit: fetchLimit.value,
     offset,
     ...(startDate.value && { start_date: formatDate(startDate.value) }),
     ...(endDate.value && { end_date: formatDate(endDate.value) }),
@@ -133,9 +131,6 @@ async function fetchEvents(offset: number, reset: boolean) {
   loading.value = false;
 }
 
-onMounted(() => {
-  fetchEvents(0, true);
-});
 
 function onPage(event: { page: number; rows: number }) {
   if (allLoaded.value) return;
@@ -148,9 +143,14 @@ function onPage(event: { page: number; rows: number }) {
   }
 }
 
-function handleDateFilterApply(start: Date | undefined, end: Date | undefined) {
+function handleDateFilterApply(
+  start: Date | undefined,
+  end: Date | undefined,
+  limit: number,
+) {
   startDate.value = start;
   endDate.value = end;
+  fetchLimit.value = limit;
   fetchEvents(0, true);
 }
 
@@ -196,14 +196,15 @@ function formatEventName(eventName: string): string {
   return eventName.toUpperCase().split(".").join("-");
 }
 
-function formatTimestamp(timestamp: string): string | undefined {
+function formatTimestampPart(
+  timestamp: string,
+  formatter: Intl.DateTimeFormat,
+): string {
   try {
-    const date = new Date(timestamp);
-    const formattedDateTime = dateTimeFormat.format(date);
-    const [dateString, timeString] = formattedDateTime.split(", ");
-    return `${dateString}<br><b>${timeString}</b>`;
+    return formatter.format(new Date(timestamp));
   } catch (error) {
     console.error(`Timestamp: ${timestamp}; Error: ${error}`);
+    return "";
   }
 }
 
@@ -239,7 +240,6 @@ const eventCountDisplay = computed(() => displayedEvents.value.length);
       <template #content>
         <div class="event-viewer-filter-panel-box">
           <DateFilterGraph
-            :eventCount="eventCountDisplay"
             :loading="loading"
             @applyDateFilter="handleDateFilterApply"
           />
@@ -300,6 +300,8 @@ const eventCountDisplay = computed(() => displayedEvents.value.length);
               paginator
               class="rounded-table"
               @page="onPage"
+              :sortOrder="-1"
+              sortField="timestamp"
             >
               <template #empty>No events found.</template>
               <Column
@@ -317,7 +319,8 @@ const eventCountDisplay = computed(() => displayedEvents.value.length);
                       paddingLeft: '0.75rem',
                     }"
                   >
-                    <span v-html="formatTimestamp(data.timestamp)" />
+                    <span>{{ formatTimestampPart(data.timestamp, dateFormatter) }}</span
+                    ><br /><b>{{ formatTimestampPart(data.timestamp, timeFormatter) }}</b>
                   </div>
                 </template>
               </Column>
