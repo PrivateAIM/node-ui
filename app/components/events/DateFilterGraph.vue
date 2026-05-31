@@ -1,26 +1,43 @@
 <script setup lang="ts">
 import DatePicker from "primevue/datepicker";
+import InputNumber from "primevue/inputnumber";
 import Toolbar from "primevue/toolbar";
 import FloatLabel from "primevue/floatlabel";
 
-const props = defineProps<{
-  eventCount: number;
-  loading: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    loading: boolean;
+    initialStartDate?: Date;
+    initialEndDate?: Date;
+  }>(),
+  {
+    initialStartDate: () => new Date(Date.now() - 5 * 60 * 1000),
+    initialEndDate: () => new Date(),
+  },
+);
 
 const emit = defineEmits<{
-  applyDateFilter: [startDate: Date | undefined, endDate: Date | undefined];
+  applyDateFilter: [
+    startDate: Date | undefined,
+    endDate: Date | undefined,
+    limit: number,
+  ];
 }>();
 
-const startDate = ref<Date>();
-const endDate = ref<Date>();
+const startDate = ref<Date>(props.initialStartDate);
+const endDate = ref<Date>(props.initialEndDate);
+const queryLimit = ref<number>(50);
+
+onMounted(() => {
+  emit("applyDateFilter", startDate.value, endDate.value, queryLimit.value);
+});
 
 const isInvalidRange = computed(
   () => !!(startDate.value && endDate.value && endDate.value < startDate.value),
 );
 
 function applyFilter() {
-  emit("applyDateFilter", startDate.value, endDate.value);
+  emit("applyDateFilter", startDate.value, endDate.value, queryLimit.value);
 }
 </script>
 
@@ -81,15 +98,17 @@ function applyFilter() {
       </template>
       <template #end>
         <div class="custom-filter-header-end">
-          <span
-            v-if="props.eventCount !== 1"
-            v-tooltip.left="'Total number of events currently shown'"
-          >
-            <b> {{ props.eventCount }} events </b>
-          </span>
-          <span v-else v-tooltip.left="'Total number of events currently shown'">
-            <b> {{ props.eventCount }} event </b>
-          </span>
+          <FloatLabel variant="on">
+            <InputNumber
+              inputId="query_limit_label"
+              v-model="queryLimit"
+              :min="1"
+              :max="10000"
+              :step="50"
+              showButtons
+            />
+            <label for="query_limit_label">Limit</label>
+          </FloatLabel>
         </div>
       </template>
     </Toolbar>
