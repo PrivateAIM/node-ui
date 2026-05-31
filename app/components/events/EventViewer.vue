@@ -46,10 +46,8 @@ const filters = ref<{
   global: { value: undefined, matchMode: FilterMatchMode.CONTAINS },
 });
 
-const dateTimeFormat = new Intl.DateTimeFormat(undefined, {
-  dateStyle: "short",
-  timeStyle: "long",
-});
+const dateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: "short" });
+const timeFormatter = new Intl.DateTimeFormat(undefined, { timeStyle: "long" });
 
 const selectedLevelFilters = computed(() =>
   appliedFilters.value
@@ -198,20 +196,12 @@ function formatEventName(eventName: string): string {
   return eventName.toUpperCase().split(".").join("-");
 }
 
-function formatTimestampDate(timestamp: string): string {
+function formatTimestampPart(
+  timestamp: string,
+  formatter: Intl.DateTimeFormat,
+): string {
   try {
-    const date = new Date(timestamp);
-    return dateTimeFormat.format(date).split(", ")[0] ?? "";
-  } catch (error) {
-    console.error(`Timestamp: ${timestamp}; Error: ${error}`);
-    return "";
-  }
-}
-
-function formatTimestampTime(timestamp: string): string {
-  try {
-    const date = new Date(timestamp);
-    return dateTimeFormat.format(date).split(", ")[1] ?? "";
+    return formatter.format(new Date(timestamp));
   } catch (error) {
     console.error(`Timestamp: ${timestamp}; Error: ${error}`);
     return "";
@@ -329,8 +319,8 @@ const eventCountDisplay = computed(() => displayedEvents.value.length);
                       paddingLeft: '0.75rem',
                     }"
                   >
-                    <span>{{ formatTimestampDate(data.timestamp) }}</span
-                    ><br /><b>{{ formatTimestampTime(data.timestamp) }}</b>
+                    <span>{{ formatTimestampPart(data.timestamp, dateFormatter) }}</span
+                    ><br /><b>{{ formatTimestampPart(data.timestamp, timeFormatter) }}</b>
                   </div>
                 </template>
               </Column>

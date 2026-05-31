@@ -158,11 +158,15 @@ const notApproved = computed(
 );
 
 const disabledReason = computed<string | null>(() => {
-  if (notApproved.value) return "Analysis not approved";
   if (props.analysisBuildStatus !== ProcessStatus.Executed) return "Image not built";
   if (props.analysisDistributionStatus !== ProcessStatus.Executed) return "Image not yet distributed to this node";
   if (props.requireDatastore && !props.datastore) return "Missing datastore";
   return null;
+});
+
+const playDisabledReason = computed<string | null>(() => {
+  if (notApproved.value) return "Analysis not approved";
+  return disabledReason.value;
 });
 
 function updatePodStatus(
@@ -382,14 +386,8 @@ async function onDeleteAnalysis(silent: boolean = false) {
   <div class="analysis-buttons">
     <Button
       v-show="buttonStatuses.playActive"
-      v-tooltip.top="disabledReason ?? 'Start the analysis'"
-      :disabled="
-        notApproved ||
-        !buttonStatuses.playActive ||
-        !(props.analysisBuildStatus === ProcessStatus.Executed) ||
-        !(props.analysisDistributionStatus === ProcessStatus.Executed) ||
-        (!props.datastore && props.requireDatastore)
-      "
+      v-tooltip.top="playDisabledReason ?? 'Start the analysis'"
+      :disabled="!!playDisabledReason || !buttonStatuses.playActive"
       :loading="loading"
       aria-label="Start"
       class="start-analysis-btn"
@@ -399,14 +397,8 @@ async function onDeleteAnalysis(silent: boolean = false) {
     />
     <Button
       v-show="!buttonStatuses.playActive"
-      v-tooltip.top="disabledReason ?? 'Rerun the analysis'"
-      :disabled="
-        notApproved ||
-        !buttonStatuses.rerunActive ||
-        !(props.analysisBuildStatus === ProcessStatus.Executed) ||
-        !(props.analysisDistributionStatus === ProcessStatus.Executed) ||
-        (!props.datastore && props.requireDatastore)
-      "
+      v-tooltip.top="playDisabledReason ?? 'Rerun the analysis'"
+      :disabled="!!playDisabledReason || !buttonStatuses.rerunActive"
       :loading="loading"
       aria-label="Rerun"
       class="rerun-analysis-btn"
@@ -416,12 +408,7 @@ async function onDeleteAnalysis(silent: boolean = false) {
     />
     <Button
       v-tooltip.top="disabledReason ?? 'Stop the analysis'"
-      :disabled="
-        !buttonStatuses.stopActive ||
-        !(props.analysisBuildStatus === ProcessStatus.Executed) ||
-        !(props.analysisDistributionStatus === ProcessStatus.Executed) ||
-        (!props.datastore && props.requireDatastore)
-      "
+      :disabled="!!disabledReason || !buttonStatuses.stopActive"
       :loading="loading"
       aria-label="Stop"
       class="stop-analysis-btn"
@@ -431,12 +418,7 @@ async function onDeleteAnalysis(silent: boolean = false) {
     />
     <Button
       v-tooltip.top="disabledReason ?? 'Delete the analysis container'"
-      :disabled="
-        !buttonStatuses.deleteActive ||
-        !(props.analysisBuildStatus === ProcessStatus.Executed) ||
-        !(props.analysisDistributionStatus === ProcessStatus.Executed) ||
-        (!props.datastore && props.requireDatastore)
-      "
+      :disabled="!!disabledReason || !buttonStatuses.deleteActive"
       :loading="loading"
       aria-label="Delete"
       class="delete-analysis-btn"

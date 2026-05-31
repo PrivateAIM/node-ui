@@ -29,15 +29,15 @@ const endDate = ref<Date>(props.initialEndDate);
 const queryLimit = ref<number>(50);
 
 onMounted(() => {
-  emit("applyDateFilter", startDate.value, endDate.value, queryLimit.value);
+  emit("applyDateFilter", startDate.value, endDate.value, queryLimit.value ?? 50);
 });
 
 const isInvalidRange = computed(
-  () => !!(startDate.value && endDate.value && endDate.value < startDate.value),
+  () => startDate.value && endDate.value && endDate.value < startDate.value,
 );
 
 function applyFilter() {
-  emit("applyDateFilter", startDate.value, endDate.value, queryLimit.value);
+  emit("applyDateFilter", startDate.value, endDate.value, queryLimit.value ?? 50);
 }
 </script>
 
@@ -105,6 +105,7 @@ function applyFilter() {
               :min="1"
               :max="10000"
               :step="50"
+              :allowEmpty="false"
               showButtons
             />
             <label for="query_limit_label">Limit</label>
