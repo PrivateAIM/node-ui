@@ -157,6 +157,14 @@ const notApproved = computed(
     !props.approvalStatus || props.approvalStatus === ApprovalStatus.Rejected,
 );
 
+const disabledReason = computed<string | null>(() => {
+  if (notApproved.value) return "Analysis not approved";
+  if (props.analysisBuildStatus !== ProcessStatus.Executed) return "Image not built";
+  if (props.analysisDistributionStatus !== ProcessStatus.Executed) return "Image not yet distributed to this node";
+  if (props.requireDatastore && !props.datastore) return "Missing datastore";
+  return null;
+});
+
 function updatePodStatus(
   podStatus: string | null | undefined,
   progressUpdate?: number | null | undefined,
@@ -374,7 +382,7 @@ async function onDeleteAnalysis(silent: boolean = false) {
   <div class="analysis-buttons">
     <Button
       v-show="buttonStatuses.playActive"
-      v-tooltip.top="notApproved ? undefined : 'Start the analysis'"
+      v-tooltip.top="disabledReason ?? 'Start the analysis'"
       :disabled="
         notApproved ||
         !buttonStatuses.playActive ||
@@ -391,7 +399,7 @@ async function onDeleteAnalysis(silent: boolean = false) {
     />
     <Button
       v-show="!buttonStatuses.playActive"
-      v-tooltip.top="notApproved ? undefined : 'Rerun the analysis'"
+      v-tooltip.top="disabledReason ?? 'Rerun the analysis'"
       :disabled="
         notApproved ||
         !buttonStatuses.rerunActive ||
@@ -407,7 +415,7 @@ async function onDeleteAnalysis(silent: boolean = false) {
       @click="onRerunAnalysis()"
     />
     <Button
-      v-tooltip.top="notApproved ? undefined : 'Stop the analysis'"
+      v-tooltip.top="disabledReason ?? 'Stop the analysis'"
       :disabled="
         !buttonStatuses.stopActive ||
         !(props.analysisBuildStatus === ProcessStatus.Executed) ||
@@ -422,7 +430,7 @@ async function onDeleteAnalysis(silent: boolean = false) {
       @click="onStopAnalysis()"
     />
     <Button
-      v-tooltip.top="notApproved ? undefined : 'Delete the analysis container'"
+      v-tooltip.top="disabledReason ?? 'Delete the analysis container'"
       :disabled="
         !buttonStatuses.deleteActive ||
         !(props.analysisBuildStatus === ProcessStatus.Executed) ||

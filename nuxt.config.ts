@@ -27,9 +27,11 @@ export default defineNuxtConfig({
       idpIssuer: process.env.NUXT_PUBLIC_IDP_ISSUER,
       idpProvider: process.env.NUXT_PUBLIC_IDP_PROVIDER || "keycloak",
       internalKeycloakUrl: process.env.NUXT_PUBLIC_INTERNAL_KEYCLOAK_URL || "",
+      victoriaLogs: process.env.NUXT_PUBLIC_VICTORIA_LOGS_URL,
     },
   },
 
+  // @ts-expect-error auth is a valid value for NuxtConfig
   auth: {
     isEnabled: true,
     originEnvKey: "NUXT_PUBLIC_ORIGIN",
@@ -73,10 +75,12 @@ export default defineNuxtConfig({
     "~/assets/css/preferences.css",
   ],
 
-  // @ts-expect-error nitro is a valid config key not fully typed in this nuxt version
   nitro: {
     alias: {
-      "node-fetch-native/proxy": join(projectRoot, "node_modules/node-fetch-native/dist/proxy.cjs"),
+      "node-fetch-native/proxy": join(
+        projectRoot,
+        "node_modules/node-fetch-native/dist/proxy.cjs",
+      ),
     },
   },
 
