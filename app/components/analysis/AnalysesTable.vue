@@ -457,35 +457,12 @@ const onCloseNavToast = () => {
       <template #content>
         <div class="analysis-description-box">
           <div class="analysis-description">
-            <span style="margin-bottom: 1rem"
+            <span
               >This table provides an overview of the analyses that are
               registered to run on this node. Approved users can <b>start</b>,
               <b>stop</b>, or <b>delete</b> analyses, as well as view the logs
               for both the analysis and associated nginx containers.
             </span>
-            <span> An analysis can start only if: </span>
-            <div class="analysis-start-criteria">
-              <div class="start-criteria">
-                <b>Approval Status</b>
-                <Tag :severity="'success'" :value="'approved'" />
-              </div>
-              <div class="start-criteria">
-                <b>Build Status</b>
-                <Tag :severity="'success'" :value="PodStatus.Executed" />
-              </div>
-              <div class="start-criteria">
-                <b>Distribution Status</b>
-                <Badge class="w-8 h-8 rounded-full" severity="success">
-                  <i class="pi pi-check"></i>
-                </Badge>
-              </div>
-              <div class="start-criteria">
-                <b>Data Store</b>
-                <Badge class="w-8 h-8 rounded-full" severity="success">
-                  <i class="pi pi-check"></i>
-                </Badge>
-              </div>
-            </div>
           </div>
           <div class="analysis-container-counter">
             <ContainerCounter
@@ -557,7 +534,7 @@ const onCloseNavToast = () => {
           >
             <template #header>
               <span
-                v-tooltip.top="'Whether the project was approved or rejected'"
+                v-tooltip.top="'Whether the analysis was approved or rejected'"
                 class="help-text"
               >
                 <b>Approval Status</b>
@@ -905,19 +882,5 @@ const onCloseNavToast = () => {
 
 .analysisTable thead th {
   padding-inline: 0.5rem;
-}
-
-.analysis-start-criteria {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  margin-top: 1rem;
-}
-
-.start-criteria {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
 }
 </style>
