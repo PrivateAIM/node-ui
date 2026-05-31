@@ -27,7 +27,7 @@ export default defineNuxtConfig({
       idpIssuer: process.env.NUXT_PUBLIC_IDP_ISSUER,
       idpProvider: process.env.NUXT_PUBLIC_IDP_PROVIDER || "keycloak",
       internalKeycloakUrl: process.env.NUXT_PUBLIC_INTERNAL_KEYCLOAK_URL || "",
-      victoriaLogs: process.env.NUXT_PUBLIC_VICTORIA_LOGS_URL,
+      victoriaLogsUrl: process.env.NUXT_PUBLIC_VICTORIA_LOGS_URL,
     },
   },
 

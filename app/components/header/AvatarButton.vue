@@ -14,7 +14,7 @@ const showPreferencesDialog = ref(false);
 const config = useRuntimeConfig();
 const baseUrl = new URL(config.public.baseUrl as string).origin;
 const idpProvider = config.public.idpProvider;
-const victoriaLogsUrl = config.public.victoriaLogs as string;
+const victoriaLogsUrl = config.public.victoriaLogsUrl as string;
 
 const isAuthenticated = computed(() => authStatus.value === "authenticated");
 
