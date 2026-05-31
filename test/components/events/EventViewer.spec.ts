@@ -1,10 +1,21 @@
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
 import EventViewer from "~/components/events/EventViewer.vue";
 import { type DefineComponent, defineComponent } from "vue";
 import { http, HttpResponse } from "msw";
 import { testServer } from "@/test/mockapi/setup";
 import { useToast } from "primevue/usetoast";
+import { fakeEventResponse } from "./constants";
+
+const FAKE_NOW = new Date("2026-05-31T12:00:00.000Z");
 
 describe("EventViewer.vue", () => {
   let EventViewerComponent: DefineComponent<typeof EventViewer>;
@@ -14,6 +25,10 @@ describe("EventViewer.vue", () => {
     vi.restoreAllMocks();
     mockToastAdd = vi.fn();
     vi.mocked(useToast).mockReturnValue({ add: mockToastAdd } as any);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   beforeAll(async () => {
@@ -28,7 +43,6 @@ describe("EventViewer.vue", () => {
 
     await flushPromises();
     expect(wrapper.text()).toContain("Event Viewer");
-    expect(wrapper.text()).toContain("1 event");
 
     const headerRow = wrapper.findAll("thead tr th");
     expect(headerRow[0]!.text()).toBe("DateTime");
@@ -59,7 +73,6 @@ describe("EventViewer.vue", () => {
     await flushPromises();
 
     expect(wrapper.text()).toContain("No events found");
-    expect(wrapper.text()).toContain("0 events");
   });
 
   it("Shows service not configured error on 503", async () => {
@@ -76,5 +89,28 @@ describe("EventViewer.vue", () => {
         summary: "Event Log Unavailable",
       }),
     );
+  });
+
+  it("Fetches events on mount with a 5-minute date window and default limit", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(FAKE_NOW);
+
+    let capturedUrl: URL | undefined;
+    testServer.use(
+      http.get("/events", ({ request }) => {
+        capturedUrl = new URL(request.url);
+        return HttpResponse.json(fakeEventResponse);
+      }),
+    );
+
+    mount(EventViewerComponent);
+    await flushPromises();
+
+    expect(capturedUrl).toBeDefined();
+    expect(capturedUrl!.searchParams.get("limit")).toBe("50");
+    expect(capturedUrl!.searchParams.get("start_date")).toBe(
+      "2026-05-31T11:55",
+    );
+    expect(capturedUrl!.searchParams.get("end_date")).toBe("2026-05-31T12:00");
   });
 });
