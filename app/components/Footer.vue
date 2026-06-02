@@ -36,6 +36,7 @@ const pkgVersion = config.public.version;
   color: var(--p-text-muted-color);
   background: var(--p-menubar-background);
   border-top: 1px solid var(--p-menubar-border-color);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06), 0 -1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .footer-row {

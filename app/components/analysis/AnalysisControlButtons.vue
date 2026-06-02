@@ -158,8 +158,10 @@ const notApproved = computed(
 );
 
 const disabledReason = computed<string | null>(() => {
-  if (props.analysisBuildStatus !== ProcessStatus.Executed) return "Image not built";
-  if (props.analysisDistributionStatus !== ProcessStatus.Executed) return "Image not yet distributed to this node";
+  if (props.analysisBuildStatus !== ProcessStatus.Executed)
+    return "Image not built";
+  if (props.analysisDistributionStatus !== ProcessStatus.Executed)
+    return "Image not yet distributed to this node";
   if (props.requireDatastore && !props.datastore) return "Missing datastore";
   return null;
 });
@@ -390,7 +392,7 @@ async function onDeleteAnalysis(silent: boolean = false) {
       :disabled="!!playDisabledReason || !buttonStatuses.playActive"
       :loading="loading"
       aria-label="Start"
-      class="start-analysis-btn"
+      class="analysis-btn start-analysis-btn"
       icon="pi pi-play"
       severity="success"
       @click="onStartAnalysis()"
@@ -401,7 +403,7 @@ async function onDeleteAnalysis(silent: boolean = false) {
       :disabled="!!playDisabledReason || !buttonStatuses.rerunActive"
       :loading="loading"
       aria-label="Rerun"
-      class="rerun-analysis-btn"
+      class="analysis-btn rerun-analysis-btn"
       icon="pi pi-replay"
       severity="success"
       @click="onRerunAnalysis()"
@@ -411,7 +413,7 @@ async function onDeleteAnalysis(silent: boolean = false) {
       :disabled="!!disabledReason || !buttonStatuses.stopActive"
       :loading="loading"
       aria-label="Stop"
-      class="stop-analysis-btn"
+      class="analysis-btn stop-analysis-btn"
       icon="pi pi-stop"
       severity="warn"
       @click="onStopAnalysis()"
@@ -421,7 +423,7 @@ async function onDeleteAnalysis(silent: boolean = false) {
       :disabled="!!disabledReason || !buttonStatuses.deleteActive"
       :loading="loading"
       aria-label="Delete"
-      class="delete-analysis-btn"
+      class="analysis-btn delete-analysis-btn"
       icon="pi pi-trash"
       severity="danger"
       @click="onDeleteAnalysis()"
@@ -438,7 +440,7 @@ async function onDeleteAnalysis(silent: boolean = false) {
         v-tooltip.top="'View the logs'"
         :disabled="buttonStatuses.playActive"
         aria-label="Logs"
-        class="logs-analysis-btn"
+        class="analysis-btn logs-analysis-btn"
         icon="pi pi-bars"
         severity="contrast"
       />

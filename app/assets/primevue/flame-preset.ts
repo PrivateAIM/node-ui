@@ -37,7 +37,7 @@ export const Flame = definePreset(Lara, {
       light: {
         surface: {
           0: "#ffffff",
-          50: "#fff8f2", // Warm parchment background
+          50: "{slate.50}",
           100: "{slate.100}",
           200: "{slate.200}", // Borders
           300: "{slate.300}",

@@ -54,13 +54,4 @@ const idpNameCapitalized: string =
 span::first-letter {
   text-transform: uppercase;
 }
-
-//.landing-btn {
-//  margin: 0.5em;
-//  border-width: 0.2em;
-//}
-//
-//.landing-btn:hover {
-//  border-width: 0.2em;
-//}
 </style>

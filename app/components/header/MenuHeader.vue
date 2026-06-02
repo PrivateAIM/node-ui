@@ -129,11 +129,17 @@ const items = ref([
 
 .menu-bar-header {
   border-radius: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 .menu-bar-header .menu-bar-item {
   border-radius: inherit;
   font-weight: 600;
+  transition: background-color 0.15s ease;
+}
+
+.menu-bar-header .menu-bar-item:hover {
+  background-color: color-mix(in srgb, var(--p-primary-color) 18%, transparent);
 }
 
 .header-end {

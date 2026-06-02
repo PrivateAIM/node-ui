@@ -494,9 +494,6 @@ const onCloseNavToast = () => {
           v-model:expandedRows="expandedRows"
           v-model:filters="filters"
           :globalFilterFields="['analysis.name', 'project_name', 'node.name']"
-          :pt="{
-            table: 'table table-striped',
-          }"
           :rows="10"
           :loading="tableLoading"
           :rowsPerPageOptions="[10, 20, 50]"
@@ -505,6 +502,7 @@ const onCloseNavToast = () => {
           dataKey="id"
           filterDisplay="menu"
           paginator
+          stripedRows
           sortField="updated_at.timestamp"
           tableStyle="min-width: 50rem"
           @page="onPage"
@@ -799,7 +797,7 @@ const onCloseNavToast = () => {
               />
             </template>
           </Column>
-          <Column :exportable="false" field="expand.id" style="min-width: 13em">
+          <Column :exportable="false" field="expand.id">
             <template #header>
               <span
                 v-tooltip.top="'Controls for the analysis container'"

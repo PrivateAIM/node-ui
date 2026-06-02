@@ -84,7 +84,7 @@ async function onClickUpdate() {
     <Button
       icon="pi pi-sync"
       aria-label="Update"
-      class="update-analysis-btn"
+      class="analysis-btn update-analysis-btn"
       v-tooltip.top="'Update the status of the analysis'"
       severity="info"
       :loading="loading"
