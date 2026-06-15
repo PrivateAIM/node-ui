@@ -16,6 +16,7 @@ export const fakeProposalsResp: ProjectNode[] = [
       created_at: "2025-01-28T14:58:02.143000Z",
       updated_at: "2025-02-14T09:05:02Z",
       name: "fake-project",
+      display_name: "fake-project",
       analyses: 17,
       realm_id: "ab1fbc92-3dc8-4bdd-9d51-3b571c2d7aaa",
       user_id: "5ec456e2-e30c-4a29-96de-6425fe5b9355",

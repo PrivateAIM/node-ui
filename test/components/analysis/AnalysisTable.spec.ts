@@ -226,7 +226,7 @@ function mockNodes(nodes: AnalysisNode[]) {
   });
 }
 
-describe("AnalysesTable.vue — PO calls and Progress", () => {
+describe("AnalysesTable.vue - PO calls and Progress", () => {
   let AnalysisTableTestComponent;
 
   beforeAll(() => {

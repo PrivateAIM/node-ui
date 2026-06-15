@@ -93,7 +93,7 @@ async function getProjects() {
       method: "GET",
       query: {
         sort: "-updated_at",
-        fields: "id,name",
+        fields: "id,display_name",
       },
     })
     .catch(() => undefined)) as Project[];
@@ -132,8 +132,8 @@ async function parseProjects() {
   }
   if (projData) {
     projData.forEach((proj: Project) => {
-      if (proj.name) {
-        projMap.set(proj.id!, proj.name);
+      if (proj.display_name) {
+        projMap.set(proj.id!, proj.display_name);
       }
     });
   }
@@ -493,7 +493,11 @@ const onCloseNavToast = () => {
         <DataTable
           v-model:expandedRows="expandedRows"
           v-model:filters="filters"
-          :globalFilterFields="['analysis.name', 'project_name', 'node.name']"
+          :globalFilterFields="[
+            'analysis.display_name',
+            'project_name',
+            'node.name',
+          ]"
           :rows="10"
           :loading="tableLoading"
           :rowsPerPageOptions="[10, 20, 50]"
@@ -510,7 +514,7 @@ const onCloseNavToast = () => {
         >
           <template #empty> No analyses found.</template>
           <Column v-if="expandRowEntries.length" expander style="width: 5rem" />
-          <Column :sortable="true" field="analysis.name">
+          <Column :sortable="true" field="analysis.display_name">
             <template #header>
               <span v-tooltip.top="'Name of the analysis'" class="help-text">
                 <b>Name</b>
@@ -518,7 +522,7 @@ const onCloseNavToast = () => {
             </template>
             <template #body="{ data }">
               <span v-tooltip.right="data.analysis_id" class="help-text">
-                {{ data.analysis.name }}
+                {{ data.analysis.display_name }}
               </span>
             </template>
           </Column>

@@ -22,7 +22,7 @@ const { data: response, status, refresh } = await getProjectNodes();
 function parseData() {
   if (status.value === "success") {
     proposals.value = formatDataRow(
-      response.value as unknown as Map<string, string | number | undefined>[],
+      response.value,
       dataRowUnixCols,
       expandRowEntries,
     );
@@ -94,7 +94,7 @@ const updateFilters = (filterText: string) => {
         <DataTable
           v-model:expandedRows="expandedRows"
           v-model:filters="filters"
-          :globalFilterFields="['id', 'project.name', 'node.name']"
+          :globalFilterFields="['id', 'project.display_name', 'node.name']"
           :rows="10"
           :rowsPerPageOptions="[10, 20, 50]"
           :value="proposals"
@@ -106,7 +106,11 @@ const updateFilters = (filterText: string) => {
         >
           <template #empty> No projects found.</template>
           <Column v-if="expandRowEntries.length" expander style="width: 5rem" />
-          <Column field="project.name" :sortable="true" style="width: 30rem">
+          <Column
+            field="project.display_name"
+            :sortable="true"
+            style="width: 30rem"
+          >
             <template #header>
               <span v-tooltip.top="'Name of the project'" class="help-text">
                 <b>Project Name</b>
@@ -114,7 +118,7 @@ const updateFilters = (filterText: string) => {
             </template>
             <template #body="{ data }">
               <span v-tooltip.right="data.project.id" class="help-text">
-                {{ data.project.name }}
+                {{ data.project.display_name }}
               </span>
             </template>
           </Column>

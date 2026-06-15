@@ -7,8 +7,8 @@ import {
 describe("buildProjectNameMap", () => {
   test("maps project id to name", () => {
     const projects = [
-      { id: "abc-123", name: "My Project" },
-      { id: "def-456", name: "Other Project" },
+      { id: "abc-123", display_name: "My Project" },
+      { id: "def-456", display_name: "Other Project" },
     ];
     const map = buildProjectNameMap(projects as any);
     expect(map.get("abc-123")).toBe("My Project");
@@ -16,13 +16,13 @@ describe("buildProjectNameMap", () => {
   });
 
   test("uses N/A when name is undefined", () => {
-    const projects = [{ id: "abc-123", name: undefined }];
+    const projects = [{ id: "abc-123", display_name: undefined }];
     const map = buildProjectNameMap(projects as any);
     expect(map.get("abc-123")).toBe("N/A");
   });
 
   test("skips entries without id", () => {
-    const projects = [{ id: undefined, name: "No ID" }];
+    const projects = [{ id: undefined, display_name: "No ID" }];
     const map = buildProjectNameMap(projects as any);
     expect(map.size).toBe(0);
   });

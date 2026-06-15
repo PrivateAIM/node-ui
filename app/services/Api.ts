@@ -146,6 +146,8 @@ export interface Analysis {
   description: string | null;
   /** Name */
   name: string | null;
+  /** Display Name */
+  display_name: string | null;
   /**
    * Project Id
    * @format uuid
@@ -297,8 +299,6 @@ export interface AnalysisImageUrl {
   registry_url: string;
   /** Registry User */
   registry_user?: string | null;
-  /** Registry Password */
-  registry_password?: string | null;
 }
 
 /**
@@ -439,12 +439,12 @@ export interface AutostartSettings {
 export interface BodyGetTokenTokenPost {
   /**
    * Username
-   * Keycloak username
+   * IDP username
    */
   username: string;
   /**
    * Password
-   * Keycloak password
+   * IDP password
    */
   password: string;
 }
@@ -682,6 +682,8 @@ export interface DetailedAnalysis {
   description: string | null;
   /** Name */
   name: string | null;
+  /** Display Name */
+  display_name: string | null;
   /**
    * Project Id
    * @format uuid
@@ -1432,6 +1434,8 @@ export interface Project {
   master_image_id: string | null;
   /** Name */
   name: string;
+  /** Display Name */
+  display_name: string | null;
   /**
    * Id
    * @format uuid
@@ -2554,10 +2558,30 @@ export class Api<
      * @request GET:/projects
      * @secure
      */
-    hubProjectGetProjectsGet: (params: RequestParams = {}) =>
-      this.request<Project[], void>({
+    hubProjectGetProjectsGet: (
+      query?: {
+        /**
+         * Page
+         * Pagination as JSON, e.g. {"limit": 50, "offset": 0}
+         */
+        page?: string | null;
+        /**
+         * Sort
+         * Sort field; prefix with - for descending, + for ascending
+         */
+        sort?: string | null;
+        /**
+         * Fields
+         * Comma-separated list of fields to return
+         */
+        fields?: string | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<Project[], void | HTTPValidationError>({
         path: `/projects`,
         method: "GET",
+        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -2601,6 +2625,21 @@ export class Api<
          * @default false
          */
         force_refresh?: boolean;
+        /**
+         * Page
+         * Pagination as JSON, e.g. {"limit": 50, "offset": 0}
+         */
+        page?: string | null;
+        /**
+         * Sort
+         * Sort field; prefix with - for descending, + for ascending
+         */
+        sort?: string | null;
+        /**
+         * Fields
+         * Comma-separated list of fields to return
+         */
+        fields?: string | null;
       },
       params: RequestParams = {},
     ) =>
@@ -2675,6 +2714,21 @@ export class Api<
          * @default false
          */
         force_refresh?: boolean;
+        /**
+         * Page
+         * Pagination as JSON, e.g. {"limit": 50, "offset": 0}
+         */
+        page?: string | null;
+        /**
+         * Sort
+         * Sort field; prefix with - for descending, + for ascending
+         */
+        sort?: string | null;
+        /**
+         * Fields
+         * Comma-separated list of fields to return
+         */
+        fields?: string | null;
       },
       params: RequestParams = {},
     ) =>
@@ -2698,11 +2752,29 @@ export class Api<
      */
     hubAnalysisNodeGetAnalysisNodesAnalysisNodeIdGet: (
       analysisNodeId: string,
+      query?: {
+        /**
+         * Page
+         * Pagination as JSON, e.g. {"limit": 50, "offset": 0}
+         */
+        page?: string | null;
+        /**
+         * Sort
+         * Sort field; prefix with - for descending, + for ascending
+         */
+        sort?: string | null;
+        /**
+         * Fields
+         * Comma-separated list of fields to return
+         */
+        fields?: string | null;
+      },
       params: RequestParams = {},
     ) =>
       this.request<AnalysisNode, void | HTTPValidationError>({
         path: `/analysis-nodes/${analysisNodeId}`,
         method: "GET",
+        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -2742,10 +2814,30 @@ export class Api<
      * @request GET:/analyses
      * @secure
      */
-    hubAnalysisGetAnalysesGet: (params: RequestParams = {}) =>
-      this.request<Analysis[], void>({
+    hubAnalysisGetAnalysesGet: (
+      query?: {
+        /**
+         * Page
+         * Pagination as JSON, e.g. {"limit": 50, "offset": 0}
+         */
+        page?: string | null;
+        /**
+         * Sort
+         * Sort field; prefix with - for descending, + for ascending
+         */
+        sort?: string | null;
+        /**
+         * Fields
+         * Comma-separated list of fields to return
+         */
+        fields?: string | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<Analysis[], void | HTTPValidationError>({
         path: `/analyses`,
         method: "GET",
+        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -2806,10 +2898,30 @@ export class Api<
      * @request GET:/nodes
      * @secure
      */
-    hubNodeGetNodesGet: (params: RequestParams = {}) =>
-      this.request<Node[], void>({
+    hubNodeGetNodesGet: (
+      query?: {
+        /**
+         * Page
+         * Pagination as JSON, e.g. {"limit": 50, "offset": 0}
+         */
+        page?: string | null;
+        /**
+         * Sort
+         * Sort field; prefix with - for descending, + for ascending
+         */
+        sort?: string | null;
+        /**
+         * Fields
+         * Comma-separated list of fields to return
+         */
+        fields?: string | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<Node[], void | HTTPValidationError>({
         path: `/nodes`,
         method: "GET",
+        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -2884,10 +2996,30 @@ export class Api<
      * @request GET:/analysis-buckets
      * @secure
      */
-    hubAnalysisBucketGetAnalysisBucketsGet: (params: RequestParams = {}) =>
-      this.request<any, void>({
+    hubAnalysisBucketGetAnalysisBucketsGet: (
+      query?: {
+        /**
+         * Page
+         * Pagination as JSON, e.g. {"limit": 50, "offset": 0}
+         */
+        page?: string | null;
+        /**
+         * Sort
+         * Sort field; prefix with - for descending, + for ascending
+         */
+        sort?: string | null;
+        /**
+         * Fields
+         * Comma-separated list of fields to return
+         */
+        fields?: string | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<any, void | HTTPValidationError>({
         path: `/analysis-buckets`,
         method: "GET",
+        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -2925,11 +3057,29 @@ export class Api<
      * @secure
      */
     hubAnalysisBucketFileGetAnalysisBucketFilesGet: (
+      query?: {
+        /**
+         * Page
+         * Pagination as JSON, e.g. {"limit": 50, "offset": 0}
+         */
+        page?: string | null;
+        /**
+         * Sort
+         * Sort field; prefix with - for descending, + for ascending
+         */
+        sort?: string | null;
+        /**
+         * Fields
+         * Comma-separated list of fields to return
+         */
+        fields?: string | null;
+      },
       params: RequestParams = {},
     ) =>
-      this.request<any, void>({
+      this.request<any, void | HTTPValidationError>({
         path: `/analysis-bucket-files`,
         method: "GET",
+        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -3531,7 +3681,6 @@ export class Api<
         /**
          * Limit
          * Maximum number of log lines to return per container
-         * @default 1000
          */
         limit?: number | null;
         /**
@@ -3601,9 +3750,8 @@ export class Api<
         /**
          * Limit
          * Maximum number of log lines to return per container
-         * @default 1000
          */
-        limit?: number;
+        limit?: number | null;
         /**
          * Offset
          * Number of log lines to skip per container
@@ -3651,7 +3799,7 @@ export class Api<
         end_date?: string | null;
         /**
          * Limit
-         * Maximum number of raw log entries to return
+         * Maximum number of analysis groups to return
          * @default 1000
          */
         limit?: number;

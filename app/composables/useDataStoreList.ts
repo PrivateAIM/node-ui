@@ -10,7 +10,7 @@ export function buildProjectNameMap(
   const map = new Map<string, string | undefined>();
   projects.forEach((entry) => {
     if (entry.id) {
-      map.set(entry.id, entry.name ?? "N/A");
+      map.set(entry.id, entry.display_name ?? "N/A");
     }
   });
   return map;

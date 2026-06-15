@@ -37,6 +37,7 @@ const fakeBaseProject: Project = {
   created_at: "2025-02-05T12:08:33.131000Z",
   updated_at: "2025-03-20T10:05:25Z",
   name: "use-case-1",
+  display_name: "use-case-1",
   analyses: 4,
   realm_id: fakeProjectId,
   user_id: null,
@@ -52,6 +53,7 @@ const fakeBaseAnalysis: Analysis = {
   created_at: "2025-02-05T12:08:33.131000Z",
   updated_at: "2025-03-20T10:05:25Z",
   name: "T006",
+  display_name: "T006",
   nodes: 4,
   nodes_approved: 4,
   configuration_locked: true,
@@ -104,31 +106,37 @@ export const fakeProjects = [
     ...fakeBaseProject,
     id: "5833b9b8-ad5c-4db4-a3d2-297517c74511",
     name: "use-case-1",
+    display_name: "use-case-1",
   },
   {
     ...fakeBaseProject,
     id: "24aabaf1-65a7-4ba9-b506-4013bc511c95",
     name: "test_bucket_unpack",
+    display_name: "test_bucket_unpack",
   },
   {
     ...fakeBaseProject,
     id: "8cb0684f-8a47-4fd3-97a3-c4f7e7349687",
     name: "Test_run",
+    display_name: "Test_run",
   },
   {
     ...fakeBaseProject,
     id: "cb4c0148-1dbc-49bd-9f02-396264d9b112",
     name: "node-it-fcbf0816-788e-48f0-ba22-68e86069f8ce",
+    display_name: "node-it-fcbf0816-788e-48f0-ba22-68e86069f8ce",
   },
   {
     ...fakeBaseProject,
     id: "ea819933-85b4-4c90-838a-9afa7dd163ee",
     name: "UC1-basic-2025Q1",
+    display_name: "UC1-basic-2025Q1",
   },
   {
     ...fakeBaseProject,
     id: "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483",
     name: "denbi-test",
+    display_name: "denbi-test",
   },
 ];
 
