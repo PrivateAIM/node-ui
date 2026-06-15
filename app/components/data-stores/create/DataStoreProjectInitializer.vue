@@ -98,6 +98,12 @@ watch(selectedProject, (newSelectedProject) => {
   }
 });
 
+watch(selectedDataStoreType, (newDataStoreType) => {
+  if (newDataStoreType === DataStoreType.S3) {
+    port.value = 9000;
+  }
+});
+
 function activateHelp(helpField: HelpTextField) {
   helpActive.value = helpActive.value === helpField ? undefined : helpField;
 }
