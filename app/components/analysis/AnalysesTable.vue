@@ -93,7 +93,7 @@ async function getProjects() {
       method: "GET",
       query: {
         sort: "-updated_at",
-        fields: "id,display_name",
+        fields: "id,name,display_name",
       },
     })
     .catch(() => undefined)) as Project[];
@@ -132,8 +132,8 @@ async function parseProjects() {
   }
   if (projData) {
     projData.forEach((proj: Project) => {
-      if (proj.display_name) {
-        projMap.set(proj.id!, proj.display_name);
+      if (proj.id) {
+        projMap.set(proj.id, proj.display_name ?? proj.name ?? proj.id);
       }
     });
   }

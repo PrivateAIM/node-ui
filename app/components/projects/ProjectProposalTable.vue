@@ -94,7 +94,12 @@ const updateFilters = (filterText: string) => {
         <DataTable
           v-model:expandedRows="expandedRows"
           v-model:filters="filters"
-          :globalFilterFields="['id', 'project.display_name', 'node.name']"
+          :globalFilterFields="[
+            'id',
+            'project.display_name',
+            'project.name',
+            'node.name',
+          ]"
           :rows="10"
           :rowsPerPageOptions="[10, 20, 50]"
           :value="proposals"
@@ -118,7 +123,7 @@ const updateFilters = (filterText: string) => {
             </template>
             <template #body="{ data }">
               <span v-tooltip.right="data.project.id" class="help-text">
-                {{ data.project.display_name }}
+                {{ data.project.display_name ?? data.project.name }}
               </span>
             </template>
           </Column>
