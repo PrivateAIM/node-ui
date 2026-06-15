@@ -123,7 +123,11 @@ const updateFilters = (filterText: string) => {
             </template>
             <template #body="{ data }">
               <span v-tooltip.right="data.project.id" class="help-text">
-                {{ data.project.display_name ?? data.project.name }}
+                {{
+                  data.project.display_name ??
+                  data.project.name ??
+                  data.project.id
+                }}
               </span>
             </template>
           </Column>

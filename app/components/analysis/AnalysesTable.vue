@@ -522,7 +522,11 @@ const onCloseNavToast = () => {
             </template>
             <template #body="{ data }">
               <span v-tooltip.right="data.analysis_id" class="help-text">
-                {{ data.analysis.display_name }}
+                {{
+                  data.analysis.display_name ??
+                  data.analysis.name ??
+                  data.analysis_id
+                }}
               </span>
             </template>
           </Column>
