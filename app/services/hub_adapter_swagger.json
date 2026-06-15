@@ -656,16 +656,77 @@
         "summary": "List all of the projects",
         "description": "List all projects.",
         "operationId": "hub_project_get_projects_get",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Pagination as JSON, e.g. {\"limit\": 50, \"offset\": 0}",
+              "title": "Page"
+            },
+            "description": "Pagination as JSON, e.g. {\"limit\": 50, \"offset\": 0}"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Sort field; prefix with - for descending, + for ascending",
+              "title": "Sort"
+            },
+            "description": "Sort field; prefix with - for descending, + for ascending"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma-separated list of fields to return",
+              "title": "Fields"
+            },
+            "description": "Comma-separated list of fields to return"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
+                  "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/Project"
                   },
-                  "type": "array",
                   "title": "Response Hub Project Get Projects Get"
                 }
               }
@@ -673,13 +734,18 @@
           },
           "404": {
             "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
           }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
+        }
       }
     },
     "/projects/{project_id}": {
@@ -762,6 +828,60 @@
               "default": false,
               "title": "Force Refresh"
             }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Pagination as JSON, e.g. {\"limit\": 50, \"offset\": 0}",
+              "title": "Page"
+            },
+            "description": "Pagination as JSON, e.g. {\"limit\": 50, \"offset\": 0}"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Sort field; prefix with - for descending, + for ascending",
+              "title": "Sort"
+            },
+            "description": "Sort field; prefix with - for descending, + for ascending"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma-separated list of fields to return",
+              "title": "Fields"
+            },
+            "description": "Comma-separated list of fields to return"
           }
         ],
         "responses": {
@@ -942,6 +1062,60 @@
               "default": false,
               "title": "Force Refresh"
             }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Pagination as JSON, e.g. {\"limit\": 50, \"offset\": 0}",
+              "title": "Page"
+            },
+            "description": "Pagination as JSON, e.g. {\"limit\": 50, \"offset\": 0}"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Sort field; prefix with - for descending, + for ascending",
+              "title": "Sort"
+            },
+            "description": "Sort field; prefix with - for descending, + for ascending"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma-separated list of fields to return",
+              "title": "Fields"
+            },
+            "description": "Comma-separated list of fields to return"
           }
         ],
         "responses": {
@@ -1005,6 +1179,60 @@
               "title": "Analysis Node Id"
             },
             "description": "Analysis Node UUID."
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Pagination as JSON, e.g. {\"limit\": 50, \"offset\": 0}",
+              "title": "Page"
+            },
+            "description": "Pagination as JSON, e.g. {\"limit\": 50, \"offset\": 0}"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Sort field; prefix with - for descending, + for ascending",
+              "title": "Sort"
+            },
+            "description": "Sort field; prefix with - for descending, + for ascending"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma-separated list of fields to return",
+              "title": "Fields"
+            },
+            "description": "Comma-separated list of fields to return"
           }
         ],
         "responses": {
@@ -1107,16 +1335,77 @@
         "summary": "List all of the analysis proposals",
         "description": "List all registered analyses.",
         "operationId": "hub_analysis_get_analyses_get",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Pagination as JSON, e.g. {\"limit\": 50, \"offset\": 0}",
+              "title": "Page"
+            },
+            "description": "Pagination as JSON, e.g. {\"limit\": 50, \"offset\": 0}"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Sort field; prefix with - for descending, + for ascending",
+              "title": "Sort"
+            },
+            "description": "Sort field; prefix with - for descending, + for ascending"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma-separated list of fields to return",
+              "title": "Fields"
+            },
+            "description": "Comma-separated list of fields to return"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
+                  "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/Analysis"
                   },
-                  "type": "array",
                   "title": "Response Hub Analysis Get Analyses Get"
                 }
               }
@@ -1124,13 +1413,18 @@
           },
           "404": {
             "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
           }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
+        }
       }
     },
     "/analyses/{analysis_id}": {
@@ -1267,16 +1561,77 @@
         "summary": "List all of the nodes",
         "description": "List all nodes.",
         "operationId": "hub_node_get_nodes_get",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Pagination as JSON, e.g. {\"limit\": 50, \"offset\": 0}",
+              "title": "Page"
+            },
+            "description": "Pagination as JSON, e.g. {\"limit\": 50, \"offset\": 0}"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Sort field; prefix with - for descending, + for ascending",
+              "title": "Sort"
+            },
+            "description": "Sort field; prefix with - for descending, + for ascending"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma-separated list of fields to return",
+              "title": "Fields"
+            },
+            "description": "Comma-separated list of fields to return"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
+                  "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/Node"
                   },
-                  "type": "array",
                   "title": "Response Hub Node Get Nodes Get"
                 }
               }
@@ -1284,13 +1639,18 @@
           },
           "404": {
             "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
           }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
+        }
       }
     },
     "/nodes/{node_id}": {
@@ -1493,6 +1853,67 @@
         "summary": "List a specific analysis bucket",
         "description": "List all analysis buckets.",
         "operationId": "hub_analysis_bucket_get_analysis_buckets_get",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Pagination as JSON, e.g. {\"limit\": 50, \"offset\": 0}",
+              "title": "Page"
+            },
+            "description": "Pagination as JSON, e.g. {\"limit\": 50, \"offset\": 0}"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Sort field; prefix with - for descending, + for ascending",
+              "title": "Sort"
+            },
+            "description": "Sort field; prefix with - for descending, + for ascending"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma-separated list of fields to return",
+              "title": "Fields"
+            },
+            "description": "Comma-separated list of fields to return"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -1504,13 +1925,18 @@
           },
           "404": {
             "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
           }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
+        }
       }
     },
     "/analysis-buckets/{analysis_bucket_id}": {
@@ -1578,6 +2004,67 @@
         "summary": "List partial analysis bucket files.",
         "description": "List partial analysis bucket files.",
         "operationId": "hub_analysis_bucket_file_get_analysis_bucket_files_get",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Pagination as JSON, e.g. {\"limit\": 50, \"offset\": 0}",
+              "title": "Page"
+            },
+            "description": "Pagination as JSON, e.g. {\"limit\": 50, \"offset\": 0}"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Sort field; prefix with - for descending, + for ascending",
+              "title": "Sort"
+            },
+            "description": "Sort field; prefix with - for descending, + for ascending"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma-separated list of fields to return",
+              "title": "Fields"
+            },
+            "description": "Comma-separated list of fields to return"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -1589,13 +2076,18 @@
           },
           "404": {
             "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
           }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
+        }
       }
     },
     "/analysis-bucket-files/{analysis_bucket_file_id}": {
@@ -3446,6 +3938,17 @@
             ],
             "title": "Name"
           },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
           "project_id": {
             "type": "string",
             "format": "uuid",
@@ -3697,6 +4200,7 @@
         "required": [
           "description",
           "name",
+          "display_name",
           "project_id",
           "master_image_id",
           "registry_id",
@@ -3828,17 +4332,6 @@
               }
             ],
             "title": "Registry User"
-          },
-          "registry_password": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Registry Password"
           }
         },
         "type": "object",
@@ -4120,12 +4613,12 @@
           "username": {
             "type": "string",
             "title": "Username",
-            "description": "Keycloak username"
+            "description": "IDP username"
           },
           "password": {
             "type": "string",
             "title": "Password",
-            "description": "Keycloak password"
+            "description": "IDP password"
           }
         },
         "type": "object",
@@ -4690,6 +5183,17 @@
             ],
             "title": "Name"
           },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
           "project_id": {
             "type": "string",
             "format": "uuid",
@@ -4948,6 +5452,7 @@
         "required": [
           "description",
           "name",
+          "display_name",
           "project_id",
           "master_image_id",
           "registry_id",
@@ -6598,6 +7103,17 @@
             "type": "string",
             "title": "Name"
           },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
           "id": {
             "type": "string",
             "format": "uuid",
@@ -6666,6 +7182,7 @@
           "description",
           "master_image_id",
           "name",
+          "display_name",
           "id",
           "analyses",
           "nodes",

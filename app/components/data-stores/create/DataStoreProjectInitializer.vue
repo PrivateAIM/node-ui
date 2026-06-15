@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch, computed } from "vue";
+import { computed, ref, watch } from "vue";
 import { navigateTo, useNuxtApp } from "nuxt/app";
 import InputText from "primevue/inputtext";
 import RadioButton from "primevue/radiobutton";
@@ -8,7 +8,10 @@ import InputNumber from "primevue/inputnumber";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import InputGroup from "primevue/inputgroup";
 import DataStoreHelpBox from "~/components/data-stores/create/DataStoreHelpBox.vue";
-import { type AvailableProject, HelpTextField } from "~/components/data-stores/create/index";
+import {
+  type AvailableProject,
+  HelpTextField,
+} from "~/components/data-stores/create/index";
 import { useToast } from "primevue/usetoast";
 import {
   type BodyKongInitializeKongInitializePost,
@@ -36,7 +39,8 @@ if (projStatus.value === "success") {
   const projectData = projects.value as unknown as Array<ProjectNode>;
   if (projectData.length > 0) {
     availableProjects.value = projectData.map((proj: ProjectNode) => ({
-      name: proj.project?.name,
+      name:
+        proj.project?.display_name ?? proj.project?.name ?? proj.project_id,
       id: proj.project_id,
     }));
   }
