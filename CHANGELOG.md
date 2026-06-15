@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.5](https://github.com/PrivateAIM/node-ui/compare/v0.6.4...v0.6.5) (2026-06-15)
+
+
+### Features
+
+* **hub:** show new display_name parameter ([15a4198](https://github.com/PrivateAIM/node-ui/commit/15a4198f5eabcaa6838924a23c04e15cbfc8edaa))
+
+
+### Bug Fixes
+
+* **config:** make specific public var name for viclogs ([8e068ff](https://github.com/PrivateAIM/node-ui/commit/8e068ffb2867d285ab4e03ac4b2c9d343d1a31ad))
+
 ## [0.6.4](https://github.com/PrivateAIM/node-ui/compare/v0.6.3...v0.6.4) (2026-05-28)
 
 
