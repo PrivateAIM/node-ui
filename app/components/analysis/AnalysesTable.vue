@@ -204,6 +204,10 @@ function parseAnalysis(
 ): ModifiedAnalysisNode {
   const projId = analysisEntry.analysis?.project_id;
   const analysisId = analysisEntry.analysis_id;
+  analysisEntry.analysis_name =
+    analysisEntry.analysis?.display_name ??
+    analysisEntry.analysis?.name ??
+    analysisId;
   if (projId) {
     analysisEntry.project_name = projMap.has(projId) ? projMap.get(projId) : "";
     analysisEntry.datastore = kongRoutes.value.has(projId);
@@ -493,11 +497,7 @@ const onCloseNavToast = () => {
         <DataTable
           v-model:expandedRows="expandedRows"
           v-model:filters="filters"
-          :globalFilterFields="[
-            'analysis.display_name',
-            'project_name',
-            'node.name',
-          ]"
+          :globalFilterFields="['analysis_name', 'project_name', 'node.name']"
           :rows="10"
           :loading="tableLoading"
           :rowsPerPageOptions="[10, 20, 50]"
@@ -514,7 +514,7 @@ const onCloseNavToast = () => {
         >
           <template #empty> No analyses found.</template>
           <Column v-if="expandRowEntries.length" expander style="width: 5rem" />
-          <Column :sortable="true" field="analysis.display_name">
+          <Column :sortable="true" field="analysis_name">
             <template #header>
               <span v-tooltip.top="'Name of the analysis'" class="help-text">
                 <b>Name</b>
@@ -522,11 +522,7 @@ const onCloseNavToast = () => {
             </template>
             <template #body="{ data }">
               <span v-tooltip.right="data.analysis_id" class="help-text">
-                {{
-                  data.analysis.display_name ??
-                  data.analysis.name ??
-                  data.analysis_id
-                }}
+                {{ data.analysis_name }}
               </span>
             </template>
           </Column>

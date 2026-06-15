@@ -21,11 +21,18 @@ const { data: response, status, refresh } = await getProjectNodes();
 
 function parseData() {
   if (status.value === "success") {
-    proposals.value = formatDataRow(
+    const formatted = formatDataRow(
       response.value,
       dataRowUnixCols,
       expandRowEntries,
-    );
+    ) as unknown as
+      | Array<ProjectNode & { project_name?: string | null }>
+      | undefined;
+    formatted?.forEach((row) => {
+      row.project_name =
+        row.project?.display_name ?? row.project?.name ?? row.project?.id;
+    });
+    proposals.value = formatted;
   }
 }
 
@@ -94,12 +101,7 @@ const updateFilters = (filterText: string) => {
         <DataTable
           v-model:expandedRows="expandedRows"
           v-model:filters="filters"
-          :globalFilterFields="[
-            'id',
-            'project.display_name',
-            'project.name',
-            'node.name',
-          ]"
+          :globalFilterFields="['id', 'project_name', 'node.name']"
           :rows="10"
           :rowsPerPageOptions="[10, 20, 50]"
           :value="proposals"
@@ -111,11 +113,7 @@ const updateFilters = (filterText: string) => {
         >
           <template #empty> No projects found.</template>
           <Column v-if="expandRowEntries.length" expander style="width: 5rem" />
-          <Column
-            field="project.display_name"
-            :sortable="true"
-            style="width: 30rem"
-          >
+          <Column field="project_name" :sortable="true" style="width: 30rem">
             <template #header>
               <span v-tooltip.top="'Name of the project'" class="help-text">
                 <b>Project Name</b>
@@ -123,11 +121,7 @@ const updateFilters = (filterText: string) => {
             </template>
             <template #body="{ data }">
               <span v-tooltip.right="data.project.id" class="help-text">
-                {{
-                  data.project.display_name ??
-                  data.project.name ??
-                  data.project.id
-                }}
+                {{ data.project_name }}
               </span>
             </template>
           </Column>

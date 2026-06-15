@@ -42,6 +42,7 @@ export interface ModifiedAnalysisNode extends Omit<
   "execution_status"
 > {
   project_name: string | undefined | null;
+  analysis_name: string | undefined | null;
   expand: {
     [key: string]: string;
   };
