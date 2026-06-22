@@ -9,7 +9,6 @@ const { status: authStatus, data: authData } = useAuthState();
 
 const menu = ref();
 const showCleanupDialog = ref(false);
-const showPreferencesDialog = ref(false);
 
 const config = useRuntimeConfig();
 const baseUrl = new URL(config.public.baseUrl as string).origin;
@@ -55,15 +54,6 @@ const menuItems = computed(() => [
         icon: "pi pi-eject",
         command: () => {
           showCleanupDialog.value = true;
-        },
-        visible: isAuthenticated.value,
-        disabled: !isAuthenticated.value,
-      },
-      {
-        label: "Preferences",
-        icon: "pi pi-cog",
-        command: () => {
-          showPreferencesDialog.value = true;
         },
         visible: isAuthenticated.value,
         disabled: !isAuthenticated.value,
@@ -124,7 +114,6 @@ const menuItems = computed(() => [
     </Menu>
   </div>
   <CleanupDialog v-model:cleanUpVisible="showCleanupDialog" />
-  <PreferencesDialog v-model:preferencesVisible="showPreferencesDialog" />
 </template>
 
 <style lang="scss" scoped>

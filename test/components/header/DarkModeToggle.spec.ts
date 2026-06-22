@@ -9,7 +9,7 @@ describe("DarkModeToggle.vue", () => {
     const htmlElement = document.documentElement;
     expect(htmlElement.getAttribute("class")).toBe("flame-light");
 
-    const toggle = wrapper.find(".dark-mode-toggle-switch");
+    const toggle = wrapper.find(".theme-toggle-btn button");
 
     await toggle.trigger("click");
     expect(htmlElement.getAttribute("class")).toBe("flame-dark");

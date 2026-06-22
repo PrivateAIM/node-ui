@@ -1,10 +1,14 @@
 <script lang="ts" setup>
 import Menubar from "primevue/menubar";
+import Button from "primevue/button";
 import AvatarButton from "~/components/header/AvatarButton.vue";
 import DarkModeToggle from "~/components/header/DarkModeToggle.vue";
 import { RouterLink } from "vue-router";
 
 const { status } = useAuthState();
+
+const isAuthenticated = computed(() => status.value === "authenticated");
+const showPreferencesDialog = ref(false);
 
 const allLinks = [
   {
@@ -83,12 +87,23 @@ const links = computed(() =>
       <template #end>
         <div class="header-end">
           <DarkModeToggle />
+          <div v-if="isAuthenticated" class="preferences-btn">
+            <Button
+              aria-label="Preferences"
+              icon="pi pi-cog"
+              severity="contrast"
+              size="small"
+              variant="outlined"
+              @click="showPreferencesDialog = true"
+            />
+          </div>
           <div class="flex align-items-center gap-2 avatar-button">
             <AvatarButton />
           </div>
         </div>
       </template>
     </Menubar>
+    <PreferencesDialog v-model:preferencesVisible="showPreferencesDialog" />
   </div>
 </template>
 
@@ -137,6 +152,10 @@ const links = computed(() =>
 .header-end {
   display: flex;
   align-items: center;
+}
+
+.preferences-btn {
+  margin-left: 0.5rem;
 }
 
 .avatar-button {
