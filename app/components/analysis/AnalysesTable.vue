@@ -625,14 +625,7 @@ const onCloseNavToast = () => {
                   <span class="hub-status-label">Distribution Status</span>
                   <Tag
                       v-if="data.analysis.distribution_status"
-                      v-tooltip.top="
-                      data.analysis.distribution_status === 'executed'
-                        ? 'Image available'
-                        : 'Image unavailable'
-                    "
-                      :severity="
-                      getBuildStatusSeverity(data.analysis.distribution_status)
-                    "
+                      :severity="getBuildStatusSeverity(data.analysis.distribution_status)"
                       :value="data.analysis.distribution_status"
                   />
                   <span v-else class="hub-status-empty">—</span>
