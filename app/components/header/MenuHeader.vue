@@ -6,7 +6,7 @@ import { RouterLink } from "vue-router";
 
 const { status } = useAuthState();
 
-const items = ref([
+const allLinks = [
   {
     label: "Home",
     icon: "pi pi-home",
@@ -43,12 +43,18 @@ const items = ref([
       },
     ],
   },
-]);
+];
+
+const links = computed(() =>
+  status.value === "unauthenticated"
+    ? allLinks.filter((item) => item.label === "Home")
+    : allLinks,
+);
 </script>
 
 <template>
   <div class="menuBar">
-    <Menubar :model="items" class="menu-bar-header">
+    <Menubar :model="links" class="menu-bar-header">
       <template #item="{ item, props, hasSubmenu }">
         <div v-ripple class="p-ripple border-round menu-bar-item">
           <router-link
@@ -57,27 +63,13 @@ const items = ref([
             :to="item.route"
             custom
           >
-            <a
-              :class="
-                status === 'unauthenticated' && item.label !== 'Home'
-                  ? 'p-disabled'
-                  : 'enabled'
-              "
-              :href="href"
-              v-bind="props.action"
-              @click="navigate"
-            >
+            <a :href="href" v-bind="props.action" @click="navigate">
               <span :class="item.icon" />
               <span class="ml-2 menu-item-label">{{ item.label }}</span>
             </a>
           </router-link>
           <a
             v-else
-            :class="
-              status === 'unauthenticated' && item.label !== 'Home'
-                ? 'p-disabled'
-                : 'enabled'
-            "
             :href="item.url"
             :target="item.target"
             v-bind="props.action"
