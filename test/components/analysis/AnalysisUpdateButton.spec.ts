@@ -88,4 +88,27 @@ describe("AnalysisUpdateButton.vue", () => {
       fakeBrokenAnalysisId,
     );
   });
+
+  it("Disabled prop disables the button", () => {
+    const wrapper = mount(AnalysisUpdateButton, {
+      props: {
+        analysisId: fakeAnalysisId,
+        disabled: true,
+      },
+    });
+
+    const btn = wrapper.find(".update-analysis-btn");
+    expect(btn.attributes("data-p-disabled")).toBe("true");
+  });
+
+  it("Defaults to enabled when no disabled prop is given", () => {
+    const wrapper = mount(AnalysisUpdateButton, {
+      props: {
+        analysisId: fakeAnalysisId,
+      },
+    });
+
+    const btn = wrapper.find(".update-analysis-btn");
+    expect(btn.attributes("data-p-disabled")).toBe("false");
+  });
 });

@@ -91,13 +91,15 @@ describe("AnalysesTable.vue", () => {
     expect(headerRow.length).toBe(1);
     const headerCols = headerRow[0]!.findAll("th");
     expect(headerCols[0]!.text()).toBe("Name"); // First col
-    expect(headerCols[10]!.text()).toBe("Analysis Controls"); // Last col
+    expect(headerCols[1]!.text()).toBe("Hub Statuses"); // Combined statuses col
+    expect(headerCols[8]!.text()).toBe("Analysis Controls"); // Last col
 
     // Verify the second row's content
     const secondRowCells = rows[1]!.findAll("td");
     expect(secondRowCells[0]!.text()).toBe("T006"); // Name
-    expect(secondRowCells[1]!.text()).toBe("approved"); // Approval status
-    expect(secondRowCells[8]!.text()).toBe("18.03.2025"); // Last Updated
+    // Hub Statuses cell combines approval/build/distribution onto three lines
+    expect(secondRowCells[1]!.text()).toContain("approved"); // Approval status
+    expect(secondRowCells[6]!.text()).toBe("18.03.2025"); // Last Updated
   });
 
   test("Cached results used", async () => {
@@ -257,10 +259,10 @@ describe("AnalysesTable.vue - PO calls and Progress", () => {
   });
 
   // Column index of the Progress cell in each DataTable row
-  // (0=Name, 1=Approval, 2=Build, 3=Distribution, 4=RunStatus, 5=Project, 6=DataStore, 7=Created, 8=LastUpdated, 9=Progress, 10=Controls)
-  const PROGRESS_COL = 9;
+  // (0=Name, 1=HubStatuses, 2=RunStatus, 3=Project, 4=DataStore, 5=Created, 6=LastUpdated, 7=Progress, 8=Controls)
+  const PROGRESS_COL = 7;
   // Column index of the Run Status cell
-  const RUN_STATUS_COL = 4;
+  const RUN_STATUS_COL = 2;
 
   test("Progress bar is indeterminate when executing and progress is 0", async () => {
     // fakeBaseAnalysisNode.analysis_id matches fakeAnalysisId, so PodOrc

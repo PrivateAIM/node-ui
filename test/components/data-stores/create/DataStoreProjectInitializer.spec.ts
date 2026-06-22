@@ -20,6 +20,16 @@ vi.mock("~/composables/useAPIFetch", () => ({
   getProjectNodes: vi.fn(),
 }));
 
+// Controllable route so we can exercise the ?projectId= preselection. The
+// global test setup only mocks RouterLink, so useRoute must be provided here.
+const { routeMock } = vi.hoisted(() => ({
+  routeMock: { query: {} as Record<string, string> },
+}));
+vi.mock("vue-router", () => ({
+  RouterLink: { template: "<a><slot /></a>" },
+  useRoute: () => routeMock,
+}));
+
 describe("DataStoreProjectInitializer.vue", () => {
   let spy;
   let mockToast;
@@ -69,6 +79,7 @@ describe("DataStoreProjectInitializer.vue", () => {
   afterEach(() => {
     spy.mockReset();
     wrapper.unmount();
+    routeMock.query = {};
   });
 
   function innerVm() {
@@ -265,5 +276,38 @@ describe("DataStoreProjectInitializer.vue", () => {
     expect(
       wrapper.findComponent(".data-store-path-input-s3-private").exists(),
     ).toBeFalsy();
+  });
+
+  it("Preselects the project from the projectId query parameter", async () => {
+    const target = fakeParsedProjects[1]!;
+    routeMock.query = { projectId: target.id };
+
+    const localWrapper = mount(DataStoreProjectInitializerTestComponent, {
+      attachTo: document.body,
+      global: { stubs: { teleport: true } },
+    });
+    await flushPromises();
+
+    const vm = localWrapper.findComponent(DataStoreProjectInitializer).vm;
+    expect(vm.selectedProject?.id).toBe(target.id);
+    // The generated data store name is derived from the selected project id
+    expect(vm.dataStoreName).toBe(target.id);
+
+    localWrapper.unmount();
+  });
+
+  it("Leaves the project unselected for an unknown projectId", async () => {
+    routeMock.query = { projectId: "does-not-exist" };
+
+    const localWrapper = mount(DataStoreProjectInitializerTestComponent, {
+      attachTo: document.body,
+      global: { stubs: { teleport: true } },
+    });
+    await flushPromises();
+
+    const vm = localWrapper.findComponent(DataStoreProjectInitializer).vm;
+    expect(vm.selectedProject).toBeUndefined();
+
+    localWrapper.unmount();
   });
 });
