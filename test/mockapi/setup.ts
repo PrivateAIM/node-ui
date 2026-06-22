@@ -16,6 +16,8 @@ import Tag from "primevue/tag";
 import Select from "primevue/select";
 import Card from "primevue/card";
 import ConfirmPopup from "primevue/confirmpopup";
+import ConfirmDialog from "primevue/confirmdialog";
+import ToggleSwitch from "primevue/toggleswitch";
 import MultiSelect from "primevue/multiselect";
 import InputIcon from "primevue/inputicon";
 import InputText from "primevue/inputtext";
@@ -44,6 +46,8 @@ config.global.components = {
   Select,
   Card,
   ConfirmPopup,
+  ConfirmDialog,
+  ToggleSwitch,
   MultiSelect,
   InputIcon,
   InputText,

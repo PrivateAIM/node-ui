@@ -53,14 +53,23 @@ describe("ProjectProposalTable.vue", () => {
     const headerRow = wrapper.findAll("thead tr");
     expect(headerRow.length).toBe(1);
     const headerCols = headerRow[0].findAll("th");
-    expect(headerCols[0].text()).toBe("Project Name"); // First col
-    expect(headerCols[2].text()).toBe("Approval Status"); // Last col
+    expect(headerCols.length).toBe(6);
+    expect(headerCols[0].text()).toBe("Project Name");
+    expect(headerCols[1].text()).toBe("Number of Analyses");
+    expect(headerCols[2].text()).toBe("Number of Nodes");
+    expect(headerCols[3].text()).toBe("Created On");
+    expect(headerCols[4].text()).toBe("Last Updated");
+    expect(headerCols[5].text()).toBe("Set Approval");
 
-    // Verify the second row's content
-    const secondRowCells = rows[0].findAll("td");
-    expect(secondRowCells[0].text()).toBe("fake-project"); // Name
-    expect(secondRowCells[1].text()).toBe("fake-node"); // Approval status
-    expect(secondRowCells[2].text()).toBe("approved"); // Last Updated
+    // Verify the row's content
+    const rowCells = rows[0].findAll("td");
+    expect(rowCells[0].text()).toBe("fake-project"); // Project name
+    expect(rowCells[1].text()).toBe("17"); // Number of analyses
+    expect(rowCells[2].text()).toBe("0"); // Number of nodes
+
+    // The "Set Approval" column renders the toggle with both status tags
+    expect(rowCells[5].text()).toContain("approved");
+    expect(rowCells[5].text()).toContain("rejected");
   });
 
   test("No projects returned", async () => {
