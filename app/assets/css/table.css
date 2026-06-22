@@ -27,3 +27,22 @@
     border-radius: 0.75rem;
     overflow: hidden;
 }
+
+.structured-table {
+    th:not(:first-child) .p-datatable-column-header-content {
+        justify-content: center;
+
+        .p-datatable-popover-filter {
+            margin-inline-start: 0.2rem;
+        }
+
+        .p-button-icon-only {
+            width: 1.5rem;
+        }
+    }
+
+    td:not(:first-child) {
+        text-align: center;
+        justify-items: center;
+    }
+}

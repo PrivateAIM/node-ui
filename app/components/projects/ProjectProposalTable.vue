@@ -105,7 +105,7 @@ const updateFilters = (filterText: string) => {
             :rows="10"
             :rowsPerPageOptions="[10, 20, 50]"
             :value="proposals"
-            class="rounded-table project-table"
+            class="rounded-table project-table structured-table"
             dataKey="id"
             filterDisplay="menu"
             paginator
@@ -231,19 +231,4 @@ const updateFilters = (filterText: string) => {
 </template>
 
 <style lang="scss">
-.project-table {
-  // Center every column except the first
-  th:not(:first-child) .p-datatable-column-header-content {
-    justify-content: center;
-
-    .p-datatable-popover-filter {
-      margin-inline-start: 0.25rem;
-    }
-  }
-
-  td:not(:first-child) {
-    text-align: center;
-    justify-items: center;
-  }
-}
 </style>

@@ -561,7 +561,7 @@ const onCloseNavToast = () => {
             :rowsPerPageOptions="[10, 20, 50]"
             :sortOrder="-1"
             :value="analyses"
-            class="rounded-table analysis-table"
+            class="rounded-table analysis-table structured-table"
             dataKey="id"
             filterDisplay="menu"
             paginator
@@ -871,6 +871,12 @@ const onCloseNavToast = () => {
   margin-top: 0.625rem;
 }
 
+/* structured-table centers non-first cells via justify-items, which shrinks
+   the block-level progress bar to its content width. Force it to fill the cell. */
+.analysis-table .p-progressbar {
+  width: 100%;
+}
+
 .datastore-badge {
   display: flex;
   justify-content: center;
@@ -943,24 +949,5 @@ const onCloseNavToast = () => {
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
-}
-
-.analysis-table {
-  th:not(:first-child) .p-datatable-column-header-content {
-    justify-content: center;
-
-    .p-datatable-popover-filter {
-      margin-inline-start: 0.2rem;
-    }
-
-    .p-button-icon-only {
-      width: 1.5rem;
-    }
-  }
-
-  td:not(:first-child) {
-    text-align: center;
-    justify-items: center;
-  }
 }
 </style>
