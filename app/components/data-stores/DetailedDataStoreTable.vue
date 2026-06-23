@@ -1,15 +1,15 @@
 <script lang="ts" setup>
-import {deleteDataStore} from "~/composables/useAPIFetch";
-import {useConfirm} from "primevue/useconfirm";
-import {useToast} from "primevue/usetoast";
-import type {Route} from "~/services/Api";
-import {FilterMatchMode} from "@primevue/core/api";
+import { deleteDataStore } from "~/composables/useAPIFetch";
+import { useConfirm } from "primevue/useconfirm";
+import { useToast } from "primevue/usetoast";
+import type { Route } from "~/services/Api";
+import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
-import {extractUuid} from "~/utils/extract-uuid-from-kong-username";
-import {parseUnixTimestamp} from "~/utils/format-data-row";
-import {getDataStoreTypeSeverity} from "~/utils/status-tag-severity";
-import type {ModifiedDetailedService} from "~/services/modifiedApiInterfaces";
-import {useNuxtApp} from "nuxt/app";
+import { extractUuid } from "~/utils/extract-uuid-from-kong-username";
+import { parseUnixTimestamp } from "~/utils/format-data-row";
+import { getDataStoreTypeSeverity } from "~/utils/status-tag-severity";
+import type { ModifiedDetailedService } from "~/services/modifiedApiInterfaces";
+import { useNuxtApp } from "nuxt/app";
 
 interface DetailedDataStoreTableRow {
   name?: string | undefined;
@@ -31,8 +31,8 @@ const props = defineProps({
 
 const confirm = useConfirm();
 const toast = useToast();
-const deleteLoading = ref(false);
-const checkingConnection = ref(false);
+const deleteLoadingFor = ref<string | null>(null);
+const checkingConnectionFor = ref<string | null>(null);
 
 const emit = defineEmits(["deleteDataStore"]);
 
@@ -44,8 +44,8 @@ const dataStores = computed(() => {
   if (props.stores && props.stores.length > 0) {
     props.stores.forEach((store: ModifiedDetailedService) => {
       const formattedRow: DetailedDataStoreTableRow = parseUnixTimestamp(
-          store,
-          ["created_at", "updated_at"],
+        store,
+        ["created_at", "updated_at"],
       );
       const routes = store.routes;
       if (routes && routes.length > 0) {
@@ -57,8 +57,8 @@ const dataStores = computed(() => {
             name: store.name,
             type: dataStoreType,
             project: props.projectNameMap?.has(projectUuid)
-                ? props.projectNameMap.get(projectUuid)!
-                : "N/A",
+              ? props.projectNameMap.get(projectUuid)!
+              : "N/A",
             path: store.path,
             host: store.host,
             port: store.port,
@@ -76,8 +76,8 @@ const dataStores = computed(() => {
 });
 
 async function onConfirmDeleteDataStore(dsName: string) {
-  deleteLoading.value = true;
-  const {status} = await deleteDataStore(dsName);
+  deleteLoadingFor.value = dsName;
+  const { status } = await deleteDataStore(dsName);
   if (status.value === "success") {
     toast.add({
       severity: "info",
@@ -94,7 +94,7 @@ async function onConfirmDeleteDataStore(dsName: string) {
       life: 3000,
     });
   }
-  deleteLoading.value = false;
+  deleteLoadingFor.value = null;
 }
 
 const confirmDelete = (event, dsName: string) => {
@@ -102,7 +102,7 @@ const confirmDelete = (event, dsName: string) => {
     target: event.currentTarget,
     group: "dataStoreDelete",
     message:
-        "Are you sure you want to delete this data store? This will disconnect all projects and analyses from accessing this data.",
+      "Are you sure you want to delete this data store? This will disconnect all projects and analyses from accessing this data.",
     icon: "pi pi-exclamation-circle",
     acceptIcon: "pi pi-check",
     position: "top",
@@ -112,27 +112,26 @@ const confirmDelete = (event, dsName: string) => {
     accept: () => {
       onConfirmDeleteDataStore(dsName);
     },
-    reject: () => {
-    },
+    reject: () => {},
   });
 };
 
 async function onCheckConnection(dsName: string) {
-  checkingConnection.value = true;
+  checkingConnectionFor.value = dsName;
   const [dsType, projectId] = extractUuid(dsName);
 
   const connStatus = await useNuxtApp()
-      .$hubApi(`/kong/project/${projectId}/${dsType}/health`, {
-        method: "GET",
-      })
-      .catch(() => {
-        toast.add({
-          severity: "error",
-          summary: "Connection test failed",
-          detail: "Unable to contact the downstream data store",
-          life: 5000,
-        });
+    .$hubApi(`/kong/project/${projectId}/${dsType}/health`, {
+      method: "GET",
+    })
+    .catch(() => {
+      toast.add({
+        severity: "error",
+        summary: "Connection test failed",
+        detail: "Unable to contact the downstream data store",
+        life: 5000,
       });
+    });
   if (connStatus) {
     toast.add({
       severity: "success",
@@ -141,15 +140,15 @@ async function onCheckConnection(dsName: string) {
       life: 3000,
     });
   }
-  checkingConnection.value = false;
+  checkingConnectionFor.value = null;
 }
 
 // Table filters
 const defaultFilters = {
-  global: {value: undefined, matchMode: FilterMatchMode.CONTAINS},
-  type: {value: undefined, matchMode: FilterMatchMode.EQUALS},
-  "created_at.short": {value: undefined, matchMode: FilterMatchMode.DATE_IS},
-  "updated_at.short": {value: undefined, matchMode: FilterMatchMode.DATE_IS},
+  global: { value: undefined, matchMode: FilterMatchMode.CONTAINS },
+  type: { value: undefined, matchMode: FilterMatchMode.EQUALS },
+  "created_at.short": { value: undefined, matchMode: FilterMatchMode.DATE_IS },
+  "updated_at.short": { value: undefined, matchMode: FilterMatchMode.DATE_IS },
 };
 
 const filters = ref(defaultFilters);
@@ -173,15 +172,15 @@ const updateFilters = (filterText: string) => {
 <template>
   <div class="table-header-row">
     <SearchBar
-        :searchTerm="defaultFilters.global.value"
-        @clearFilters="resetFilters"
-        @updateSearch="updateFilters"
+      :searchTerm="defaultFilters.global.value"
+      @clearFilters="resetFilters"
+      @updateSearch="updateFilters"
     />
   </div>
   <div class="detailed-data-store-table">
     <DataTable
-        v-model:filters="filters"
-        :globalFilterFields="[
+      v-model:filters="filters"
+      :globalFilterFields="[
         'name',
         'path',
         'host',
@@ -189,52 +188,52 @@ const updateFilters = (filterText: string) => {
         'type',
         'protocol',
       ]"
-        :loading="props.loading"
-        :rows="10"
-        :rowsPerPageOptions="[10, 20, 50]"
-        :value="dataStores"
-        class="rounded-table structured-table"
-        filterDisplay="menu"
-        paginator
-        tableStyle="min-width: 50rem"
+      :loading="props.loading"
+      :rows="10"
+      :rowsPerPageOptions="[10, 20, 50]"
+      :value="dataStores"
+      class="rounded-table structured-table"
+      filterDisplay="menu"
+      paginator
+      tableStyle="min-width: 50rem"
     >
       <template #empty> No data stores found.</template>
       <Column
-          :sortable="true"
-          field="name"
-          header="Name"
-          style="width: 30rem"
+        :sortable="true"
+        field="name"
+        header="Name"
+        style="width: 30rem"
       ></Column>
       <Column :sortable="true" field="project" header="Project"></Column>
       <Column
-          :showAddButton="false"
-          :showApplyButton="false"
-          :showClearButton="false"
-          :showFilterMatchModes="false"
-          :showFilterOperator="false"
-          field="type"
-          header="Type"
+        :showAddButton="false"
+        :showApplyButton="false"
+        :showClearButton="false"
+        :showFilterMatchModes="false"
+        :showFilterOperator="false"
+        field="type"
+        header="Type"
       >
         <template #body="{ data }">
           <Tag
-              v-if="data.type"
-              :severity="getDataStoreTypeSeverity(data.type)"
-              :value="data.type"
+            v-if="data.type"
+            :severity="getDataStoreTypeSeverity(data.type)"
+            :value="data.type"
           />
         </template>
         <template #filter="{ filterModel, filterCallback }">
           <Select
-              v-model="filterModel.value"
-              :options="dataStoreTypes"
-              :showClear="true"
-              class="p-column-filter"
-              placeholder="Select One"
-              @change="filterCallback()"
+            v-model="filterModel.value"
+            :options="dataStoreTypes"
+            :showClear="true"
+            class="p-column-filter"
+            placeholder="Select One"
+            @change="filterCallback()"
           >
             <template #option="slotProps">
               <Tag
-                  :severity="getDataStoreTypeSeverity(slotProps.option)"
-                  :value="slotProps.option"
+                :severity="getDataStoreTypeSeverity(slotProps.option)"
+                :value="slotProps.option"
               />
             </template>
           </Select>
@@ -245,10 +244,10 @@ const updateFilters = (filterText: string) => {
       <Column field="port" header="Port"></Column>
       <Column :sortable="true" field="protocol" header="Protocol"></Column>
       <Column
-          :sortable="true"
-          dataType="date"
-          field="created_at.timestamp"
-          header="Created On"
+        :sortable="true"
+        dataType="date"
+        field="created_at.timestamp"
+        header="Created On"
       >
         <template #body="{ data }">
           <p v-tooltip.top="data.created_at.long">
@@ -257,10 +256,10 @@ const updateFilters = (filterText: string) => {
         </template>
       </Column>
       <Column
-          :sortable="true"
-          dataType="date"
-          field="updated_at.timestamp"
-          header="Last Updated"
+        :sortable="true"
+        dataType="date"
+        field="updated_at.timestamp"
+        header="Last Updated"
       >
         <template #body="{ data }">
           <p v-tooltip.top="data.updated_at.long">
@@ -271,8 +270,8 @@ const updateFilters = (filterText: string) => {
       <Column :exportable="false" field="name">
         <template #header>
           <span
-              v-tooltip.top="'Test the connection to the data store'"
-              class="help-text"
+            v-tooltip.top="'Test the connection to the data store'"
+            class="help-text"
           >
             <b>Test</b>
           </span>
@@ -280,11 +279,11 @@ const updateFilters = (filterText: string) => {
         <template #body="slotProps">
           <div>
             <Button
-                :loading="checkingConnection"
-                aria-label="test-connection"
-                icon="pi pi-wifi"
-                severity="contrast"
-                @click="onCheckConnection(slotProps.data.name)"
+              :loading="checkingConnectionFor === slotProps.data.name"
+              aria-label="test-connection"
+              icon="pi pi-wifi"
+              severity="contrast"
+              @click="onCheckConnection(slotProps.data.name)"
             />
           </div>
         </template>
@@ -300,8 +299,8 @@ const updateFilters = (filterText: string) => {
             <template #message="slotProps">
               <div class="ds-confirm-message">
                 <i
-                    :class="slotProps.message.icon"
-                    class="text-6xl text-primary-500"
+                  :class="slotProps.message.icon"
+                  class="text-6xl text-primary-500"
                 ></i>
                 <p class="ds-confirm-text">
                   {{ slotProps.message.message }}
@@ -311,11 +310,11 @@ const updateFilters = (filterText: string) => {
           </ConfirmPopup>
           <div>
             <Button
-                :loading="deleteLoading"
-                aria-label="Delete"
-                icon="pi pi-trash"
-                severity="danger"
-                @click="confirmDelete($event, slotProps.data.name)"
+              :loading="deleteLoadingFor === slotProps.data.name"
+              aria-label="Delete"
+              icon="pi pi-trash"
+              severity="danger"
+              @click="confirmDelete($event, slotProps.data.name)"
             />
           </div>
         </template>

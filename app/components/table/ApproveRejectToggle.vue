@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import {useNuxtApp} from "nuxt/app";
-import {useToast} from "primevue/usetoast";
-import type {AnalysisNode, ProjectNode} from "~/services/Api";
-import {ApprovalStatus} from "~/types/node";
-import {getApprovalStatusSeverity} from "~/utils/status-tag-severity";
+import { useNuxtApp } from "nuxt/app";
+import { useToast } from "primevue/usetoast";
+import type { AnalysisNode, ProjectNode } from "~/services/Api";
+import { ApprovalStatus } from "~/types/node";
+import { getApprovalStatusSeverity } from "~/utils/status-tag-severity";
 import Tag from "primevue/tag";
-import {useConfirm} from "primevue/useconfirm";
+import { useConfirm } from "primevue/useconfirm";
 
 const props = defineProps<{
   objectId?: string;
@@ -20,6 +20,11 @@ const confirm = useConfirm();
 const loading = ref(false);
 
 const toggleApproval = () => {
+  if (loading.value) {
+    // Revert the optimistic v-model flip and ignore while a request is in flight
+    checked.value = !checked.value;
+    return;
+  }
   if (checked.value) {
     confirmRejection();
   } else {
@@ -32,15 +37,15 @@ const emit = defineEmits(["updatedRow"]);
 const confirmApproval = () => {
   confirm.require({
     message: `Are you sure you want to approve this ${props.objectClass}?`,
-    header: 'Approval Confirmation',
-    icon: 'pi pi-exclamation-triangle',
+    header: "Approval Confirmation",
+    icon: "pi pi-exclamation-triangle",
     rejectProps: {
-      label: 'Cancel',
-      severity: 'secondary',
-      outlined: true
+      label: "Cancel",
+      severity: "secondary",
+      outlined: true,
     },
     acceptProps: {
-      label: 'Submit'
+      label: "Submit",
     },
     accept: () => {
       onSubmitApproval(true);
@@ -48,22 +53,22 @@ const confirmApproval = () => {
     reject: () => {
       // Reset the toggle
       checked.value = !checked.value;
-    }
+    },
   });
 };
 
 const confirmRejection = () => {
   confirm.require({
     message: `Are you sure you want to reject this ${props.objectClass}?`,
-    header: 'Rejection Confirmation',
-    icon: 'pi pi-exclamation-triangle',
+    header: "Rejection Confirmation",
+    icon: "pi pi-exclamation-triangle",
     rejectProps: {
-      label: 'Cancel',
-      severity: 'secondary',
-      outlined: true
+      label: "Cancel",
+      severity: "secondary",
+      outlined: true,
     },
     acceptProps: {
-      label: 'Submit'
+      label: "Submit",
     },
     accept: () => {
       onSubmitApproval(false);
@@ -71,7 +76,7 @@ const confirmRejection = () => {
     reject: () => {
       // Reset the toggle
       checked.value = !checked.value;
-    }
+    },
   });
 };
 
@@ -94,14 +99,20 @@ async function onSubmitApproval(isApproved: boolean) {
       detail: `Unable to submit request due to invalid props: ${props}`,
       life: 6000,
     });
+    checked.value = !checked.value;
+    loading.value = false;
+    return;
   }
 
   approvalResp = (await useNuxtApp()
-      .$hubApi(endpoint, {
-        method: "POST",
-        body: formData,
-      })
-      .catch((e) => console.error(e))) as approvalResp;
+    .$hubApi(endpoint, {
+      method: "POST",
+      body: formData,
+    })
+    .catch((e) => {
+      console.error(e);
+      return undefined;
+    })) as AnalysisNode | ProjectNode | undefined;
 
   if (approvalResp && "approval_status" in approvalResp) {
     showSuccessfulSubmission(isApproved);
@@ -109,7 +120,7 @@ async function onSubmitApproval(isApproved: boolean) {
     emit("updatedRow", approvalResp);
   } else {
     // Reset toggle and show failed toast
-    checked.value = !checked.value
+    checked.value = !checked.value;
     showFailedSubmission();
   }
   loading.value = false;
@@ -137,22 +148,28 @@ const showFailedSubmission = () => {
 
 <template>
   <div class="approval-toggle">
-    <div class="approval-tag approval-tag-rejected" :class="{ dimmed: checked }">
+    <div
+      class="approval-tag approval-tag-rejected"
+      :class="{ dimmed: checked }"
+    >
       <Tag
-          :severity="getApprovalStatusSeverity(ApprovalStatus.Rejected)"
-          :value="ApprovalStatus.Rejected"
+        :severity="getApprovalStatusSeverity(ApprovalStatus.Rejected)"
+        :value="ApprovalStatus.Rejected"
       />
     </div>
     <ToggleSwitch
-        v-model="checked"
-        class="approval-toggle-switch"
-        label="Approval Toggle"
-        @click="toggleApproval()"
+      v-model="checked"
+      class="approval-toggle-switch"
+      label="Approval Toggle"
+      @click="toggleApproval()"
     />
-    <div class="approval-tag approval-tag-approved" :class="{ dimmed: !checked }">
+    <div
+      class="approval-tag approval-tag-approved"
+      :class="{ dimmed: !checked }"
+    >
       <Tag
-          :severity="getApprovalStatusSeverity(ApprovalStatus.Approved)"
-          :value="ApprovalStatus.Approved"
+        :severity="getApprovalStatusSeverity(ApprovalStatus.Approved)"
+        :value="ApprovalStatus.Approved"
       />
     </div>
   </div>

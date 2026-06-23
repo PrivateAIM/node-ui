@@ -1,12 +1,15 @@
 <script lang="ts" setup>
-import {useNuxtApp, useState} from "nuxt/app";
+import { useNuxtApp, useState } from "nuxt/app";
 import Badge from "primevue/badge";
-import {useToast} from "primevue/usetoast";
+import { useToast } from "primevue/usetoast";
 import ProgressBar from "primevue/progressbar";
-import {getAnalysisNodes} from "~/composables/useAPIFetch";
-import {formatDataRow} from "~/utils/format-data-row";
-import {showCacheWarningToast, showConnectionErrorToast,} from "~/composables/connectionErrorToast";
-import {FilterMatchMode, FilterService} from "@primevue/core/api";
+import { getAnalysisNodes } from "~/composables/useAPIFetch";
+import { formatDataRow } from "~/utils/format-data-row";
+import {
+  showCacheWarningToast,
+  showConnectionErrorToast,
+} from "~/composables/connectionErrorToast";
+import { FilterMatchMode, FilterService } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
 import AnalysisControlButtons from "./AnalysisControlButtons.vue";
 import {
@@ -23,26 +26,29 @@ import {
   type Project,
   type Route,
 } from "~/services/Api";
-import {ApprovalStatus} from "~/types/node";
+import { ApprovalStatus } from "~/types/node";
 import ContainerCounter from "~/components/analysis/ContainerCounter.vue";
-import {useDatastoreRequirement} from "~/composables/useDatastoreRequirement";
-import type {HubStatuses, ModifiedAnalysisNode,} from "~/services/modifiedApiInterfaces";
-import {ProcessStatus} from "~/types/analysis";
+import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
+import type {
+  HubStatuses,
+  ModifiedAnalysisNode,
+} from "~/services/modifiedApiInterfaces";
+import { ProcessStatus } from "~/types/analysis";
 
 const toast = useToast();
 const tableLoading = ref(true);
 
 // Data Store Requirement Check
-const {nodeType, requireDataStore: datastoreRequired} =
-    useDatastoreRequirement();
+const { nodeType, requireDataStore: datastoreRequired } =
+  useDatastoreRequirement();
 
 const datastoreBadgeSeverity = computed(() =>
-    datastoreRequired.value ? "danger" : "secondary",
+  datastoreRequired.value ? "danger" : "secondary",
 );
 const datastoreBadgeTooltip = computed(() =>
-    datastoreRequired.value
-        ? "Data store missing, click here to create a data store for this project"
-        : "Data store missing, but not required",
+  datastoreRequired.value
+    ? "Data store missing, click here to create a data store for this project"
+    : "Data store missing, but not required",
 );
 
 const analysesMap = ref<Map<string, ModifiedAnalysisNode>>(new Map());
@@ -57,12 +63,12 @@ const filters = ref();
 
 // Cache
 const analysisCache = useState<AnalysisNode[] | undefined>(
-    "analysisCache",
-    () => undefined,
+  "analysisCache",
+  () => undefined,
 );
 const projectCache = useState<Project[] | undefined>(
-    "projectCache",
-    () => undefined,
+  "projectCache",
+  () => undefined,
 );
 const podOrcUnreacheable = ref(false);
 
@@ -80,12 +86,15 @@ const podStatuses = Object.values(PodStatus);
 
 // Combined "Hub Statuses" column filtering
 const HUB_STATUS_FILTER_MATCH_MODE = "hubStatusMatch";
-type HubStatusGroup = "approval_status" | "build_status" | "distribution_status";
+type HubStatusGroup =
+  | "approval_status"
+  | "build_status"
+  | "distribution_status";
 
 function getHubStatusSeverity(group: HubStatusGroup, status: string) {
   return group === "approval_status"
-      ? getApprovalStatusSeverity(status as ApprovalStatus)
-      : getBuildStatusSeverity(status as ProcessStatus);
+    ? getApprovalStatusSeverity(status as ApprovalStatus)
+    : getBuildStatusSeverity(status as ProcessStatus);
 }
 
 const hubStatusFilterOptions = [
@@ -120,37 +129,37 @@ const hubStatusFilterOptions = [
 
 // Match a row when ANY of the selected statuses matches its respective column
 FilterService.register(
-    HUB_STATUS_FILTER_MATCH_MODE,
-    (value: HubStatuses | undefined, filter: string[] | undefined | null) => {
-      if (!filter || filter.length === 0) return true;
-      if (!value) return false;
-      return filter.some((selected) => {
-        const [group, status] = selected.split("::");
-        return value[group as HubStatusGroup] === status;
-      });
-    },
+  HUB_STATUS_FILTER_MATCH_MODE,
+  (value: HubStatuses | undefined, filter: string[] | undefined | null) => {
+    if (!filter || filter.length === 0) return true;
+    if (!value) return false;
+    return filter.some((selected) => {
+      const [group, status] = selected.split("::");
+      return value[group as HubStatusGroup] === status;
+    });
+  },
 );
 
-const {data: analysisNodeResp, status, refresh} = await getAnalysisNodes(); // Get the first batch of 50
+const { data: analysisNodeResp, status, refresh } = await getAnalysisNodes(); // Get the first batch of 50
 
 async function getProjects() {
   return (await useNuxtApp()
-      .$hubApi("/projects", {
-        method: "GET",
-        query: {
-          sort: "-updated_at",
-          fields: "id,name,display_name",
-        },
-      })
-      .catch(() => undefined)) as Project[];
+    .$hubApi("/projects", {
+      method: "GET",
+      query: {
+        sort: "-updated_at",
+        fields: "id,name,display_name",
+      },
+    })
+    .catch(() => undefined)) as Project[];
 }
 
 async function getKongRoutes() {
   const kongRoutesResp = (await useNuxtApp()
-      .$hubApi("/kong/project", {
-        method: "GET",
-      })
-      .catch(() => undefined)) as ListRoutes;
+    .$hubApi("/kong/project", {
+      method: "GET",
+    })
+    .catch(() => undefined)) as ListRoutes;
   if (kongRoutesResp && kongRoutesResp.data) {
     const projIds: string[] = [];
     kongRoutesResp.data.forEach((proj: Route) => {
@@ -186,25 +195,25 @@ async function parseProjects() {
 }
 
 async function getExecutionStatusesFromPodOrc(): Promise<
-    PodProgressResponse | undefined
+  PodProgressResponse | undefined
 > {
   const podOrcResponse = (await useNuxtApp()
-      .$hubApi("/po/status", {
-        method: "GET",
-      })
-      .catch(() => {
-        if (!podOrcUnreacheable.value) {
-          podOrcUnreacheable.value = true;
-          showConnectionErrorToast(toast, {
-            severity: "warn",
-            summary: "Missing PO Status Update",
-            detail:
-                "Unable to retrieve pod statuses from the PO, relying on information from the Hub",
-            life: 3000,
-          });
-        }
-        return undefined;
-      })) as PodProgressResponse;
+    .$hubApi("/po/status", {
+      method: "GET",
+    })
+    .catch(() => {
+      if (!podOrcUnreacheable.value) {
+        podOrcUnreacheable.value = true;
+        showConnectionErrorToast(toast, {
+          severity: "warn",
+          summary: "Missing PO Status Update",
+          detail:
+            "Unable to retrieve pod statuses from the PO, relying on information from the Hub",
+          life: 3000,
+        });
+      }
+      return undefined;
+    })) as PodProgressResponse;
   podOrcUnreacheable.value = !podOrcResponse;
   return podOrcResponse;
 }
@@ -212,8 +221,8 @@ async function getExecutionStatusesFromPodOrc(): Promise<
 function setProgress(analysis: ModifiedAnalysisNode): ModifiedAnalysisNode {
   // For testing: Math.round(Math.random() * 100);
   analysis.execution_progress = analysis.execution_progress
-      ? analysis.execution_progress
-      : 0;
+    ? analysis.execution_progress
+    : 0;
 
   const currentRunStatus = analysis.execution_status;
   if (currentRunStatus) {
@@ -245,15 +254,15 @@ function determineProgressBarColor(progress: number) {
 }
 
 function parseAnalysis(
-    analysisEntry: ModifiedAnalysisNode,
-    executionStatuses: PodProgressResponse | undefined,
+  analysisEntry: ModifiedAnalysisNode,
+  executionStatuses: PodProgressResponse | undefined,
 ): ModifiedAnalysisNode {
   const projId = analysisEntry.analysis?.project_id;
   const analysisId = analysisEntry.analysis_id;
   analysisEntry.analysis_name =
-      analysisEntry.analysis?.display_name ??
-      analysisEntry.analysis?.name ??
-      analysisId;
+    analysisEntry.analysis?.display_name ??
+    analysisEntry.analysis?.name ??
+    analysisId;
   if (projId) {
     analysisEntry.project_name = projMap.has(projId) ? projMap.get(projId) : "";
     analysisEntry.datastore = kongRoutes.value.has(projId);
@@ -266,7 +275,7 @@ function parseAnalysis(
     const podStatus = executionStatuses[analysisId]!;
     analysisEntry.execution_status = podStatus.status;
     analysisEntry.execution_progress =
-        podStatus.progress ?? analysisEntry.execution_progress;
+      podStatus.progress ?? analysisEntry.execution_progress;
   } else {
     if (!acceptableHubStatuses.includes(analysisEntry.execution_status)) {
       analysisEntry.execution_status = null;
@@ -281,17 +290,17 @@ function parseAnalysis(
 }
 
 async function compileAnalysisTable(
-    respStatus: string,
-    respData: AnalysisNode[] | undefined,
-    silent = false,
-    merge = false,
+  respStatus: string,
+  respData: AnalysisNode[] | undefined,
+  silent = false,
+  merge = false,
 ) {
   if (!silent) tableLoading.value = true;
   await parseProjects();
   await getKongRoutes();
   const parsedAnalyses = new Map<string, ModifiedAnalysisNode>();
   const currentExecutionStatuses: PodProgressResponse | undefined =
-      await getExecutionStatusesFromPodOrc();
+    await getExecutionStatusesFromPodOrc();
 
   let analysisData: AnalysisNode[] | undefined;
   if (respStatus === "success") {
@@ -305,15 +314,15 @@ async function compileAnalysisTable(
   }
 
   const formattedAnalyses = formatDataRow(
-      analysisData,
-      ["created_at", "updated_at"],
-      expandRowEntries,
+    analysisData,
+    ["created_at", "updated_at"],
+    expandRowEntries,
   ) as ModifiedAnalysisNode[];
   if (formattedAnalyses && projMap.size > 0) {
     formattedAnalyses.forEach((analysisEntry: ModifiedAnalysisNode) => {
       parsedAnalyses.set(
-          analysisEntry.analysis_id,
-          parseAnalysis(analysisEntry, currentExecutionStatuses),
+        analysisEntry.analysis_id,
+        parseAnalysis(analysisEntry, currentExecutionStatuses),
       );
     });
     if (merge) {
@@ -369,19 +378,19 @@ function onPage(event) {
 
 async function getNextPage() {
   const nextSetResults = (await useNuxtApp()
-      .$hubApi("/analysis-nodes", {
-        method: "GET",
-        query: {
-          page: {
-            offset: currentOffset,
-            limit: queryLimit,
-          },
-          include: "analysis,node",
-          sort: "-updated_at",
+    .$hubApi("/analysis-nodes", {
+      method: "GET",
+      query: {
+        page: {
+          offset: currentOffset,
+          limit: queryLimit,
         },
-      })
-      .catch(() => undefined)) as AnalysisNode[];
-  if (nextSetResults.length > 0) {
+        include: "analysis,node",
+        sort: "-updated_at",
+      },
+    })
+    .catch(() => undefined)) as AnalysisNode[] | undefined;
+  if (nextSetResults && nextSetResults.length > 0) {
     if (nextSetResults.length < queryLimit) {
       // Fewer than limit means we are at the end
       allResultsRetrieved = true;
@@ -396,9 +405,9 @@ async function getNextPage() {
 
 // Table filters
 const defaultFilters = {
-  global: {value: undefined, matchMode: FilterMatchMode.CONTAINS},
-  hub_statuses: {value: undefined, matchMode: HUB_STATUS_FILTER_MATCH_MODE},
-  execution_status: {value: undefined, matchMode: FilterMatchMode.IN},
+  global: { value: undefined, matchMode: FilterMatchMode.CONTAINS },
+  hub_statuses: { value: undefined, matchMode: HUB_STATUS_FILTER_MATCH_MODE },
+  execution_status: { value: undefined, matchMode: FilterMatchMode.IN },
 };
 filters.value = defaultFilters;
 
@@ -418,8 +427,8 @@ const updateFilters = (filterText: string) => {
 };
 
 function updateAnalysisRun(
-    analysisId: string,
-    newStatusData: AnalysisStatus | undefined,
+  analysisId: string,
+  newStatusData: AnalysisStatus | undefined,
 ) {
   if (analysesMap.value.has(analysisId)) {
     const analysisToUpdate = analysesMap.value.get(analysisId)!; // Tell typescript we are sure there is a value
@@ -441,7 +450,7 @@ function updateExecutionStatusFilter(filterText: string) {
     if (currentExecutionStatusFilters.includes(filterText)) {
       // If filter already there, then remove it
       const filteredStatuses = currentExecutionStatusFilters.filter(
-          (item) => item !== filterText,
+        (item) => item !== filterText,
       );
       if (filteredStatuses.length == 0) {
         // If empty array after filtering then set to null
@@ -461,8 +470,8 @@ const showDataStoreNavToast = () => {
   toast.add({
     severity: "error",
     summary:
-        "Unable to find an associated data store, click the button below " +
-        "to create a data store for the project of this analysis",
+      "Unable to find an associated data store, click the button below " +
+      "to create a data store for the project of this analysis",
     group: "datastoreToastLink",
     life: 10000,
   });
@@ -477,7 +486,7 @@ const onNavigate = () => {
 const onCreateDataStore = (projectId: string | undefined) => {
   navigateTo({
     path: "/data-stores/create",
-    query: projectId ? {projectId} : undefined,
+    query: projectId ? { projectId } : undefined,
   });
 };
 
@@ -489,9 +498,9 @@ const onCloseNavToast = () => {
 <template>
   <div class="card flex justify-content-center">
     <Toast
-        group="datastoreToastLink"
-        position="top-right"
-        @close="onCloseNavToast()"
+      group="datastoreToastLink"
+      position="top-right"
+      @close="onCloseNavToast()"
     >
       <template #message="slotProps">
         <div class="flex flex-col items-start flex-auto">
@@ -502,10 +511,10 @@ const onCloseNavToast = () => {
             <span>{{ slotProps.message.summary }}</span>
           </div>
           <Button
-              class="p-button-sm nav-btn"
-              label="Create a Data Store"
-              severity="info"
-              @click="onNavigate"
+            class="p-button-sm nav-btn"
+            label="Create a Data Store"
+            severity="info"
+            @click="onNavigate"
           >
             Create Data Store
           </Button>
@@ -520,7 +529,7 @@ const onCloseNavToast = () => {
         <div class="analysis-description-box">
           <div class="analysis-description">
             <span
-            >This table provides an overview of the analyses that are
+              >This table provides an overview of the analyses that are
               registered to run on this node. Approved users can <b>start</b>,
               <b>stop</b>, or <b>delete</b> analyses, as well as view the logs
               for both the analysis and associated nginx containers.
@@ -528,50 +537,50 @@ const onCloseNavToast = () => {
           </div>
           <div class="analysis-container-counter">
             <ContainerCounter
-                :activeFilters="filters"
-                :analyses="analyses"
-                @applyExecutionStatusFilter="updateExecutionStatusFilter"
+              :activeFilters="filters"
+              :analyses="analyses"
+              @applyExecutionStatusFilter="updateExecutionStatusFilter"
             />
           </div>
         </div>
         <div class="table-header-row">
           <SearchBar
-              :searchTerm="defaultFilters.global.value"
-              @clearFilters="resetFilters"
-              @updateSearch="updateFilters"
+            :searchTerm="defaultFilters.global.value"
+            @clearFilters="resetFilters"
+            @updateSearch="updateFilters"
           />
           <div class="card flex justify-content-center refresh-switch">
             <Button
-                v-tooltip.top="'Refresh table'"
-                :loading="status.value === 'pending'"
-                aria-label="Filter"
-                class="table-refresh-btn"
-                icon="pi pi-refresh"
-                severity="contrast"
-                @click="onTableRefresh"
+              v-tooltip.top="'Refresh table'"
+              :loading="status.value === 'pending'"
+              aria-label="Filter"
+              class="table-refresh-btn"
+              icon="pi pi-refresh"
+              severity="contrast"
+              @click="onTableRefresh"
             />
           </div>
         </div>
         <DataTable
-            v-model:expandedRows="expandedRows"
-            v-model:filters="filters"
-            :globalFilterFields="['analysis_name', 'project_name', 'node.name']"
-            :loading="tableLoading"
-            :rows="10"
-            :rowsPerPageOptions="[10, 20, 50]"
-            :sortOrder="-1"
-            :value="analyses"
-            class="rounded-table analysis-table structured-table"
-            dataKey="id"
-            filterDisplay="menu"
-            paginator
-            sortField="updated_at.timestamp"
-            stripedRows
-            tableStyle="min-width: 50rem"
-            @page="onPage"
+          v-model:expandedRows="expandedRows"
+          v-model:filters="filters"
+          :globalFilterFields="['analysis_name', 'project_name', 'node.name']"
+          :loading="tableLoading"
+          :rows="10"
+          :rowsPerPageOptions="[10, 20, 50]"
+          :sortOrder="-1"
+          :value="analyses"
+          class="rounded-table analysis-table structured-table"
+          dataKey="id"
+          filterDisplay="menu"
+          paginator
+          sortField="updated_at.timestamp"
+          stripedRows
+          tableStyle="min-width: 50rem"
+          @page="onPage"
         >
           <template #empty> No analyses found.</template>
-          <Column v-if="expandRowEntries.length" expander style="width: 5rem"/>
+          <Column v-if="expandRowEntries.length" expander style="width: 5rem" />
           <Column :sortable="true" field="analysis_name">
             <template #header>
               <span v-tooltip.top="'Name of the analysis'" class="help-text">
@@ -585,18 +594,20 @@ const onCloseNavToast = () => {
             </template>
           </Column>
           <Column
-              :showAddButton="false"
-              :showApplyButton="false"
-              :showClearButton="false"
-              :showFilterMatchModes="false"
-              :showFilterOperator="false"
-              field="hub_statuses"
-              filterField="hub_statuses"
+            :showAddButton="false"
+            :showApplyButton="false"
+            :showClearButton="false"
+            :showFilterMatchModes="false"
+            :showFilterOperator="false"
+            field="hub_statuses"
+            filterField="hub_statuses"
           >
             <template #header>
               <span
-                  v-tooltip.top="'Approval, build and distribution statuses from the Hub'"
-                  class="help-text"
+                v-tooltip.top="
+                  'Approval, build and distribution statuses from the Hub'
+                "
+                class="help-text"
               >
                 <b>Hub Statuses</b>
               </span>
@@ -606,27 +617,31 @@ const onCloseNavToast = () => {
                 <div class="hub-status-line">
                   <span class="hub-status-label">Approval Status</span>
                   <Tag
-                      v-if="data.approval_status"
-                      :severity="getApprovalStatusSeverity(data.approval_status)"
-                      :value="data.approval_status"
+                    v-if="data.approval_status"
+                    :severity="getApprovalStatusSeverity(data.approval_status)"
+                    :value="data.approval_status"
                   />
                   <span v-else class="hub-status-empty">—</span>
                 </div>
                 <div class="hub-status-line">
                   <span class="hub-status-label">Build Status</span>
                   <Tag
-                      v-if="data.analysis.build_status"
-                      :severity="getBuildStatusSeverity(data.analysis.build_status)"
-                      :value="data.analysis.build_status"
+                    v-if="data.analysis.build_status"
+                    :severity="
+                      getBuildStatusSeverity(data.analysis.build_status)
+                    "
+                    :value="data.analysis.build_status"
                   />
                   <span v-else class="hub-status-empty">—</span>
                 </div>
                 <div class="hub-status-line">
                   <span class="hub-status-label">Distribution Status</span>
                   <Tag
-                      v-if="data.analysis.distribution_status"
-                      :severity="getBuildStatusSeverity(data.analysis.distribution_status)"
-                      :value="data.analysis.distribution_status"
+                    v-if="data.analysis.distribution_status"
+                    :severity="
+                      getBuildStatusSeverity(data.analysis.distribution_status)
+                    "
+                    :value="data.analysis.distribution_status"
                   />
                   <span v-else class="hub-status-empty">—</span>
                 </div>
@@ -634,15 +649,15 @@ const onCloseNavToast = () => {
             </template>
             <template #filter="{ filterModel, filterCallback }">
               <MultiSelect
-                  v-model="filterModel.value"
-                  :options="hubStatusFilterOptions"
-                  class="p-column-filter hub-status-filter"
-                  optionGroupChildren="items"
-                  optionGroupLabel="label"
-                  optionLabel="label"
-                  optionValue="value"
-                  placeholder="Any status"
-                  @change="filterCallback()"
+                v-model="filterModel.value"
+                :options="hubStatusFilterOptions"
+                class="p-column-filter hub-status-filter"
+                optionGroupChildren="items"
+                optionGroupLabel="label"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Any status"
+                @change="filterCallback()"
               >
                 <template #optiongroup="slotProps">
                   <span class="hub-status-filter-group">
@@ -651,58 +666,58 @@ const onCloseNavToast = () => {
                 </template>
                 <template #option="slotProps">
                   <Tag
-                      :severity="
+                    :severity="
                       getHubStatusSeverity(
                         slotProps.option.group,
                         slotProps.option.status,
                       )
                     "
-                      :value="slotProps.option.status"
+                    :value="slotProps.option.status"
                   />
                 </template>
               </MultiSelect>
             </template>
           </Column>
           <Column
-              :showAddButton="false"
-              :showApplyButton="false"
-              :showClearButton="false"
-              :showFilterMatchModes="false"
-              :showFilterOperator="false"
-              field="execution_status"
-              filterField="execution_status"
-              headerStyle="text-align: center"
+            :showAddButton="false"
+            :showApplyButton="false"
+            :showClearButton="false"
+            :showFilterMatchModes="false"
+            :showFilterOperator="false"
+            field="execution_status"
+            filterField="execution_status"
+            headerStyle="text-align: center"
           >
             <template #header>
               <span
-                  v-tooltip.top="'Current run status of the analysis container'"
-                  class="help-text"
+                v-tooltip.top="'Current run status of the analysis container'"
+                class="help-text"
               >
                 <b>Run Status</b>
               </span>
             </template>
             <template #body="{ data }">
               <Tag
-                  v-if="data.execution_status"
-                  :severity="getExecutionStatusSeverity(data.execution_status)"
-                  :value="data.execution_status"
+                v-if="data.execution_status"
+                :severity="getExecutionStatusSeverity(data.execution_status)"
+                :value="data.execution_status"
               />
             </template>
             <template #filter="{ filterModel, filterCallback }">
               <MultiSelect
-                  v-model="filterModel.value"
-                  :options="podStatuses"
-                  class="p-column-filter"
-                  optionLabel=""
-                  placeholder="Any"
-                  @change="filterCallback()"
+                v-model="filterModel.value"
+                :options="podStatuses"
+                class="p-column-filter"
+                optionLabel=""
+                placeholder="Any"
+                @change="filterCallback()"
               >
                 <template #option="slotProps">
                   <div class="flex align-items-center gap-2">
                     <Tag
-                        v-if="slotProps.option"
-                        :severity="getExecutionStatusSeverity(slotProps.option)"
-                        :value="slotProps.option"
+                      v-if="slotProps.option"
+                      :severity="getExecutionStatusSeverity(slotProps.option)"
+                      :value="slotProps.option"
                     />
                   </div>
                 </template>
@@ -712,8 +727,8 @@ const onCloseNavToast = () => {
           <Column :sortable="true" field="project_name">
             <template #header>
               <span
-                  v-tooltip.top="'Name of the associated project'"
-                  class="help-text"
+                v-tooltip.top="'Name of the associated project'"
+                class="help-text"
               >
                 <b>Project</b>
               </span>
@@ -725,14 +740,14 @@ const onCloseNavToast = () => {
             </template>
           </Column>
           <Column
-              :hidden="nodeType === 'aggregator'"
-              :sortable="true"
-              field="datastore"
+            :hidden="nodeType === 'aggregator'"
+            :sortable="true"
+            field="datastore"
           >
             <template #header>
               <span
-                  v-tooltip.top="'Whether the analysis has access to data'"
-                  class="help-text"
+                v-tooltip.top="'Whether the analysis has access to data'"
+                class="help-text"
               >
                 <b>Data Store</b>
               </span>
@@ -740,24 +755,25 @@ const onCloseNavToast = () => {
             <template #body="{ data }">
               <div v-if="data.datastore" class="datastore-badge">
                 <Badge class="w-8 h-8 rounded-full" severity="success"
-                ><i v-tooltip.top="'Data store found'" class="pi pi-check"></i
+                  ><i v-tooltip.top="'Data store found'" class="pi pi-check"></i
                 ></Badge>
               </div>
               <div v-else class="datastore-badge">
                 <Badge
-                    :severity="datastoreBadgeSeverity"
-                    class="w-8 h-8 rounded-full"
-                ><i
+                  :severity="datastoreBadgeSeverity"
+                  class="w-8 h-8 rounded-full"
+                  ><button
                     v-tooltip.top="datastoreBadgeTooltip"
+                    type="button"
+                    :disabled="!datastoreRequired"
+                    :aria-label="datastoreBadgeTooltip"
                     :class="[
-                      'pi pi-times',
+                      'datastore-icon-btn',
                       { 'datastore-create-link': datastoreRequired },
                     ]"
-                    @click="
-                      datastoreRequired &&
-                        onCreateDataStore(data.analysis.project_id)
-                    "
-                ></i
+                    @click="onCreateDataStore(data.analysis.project_id)"
+                  >
+                    <i class="pi pi-times"></i></button
                 ></Badge>
               </div>
             </template>
@@ -765,8 +781,8 @@ const onCloseNavToast = () => {
           <Column :sortable="true" dataType="date" field="created_at.timestamp">
             <template #header>
               <span
-                  v-tooltip.top="'Date the analysis image was created'"
-                  class="help-text"
+                v-tooltip.top="'Date the analysis image was created'"
+                class="help-text"
               >
                 <b>Created On</b>
               </span>
@@ -780,10 +796,10 @@ const onCloseNavToast = () => {
           <Column :sortable="true" dataType="date" field="updated_at.timestamp">
             <template #header>
               <span
-                  v-tooltip.top="
+                v-tooltip.top="
                   'Date the analysis container on the node was last modified'
                 "
-                  class="help-text"
+                class="help-text"
               >
                 <b>Last Updated</b>
               </span>
@@ -797,37 +813,37 @@ const onCloseNavToast = () => {
           <Column field="progress">
             <template #header>
               <span
-                  v-tooltip.top="'Self-reported progress of analysis'"
-                  class="help-text"
+                v-tooltip.top="'Self-reported progress of analysis'"
+                class="help-text"
               >
                 <b>Progress</b>
               </span>
             </template>
             <template #body="{ data }">
               <ProgressBar
-                  :mode="
+                :mode="
                   (data.execution_status === PodStatus.Executing ||
                     data.execution_status === PodStatus.Running) &&
                   !data.execution_progress
                     ? 'indeterminate'
                     : 'determinate'
                 "
-                  :style="
+                :style="
                   (data.execution_status === PodStatus.Executing ||
                     data.execution_status === PodStatus.Running) &&
                   !data.execution_progress
                     ? {}
                     : determineProgressBarColor(data.execution_progress)
                 "
-                  :value="data.execution_progress"
+                :value="data.execution_progress"
               />
             </template>
           </Column>
           <Column :exportable="false" field="expand.id">
             <template #header>
               <span
-                  v-tooltip.top="'Controls for the analysis container'"
-                  class="help-text"
+                v-tooltip.top="'Controls for the analysis container'"
+                class="help-text"
               >
                 <b>Analysis Controls</b>
               </span>
@@ -835,20 +851,20 @@ const onCloseNavToast = () => {
             <template #body="slotProps">
               <div class="control-buttons">
                 <AnalysisControlButtons
-                    :analysisBuildStatus="slotProps.data.analysis.build_status"
-                    :analysisDistributionStatus="
+                  :analysisBuildStatus="slotProps.data.analysis.build_status"
+                  :analysisDistributionStatus="
                     slotProps.data.analysis.distribution_status
                   "
-                    :analysisExecutionStatus="slotProps.data.execution_status"
-                    :analysisId="slotProps.data.analysis_id"
-                    :analysisNodeId="slotProps.data.id"
-                    :approvalStatus="slotProps.data.approval_status"
-                    :datastore="slotProps.data.datastore"
-                    :nodeId="slotProps.data.node_id"
-                    :projectId="slotProps.data.analysis.project_id"
-                    :requireDatastore="datastoreRequired!"
-                    @missingDataStore="showDataStoreNavToast"
-                    @updateAnalysisRow="updateAnalysisRun"
+                  :analysisExecutionStatus="slotProps.data.execution_status"
+                  :analysisId="slotProps.data.analysis_id"
+                  :analysisNodeId="slotProps.data.id"
+                  :approvalStatus="slotProps.data.approval_status"
+                  :datastore="slotProps.data.datastore"
+                  :nodeId="slotProps.data.node_id"
+                  :projectId="slotProps.data.analysis.project_id"
+                  :requireDatastore="datastoreRequired!"
+                  @missingDataStore="showDataStoreNavToast"
+                  @updateAnalysisRow="updateAnalysisRun"
                 />
               </div>
             </template>
@@ -873,6 +889,21 @@ const onCloseNavToast = () => {
 .datastore-badge {
   display: flex;
   justify-content: center;
+}
+
+.datastore-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+}
+
+.datastore-icon-btn:disabled {
+  cursor: default;
 }
 
 .datastore-create-link {
