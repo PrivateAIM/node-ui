@@ -31,8 +31,8 @@ const props = defineProps({
 
 const confirm = useConfirm();
 const toast = useToast();
-const deleteLoading = ref(false);
-const checkingConnection = ref(false);
+const deleteLoadingFor = ref<string | null>(null);
+const checkingConnectionFor = ref<string | null>(null);
 
 const emit = defineEmits(["deleteDataStore"]);
 
@@ -76,7 +76,7 @@ const dataStores = computed(() => {
 });
 
 async function onConfirmDeleteDataStore(dsName: string) {
-  deleteLoading.value = true;
+  deleteLoadingFor.value = dsName;
   const { status } = await deleteDataStore(dsName);
   if (status.value === "success") {
     toast.add({
@@ -94,7 +94,7 @@ async function onConfirmDeleteDataStore(dsName: string) {
       life: 3000,
     });
   }
-  deleteLoading.value = false;
+  deleteLoadingFor.value = null;
 }
 
 const confirmDelete = (event, dsName: string) => {
@@ -117,7 +117,7 @@ const confirmDelete = (event, dsName: string) => {
 };
 
 async function onCheckConnection(dsName: string) {
-  checkingConnection.value = true;
+  checkingConnectionFor.value = dsName;
   const [dsType, projectId] = extractUuid(dsName);
 
   const connStatus = await useNuxtApp()
@@ -140,7 +140,7 @@ async function onCheckConnection(dsName: string) {
       life: 3000,
     });
   }
-  checkingConnection.value = false;
+  checkingConnectionFor.value = null;
 }
 
 // Table filters
@@ -192,10 +192,10 @@ const updateFilters = (filterText: string) => {
       :rows="10"
       :rowsPerPageOptions="[10, 20, 50]"
       :value="dataStores"
+      class="rounded-table structured-table"
       filterDisplay="menu"
       paginator
       tableStyle="min-width: 50rem"
-      class="rounded-table"
     >
       <template #empty> No data stores found.</template>
       <Column
@@ -279,7 +279,7 @@ const updateFilters = (filterText: string) => {
         <template #body="slotProps">
           <div>
             <Button
-              :loading="checkingConnection"
+              :loading="checkingConnectionFor === slotProps.data.name"
               aria-label="test-connection"
               icon="pi pi-wifi"
               severity="contrast"
@@ -295,7 +295,7 @@ const updateFilters = (filterText: string) => {
           </span>
         </template>
         <template #body="slotProps">
-          <ConfirmPopup group="dataStoreDelete" class="ds-confirm-popup">
+          <ConfirmPopup class="ds-confirm-popup" group="dataStoreDelete">
             <template #message="slotProps">
               <div class="ds-confirm-message">
                 <i
@@ -310,7 +310,7 @@ const updateFilters = (filterText: string) => {
           </ConfirmPopup>
           <div>
             <Button
-              :loading="deleteLoading"
+              :loading="deleteLoadingFor === slotProps.data.name"
               aria-label="Delete"
               icon="pi pi-trash"
               severity="danger"

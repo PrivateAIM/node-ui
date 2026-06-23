@@ -68,10 +68,13 @@ const loadingRestoredFromStorage = ref(false);
 const loadingStorageKey = computed(
   () => `analysis-start-loading-${props.analysisId}`,
 );
+const LOADING_RESTORE_TTL_MS = 2 * 60_000;
 
 onMounted(() => {
+  const startedAt = Number(localStorage.getItem(loadingStorageKey.value));
   if (
-    localStorage.getItem(loadingStorageKey.value) === "true" &&
+    Number.isFinite(startedAt) &&
+    Date.now() - startedAt < LOADING_RESTORE_TTL_MS &&
     playButtonActiveStates.includes(props.analysisExecutionStatus)
   ) {
     loading.value = true;
@@ -171,6 +174,17 @@ const playDisabledReason = computed<string | null>(() => {
   return disabledReason.value;
 });
 
+// Status update button: hidden once the run has finished, disabled when there is no run status to update
+const updateButtonHidden = computed(
+  () =>
+    props.analysisExecutionStatus === PodStatus.Failed ||
+    props.analysisExecutionStatus === PodStatus.Executed ||
+    props.analysisExecutionStatus == null,
+);
+const updateButtonDisabled = computed(
+  () => props.analysisExecutionStatus == null,
+);
+
 function updatePodStatus(
   podStatus: string | null | undefined,
   progressUpdate?: number | null | undefined,
@@ -232,7 +246,7 @@ async function onRerunAnalysis() {
 async function onStartAnalysis() {
   loading.value = true;
   loadingRestoredFromStorage.value = false;
-  localStorage.setItem(loadingStorageKey.value, "true");
+  localStorage.setItem(loadingStorageKey.value, String(Date.now()));
   const originalExecutionStatus = props.analysisExecutionStatus;
   updatePodStatus(PodStatus.Starting);
   const analysisProps = new FormData();
@@ -389,7 +403,7 @@ async function onDeleteAnalysis(silent: boolean = false) {
     <Button
       v-show="buttonStatuses.playActive"
       v-tooltip.top="playDisabledReason ?? 'Start the analysis'"
-      :disabled="!!playDisabledReason || !buttonStatuses.playActive"
+      :disabled="!!playDisabledReason"
       :loading="loading"
       aria-label="Start"
       class="analysis-btn start-analysis-btn"
@@ -398,9 +412,9 @@ async function onDeleteAnalysis(silent: boolean = false) {
       @click="onStartAnalysis()"
     />
     <Button
-      v-show="!buttonStatuses.playActive"
+      v-show="buttonStatuses.rerunActive"
       v-tooltip.top="playDisabledReason ?? 'Rerun the analysis'"
-      :disabled="!!playDisabledReason || !buttonStatuses.rerunActive"
+      :disabled="!!playDisabledReason"
       :loading="loading"
       aria-label="Rerun"
       class="analysis-btn rerun-analysis-btn"
@@ -409,8 +423,9 @@ async function onDeleteAnalysis(silent: boolean = false) {
       @click="onRerunAnalysis()"
     />
     <Button
+      v-show="buttonStatuses.stopActive"
       v-tooltip.top="disabledReason ?? 'Stop the analysis'"
-      :disabled="!!disabledReason || !buttonStatuses.stopActive"
+      :disabled="!!disabledReason"
       :loading="loading"
       aria-label="Stop"
       class="analysis-btn stop-analysis-btn"
@@ -419,8 +434,9 @@ async function onDeleteAnalysis(silent: boolean = false) {
       @click="onStopAnalysis()"
     />
     <Button
+      v-show="buttonStatuses.deleteActive"
       v-tooltip.top="disabledReason ?? 'Delete the analysis container'"
-      :disabled="!!disabledReason || !buttonStatuses.deleteActive"
+      :disabled="!!disabledReason"
       :loading="loading"
       aria-label="Delete"
       class="analysis-btn delete-analysis-btn"
@@ -446,7 +462,9 @@ async function onDeleteAnalysis(silent: boolean = false) {
       />
     </NuxtLink>
     <AnalysisUpdateButton
+      v-show="!updateButtonHidden"
       :analysisId="props.analysisId"
+      :disabled="updateButtonDisabled"
       @updateAnalysisRunStatus="updatePodStatus"
     />
   </div>

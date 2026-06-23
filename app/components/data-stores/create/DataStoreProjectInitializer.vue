@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from "vue";
 import { navigateTo, useNuxtApp } from "nuxt/app";
+import { useRoute } from "vue-router";
 import InputText from "primevue/inputtext";
 import RadioButton from "primevue/radiobutton";
 import Select from "primevue/select";
@@ -97,6 +98,15 @@ watch(selectedProject, (newSelectedProject) => {
     dataStoreName.value = `${newSelectedProject.id}`;
   }
 });
+
+// Preselect the project when navigated here with a projectId query parameter
+const route = useRoute();
+const preselectedProjectId = route.query.projectId;
+if (typeof preselectedProjectId === "string") {
+  selectedProject.value = availableProjects.value.find(
+    (proj) => proj.id === preselectedProjectId,
+  );
+}
 
 watch(selectedDataStoreType, (newDataStoreType) => {
   if (newDataStoreType === DataStoreType.S3) {

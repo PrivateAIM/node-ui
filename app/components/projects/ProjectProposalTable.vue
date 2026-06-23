@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { getProjectNodes } from "~/composables/useAPIFetch";
-import ApproveRejectButtons from "~/components/table/ApproveRejectButtons.vue";
+import ApproveRejectToggle from "~/components/table/ApproveRejectToggle.vue";
 import { formatDataRow } from "~/utils/format-data-row";
 import { type ProjectNode } from "~/services/Api";
 import { FilterMatchMode } from "@primevue/core/api";
@@ -14,7 +14,6 @@ const expandedRows = ref({});
 const dataRowUnixCols = ["created_at", "updated_at"];
 const expandRowEntries = [];
 
-const approvalStatuses = Object.values(ApprovalStatus);
 const filters = ref();
 
 const { data: response, status, refresh } = await getProjectNodes();
@@ -77,7 +76,8 @@ const updateFilters = (filterText: string) => {
 </script>
 
 <template>
-  <div class="proposalTable">
+  <ConfirmDialog />
+  <div class="proposal-card">
     <Card class="content-card">
       <template #title>Project Proposals</template>
       <template #content>
@@ -91,7 +91,7 @@ const updateFilters = (filterText: string) => {
             <Button
               v-tooltip.top="'Refresh table'"
               :loading="status === 'pending'"
-              aria-label="Filter"
+              aria-label="Refresh table"
               icon="pi pi-refresh"
               severity="contrast"
               @click="onTableRefresh"
@@ -105,15 +105,15 @@ const updateFilters = (filterText: string) => {
           :rows="10"
           :rowsPerPageOptions="[10, 20, 50]"
           :value="proposals"
+          class="rounded-table project-table structured-table"
           dataKey="id"
           filterDisplay="menu"
           paginator
           tableStyle="min-width: 50rem"
-          class="rounded-table"
         >
           <template #empty> No projects found.</template>
           <Column v-if="expandRowEntries.length" expander style="width: 5rem" />
-          <Column field="project_name" :sortable="true" style="width: 30rem">
+          <Column :sortable="true" field="project_name" style="width: 30rem">
             <template #header>
               <span v-tooltip.top="'Name of the project'" class="help-text">
                 <b>Project Name</b>
@@ -125,64 +125,33 @@ const updateFilters = (filterText: string) => {
               </span>
             </template>
           </Column>
-          <Column :sortable="true" field="node.name">
+          <Column :sortable="true" field="project.analyses">
             <template #header>
               <span
-                class="help-text"
                 v-tooltip.top="
-                  'Which node the analyses for this project will run on (should be current node)'
+                  'Number of analyses associated with this project'
                 "
+                class="help-text"
               >
-                <b>Node</b>
+                <b>Number of Analyses</b>
               </span>
             </template>
           </Column>
-          <Column
-            :showAddButton="false"
-            :showApplyButton="false"
-            :showClearButton="false"
-            :showFilterMatchModes="false"
-            :showFilterOperator="false"
-            field="approval_status"
-          >
+          <Column :sortable="true" field="project.nodes">
             <template #header>
               <span
+                v-tooltip.top="'Number of nodes associated with this project'"
                 class="help-text"
-                v-tooltip.top="'Whether the project was approved or rejected'"
               >
-                <b>Approval Status</b>
+                <b>Number of Nodes</b>
               </span>
-            </template>
-            <template #body="{ data }">
-              <Tag
-                v-if="data.approval_status"
-                :severity="getApprovalStatusSeverity(data.approval_status)"
-                :value="data.approval_status"
-              />
-            </template>
-            <template #filter="{ filterModel, filterCallback }">
-              <Select
-                v-model="filterModel.value"
-                :options="approvalStatuses"
-                :showClear="true"
-                class="p-column-filter"
-                placeholder="Select One"
-                @change="filterCallback()"
-              >
-                <template #option="slotProps">
-                  <Tag
-                    :severity="getApprovalStatusSeverity(slotProps.option)"
-                    :value="slotProps.option"
-                  />
-                </template>
-              </Select>
             </template>
           </Column>
           <Column :sortable="true" dataType="date" field="created_at.timestamp">
             <template #header>
               <span
-                class="help-text"
                 v-tooltip.top="'Date the project was registered with the Hub'"
+                class="help-text"
               >
                 <b>Created On</b>
               </span>
@@ -196,8 +165,8 @@ const updateFilters = (filterText: string) => {
           <Column :sortable="true" dataType="date" field="updated_at.timestamp">
             <template #header>
               <span
-                class="help-text"
                 v-tooltip.top="'Date the project was last modified'"
+                class="help-text"
               >
                 <b>Last Updated</b>
               </span>
@@ -208,23 +177,50 @@ const updateFilters = (filterText: string) => {
               </p>
             </template>
           </Column>
-          <Column :exportable="false" field="id" style="min-width: 10em">
+          <Column
+            :exportable="false"
+            :showAddButton="false"
+            :showApplyButton="false"
+            :showClearButton="false"
+            :showFilterMatchModes="false"
+            :showFilterOperator="false"
+            field="approval_status"
+            style="min-width: 10em"
+          >
             <template #header>
               <span
-                class="help-text"
                 v-tooltip.top="
                   'Set it so that the project is either approved for running on this node or rejected'
                 "
+                class="help-text"
               >
                 <b>Set Approval</b>
               </span>
             </template>
             <template #body="slotProps">
-              <ApproveRejectButtons
+              <ApproveRejectToggle
+                :currentStatus="slotProps.data.approval_status"
                 :objectClass="'project'"
                 :objectId="slotProps.data.id"
                 @updatedRow="updateTable"
               />
+            </template>
+            <template #filter="{ filterModel, filterCallback }">
+              <Select
+                v-model="filterModel.value"
+                :options="Object.values(ApprovalStatus)"
+                :showClear="true"
+                class="p-column-filter"
+                placeholder="Select One"
+                @change="filterCallback()"
+              >
+                <template #option="slotProps">
+                  <Tag
+                    :severity="getApprovalStatusSeverity(slotProps.option)"
+                    :value="slotProps.option"
+                  />
+                </template>
+              </Select>
             </template>
           </Column>
         </DataTable>

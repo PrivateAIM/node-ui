@@ -16,6 +16,8 @@ import Tag from "primevue/tag";
 import Select from "primevue/select";
 import Card from "primevue/card";
 import ConfirmPopup from "primevue/confirmpopup";
+import ConfirmDialog from "primevue/confirmdialog";
+import ToggleSwitch from "primevue/toggleswitch";
 import MultiSelect from "primevue/multiselect";
 import InputIcon from "primevue/inputicon";
 import InputText from "primevue/inputtext";
@@ -29,6 +31,29 @@ globalThis.computed = computed;
 globalThis.onMounted = onMounted;
 globalThis.watch = watch;
 globalThis.readonly = readonly;
+
+// happy-dom / Node 22 do not expose a global `localStorage` in this setup, so
+// components that read it directly (e.g. AnalysisControlButtons) throw on mount.
+// Provide a minimal in-memory implementation.
+if (typeof globalThis.localStorage === "undefined") {
+  const store = new Map<string, string>();
+  globalThis.localStorage = {
+    getItem: (key: string) => (store.has(key) ? store.get(key)! : null),
+    setItem: (key: string, value: string) => {
+      store.set(key, String(value));
+    },
+    removeItem: (key: string) => {
+      store.delete(key);
+    },
+    clear: () => {
+      store.clear();
+    },
+    key: (index: number) => Array.from(store.keys())[index] ?? null,
+    get length() {
+      return store.size;
+    },
+  };
+}
 
 // Register PrimeVue components globally for testing
 config.global.plugins = [PrimeVue];
@@ -44,6 +69,8 @@ config.global.components = {
   Select,
   Card,
   ConfirmPopup,
+  ConfirmDialog,
+  ToggleSwitch,
   MultiSelect,
   InputIcon,
   InputText,

@@ -1,10 +1,17 @@
 import {
+  type Analysis,
   type AnalysisNode,
   type Consumer,
   type DetailedService,
   PodStatus,
   type Route,
 } from "~/services/Api";
+
+export interface HubStatuses {
+  approval_status: AnalysisNode["approval_status"];
+  build_status: Analysis["build_status"];
+  distribution_status: Analysis["distribution_status"];
+}
 
 export interface modifiedTimestamp {
   short: string;
@@ -49,6 +56,7 @@ export interface ModifiedAnalysisNode extends Omit<
   datastore: boolean;
   execution_status: PodStatus | undefined | null;
   progress: number;
+  hub_statuses: HubStatuses;
 }
 
 export interface ModifiedParsedAnalysisNode extends Omit<

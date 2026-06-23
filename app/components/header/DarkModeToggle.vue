@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useDark, useToggle } from "@vueuse/core";
 import ToggleSwitch from "primevue/toggleswitch";
+import Button from "primevue/button";
 
 const isDark = useDark({
   selector: "html",
@@ -9,38 +10,16 @@ const isDark = useDark({
   valueLight: "flame-light",
   initOnMounted: true,
 });
-const checked = ref(false);
-onMounted(() => {
-  checked.value = !isDark.value;
-});
 
 const toggleDark = useToggle(isDark);
+const themeIcon = computed(() => isDark.value ? "pi pi-moon" : "pi pi-sun");
 </script>
 
 <template>
-  <div class="dark-mode-toggle">
-    <div class="dark-mode-toggle-icon">
-      <i class="pi pi-moon" />
-    </div>
-    <ToggleSwitch
-      v-model="checked"
-      class="dark-mode-toggle-switch"
-      label="Toggle Dark Mode"
-      @click="toggleDark()"
-    />
-    <div class="dark-mode-toggle-icon">
-      <i class="pi pi-sun" />
-    </div>
+  <div class="theme-toggle-btn">
+    <Button :icon="themeIcon" severity="contrast" size="small" variant="outlined" @click="toggleDark()" />
   </div>
 </template>
 
 <style lang="scss" scoped>
-.dark-mode-toggle {
-  display: flex;
-  align-items: center;
-}
-
-.dark-mode-toggle-icon {
-  padding: 0.3em;
-}
 </style>

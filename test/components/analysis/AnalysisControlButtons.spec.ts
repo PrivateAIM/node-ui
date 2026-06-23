@@ -110,9 +110,12 @@ describe("AnalysisControlButtons.vue", () => {
       PodStatus.Started,
     );
 
-    // Start button should be replaced by rerun
+    // Once running, the start/rerun buttons are inactive and hidden; only the
+    // stop and delete buttons remain visible
     expect(isButtonVisible(wrapper, ".start-analysis-btn")).toBe(false);
-    expect(isButtonVisible(wrapper, ".rerun-analysis-btn")).toBe(true);
+    expect(isButtonVisible(wrapper, ".rerun-analysis-btn")).toBe(false);
+    expect(isButtonVisible(wrapper, ".stop-analysis-btn")).toBe(true);
+    expect(isButtonVisible(wrapper, ".delete-analysis-btn")).toBe(true);
   });
 
   it("Start analysis button - PO broken", async () => {
@@ -323,5 +326,56 @@ describe("AnalysisControlButtons.vue", () => {
     });
     expect(logBtn.attributes("data-p-disabled")).toBe("false");
     //
+  });
+
+  function mountControls(analysisExecutionStatus: string | null) {
+    return mount(AnalysisControlButtons, {
+      props: {
+        analysisBuildStatus: ProcessStatus.Executed,
+        analysisExecutionStatus,
+        analysisNodeId: "8003eefe-e39b-4bd4-aec4-78046c63b39b",
+        analysisDistributionStatus: ProcessStatus.Executed,
+        analysisId: fakeAnalysisId,
+        approvalStatus: "approved",
+        projectId: "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483",
+        nodeId: "e3b89572-327f-4936-8cf0-fbfbcc6336b7",
+        datastore: true,
+        requireDatastore: true,
+      },
+    });
+  }
+
+  it("Update button - disabled when execution status is null", () => {
+    const wrapper = mountControls(null);
+    const updateBtn = wrapper.find(".update-analysis-btn");
+    expect(updateBtn.exists()).toBe(true);
+    expect(updateBtn.attributes("data-p-disabled")).toBe("true");
+  });
+
+  it("Update button - enabled for an in-progress execution status", () => {
+    const wrapper = mountControls(PodStatus.Executing);
+    const updateBtn = wrapper.find(".update-analysis-btn");
+    expect(updateBtn.attributes("data-p-disabled")).toBe("false");
+    // v-show is applied to the AnalysisUpdateButton root container
+    expect(isButtonVisible(wrapper, ".update-analysis-btn-container")).toBe(
+      true,
+    );
+  });
+
+  it("Update button - hidden when execution status is failed or executed", async () => {
+    const wrapper = mountControls(PodStatus.Failed);
+    expect(isButtonVisible(wrapper, ".update-analysis-btn-container")).toBe(
+      false,
+    );
+
+    await wrapper.setProps({ analysisExecutionStatus: PodStatus.Executed });
+    expect(isButtonVisible(wrapper, ".update-analysis-btn-container")).toBe(
+      false,
+    );
+
+    await wrapper.setProps({ analysisExecutionStatus: PodStatus.Executing });
+    expect(isButtonVisible(wrapper, ".update-analysis-btn-container")).toBe(
+      true,
+    );
   });
 });

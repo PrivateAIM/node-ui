@@ -52,7 +52,13 @@ describe("EventViewer.vue", () => {
     expect(rows.length).toBe(1);
 
     const rowCells = rows[0]!.findAll("td");
-    expect(rowCells[0]!.text()).toContain("2/19/26");
+    // Date is rendered with the runtime's default locale (Intl.DateTimeFormat
+    // with an undefined locale), so derive the expected string the same way
+    // rather than hard-coding a single locale's format.
+    const expectedDate = new Intl.DateTimeFormat(undefined, {
+      dateStyle: "short",
+    }).format(new Date(fakeEventResponse.data[0]!.timestamp));
+    expect(rowCells[0]!.text()).toContain(expectedDate);
     expect(rowCells[1]!.text()).toBe(
       "NODE-SETTINGS-GET-SUCCESSInfoHub AdapterA user fetched the node's configurations settings",
     );

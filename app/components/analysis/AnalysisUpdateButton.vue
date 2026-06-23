@@ -10,6 +10,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const emit = defineEmits(["updateAnalysisRunStatus"]);
@@ -87,6 +91,7 @@ async function onClickUpdate() {
       class="analysis-btn update-analysis-btn"
       v-tooltip.top="'Update the status of the analysis'"
       severity="info"
+      :disabled="props.disabled"
       :loading="loading"
       @click="onClickUpdate()"
     />

@@ -9,7 +9,7 @@ import {
   showCacheWarningToast,
   showConnectionErrorToast,
 } from "~/composables/connectionErrorToast";
-import { FilterMatchMode } from "@primevue/core/api";
+import { FilterMatchMode, FilterService } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
 import AnalysisControlButtons from "./AnalysisControlButtons.vue";
 import {
@@ -29,7 +29,10 @@ import {
 import { ApprovalStatus } from "~/types/node";
 import ContainerCounter from "~/components/analysis/ContainerCounter.vue";
 import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
-import type { ModifiedAnalysisNode } from "~/services/modifiedApiInterfaces";
+import type {
+  HubStatuses,
+  ModifiedAnalysisNode,
+} from "~/services/modifiedApiInterfaces";
 import { ProcessStatus } from "~/types/analysis";
 
 const toast = useToast();
@@ -44,7 +47,7 @@ const datastoreBadgeSeverity = computed(() =>
 );
 const datastoreBadgeTooltip = computed(() =>
   datastoreRequired.value
-    ? "Data store missing!"
+    ? "Data store missing, click here to create a data store for this project"
     : "Data store missing, but not required",
 );
 
@@ -81,9 +84,61 @@ const approvalStatuses = Object.values(ApprovalStatus);
 const processStatuses = Object.values(ProcessStatus);
 const podStatuses = Object.values(PodStatus);
 
-// Stable sort function for distribution status column maps to binary value
-const distributionStatusSortFn = (row: ModifiedAnalysisNode) =>
-  row.analysis?.distribution_status === "executed" ? "1" : "0";
+// Combined "Hub Statuses" column filtering
+const HUB_STATUS_FILTER_MATCH_MODE = "hubStatusMatch";
+type HubStatusGroup =
+  | "approval_status"
+  | "build_status"
+  | "distribution_status";
+
+function getHubStatusSeverity(group: HubStatusGroup, status: string) {
+  return group === "approval_status"
+    ? getApprovalStatusSeverity(status as ApprovalStatus)
+    : getBuildStatusSeverity(status as ProcessStatus);
+}
+
+const hubStatusFilterOptions = [
+  {
+    label: "Approval Status",
+    items: approvalStatuses.map((status) => ({
+      label: status,
+      value: `approval_status::${status}`,
+      group: "approval_status" as HubStatusGroup,
+      status,
+    })),
+  },
+  {
+    label: "Build Status",
+    items: processStatuses.map((status) => ({
+      label: status,
+      value: `build_status::${status}`,
+      group: "build_status" as HubStatusGroup,
+      status,
+    })),
+  },
+  {
+    label: "Distribution Status",
+    items: processStatuses.map((status) => ({
+      label: status,
+      value: `distribution_status::${status}`,
+      group: "distribution_status" as HubStatusGroup,
+      status,
+    })),
+  },
+];
+
+// Match a row when ANY of the selected statuses matches its respective column
+FilterService.register(
+  HUB_STATUS_FILTER_MATCH_MODE,
+  (value: HubStatuses | undefined, filter: string[] | undefined | null) => {
+    if (!filter || filter.length === 0) return true;
+    if (!value) return false;
+    return filter.some((selected) => {
+      const [group, status] = selected.split("::");
+      return value[group as HubStatusGroup] === status;
+    });
+  },
+);
 
 const { data: analysisNodeResp, status, refresh } = await getAnalysisNodes(); // Get the first batch of 50
 
@@ -226,6 +281,11 @@ function parseAnalysis(
       analysisEntry.execution_status = null;
     }
   }
+  analysisEntry.hub_statuses = {
+    approval_status: analysisEntry.approval_status,
+    build_status: analysisEntry.analysis?.build_status ?? null,
+    distribution_status: analysisEntry.analysis?.distribution_status ?? null,
+  };
   return setProgress(analysisEntry);
 }
 
@@ -329,8 +389,8 @@ async function getNextPage() {
         sort: "-updated_at",
       },
     })
-    .catch(() => undefined)) as AnalysisNode[];
-  if (nextSetResults.length > 0) {
+    .catch(() => undefined)) as AnalysisNode[] | undefined;
+  if (nextSetResults && nextSetResults.length > 0) {
     if (nextSetResults.length < queryLimit) {
       // Fewer than limit means we are at the end
       allResultsRetrieved = true;
@@ -346,8 +406,7 @@ async function getNextPage() {
 // Table filters
 const defaultFilters = {
   global: { value: undefined, matchMode: FilterMatchMode.CONTAINS },
-  approval_status: { value: undefined, matchMode: FilterMatchMode.EQUALS },
-  "analysis.build_status": { value: undefined, matchMode: FilterMatchMode.IN },
+  hub_statuses: { value: undefined, matchMode: HUB_STATUS_FILTER_MATCH_MODE },
   execution_status: { value: undefined, matchMode: FilterMatchMode.IN },
 };
 filters.value = defaultFilters;
@@ -423,6 +482,14 @@ const onNavigate = () => {
   navigateTo("/data-stores/create");
 };
 
+// Navigate to data store creation with the analysis' project preselected
+const onCreateDataStore = (projectId: string | undefined) => {
+  navigateTo({
+    path: "/data-stores/create",
+    query: projectId ? { projectId } : undefined,
+  });
+};
+
 const onCloseNavToast = () => {
   toast.removeGroup("datastoreToastLink");
 };
@@ -455,7 +522,7 @@ const onCloseNavToast = () => {
       </template>
     </Toast>
   </div>
-  <div class="card analysisTable">
+  <div class="card analysis-card">
     <Card class="content-card">
       <template #title>Analyses</template>
       <template #content>
@@ -498,19 +565,19 @@ const onCloseNavToast = () => {
           v-model:expandedRows="expandedRows"
           v-model:filters="filters"
           :globalFilterFields="['analysis_name', 'project_name', 'node.name']"
-          :rows="10"
           :loading="tableLoading"
+          :rows="10"
           :rowsPerPageOptions="[10, 20, 50]"
           :sortOrder="-1"
           :value="analyses"
+          class="rounded-table analysis-table structured-table"
           dataKey="id"
           filterDisplay="menu"
           paginator
-          stripedRows
           sortField="updated_at.timestamp"
+          stripedRows
           tableStyle="min-width: 50rem"
           @page="onPage"
-          class="rounded-table"
         >
           <template #empty> No analyses found.</template>
           <Column v-if="expandRowEntries.length" expander style="width: 5rem" />
@@ -532,120 +599,83 @@ const onCloseNavToast = () => {
             :showClearButton="false"
             :showFilterMatchModes="false"
             :showFilterOperator="false"
-            field="approval_status"
-          >
-            <template #header>
-              <span
-                v-tooltip.top="'Whether the analysis was approved or rejected'"
-                class="help-text"
-              >
-                <b>Approval Status</b>
-              </span>
-            </template>
-            <template #body="{ data }">
-              <Tag
-                v-if="data.approval_status"
-                :severity="getApprovalStatusSeverity(data.approval_status)"
-                :value="data.approval_status"
-              />
-            </template>
-            <template #filter="{ filterModel, filterCallback }">
-              <Select
-                v-model="filterModel.value"
-                :options="approvalStatuses"
-                :showClear="true"
-                class="p-column-filter"
-                placeholder="Select One"
-                @change="filterCallback()"
-              >
-                <template #option="slotProps">
-                  <Tag
-                    :severity="getApprovalStatusSeverity(slotProps.option)"
-                    :value="slotProps.option"
-                  />
-                </template>
-              </Select>
-            </template>
-          </Column>
-          <Column
-            :showAddButton="false"
-            :showApplyButton="false"
-            :showClearButton="false"
-            :showFilterMatchModes="false"
-            :showFilterOperator="false"
-            field="analysis.build_status"
-            filterField="analysis.build_status"
-          >
-            <template #header>
-              <span
-                v-tooltip.top="'Build stage of the analysis Docker image'"
-                class="help-text"
-              >
-                <b>Build Status</b>
-              </span>
-            </template>
-            <template #body="{ data }">
-              <Tag
-                v-if="data.analysis.build_status"
-                :severity="getBuildStatusSeverity(data.analysis.build_status)"
-                :value="data.analysis.build_status"
-              />
-            </template>
-            <template #filter="{ filterModel, filterCallback }">
-              <MultiSelect
-                v-model="filterModel.value"
-                :options="processStatuses"
-                class="p-column-filter"
-                display="chip"
-                optionLabel=""
-                placeholder="Any"
-                @change="filterCallback()"
-              >
-                <template #option="slotProps">
-                  <div class="flex align-items-center gap-2">
-                    <Tag
-                      v-if="slotProps.option"
-                      :severity="getBuildStatusSeverity(slotProps.option)"
-                      :value="slotProps.option"
-                    />
-                  </div>
-                </template>
-              </MultiSelect>
-            </template>
-          </Column>
-          <Column
-            :sortable="true"
-            field="analysis.distribution_status"
-            :sortField="distributionStatusSortFn"
-            headerStyle="text-align: center"
+            field="hub_statuses"
+            filterField="hub_statuses"
           >
             <template #header>
               <span
                 v-tooltip.top="
-                  'Distribution status of the analysis Docker image'
+                  'Approval, build and distribution statuses from the Hub'
                 "
                 class="help-text"
               >
-                <b>Distribution Status</b>
+                <b>Hub Statuses</b>
               </span>
             </template>
             <template #body="{ data }">
-              <div
-                v-if="data.analysis.distribution_status === 'executed'"
-                class="distribution-badge"
+              <div class="hub-statuses">
+                <div class="hub-status-line">
+                  <span class="hub-status-label">Approval Status</span>
+                  <Tag
+                    v-if="data.approval_status"
+                    :severity="getApprovalStatusSeverity(data.approval_status)"
+                    :value="data.approval_status"
+                  />
+                  <span v-else class="hub-status-empty">—</span>
+                </div>
+                <div class="hub-status-line">
+                  <span class="hub-status-label">Build Status</span>
+                  <Tag
+                    v-if="data.analysis.build_status"
+                    :severity="
+                      getBuildStatusSeverity(data.analysis.build_status)
+                    "
+                    :value="data.analysis.build_status"
+                  />
+                  <span v-else class="hub-status-empty">—</span>
+                </div>
+                <div class="hub-status-line">
+                  <span class="hub-status-label">Distribution Status</span>
+                  <Tag
+                    v-if="data.analysis.distribution_status"
+                    :severity="
+                      getBuildStatusSeverity(data.analysis.distribution_status)
+                    "
+                    :value="data.analysis.distribution_status"
+                  />
+                  <span v-else class="hub-status-empty">—</span>
+                </div>
+              </div>
+            </template>
+            <template #filter="{ filterModel, filterCallback }">
+              <MultiSelect
+                v-model="filterModel.value"
+                :options="hubStatusFilterOptions"
+                class="p-column-filter hub-status-filter"
+                optionGroupChildren="items"
+                optionGroupLabel="label"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Any status"
+                @change="filterCallback()"
               >
-                <Badge class="w-8 h-8 rounded-full" severity="success"
-                  ><i v-tooltip.top="'Image available'" class="pi pi-check"></i
-                ></Badge>
-              </div>
-              <div v-else class="distribution-badge">
-                <Badge class="w-8 h-8 rounded-full" :severity="'danger'"
-                  ><i
-                    v-tooltip.top="'Image unavailable'"
-                    class="pi pi-times"
-                  ></i
-                ></Badge>
-              </div>
+                <template #optiongroup="slotProps">
+                  <span class="hub-status-filter-group">
+                    {{ slotProps.option.label }}
+                  </span>
+                </template>
+                <template #option="slotProps">
+                  <Tag
+                    :severity="
+                      getHubStatusSeverity(
+                        slotProps.option.group,
+                        slotProps.option.status,
+                      )
+                    "
+                    :value="slotProps.option.status"
+                  />
+                </template>
+              </MultiSelect>
             </template>
           </Column>
           <Column
@@ -730,12 +760,20 @@ const onCloseNavToast = () => {
               </div>
               <div v-else class="datastore-badge">
                 <Badge
-                  class="w-8 h-8 rounded-full"
                   :severity="datastoreBadgeSeverity"
-                  ><i
+                  class="w-8 h-8 rounded-full"
+                  ><button
                     v-tooltip.top="datastoreBadgeTooltip"
-                    class="pi pi-times"
-                  ></i
+                    type="button"
+                    :disabled="!datastoreRequired"
+                    :aria-label="datastoreBadgeTooltip"
+                    :class="[
+                      'datastore-icon-btn',
+                      { 'datastore-create-link': datastoreRequired },
+                    ]"
+                    @click="onCreateDataStore(data.analysis.project_id)"
+                  >
+                    <i class="pi pi-times"></i></button
                 ></Badge>
               </div>
             </template>
@@ -817,14 +855,14 @@ const onCloseNavToast = () => {
                   :analysisDistributionStatus="
                     slotProps.data.analysis.distribution_status
                   "
+                  :analysisExecutionStatus="slotProps.data.execution_status"
                   :analysisId="slotProps.data.analysis_id"
                   :analysisNodeId="slotProps.data.id"
-                  :analysisExecutionStatus="slotProps.data.execution_status"
                   :approvalStatus="slotProps.data.approval_status"
                   :datastore="slotProps.data.datastore"
                   :nodeId="slotProps.data.node_id"
-                  :requireDatastore="datastoreRequired!"
                   :projectId="slotProps.data.analysis.project_id"
+                  :requireDatastore="datastoreRequired!"
                   @missingDataStore="showDataStoreNavToast"
                   @updateAnalysisRow="updateAnalysisRun"
                 />
@@ -842,14 +880,69 @@ const onCloseNavToast = () => {
   margin-top: 0.625rem;
 }
 
+/* structured-table centers non-first cells via justify-items, which shrinks
+   the block-level progress bar to its content width. Force it to fill the cell. */
+.analysis-table .p-progressbar {
+  width: 100%;
+}
+
 .datastore-badge {
   display: flex;
   justify-content: center;
 }
 
-.distribution-badge {
-  display: flex;
+.datastore-icon-btn {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
+  padding: 0;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+}
+
+.datastore-icon-btn:disabled {
+  cursor: default;
+}
+
+.datastore-create-link {
+  cursor: pointer;
+}
+
+.hub-statuses {
+  display: inline-grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  gap: 0.2rem 0.4rem;
+  text-align: left;
+}
+
+.hub-status-line {
+  display: contents;
+}
+
+.hub-status-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--p-text-muted-color);
+  white-space: nowrap;
+}
+
+.hub-status-empty {
+  font-size: 0.7rem;
+  color: var(--p-text-muted-color);
+}
+
+.hub-statuses .p-tag {
+  font-size: 0.65rem;
+  padding: 0.15rem 0.3rem;
+  line-height: 1.1;
+}
+
+.hub-status-filter-group {
+  font-weight: 700;
+  font-size: 0.8rem;
 }
 
 .analysis-description-box {
@@ -880,9 +973,5 @@ const onCloseNavToast = () => {
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
-}
-
-.analysisTable thead th {
-  padding-inline: 0.5rem;
 }
 </style>
