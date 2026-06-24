@@ -30,6 +30,7 @@ const analysis = ref<AnalysisNode | null>(null);
 const logChunks = useLogChunks(analysisId);
 const lastFetchedAt = ref<string | null>(null);
 const showTimestamps = ref(false);
+const showDebug = ref(false);
 
 await logChunks.initialize();
 if (logChunks.httpError.value === 403) {
@@ -149,6 +150,14 @@ function onRefreshToggle() {
             offIcon="pi pi-clock"
             class="log-timestamp-toggle"
           />
+          <ToggleButton
+            v-model="showDebug"
+            onLabel="Debug On"
+            offLabel="Debug Off"
+            onIcon="pi pi-eye"
+            offIcon="pi pi-eye-slash"
+            class="log-debug-toggle"
+          />
           <RefreshSwitch
             :disabled="analysis?.execution_status !== ProcessStatus.Executing"
             :startEnabled="
@@ -169,6 +178,7 @@ function onRefreshToggle() {
             :nginxLines="prevLogs[0]!.nginxLines"
             :analysisLines="prevLogs[0]!.analysisLines"
             :showTimestamps="showTimestamps"
+            :showDebug="showDebug"
           />
         </div>
         <AnalysisLogCardContent
@@ -176,6 +186,7 @@ function onRefreshToggle() {
           :nginxLines="logChunks.nginxLines.value"
           :analysisLines="logChunks.analysisLines.value"
           :showTimestamps="showTimestamps"
+          :showDebug="showDebug"
           :nginxHasOlder="logChunks.hasOlder.value"
           :analysisHasOlder="logChunks.hasOlder.value"
           :nginxLoading="logChunks.isLoading.value"
@@ -198,6 +209,7 @@ function onRefreshToggle() {
                 :nginxLines="run.nginxLines"
                 :analysisLines="run.analysisLines"
                 :showTimestamps="showTimestamps"
+                :showDebug="showDebug"
               />
             </Fieldset>
           </div>
@@ -237,7 +249,8 @@ function onRefreshToggle() {
   gap: 0.75em;
 }
 
-.log-timestamp-toggle {
+.log-timestamp-toggle,
+.log-debug-toggle {
   font-size: 0.8em;
 }
 </style>

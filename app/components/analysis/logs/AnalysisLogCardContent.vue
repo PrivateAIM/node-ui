@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { Card, VirtualScroller } from "primevue";
-import { nextTick, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
 import type { FlatLogLine } from "~/types/logs";
@@ -9,6 +9,7 @@ const props = defineProps<{
   nginxLines: FlatLogLine[];
   analysisLines: FlatLogLine[];
   showTimestamps?: boolean;
+  showDebug?: boolean;
   nginxHasOlder?: boolean;
   analysisHasOlder?: boolean;
   nginxLoading?: boolean;
@@ -18,6 +19,25 @@ const props = defineProps<{
 }>();
 
 const toast = useToast();
+
+// Hide DEBUG entries unless toggled on
+function filterDebug(lines: FlatLogLine[]): FlatLogLine[] {
+  if (props.showDebug) return lines;
+  const result: FlatLogLine[] = [];
+  let skipping = false;
+  for (const line of lines) {
+    if (line.isStacktrace) {
+      if (!skipping) result.push(line);
+      continue;
+    }
+    skipping = line.level?.toUpperCase() === "DEBUG";
+    if (!skipping) result.push(line);
+  }
+  return result;
+}
+
+const displayedNginxLines = computed(() => filterDebug(props.nginxLines));
+const displayedAnalysisLines = computed(() => filterDebug(props.analysisLines));
 
 function isNearBottom(el: HTMLElement): boolean {
   return el.scrollTop >= el.scrollHeight - el.clientHeight - 50;
@@ -80,7 +100,7 @@ function createScrollState(
 
 const { scrollerRef: nginxScrollerRef, onScroll: onNginxScroll } =
   createScrollState(
-    () => props.nginxLines,
+    () => displayedNginxLines.value,
     () => props.nginxHasOlder,
     () => props.nginxLoading,
     () => props.onLoadOlderNginx,
@@ -88,7 +108,7 @@ const { scrollerRef: nginxScrollerRef, onScroll: onNginxScroll } =
 
 const { scrollerRef: analysisScrollerRef, onScroll: onAnalysisScroll } =
   createScrollState(
-    () => props.analysisLines,
+    () => displayedAnalysisLines.value,
     () => props.analysisHasOlder,
     () => props.analysisLoading,
     () => props.onLoadOlderAnalysis,
@@ -139,7 +159,7 @@ function downloadLogs(isAnalysis: boolean) {
   const prefix = isAnalysis ? "analysis" : "nginx";
   const filename = `${prefix}-logs-${Date.now()}`;
   const logs = formatFlatLines(
-    isAnalysis ? props.analysisLines : props.nginxLines,
+    isAnalysis ? displayedAnalysisLines.value : displayedNginxLines.value,
   );
   if (logs) {
     const blob = new Blob([logs], { type: "text/plain" });
@@ -156,7 +176,7 @@ function downloadLogs(isAnalysis: boolean) {
 
 async function copyToClipboard(isAnalysis: boolean) {
   const logs = formatFlatLines(
-    isAnalysis ? props.analysisLines : props.nginxLines,
+    isAnalysis ? displayedAnalysisLines.value : displayedNginxLines.value,
   );
   if (logs) {
     try {
@@ -172,8 +192,6 @@ async function copyToClipboard(isAnalysis: boolean) {
     }
   }
 }
-
-
 </script>
 
 <template>
@@ -208,9 +226,9 @@ async function copyToClipboard(isAnalysis: boolean) {
       <template #content>
         <div class="card nginx-log-content">
           <VirtualScroller
-            v-if="nginxLines.length"
+            v-if="displayedNginxLines.length"
             ref="nginxScrollerRef"
-            :items="nginxLines"
+            :items="displayedNginxLines"
             :itemSize="20"
             style="height: 30em"
             class="log-scroll-panel"
@@ -232,7 +250,9 @@ async function copyToClipboard(isAnalysis: boolean) {
               </div>
             </template>
           </VirtualScroller>
-          <span v-else>No logs found...</span>
+          <div v-else class="log-entry-empty log-entry">
+            <span>No logs found...</span>
+          </div>
         </div>
       </template>
     </Card>
@@ -264,9 +284,9 @@ async function copyToClipboard(isAnalysis: boolean) {
       </template>
       <template #content>
         <VirtualScroller
-          v-if="analysisLines.length"
+          v-if="displayedAnalysisLines.length"
           ref="analysisScrollerRef"
-          :items="analysisLines"
+          :items="displayedAnalysisLines"
           :itemSize="20"
           style="height: 30em"
           class="log-scroll-panel"
@@ -288,7 +308,9 @@ async function copyToClipboard(isAnalysis: boolean) {
             </div>
           </template>
         </VirtualScroller>
-        <span v-else>No logs found...</span>
+        <div v-else class="log-entry-empty log-entry">
+          <span>No logs found...</span>
+        </div>
       </template>
     </Card>
   </div>
@@ -312,7 +334,8 @@ async function copyToClipboard(isAnalysis: boolean) {
 }
 
 .log-scroll-panel {
-  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Monaco,
+  font-family:
+    ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Monaco,
     "Courier New", monospace;
   font-size: 0.8125rem;
   height: 30em;
@@ -367,6 +390,10 @@ async function copyToClipboard(isAnalysis: boolean) {
   align-items: center;
   padding: 0 0.75rem;
   overflow: hidden;
+}
+
+.log-entry-empty {
+  margin: 2rem 0.25rem;
 }
 
 .log-message {
