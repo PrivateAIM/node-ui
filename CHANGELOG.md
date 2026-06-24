@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.6.6](https://github.com/PrivateAIM/node-ui/compare/v0.6.5...v0.6.6) (2026-06-24)
+
+
+### Features
+
+* **analysis:** restructure table and remove disabled buttons ([56b5d09](https://github.com/PrivateAIM/node-ui/commit/56b5d09ea98e0db753feffaf95f9933f00bf8281))
+* **project:** change approval to toggle switch with confirmation ([f24b0b4](https://github.com/PrivateAIM/node-ui/commit/f24b0b4d5ab31602b1b19b615a1bd1b6e6244123))
+
+
+### Bug Fixes
+
+* **analysis:** allow progressbar to show when centered ([343f664](https://github.com/PrivateAIM/node-ui/commit/343f6645d8f8b135115c7cf731f79df0c7655294))
+* **hub:** add fallback for display name field in AnalysesTable ([bc2c86c](https://github.com/PrivateAIM/node-ui/commit/bc2c86c4dd3b970fc313733d8b8fc4dcd94cecff))
+
+
+### Performance Improvements
+
+* **datastore:** change port to 9000 when S3 selected ([3c51cb2](https://github.com/PrivateAIM/node-ui/commit/3c51cb205d742ccc97ff87b9abae257677b558a7))
+
 ## [0.6.5](https://github.com/PrivateAIM/node-ui/compare/v0.6.4...v0.6.5) (2026-06-15)
 
 
