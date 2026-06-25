@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.7.0](https://github.com/PrivateAIM/node-ui/compare/v0.6.6...v0.7.0) (2026-06-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove deprecated statuses
+
+### Features
+
+* **logs:** optional debug log filter ([f029dfe](https://github.com/PrivateAIM/node-ui/commit/f029dfe9710e525a5ec2299b419119ced3f9c942))
+
+
+### Bug Fixes
+
+* remove deprecated statuses ([c43d112](https://github.com/PrivateAIM/node-ui/commit/c43d112421a6c2bb53b8e84541e541fd59214259))
+
 ## [0.6.6](https://github.com/PrivateAIM/node-ui/compare/v0.6.5...v0.6.6) (2026-06-24)
 
 
