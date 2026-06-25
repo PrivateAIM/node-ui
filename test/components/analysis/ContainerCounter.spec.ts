@@ -70,12 +70,7 @@ describe("ContainerCounter.vue", () => {
           expect(counterDiv.attributes("class")).toContain("opaque-badge");
         }
 
-        if (executionStatus === "Executing" || executionStatus === "Executed") {
-          // Emit extra for running and finished
-          emitCounts += 2;
-        } else {
-          emitCounts++;
-        }
+        emitCounts++;
         // Clicking on badge emits correctly
         badgeDiv.trigger("click");
         expect(wrapper.emitted()).toHaveProperty("applyExecutionStatusFilter");

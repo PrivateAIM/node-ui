@@ -29,12 +29,11 @@ describe("countAnalysisContainers", () => {
     expect(result.started).toBe(2);
   });
 
-  it("counts Executing and Running as executing", () => {
+  it("counts Executing as executing", () => {
     const result = countAnalysisContainers([
       makeNode(PodStatus.Executing),
-      makeNode(PodStatus.Running),
     ]);
-    expect(result.executing).toBe(2);
+    expect(result.executing).toBe(1);
   });
 
   it("counts Stopping and Stopped as stopped", () => {
@@ -50,12 +49,11 @@ describe("countAnalysisContainers", () => {
     expect(result.failed).toBe(1);
   });
 
-  it("counts Executed and Finished as executed", () => {
+  it("counts Executed as executed", () => {
     const result = countAnalysisContainers([
       makeNode(PodStatus.Executed),
-      makeNode(PodStatus.Finished),
     ]);
-    expect(result.executed).toBe(2);
+    expect(result.executed).toBe(1);
   });
 
   it("skips nodes with null or undefined execution_status", () => {

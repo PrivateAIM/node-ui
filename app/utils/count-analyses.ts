@@ -29,7 +29,6 @@ export function countAnalysisContainers(
           break;
 
         case PodStatus.Executing:
-        case PodStatus.Running:
           counts.executing++;
           break;
 
@@ -43,7 +42,6 @@ export function countAnalysisContainers(
           break;
 
         case PodStatus.Executed:
-        case PodStatus.Finished:
           counts.executed++;
           break;
 

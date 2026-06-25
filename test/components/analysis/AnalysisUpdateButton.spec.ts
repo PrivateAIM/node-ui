@@ -63,7 +63,7 @@ describe("AnalysisUpdateButton.vue", () => {
     );
     expect(wrapper.emitted("updateAnalysisRunStatus")).toHaveLength(1);
     expect(wrapper.emitted("updateAnalysisRunStatus")![0]).toEqual([
-      PodStatus.Running,
+      PodStatus.Executing,
       undefined,
     ]);
   });

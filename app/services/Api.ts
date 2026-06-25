@@ -51,8 +51,6 @@ export enum PodStatus {
   Started = "started",
   Stopping = "stopping",
   Stopped = "stopped",
-  Running = "running",
-  Finished = "finished",
   Executing = "executing",
   Executed = "executed",
   Stuck = "stuck",

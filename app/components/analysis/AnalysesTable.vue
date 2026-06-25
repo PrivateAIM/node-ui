@@ -822,15 +822,13 @@ const onCloseNavToast = () => {
             <template #body="{ data }">
               <ProgressBar
                 :mode="
-                  (data.execution_status === PodStatus.Executing ||
-                    data.execution_status === PodStatus.Running) &&
+                  data.execution_status === PodStatus.Executing &&
                   !data.execution_progress
                     ? 'indeterminate'
                     : 'determinate'
                 "
                 :style="
-                  (data.execution_status === PodStatus.Executing ||
-                    data.execution_status === PodStatus.Running) &&
+                  data.execution_status === PodStatus.Executing &&
                   !data.execution_progress
                     ? {}
                     : determineProgressBarColor(data.execution_progress)
