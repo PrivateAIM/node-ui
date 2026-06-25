@@ -148,7 +148,7 @@ export const handlers = [
   http.get(`/po/status/${fakeAnalysisId}`, () => {
     return HttpResponse.json({
       [fakeAnalysisId]: {
-        status: PodStatus.Running,
+        status: PodStatus.Executing,
         progress: undefined,
       },
     });
@@ -157,7 +157,7 @@ export const handlers = [
   http.get(`/po/status`, () => {
     return HttpResponse.json({
       [fakeAnalysisId]: {
-        status: PodStatus.Running,
+        status: PodStatus.Executing,
         progress: undefined,
       },
     });

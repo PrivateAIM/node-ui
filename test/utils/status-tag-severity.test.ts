@@ -42,12 +42,10 @@ test("Analysis run status severity tag", () => {
   const expectations = {
     starting: "info",
     started: "info",
-    running: "contrast", // deprecated
     executing: "contrast",
     stopping: "warning",
     stopped: "warning",
     executed: "success",
-    finished: "success", // deprecated
     failed: "danger",
   };
 

@@ -40,7 +40,6 @@ export const getExecutionStatusSeverity = (status: PodStatus) => {
       return "info";
 
     case PodStatus.Executing:
-    case PodStatus.Running:
       return "contrast";
 
     case PodStatus.Stopping:
@@ -51,7 +50,6 @@ export const getExecutionStatusSeverity = (status: PodStatus) => {
       return "danger";
 
     case PodStatus.Executed:
-    case PodStatus.Finished:
       return "success";
   }
 };

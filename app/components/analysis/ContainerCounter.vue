@@ -24,14 +24,6 @@ const emit = defineEmits(["applyExecutionStatusFilter"]);
 
 function onApplyExecutionStatusFilter(executionStatus: PodStatus) {
   emit("applyExecutionStatusFilter", executionStatus);
-
-  // Also emit the PO alternatives
-  if (executionStatus === PodStatus.Executing) {
-    emit("applyExecutionStatusFilter", PodStatus.Running);
-  }
-  if (executionStatus === PodStatus.Executed) {
-    emit("applyExecutionStatusFilter", PodStatus.Finished);
-  }
 }
 </script>
 

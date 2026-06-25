@@ -377,7 +377,7 @@ describe("AnalysesTable.vue - PO calls and Progress", () => {
     const runStatusCell = wrapper.findAll("tbody tr")[0]!.findAll("td")[
       RUN_STATUS_COL
     ]!;
-    expect(runStatusCell.text()).toBe(PodStatus.Running);
+    expect(runStatusCell.text()).toBe(PodStatus.Executing);
   });
 
   test("Non-terminal execution_status is cleared when analysis is absent from PodOrc", async () => {

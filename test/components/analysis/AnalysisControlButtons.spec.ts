@@ -16,6 +16,7 @@ interface ButtonStates {
   rerunActive: boolean;
   stopActive: boolean;
   deleteActive: boolean;
+  logsActive: boolean;
 }
 
 function isButtonVisible(wrapper: VueWrapper, selector: string): boolean {
@@ -23,6 +24,17 @@ function isButtonVisible(wrapper: VueWrapper, selector: string): boolean {
   if (!btn.exists()) return false;
 
   const style = btn.attributes("style");
+  return !style || !style.includes("display: none");
+}
+
+// The logs button is wrapped in a NuxtLink that carries the v-show, so the
+// `display: none` lands on the anchor rather than the button itself.
+function isLogsBtnVisible(wrapper: VueWrapper): boolean {
+  const btn = wrapper.find(".logs-analysis-btn");
+  if (!btn.exists()) return false;
+
+  const anchor = btn.element.closest("a");
+  const style = anchor?.getAttribute("style");
   return !style || !style.includes("display: none");
 }
 
@@ -105,6 +117,7 @@ describe("AnalysisControlButtons.vue", () => {
         rerunActive: false,
         stopActive: true,
         deleteActive: true,
+        logsActive: false,
       },
       "",
       PodStatus.Started,
@@ -130,6 +143,7 @@ describe("AnalysisControlButtons.vue", () => {
         rerunActive: false,
         stopActive: false,
         deleteActive: false,
+        logsActive: false,
       },
       "",
       "",
@@ -148,6 +162,7 @@ describe("AnalysisControlButtons.vue", () => {
         rerunActive: false,
         stopActive: false,
         deleteActive: false,
+        logsActive: false,
       },
       "",
       "",
@@ -168,6 +183,7 @@ describe("AnalysisControlButtons.vue", () => {
         rerunActive: true,
         stopActive: false,
         deleteActive: true,
+        logsActive: true,
       },
       PodStatus.Executing,
       PodStatus.Stopped,
@@ -186,6 +202,7 @@ describe("AnalysisControlButtons.vue", () => {
         rerunActive: true,
         stopActive: false,
         deleteActive: true,
+        logsActive: true,
       },
       PodStatus.Executing,
       PodStatus.Stopped,
@@ -204,6 +221,7 @@ describe("AnalysisControlButtons.vue", () => {
         rerunActive: false,
         stopActive: true,
         deleteActive: true,
+        logsActive: true,
       },
       PodStatus.Executing,
       PodStatus.Executing,
@@ -222,6 +240,7 @@ describe("AnalysisControlButtons.vue", () => {
         rerunActive: false,
         stopActive: false,
         deleteActive: false,
+        logsActive: false,
       },
       PodStatus.Executing,
       "",
@@ -240,6 +259,7 @@ describe("AnalysisControlButtons.vue", () => {
         rerunActive: false,
         stopActive: false,
         deleteActive: false,
+        logsActive: false,
       },
     );
   });
@@ -256,6 +276,7 @@ describe("AnalysisControlButtons.vue", () => {
         rerunActive: false,
         stopActive: true,
         deleteActive: true,
+        logsActive: true,
       },
       PodStatus.Executing,
       PodStatus.Executing,
@@ -274,58 +295,37 @@ describe("AnalysisControlButtons.vue", () => {
         rerunActive: false,
         stopActive: false,
         deleteActive: false,
+        logsActive: false,
       },
       "",
     );
   });
 
-  it("Log btn check", async () => {
-    const wrapper = mount(AnalysisControlButtons, {
-      props: {
-        analysisBuildStatus: ProcessStatus.Executed,
-        analysisExecutionStatus: null,
-        analysisNodeId: "8003eefe-e39b-4bd4-aec4-78046c63b39b",
-        analysisDistributionStatus: ProcessStatus.Executed,
-        analysisId: fakeAnalysisId,
-        approvalStatus: "approved",
-        projectId: "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483",
-        nodeId: "e3b89572-327f-4936-8cf0-fbfbcc6336b7",
-        datastore: true,
-        requireDatastore: true,
-      },
-    });
+  it("Log btn - hidden until the pod has logs to show", async () => {
+    const wrapper = mountControls(null);
 
     expect(AnalysisControlButtons).toBeTruthy();
 
-    // Success check
-    const logBtn = wrapper.find(".logs-analysis-btn");
-    expect(logBtn.attributes("data-p-disabled")).toBe("true");
+    // No run yet, so there is nothing to view
+    expect(isLogsBtnVisible(wrapper)).toBe(false);
 
-    await wrapper.setProps({
-      analysisExecutionStatus: PodStatus.Started,
-    });
-    expect(logBtn.attributes("data-p-disabled")).toBe("false");
+    // Shown for statuses that have produced logs
+    for (const status of [
+      PodStatus.Failed,
+      PodStatus.Stopped,
+      PodStatus.Stopping,
+      PodStatus.Executing,
+      PodStatus.Executed,
+    ]) {
+      await wrapper.setProps({ analysisExecutionStatus: status });
+      expect(isLogsBtnVisible(wrapper)).toBe(true);
+    }
 
-    await wrapper.setProps({
-      analysisExecutionStatus: PodStatus.Executing,
-    });
-    expect(logBtn.attributes("data-p-disabled")).toBe("false");
-
-    await wrapper.setProps({
-      analysisExecutionStatus: "",
-    });
-    expect(logBtn.attributes("data-p-disabled")).toBe("true");
-
-    await wrapper.setProps({
-      analysisExecutionStatus: PodStatus.Failed,
-    });
-    expect(logBtn.attributes("data-p-disabled")).toBe("false");
-
-    await wrapper.setProps({
-      analysisExecutionStatus: PodStatus.Executed,
-    });
-    expect(logBtn.attributes("data-p-disabled")).toBe("false");
-    //
+    // Hidden again for statuses without logs
+    for (const status of [PodStatus.Starting, PodStatus.Started, ""]) {
+      await wrapper.setProps({ analysisExecutionStatus: status });
+      expect(isLogsBtnVisible(wrapper)).toBe(false);
+    }
   });
 
   function mountControls(analysisExecutionStatus: string | null) {

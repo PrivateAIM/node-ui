@@ -17,6 +17,7 @@ interface ButtonStates {
   rerunActive: boolean;
   stopActive: boolean;
   deleteActive: boolean;
+  logsActive: boolean;
 }
 
 const props = defineProps({
@@ -121,25 +122,27 @@ const playButtonActiveStates = [null, "", undefined];
 const rerunButtonActiveStates: Array<string | null | undefined> = [
   PodStatus.Failed,
   PodStatus.Executed,
-  PodStatus.Finished, // Deprecated
   PodStatus.Stopped,
-  PodStatus.Stopping,
 ];
 const stopButtonActiveStates: Array<string | null | undefined> = [
   PodStatus.Executing,
-  PodStatus.Running, // Deprecated
   PodStatus.Starting,
   PodStatus.Started,
   PodStatus.Stopping,
 ];
 const deleteButtonActiveStates: Array<string | null | undefined> = [
+  PodStatus.Stopped,
+  PodStatus.Stopping,
+  PodStatus.Executing,
+  PodStatus.Starting,
+  PodStatus.Started,
+];
+const logsButtonActiveStates: Array<string | null | undefined> = [
   PodStatus.Failed,
   PodStatus.Stopped,
   PodStatus.Stopping,
   PodStatus.Executing,
-  PodStatus.Running, // Deprecated
-  PodStatus.Starting,
-  PodStatus.Started,
+  PodStatus.Executed,
 ];
 
 function getButtonStatuses(podStatus: string | null | undefined) {
@@ -148,6 +151,7 @@ function getButtonStatuses(podStatus: string | null | undefined) {
     rerunActive: rerunButtonActiveStates.includes(podStatus),
     stopActive: stopButtonActiveStates.includes(podStatus),
     deleteActive: deleteButtonActiveStates.includes(podStatus),
+    logsActive: logsButtonActiveStates.includes(podStatus),
   };
 }
 
@@ -445,6 +449,7 @@ async function onDeleteAnalysis(silent: boolean = false) {
       @click="onDeleteAnalysis()"
     />
     <NuxtLink
+      v-show="buttonStatuses.logsActive"
       :to="{
         name: 'analyses-id',
         params: { id: props.analysisId },
@@ -454,7 +459,6 @@ async function onDeleteAnalysis(silent: boolean = false) {
     >
       <Button
         v-tooltip.top="'View the logs'"
-        :disabled="buttonStatuses.playActive"
         aria-label="Logs"
         class="analysis-btn logs-analysis-btn"
         icon="pi pi-bars"
