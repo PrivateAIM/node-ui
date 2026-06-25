@@ -1,0 +1,8 @@
+patchedDependencies:
+  next-auth@4.21.1: patches/next-auth-no-proxy.patch
+
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  msw: true
+  vue-demi: true

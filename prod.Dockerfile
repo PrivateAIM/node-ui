@@ -1,4 +1,4 @@
-FROM node:23-alpine AS builder
+FROM node:24-alpine AS builder
 LABEL maintainer="bruce.schultz@uk-koeln.de"
 
 ENV PNPM_HOME="/pnpm"
@@ -7,16 +7,21 @@ RUN corepack enable
 
 WORKDIR /app
 
-COPY pnpm-lock.yaml package.json ./
+# pnpm-workspace.yaml carries patchedDependencies and allowBuilds (pnpm v11+);
+# without it, patches are silently skipped and build scripts are not run.
+COPY pnpm-lock.yaml package.json pnpm-workspace.yaml ./
 COPY patches /app/patches
 
-RUN pnpm install
+# Remove once corepack bug fixed https://github.com/nodejs/corepack/issues/612#issuecomment-2629613697
+ENV COREPACK_INTEGRITY_KEYS=0
+
+RUN pnpm install --frozen-lockfile
 
 COPY . .
 
 RUN pnpm build
 
-FROM node:23-alpine AS production
+FROM node:24-alpine AS production
 RUN apk add --no-cache curl
 RUN adduser -u 10000 -D nodeui
 
