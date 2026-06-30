@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { deleteDataStore } from "~/composables/useAPIFetch";
+import ConfirmDialog from "primevue/confirmdialog";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import type { Route } from "~/services/Api";
@@ -97,18 +98,22 @@ async function onConfirmDeleteDataStore(dsName: string) {
   deleteLoadingFor.value = null;
 }
 
-const confirmDelete = (event, dsName: string) => {
+const confirmDelete = (dsName: string) => {
   confirm.require({
-    target: event.currentTarget,
-    group: "dataStoreDelete",
+    header: "Confirm Data Store Removal",
     message:
       "Are you sure you want to delete this data store? This will disconnect all projects and analyses from accessing this data.",
     icon: "pi pi-exclamation-circle",
-    acceptIcon: "pi pi-check",
-    position: "top",
-    acceptLabel: "Confirm",
-    rejectIcon: "pi pi-times",
-    rejectLabel: "Cancel",
+    acceptProps: {
+      label: "Delete",
+      icon: "pi pi-check",
+    },
+    rejectProps: {
+      label: "Cancel",
+      severity: "secondary",
+      outlined: true,
+      icon: "pi pi-times",
+    },
     accept: () => {
       onConfirmDeleteDataStore(dsName);
     },
@@ -178,6 +183,7 @@ const updateFilters = (filterText: string) => {
     />
   </div>
   <div class="detailed-data-store-table">
+    <ConfirmDialog></ConfirmDialog>
     <DataTable
       v-model:filters="filters"
       :globalFilterFields="[
@@ -273,7 +279,7 @@ const updateFilters = (filterText: string) => {
             v-tooltip.top="'Test the connection to the data store'"
             class="help-text"
           >
-            <b>Test</b>
+            <b>Test Connection</b>
           </span>
         </template>
         <template #body="slotProps">
@@ -291,30 +297,16 @@ const updateFilters = (filterText: string) => {
       <Column :exportable="false" field="name">
         <template #header>
           <span v-tooltip.top="'Delete the data store'" class="help-text">
-            <b>Delete?</b>
+            <b>Delete Data Store</b>
           </span>
         </template>
         <template #body="slotProps">
-          <ConfirmPopup class="ds-confirm-popup" group="dataStoreDelete">
-            <template #message="slotProps">
-              <div class="ds-confirm-message">
-                <i
-                  :class="slotProps.message.icon"
-                  class="text-6xl text-primary-500"
-                ></i>
-                <p class="ds-confirm-text">
-                  {{ slotProps.message.message }}
-                </p>
-              </div>
-            </template>
-          </ConfirmPopup>
           <div>
             <Button
-              :loading="deleteLoadingFor === slotProps.data.name"
               aria-label="Delete"
               icon="pi pi-trash"
               severity="danger"
-              @click="confirmDelete($event, slotProps.data.name)"
+              @click="confirmDelete(slotProps.data.name)"
             />
           </div>
         </template>
@@ -323,25 +315,4 @@ const updateFilters = (filterText: string) => {
   </div>
 </template>
 
-<style lang="scss" scoped>
-:deep(.ds-confirm-popup) {
-  width: 20rem;
-}
-
-.ds-confirm-message {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  gap: 1rem;
-  border-bottom: 1px solid var(--p-surface-200);
-  padding: 1rem 1rem 0;
-  margin-bottom: 1rem;
-}
-
-.ds-confirm-text {
-  padding: 0 0.625rem;
-  margin: 0;
-  text-align: center;
-}
-</style>
+<style lang="scss" scoped></style>

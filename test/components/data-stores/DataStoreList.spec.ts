@@ -76,7 +76,7 @@ describe("DataStoreList.vue", () => {
     const headerCols = ddstHeaderRow[0].findAll("th");
     expect(headerCols.length).toBe(11); // First col
     expect(headerCols[0].text()).toBe("Name"); // First col
-    expect(headerCols[9].text()).toBe("Test"); // Last col
+    expect(headerCols[9].text()).toBe("Test Connection"); // Last col
   }
 
   test("All data returned", async () => {
