@@ -31,7 +31,6 @@ export default defineNuxtConfig({
     },
   },
 
-  // @ts-expect-error auth is a valid value for NuxtConfig
   auth: {
     isEnabled: true,
     originEnvKey: "NUXT_PUBLIC_ORIGIN",
@@ -73,6 +72,7 @@ export default defineNuxtConfig({
     "~/assets/css/elements.css",
     "~/assets/css/table.css",
     "~/assets/css/preferences.css",
+    "~/assets/css/toast.css",
   ],
 
   nitro: {

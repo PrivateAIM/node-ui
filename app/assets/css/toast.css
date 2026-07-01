@@ -1,0 +1,33 @@
+.p-toast-message {
+    position: relative;
+    overflow: hidden;
+}
+
+.p-toast-message[data-toast-life]::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background-color: currentColor;
+    opacity: 0.55;
+    transform-origin: left;
+    animation-name: toast-timeout-bar;
+    animation-duration: var(--toast-life);
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+}
+
+.p-toast-message:hover::after {
+    animation-play-state: paused;
+}
+
+@keyframes toast-timeout-bar {
+    from {
+        transform: scaleX(1);
+    }
+    to {
+        transform: scaleX(0);
+    }
+}
