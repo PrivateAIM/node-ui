@@ -133,7 +133,7 @@ async function cleanUpResource(endpoint: string) {
       detail += ", number of modified resources: " + modifiedResources;
     }
     toast.add({
-      severity: "info",
+      severity: "success",
       summary: "Cleanup Started",
       detail: detail,
       life: 5000,

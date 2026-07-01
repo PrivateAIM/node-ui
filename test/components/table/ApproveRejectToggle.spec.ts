@@ -91,7 +91,7 @@ describe("ApproveRejectToggle.vue", () => {
 
     expect(toastSpy).toHaveBeenCalledWith(
       expect.objectContaining({
-        severity: "info",
+        severity: "success",
         summary: "Submission successful",
         detail: "Approval successfully submitted.",
       }),
@@ -118,7 +118,7 @@ describe("ApproveRejectToggle.vue", () => {
 
     expect(toastSpy).toHaveBeenCalledWith(
       expect.objectContaining({
-        severity: "info",
+        severity: "success",
         summary: "Submission successful",
         detail: "Rejection successfully submitted.",
       }),

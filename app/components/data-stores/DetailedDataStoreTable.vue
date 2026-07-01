@@ -81,7 +81,7 @@ async function onConfirmDeleteDataStore(dsName: string) {
   const { status } = await deleteDataStore(dsName);
   if (status.value === "success") {
     toast.add({
-      severity: "info",
+      severity: "success",
       summary: "Delete success",
       detail: "The data store was successfully deleted",
       life: 3000,

@@ -34,8 +34,8 @@ async function getStatusUpdateFromPodOrc(): Promise<
     if (analysisStatusUpdate && props.analysisId in analysisStatusUpdate) {
       analysisStatus = analysisStatusUpdate[props.analysisId];
       toast.add({
-        severity: "info",
-        summary: "Analysis status successfully update",
+        severity: "success",
+        summary: "Analysis status successfully updated",
         detail:
           "The current status of the analysis container was successfully updated.",
         life: 5000,

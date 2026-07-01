@@ -129,7 +129,7 @@ async function onSubmitApproval(isApproved: boolean) {
 const showSuccessfulSubmission = (approval: boolean) => {
   const submissionType = approval ? "Approval" : "Rejection";
   toast.add({
-    severity: "info",
+    severity: "success",
     summary: "Submission successful",
     detail: `${submissionType} successfully submitted.`,
     life: 3000,

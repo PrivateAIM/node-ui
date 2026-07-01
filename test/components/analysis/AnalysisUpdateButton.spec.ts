@@ -55,8 +55,8 @@ describe("AnalysisUpdateButton.vue", () => {
 
   it("Update analysis status - some running", async () => {
     const wrapper = await basicButtonCheck(
-      "info",
-      "Analysis status successfully update",
+      "success",
+      "Analysis status successfully updated",
       "The current status of the analysis container was successfully updated.",
       5000,
       fakeAnalysisId,

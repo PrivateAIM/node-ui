@@ -58,7 +58,7 @@ describe("CleanupDialog.vue", () => {
       });
     } else {
       expect(spy).toHaveBeenCalledWith({
-        severity: "info",
+        severity: "success",
         summary: "Cleanup Started",
         detail: "Cleanup request successfully submitted",
         life: 5000,
