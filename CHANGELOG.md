@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.1](https://github.com/PrivateAIM/node-ui/compare/v0.7.0...v0.7.1) (2026-07-01)
+
+
+### Features
+
+* **ds:** change to confirm dialog ([4fe8674](https://github.com/PrivateAIM/node-ui/commit/4fe86745b22f255e1c6235039d3569d9cd51188b))
+* **toast:** add toast timeout bar ([7efb9a5](https://github.com/PrivateAIM/node-ui/commit/7efb9a5c71a48551fcb95a123d81336544f8fbd7))
+
+
+### Bug Fixes
+
+* **toast:** hide delete start when rerunning an analysis ([fe718de](https://github.com/PrivateAIM/node-ui/commit/fe718de7ee4ff5a943dc2a0f1677745f766d5427))
+
 ## [0.7.0](https://github.com/PrivateAIM/node-ui/compare/v0.6.6...v0.7.0) (2026-06-25)
 
 
