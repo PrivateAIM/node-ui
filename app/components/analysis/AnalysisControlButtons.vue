@@ -383,7 +383,7 @@ async function onDeleteAnalysis(silent: boolean = false) {
 
     // deleteResp is undefined if error occurred
     if (deleteResp) {
-      if (props.analysisId in deleteResp) {
+      if (props.analysisId in deleteResp && !silent) {
         showToast(
           "success",
           "Delete success",
