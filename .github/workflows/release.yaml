@@ -44,6 +44,8 @@ jobs:
     steps:
       - name: Checkout  # required for finding action
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: check-version
         run: |
@@ -68,6 +70,8 @@ jobs:
     steps:
       - name: Checkout  # required for finding action
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Build canary image
         uses: ./.github/actions/build-docker-image
