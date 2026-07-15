@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import Panel from "primevue/panel";
 
 defineProps<{ header: string }>();
@@ -11,11 +11,14 @@ const emit = defineEmits(["closeHelp"]);
       <slot />
       <template #icons>
         <Button
+          v-tooltip.top="'Close help box'"
+          :size="'small'"
+          aria-label="Close help box"
           class="p-panel-header-icon p-link mr-2 help-box-close-btn"
           icon="pi pi-times"
+          rounded
           severity="contrast"
-          v-tooltip.top="'Close help box'"
-          aria-label="Close help box"
+          variant="text"
           @click="emit('closeHelp')"
         />
       </template>
@@ -23,4 +26,4 @@ const emit = defineEmits(["closeHelp"]);
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style lang="scss" scoped></style>
