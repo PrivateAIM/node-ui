@@ -20,6 +20,10 @@ import {
   type ProjectNode,
 } from "~/services/Api";
 import { getProjectNodes } from "~/composables/useAPIFetch";
+import {
+  generateRandomDataStoreName,
+  isValidDataStoreName,
+} from "~/utils/data-store-name";
 
 const loading = ref(false);
 const helpActive = ref<HelpTextField | undefined>();
@@ -70,8 +74,8 @@ const dataStoreSettingsMap: Map<string, string> = new Map([
   ["path", "Data path or bucket name"],
   ["port", "Port"],
   ["protocol", "Connection protocol"],
-  ["minio_access_key", "MinIO access key"],
-  ["minio_secret_key", "MinIO secret key"],
+  ["s3_access_key", "S3 access key"],
+  ["s3_secret_key", "S3 secret key"],
 ]);
 
 // Datastore settings
@@ -93,11 +97,15 @@ const acceptedProtocols = [
   "wss",
 ];
 
-watch(selectedProject, (newSelectedProject) => {
-  if (newSelectedProject) {
-    dataStoreName.value = `${newSelectedProject.id}`;
+function rerollDataStoreName() {
+  if (selectedProject.value) {
+    dataStoreName.value = generateRandomDataStoreName(
+      selectedProject.value.name ?? selectedProject.value.id,
+    );
   }
-});
+}
+
+watch(selectedProject, rerollDataStoreName);
 
 // Preselect the project when navigated here with a projectId query parameter
 const route = useRoute();
@@ -145,6 +153,17 @@ function verifyValuesFilled(settings: object): boolean {
 }
 
 async function onSubmitCreateDataStoreAndProject() {
+  if (!isValidDataStoreName(dataStoreName.value)) {
+    toast.add({
+      severity: "error",
+      summary: "Invalid data store name",
+      detail:
+        "Only letters, digits, '.', '_', '~', and '-' are allowed, and the name cannot be a bare UUID",
+      life: 5000,
+    });
+    return;
+  }
+
   const validatedPath = validatePath(path.value);
   const datastoreSettings = {
     name: dataStoreName.value,
@@ -160,9 +179,9 @@ async function onSubmitCreateDataStoreAndProject() {
     ds_type: selectedDataStoreType.value,
   };
 
-  const minioSettings = {
-    minio_access_key: bucketAccessKey.value || "",
-    minio_secret_key: bucketSecretKey.value || "",
+  const s3Settings = {
+    s3_access_key: bucketAccessKey.value || "",
+    s3_secret_key: bucketSecretKey.value || "",
   };
 
   let settingsValidated = verifyValuesFilled(datastoreSettings);
@@ -171,8 +190,8 @@ async function onSubmitCreateDataStoreAndProject() {
     selectedDataStoreType.value === DataStoreType.S3 &&
     selectedBucketAccessPolicy.value === "Private"
   ) {
-    configSettings.minio_config = minioSettings;
-    settingsValidated = settingsValidated && verifyValuesFilled(minioSettings);
+    configSettings.s3_config = s3Settings;
+    settingsValidated = settingsValidated && verifyValuesFilled(s3Settings);
   }
 
   if (settingsValidated) {
@@ -257,13 +276,27 @@ async function onSubmitCreateDataStoreAndProject() {
               <InputGroupAddon class="data-store-field-name">
                 <i class="pi pi-barcode"></i>
                 <p
-                  v-tooltip.top="'Generated name of the data store'"
+                  v-tooltip.top="'Display name of the data store'"
                   class="data-store-field-name-box"
                 >
                   Data Store
                 </p>
               </InputGroupAddon>
-              <InputText v-model="dataStoreName" disabled />
+              <InputText
+                v-model="dataStoreName"
+                :invalid="
+                  dataStoreName !== '' && !isValidDataStoreName(dataStoreName)
+                "
+                placeholder="Name of the data store"
+              />
+              <Button
+                v-tooltip.top="'Suggest a new random name'"
+                :disabled="!selectedProject"
+                class="reroll-name-btn"
+                icon="pi pi-refresh"
+                severity="secondary"
+                @click="rerollDataStoreName"
+              />
             </InputGroup>
             <InputGroup class="data-store-type-input">
               <InputGroupAddon class="data-store-field-name">

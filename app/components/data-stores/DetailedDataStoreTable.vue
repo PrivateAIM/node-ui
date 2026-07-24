@@ -6,22 +6,28 @@ import { useToast } from "primevue/usetoast";
 import type { Route } from "~/services/Api";
 import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
-import { extractUuid } from "~/utils/extract-uuid-from-kong-username";
+import { parseKongTags } from "~/utils/parse-kong-tags";
 import { parseUnixTimestamp } from "~/utils/format-data-row";
 import { getDataStoreTypeSeverity } from "~/utils/status-tag-severity";
-import type { ModifiedDetailedService } from "~/services/modifiedApiInterfaces";
+import type {
+  ModifiedDetailedService,
+  modifiedTimestamp,
+} from "~/services/modifiedApiInterfaces";
 import { useNuxtApp } from "nuxt/app";
 
 interface DetailedDataStoreTableRow {
-  name?: string | undefined;
+  rowKey: string;
+  datastoreId?: string | undefined;
+  projectId?: string | undefined;
+  name?: string | null | undefined;
   type?: string | undefined;
   project?: string | undefined;
-  path?: string | undefined;
-  host?: string | undefined;
-  port?: number | undefined;
-  protocol?: string | undefined;
-  created_at?: string | undefined;
-  updated_at?: string | undefined;
+  path?: string | null | undefined;
+  host?: string | null | undefined;
+  port?: number | null | undefined;
+  protocol?: string | null | undefined;
+  created_at?: modifiedTimestamp | undefined;
+  updated_at?: modifiedTimestamp | undefined;
 }
 
 const props = defineProps({
@@ -44,31 +50,42 @@ const dataStores = computed(() => {
 
   if (props.stores && props.stores.length > 0) {
     props.stores.forEach((store: ModifiedDetailedService) => {
-      const formattedRow: DetailedDataStoreTableRow = parseUnixTimestamp(
-        store,
-        ["created_at", "updated_at"],
-      );
+      const formattedRow = parseUnixTimestamp(store, [
+        "created_at",
+        "updated_at",
+      ]) as ModifiedDetailedService;
+      const baseRow: DetailedDataStoreTableRow = {
+        rowKey: store.id!,
+        datastoreId: store.id ?? undefined,
+        name: store.name,
+        type: parseKongTags(store.tags).type,
+        project: "N/A",
+        path: store.path,
+        host: store.host,
+        port: store.port,
+        protocol: store.protocol,
+        created_at: formattedRow.created_at,
+        updated_at: formattedRow.updated_at,
+      };
       const routes = store.routes;
       if (routes && routes.length > 0) {
-        routes.forEach((proj: Route) => {
-          const projectParts = extractUuid(proj.name!);
-          const dataStoreType = projectParts[0];
-          const projectUuid = projectParts[1] as string;
-          const newRow: DetailedDataStoreTableRow = {
-            name: store.name,
-            type: dataStoreType,
-            project: props.projectNameMap?.has(projectUuid)
-              ? props.projectNameMap.get(projectUuid)!
-              : "N/A",
-            path: store.path,
-            host: store.host,
-            port: store.port,
-            protocol: store.protocol,
-            created_at: formattedRow.created_at,
-            updated_at: formattedRow.updated_at,
-          };
-          tableRows.push(newRow);
+        routes.forEach((route: Route) => {
+          const routeTags = parseKongTags(route.tags);
+          const projectUuid = routeTags.project ?? route["projectId"];
+          tableRows.push({
+            ...baseRow,
+            rowKey: `${store.id}:${route.id}`,
+            projectId: projectUuid,
+            type: routeTags.type ?? baseRow.type,
+            project:
+              projectUuid && props.projectNameMap?.has(projectUuid)
+                ? props.projectNameMap.get(projectUuid)!
+                : "N/A",
+          });
         });
+      } else {
+        // Data stores can now exist without any linked project
+        tableRows.push(baseRow);
       }
     });
   }
@@ -76,9 +93,11 @@ const dataStores = computed(() => {
   return tableRows;
 });
 
-async function onConfirmDeleteDataStore(dsName: string) {
-  deleteLoadingFor.value = dsName;
-  const { status } = await deleteDataStore(dsName);
+async function onConfirmDeleteDataStore(row: DetailedDataStoreTableRow) {
+  const dsId = row.datastoreId ?? row.name!;
+  deleteLoadingFor.value = dsId;
+  // Cascade removes the project links (routes) along with the store
+  const { status } = await deleteDataStore(dsId, true);
   if (status.value === "success") {
     toast.add({
       severity: "success",
@@ -86,7 +105,7 @@ async function onConfirmDeleteDataStore(dsName: string) {
       detail: "The data store was successfully deleted",
       life: 3000,
     });
-    emit("deleteDataStore", dsName);
+    emit("deleteDataStore", dsId);
   } else {
     toast.add({
       severity: "error",
@@ -98,7 +117,7 @@ async function onConfirmDeleteDataStore(dsName: string) {
   deleteLoadingFor.value = null;
 }
 
-const confirmDelete = (dsName: string) => {
+const confirmDelete = (row: DetailedDataStoreTableRow) => {
   confirm.require({
     header: "Confirm Data Store Removal",
     message:
@@ -115,20 +134,22 @@ const confirmDelete = (dsName: string) => {
       icon: "pi pi-times",
     },
     accept: () => {
-      onConfirmDeleteDataStore(dsName);
+      onConfirmDeleteDataStore(row);
     },
     reject: () => {},
   });
 };
 
-async function onCheckConnection(dsName: string) {
-  checkingConnectionFor.value = dsName;
-  const [dsType, projectId] = extractUuid(dsName);
+async function onCheckConnection(row: DetailedDataStoreTableRow) {
+  checkingConnectionFor.value = row.rowKey;
 
   const connStatus = await useNuxtApp()
-    .$hubApi(`/kong/project/${projectId}/${dsType}/health`, {
-      method: "GET",
-    })
+    .$hubApi(
+      `/kong/project/${row.projectId}/datastore/${row.datastoreId}/health`,
+      {
+        method: "GET",
+      },
+    )
     .catch(() => {
       toast.add({
         severity: "error",
@@ -166,10 +187,12 @@ function resetFilters() {
     };
     clearedFilters[filterKey].value = undefined;
   }
+  // @ts-expect-error filters are fine
   filters.value = clearedFilters;
 }
 
 const updateFilters = (filterText: string) => {
+  // @ts-expect-error filters are fine
   filters.value.global.value = filterText;
 };
 </script>
@@ -285,11 +308,17 @@ const updateFilters = (filterText: string) => {
         <template #body="slotProps">
           <div>
             <Button
-              :loading="checkingConnectionFor === slotProps.data.name"
+              v-tooltip.top="
+                slotProps.data.projectId
+                  ? undefined
+                  : 'No linked project to test through'
+              "
+              :disabled="!slotProps.data.projectId"
+              :loading="checkingConnectionFor === slotProps.data.rowKey"
               aria-label="test-connection"
               icon="pi pi-wifi"
               severity="contrast"
-              @click="onCheckConnection(slotProps.data.name)"
+              @click="onCheckConnection(slotProps.data)"
             />
           </div>
         </template>
@@ -303,10 +332,11 @@ const updateFilters = (filterText: string) => {
         <template #body="slotProps">
           <div>
             <Button
+              :loading="deleteLoadingFor === slotProps.data.datastoreId"
               aria-label="Delete"
               icon="pi pi-trash"
               severity="danger"
-              @click="confirmDelete(slotProps.data.name)"
+              @click="confirmDelete(slotProps.data)"
             />
           </div>
         </template>

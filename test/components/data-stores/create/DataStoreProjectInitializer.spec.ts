@@ -290,8 +290,11 @@ describe("DataStoreProjectInitializer.vue", () => {
 
     const vm = localWrapper.findComponent(DataStoreProjectInitializer).vm;
     expect(vm.selectedProject?.id).toBe(target.id);
-    // The generated data store name is derived from the selected project id
-    expect(vm.dataStoreName).toBe(target.id);
+    // The generated data store name is derived from the selected project name
+    // plus a random adjective-noun suffix
+    expect(vm.dataStoreName).toMatch(
+      new RegExp(`^${target.name}-[a-z]+-[a-z]+$`),
+    );
 
     localWrapper.unmount();
   });
@@ -309,5 +312,35 @@ describe("DataStoreProjectInitializer.vue", () => {
     expect(vm.selectedProject).toBeUndefined();
 
     localWrapper.unmount();
+  });
+
+  it("Generates a random data store name and rerolls it", async () => {
+    const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0);
+
+    // Disabled until a project is selected
+    const rerollBtn = wrapper.find(".reroll-name-btn");
+    expect(rerollBtn.exists()).toBe(true);
+    expect(rerollBtn.attributes("disabled")).toBeDefined();
+
+    const project = innerVm().availableProjects[0];
+    innerVm().selectedProject = project;
+    await innerVm().$nextTick();
+
+    const namePattern = new RegExp(`^${project.name}-[a-z]+-[a-z]+$`);
+    const firstName = innerVm().dataStoreName;
+    expect(firstName).toMatch(namePattern);
+    expect(
+      wrapper.find(".reroll-name-btn").attributes("disabled"),
+    ).toBeUndefined();
+
+    // Force a different pair and reroll
+    randomSpy.mockReturnValue(0.999);
+    await wrapper.find(".reroll-name-btn").trigger("click");
+
+    const secondName = innerVm().dataStoreName;
+    expect(secondName).toMatch(namePattern);
+    expect(secondName).not.toBe(firstName);
+
+    randomSpy.mockRestore();
   });
 });

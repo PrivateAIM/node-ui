@@ -1,16 +1,13 @@
 import type {
-  AnalysisLogsResponse,
   AnalysisNode,
-  DeleteProject,
+  BodyKongProjectLinkKongProjectProjectIdDatastoreDatastoreIdPost,
   DetailedAnalysis,
   EventLogResponse,
   LinkDataStoreProject,
-  ListConsumers,
-  ListRoutes,
   ListServices,
   Project,
   ProjectNode,
-  Service,
+  UnlinkResponse,
   UserSettings,
 } from "~/services/Api";
 
@@ -111,60 +108,40 @@ export function getDataStores(includeProject: boolean, opts?) {
   });
 }
 
-export function createDataStore(dataStoreProps: Service, opts?) {
-  return useAPIFetch<{ data: Service }>(`/kong/datastore`, {
-    ...opts,
-    method: "POST",
-    body: dataStoreProps,
-  });
-}
-
-export function deleteDataStore(dataStoreName: string, opts?) {
-  return useAPIFetch(`/kong/datastore/${dataStoreName}`, {
+export function deleteDataStore(
+  dataStoreIdOrName: string,
+  cascade: boolean = false,
+  opts?,
+) {
+  return useAPIFetch(`/kong/datastore/${dataStoreIdOrName}`, {
     ...opts,
     method: "DELETE",
+    query: {
+      cascade,
+    },
   });
 }
 
-export function createProject(routeProps: ListRoutes, opts?) {
-  return useAPIFetch<{ data: LinkDataStoreProject }>(`/kong/project`, {
-    ...opts,
-    method: "POST",
-    body: routeProps,
-  });
+export function linkProjectToDataStore(
+  projectId: string,
+  datastoreId: string,
+  linkProps: BodyKongProjectLinkKongProjectProjectIdDatastoreDatastoreIdPost = {},
+  opts?,
+) {
+  return useAPIFetch<LinkDataStoreProject>(
+    `/kong/project/${projectId}/datastore/${datastoreId}`,
+    {
+      ...opts,
+      method: "POST",
+      body: linkProps,
+    },
+  );
 }
 
 export function deleteProjectFromKong(projectId: string, opts?) {
-  return useAPIFetch<{ data: DeleteProject }>(`/kong/project/${projectId}`, {
+  return useAPIFetch<UnlinkResponse>(`/kong/project/${projectId}`, {
     ...opts,
     method: "DELETE",
-  });
-}
-
-export function getAnalysesFromKong(opts?) {
-  return useAPIFetch<ListConsumers>(`/kong/analysis`, {
-    ...opts,
-    method: "GET",
-  });
-}
-
-export function deleteAnalysisFromKong(analysisId: string, opts?) {
-  return useAPIFetch<{ data: DeleteProject }>(`/kong/analysis/${analysisId}`, {
-    ...opts,
-    method: "DELETE",
-  });
-}
-
-// PodOrc endpoints
-export function getAnalysisLogs(
-  analysisId: string,
-  query?: { limit?: number | null; start_date?: string | null },
-  opts?,
-) {
-  return useAPIFetch<AnalysisLogsResponse>(`/logs/${analysisId}`, {
-    ...opts,
-    method: "GET",
-    query,
   });
 }
 

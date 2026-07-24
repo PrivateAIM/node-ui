@@ -1,6 +1,7 @@
 import { ref, watchEffect } from "vue";
 import { getDataStores, getProjects } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
+import { parseKongTags } from "~/utils/parse-kong-tags";
 import type { ModifiedDetailedService } from "~/services/modifiedApiInterfaces";
 import type { DetailedAnalysis, Project, Route } from "~/services/Api";
 
@@ -59,7 +60,9 @@ export async function useDataStoreList() {
             [],
           ) as Route[];
           store.routes?.forEach((route: Route) => {
-            route["projectId"] = extractProjectIdFromPath(route.paths);
+            route["projectId"] =
+              parseKongTags(route.tags).project ??
+              extractProjectIdFromPath(route.paths);
           });
         }
       });
