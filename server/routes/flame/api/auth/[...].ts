@@ -76,6 +76,7 @@ function buildProvider() {
         clientId: clientId,
         clientSecret: clientSecret,
         wellKnown: `${clientIssuer}/.well-known/openid-configuration`,
+        checks: ["state"],
         authorization: {
           params: {
             scope: "global",
