@@ -314,6 +314,76 @@ describe("DataStoreProjectInitializer.vue", () => {
     localWrapper.unmount();
   });
 
+  describe("Autofill buttons", () => {
+    it("renders Autofill FHIR and Autofill S3 buttons", () => {
+      const buttons = wrapper.findAll(".ds-autofill-btn");
+      expect(buttons).toHaveLength(2);
+      expect(buttons[0]!.text()).toBe("Autofill FHIR");
+      expect(buttons[1]!.text()).toBe("Autofill S3");
+    });
+
+    it("Autofill FHIR populates hostname, port, and type with FHIR defaults", async () => {
+      const fhirBtn = wrapper
+        .findAll(".ds-autofill-btn")
+        .find((btn) => btn.text() === "Autofill FHIR");
+      await fhirBtn!.trigger("click");
+      await innerVm().$nextTick();
+
+      expect(innerVm().selectedDataStoreType).toBe(DataStoreType.Fhir);
+      expect(innerVm().host).toBe("node-datastore-blaze");
+      expect(innerVm().port).toBe(80);
+    });
+
+    it("Autofill FHIR shows the FHIR data path field", async () => {
+      const fhirBtn = wrapper
+        .findAll(".ds-autofill-btn")
+        .find((btn) => btn.text() === "Autofill FHIR");
+      await fhirBtn!.trigger("click");
+      await innerVm().$nextTick();
+
+      expect(wrapper.find(".data-store-path-input-fhir").exists()).toBe(true);
+      expect(wrapper.find(".s3-name-fields").exists()).toBe(false);
+    });
+
+    it("Autofill S3 populates hostname, port, and type with S3 defaults", async () => {
+      const s3Btn = wrapper
+        .findAll(".ds-autofill-btn")
+        .find((btn) => btn.text() === "Autofill S3");
+      await s3Btn!.trigger("click");
+      await innerVm().$nextTick();
+
+      expect(innerVm().selectedDataStoreType).toBe(DataStoreType.S3);
+      expect(innerVm().host).toBe("node-datastore-seaweedfs-all-in-one");
+      expect(innerVm().port).toBe(8333);
+    });
+
+    it("Autofill S3 shows the S3 bucket fields", async () => {
+      const s3Btn = wrapper
+        .findAll(".ds-autofill-btn")
+        .find((btn) => btn.text() === "Autofill S3");
+      await s3Btn!.trigger("click");
+      await innerVm().$nextTick();
+
+      expect(wrapper.find(".s3-name-fields").exists()).toBe(true);
+      expect(wrapper.find(".data-store-path-input-fhir").exists()).toBe(false);
+    });
+
+    it("Autofill FHIR switches back to FHIR after S3 was selected", async () => {
+      const [fhirBtn, s3Btn] = wrapper.findAll(".ds-autofill-btn");
+      await s3Btn!.trigger("click");
+      await innerVm().$nextTick();
+      expect(innerVm().selectedDataStoreType).toBe(DataStoreType.S3);
+
+      await fhirBtn!.trigger("click");
+      await innerVm().$nextTick();
+
+      expect(innerVm().selectedDataStoreType).toBe(DataStoreType.Fhir);
+      expect(innerVm().host).toBe("node-datastore-blaze");
+      expect(innerVm().port).toBe(80);
+      expect(wrapper.find(".data-store-path-input-fhir").exists()).toBe(true);
+    });
+  });
+
   it("Generates a random data store name and rerolls it", async () => {
     const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0);
 

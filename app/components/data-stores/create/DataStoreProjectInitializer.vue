@@ -9,16 +9,9 @@ import InputNumber from "primevue/inputnumber";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import InputGroup from "primevue/inputgroup";
 import DataStoreHelpBox from "~/components/data-stores/create/DataStoreHelpBox.vue";
-import {
-  type AvailableProject,
-  HelpTextField,
-} from "~/components/data-stores/create/index";
+import { type AvailableProject, HelpTextField } from "~/components/data-stores/create/index";
 import { useToast } from "primevue/usetoast";
-import {
-  type BodyKongInitializeKongInitializePost,
-  DataStoreType,
-  type ProjectNode,
-} from "~/services/Api";
+import { type BodyKongInitializeKongInitializePost, DataStoreType, type ProjectNode } from "~/services/Api";
 import { getProjectNodes } from "~/composables/useAPIFetch";
 import {
   generateRandomDataStoreName,
@@ -74,8 +67,8 @@ const dataStoreSettingsMap: Map<string, string> = new Map([
   ["path", "Data path or bucket name"],
   ["port", "Port"],
   ["protocol", "Connection protocol"],
-  ["s3_access_key", "S3 access key"],
-  ["s3_secret_key", "S3 secret key"],
+  ["minio_access_key", "S3 access key"],
+  ["minio_secret_key", "S3 secret key"],
 ]);
 
 // Datastore settings
@@ -116,12 +109,6 @@ if (typeof preselectedProjectId === "string") {
   );
 }
 
-watch(selectedDataStoreType, (newDataStoreType) => {
-  if (newDataStoreType === DataStoreType.S3) {
-    port.value = 9000;
-  }
-});
-
 function activateHelp(helpField: HelpTextField) {
   helpActive.value = helpActive.value === helpField ? undefined : helpField;
 }
@@ -132,6 +119,16 @@ function deactivateHelp() {
 
 function validatePath(path: string) {
   return path.startsWith("/") ? path : `/${path}`;
+}
+
+function autofillFields(
+  afDatastoreType: DataStoreType,
+  afHostname: string,
+  afPort: number,
+) {
+  selectedDataStoreType.value = afDatastoreType;
+  host.value = afHostname;
+  port.value = afPort;
 }
 
 function verifyValuesFilled(settings: object): boolean {
@@ -254,6 +251,36 @@ async function onSubmitCreateDataStoreAndProject() {
             column.
           </p>
         </div>
+        <div class="ds-autofill-btns">
+          <Button
+            :loading="loading"
+            :size="'small'"
+            class="ds-autofill-btn"
+            label="Autofill FHIR"
+            outlined
+            rounded
+            severity="warn"
+            @click="
+              autofillFields(DataStoreType.Fhir, 'node-datastore-blaze', 80)
+            "
+          />
+          <Button
+            :loading="loading"
+            :size="'small'"
+            class="ds-autofill-btn"
+            label="Autofill S3"
+            outlined
+            rounded
+            severity="info"
+            @click="
+              autofillFields(
+                DataStoreType.S3,
+                'node-datastore-seaweedfs-all-in-one',
+                8333,
+              )
+            "
+          />
+        </div>
         <div class="data-store-panel">
           <div class="data-store-input-fields">
             <InputGroup
@@ -318,9 +345,9 @@ async function onSubmitCreateDataStoreAndProject() {
               <Select
                 v-model="selectedDataStoreType"
                 :options="dataStoreTypeOptions"
+                class="data-store-type-picker"
                 optionLabel="label"
                 optionValue="value"
-                class="data-store-type-picker"
               />
             </InputGroup>
             <div
@@ -368,22 +395,22 @@ async function onSubmitCreateDataStoreAndProject() {
                     <div class="flex items-center gap-2">
                       <RadioButton
                         v-model="selectedBucketAccessPolicy"
+                        class="bucket-access-policy-radio-btn-private"
                         inputId="private"
                         name="accessPolicy"
-                        value="Private"
                         size="small"
-                        class="bucket-access-policy-radio-btn-private"
+                        value="Private"
                       />
                       <label for="private">Private</label>
                     </div>
                     <div class="flex items-center gap-2">
                       <RadioButton
                         v-model="selectedBucketAccessPolicy"
+                        class="bucket-access-policy-radio-btn-public"
                         inputId="public"
                         name="accessPolicy"
-                        value="Public"
                         size="small"
-                        class="bucket-access-policy-radio-btn-public"
+                        value="Public"
                       />
                       <label for="public">Public</label>
                     </div>
@@ -494,8 +521,8 @@ async function onSubmitCreateDataStoreAndProject() {
               </InputGroupAddon>
               <InputNumber
                 v-model="port"
-                :useGrouping="false"
                 :invalid="port < 0 || port > 65535"
+                :useGrouping="false"
                 placeholder="Port e.g. 443"
               />
             </InputGroup>
@@ -569,6 +596,11 @@ async function onSubmitCreateDataStoreAndProject() {
   width: 100%;
 }
 
+.ds-autofill-btns {
+  display: flex;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
 .data-store-input-fields {
   width: 80%;
   margin-right: 24px;

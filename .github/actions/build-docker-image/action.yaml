@@ -25,6 +25,10 @@ inputs:
     default: ""
     description: "Suffix to append to the image tags"
     required: false
+  extra_tag:
+    default: ""
+    description: "An extra raw tag to apply to the image (e.g. edge, canary)"
+    required: false
 
 runs:
   using: composite
@@ -32,6 +36,8 @@ runs:
   steps:
     - name: Checkout
       uses: actions/checkout@v6
+      with:
+        persist-credentials: false
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v4
@@ -58,6 +64,7 @@ runs:
           type=raw,value=canary,enable=${{ github.event_name == 'workflow_dispatch' }}
           type=raw,event=workflow_dispatch,value=${{ github.event.inputs.dispatch-tag }}
           type=semver,pattern={{version}},value=${{ inputs.image_tags }},branch=develop
+          type=raw,value=${{ inputs.extra_tag }},enable=${{ inputs.extra_tag != '' }}
 
     - name: Clean variables
       id: clean
