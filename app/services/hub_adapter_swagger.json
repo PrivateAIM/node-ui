@@ -2626,7 +2626,7 @@
       "post": {
         "tags": ["Kong"],
         "summary": "Kong.Project.Link",
-        "description": "Link a project to a data store by creating a route on the store's service.\n\nThe route carries all relationship data in its tags and has no name, the project's analyses reach it automatically\nthrough their project ACL group.",
+        "description": "Link a project to a data store by creating a route on the store's service.\n\nA data store can only be linked to one project at a time.\nThe route's matching path is \"/{service_name}/{type}\" with no project identifier in it.",
         "operationId": "kong_project_link_kong_project__project_id__datastore__datastore_id__post",
         "security": [
           {
@@ -4732,7 +4732,8 @@
           "interval": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "integer",
+                "exclusiveMinimum": 0.0
               },
               {
                 "type": "null"
@@ -6446,7 +6447,8 @@
           "interval": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "integer",
+                "exclusiveMinimum": 0.0
               },
               {
                 "type": "null"

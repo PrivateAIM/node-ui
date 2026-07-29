@@ -3344,7 +3344,7 @@ export class Api<
       }),
 
     /**
-     * @description Link a project to a data store by creating a route on the store's service. The route carries all relationship data in its tags and has no name, the project's analyses reach it automatically through their project ACL group.
+     * @description Link a project to a data store by creating a route on the store's service. A data store can only be linked to one project at a time. The route's matching path is "/{service_name}/{type}" with no project identifier in it.
      *
      * @tags Kong
      * @name KongProjectLinkKongProjectProjectIdDatastoreDatastoreIdPost
