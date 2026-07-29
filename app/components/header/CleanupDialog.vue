@@ -94,8 +94,9 @@ async function cleanUpResource(endpoint: string) {
         life: 5000,
       });
     })) as CleanupPodResponse;
-  if (cleanupResponse && cleanupResponse.zombies) {
-    modifiedResources = cleanupResponse.zombies;
+  if (cleanupResponse) {
+    const count = cleanupResponse[endpoint as keyof CleanupPodResponse];
+    if (count) modifiedResources = count;
   }
 
   if (cleanupResponse) {
