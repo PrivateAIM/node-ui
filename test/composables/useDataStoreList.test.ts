@@ -1,8 +1,5 @@
 import { expect, test, describe } from "vitest";
-import {
-  buildProjectNameMap,
-  extractProjectIdFromPath,
-} from "~/composables/useDataStoreList";
+import { buildProjectNameMap } from "~/composables/useDataStoreList";
 
 describe("buildProjectNameMap", () => {
   test("maps project id to name", () => {
@@ -30,17 +27,5 @@ describe("buildProjectNameMap", () => {
   test("returns empty map for empty array", () => {
     const map = buildProjectNameMap([]);
     expect(map.size).toBe(0);
-  });
-});
-
-describe("extractProjectIdFromPath", () => {
-  test("extracts the second path segment", () => {
-    expect(extractProjectIdFromPath(["/abc-123/data"])).toBe("abc-123");
-  });
-
-  test("works with uuid-style ids", () => {
-    expect(
-      extractProjectIdFromPath(["/97ed7bca-d56c-41b1-9625-61d20d90690c/fhir"]),
-    ).toBe("97ed7bca-d56c-41b1-9625-61d20d90690c");
   });
 });

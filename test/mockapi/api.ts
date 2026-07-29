@@ -46,7 +46,7 @@ export const fakeHubApi = $fetch.create({
           break;
 
         case 409:
-          showKongDuplicateErrorToast(toast);
+          showKongDuplicateErrorToast(toast, errMsg);
           break;
 
         case 502:

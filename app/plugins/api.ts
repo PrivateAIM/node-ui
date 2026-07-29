@@ -97,7 +97,7 @@ export default defineNuxtPlugin(() => {
             break;
 
           case 409:
-            showKongDuplicateErrorToast(toast);
+            showKongDuplicateErrorToast(toast, errMsg);
             break;
 
           case 502:

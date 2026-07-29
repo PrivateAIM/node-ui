@@ -177,10 +177,26 @@ describe("helper toast functions", () => {
     expect(errorSpy).toHaveBeenCalledWith("connection refused");
   });
 
-  it("showKongDuplicateErrorToast shows a duplicate entry error", () => {
+  it("showKongDuplicateErrorToast falls back to a default message", () => {
     showKongDuplicateErrorToast(toast as unknown as ToastServiceMethods);
     expect(toast.add).toHaveBeenCalledWith(
-      expect.objectContaining({ summary: "Duplicate entry error" }),
+      expect.objectContaining({
+        summary: "Conflict error",
+        detail: "A data store for this project and server type already exists!",
+      }),
+    );
+  });
+
+  it("showKongDuplicateErrorToast uses the provided message", () => {
+    showKongDuplicateErrorToast(
+      toast as unknown as ToastServiceMethods,
+      "Data store is linked to a different project",
+    );
+    expect(toast.add).toHaveBeenCalledWith(
+      expect.objectContaining({
+        summary: "Conflict error",
+        detail: "Data store is linked to a different project",
+      }),
     );
   });
 

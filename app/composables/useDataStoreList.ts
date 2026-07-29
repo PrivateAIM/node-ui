@@ -17,13 +17,6 @@ export function buildProjectNameMap(
   return map;
 }
 
-export function extractProjectIdFromPath(
-  paths: string[] | null | undefined,
-): string | undefined {
-  const firstPath = paths?.[0];
-  return firstPath?.split("/")[1];
-}
-
 const DATA_ROW_UNIX_COLS = ["created_at", "updated_at"];
 
 export async function useDataStoreList() {
@@ -60,9 +53,7 @@ export async function useDataStoreList() {
             [],
           ) as Route[];
           store.routes?.forEach((route: Route) => {
-            route["projectId"] =
-              parseKongTags(route.tags).project ??
-              extractProjectIdFromPath(route.paths);
+            route["projectId"] = parseKongTags(route.tags).project;
           });
         }
       });

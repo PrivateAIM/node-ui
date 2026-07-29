@@ -86,11 +86,15 @@ export const showKongConnectionErrorToast = (toast: ToastServiceMethods) => {
   console.warn("Kong service unreachable");
 };
 
-export const showKongDuplicateErrorToast = (toast: ToastServiceMethods) => {
+export const showKongDuplicateErrorToast = (
+  toast: ToastServiceMethods,
+  msg?: string,
+) => {
   showConnectionErrorToast(toast, {
     severity: "error",
-    summary: "Duplicate entry error",
-    detail: "A data store for this project and server type already exists!",
+    summary: "Conflict error",
+    detail:
+      msg || "A data store for this project and server type already exists!",
   });
 };
 
