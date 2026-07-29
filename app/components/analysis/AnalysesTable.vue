@@ -27,6 +27,7 @@ import {
   type Route,
 } from "~/services/Api";
 import { ApprovalStatus } from "~/types/node";
+import { parseKongTags } from "~/utils/parse-kong-tags";
 import ContainerCounter from "~/components/analysis/ContainerCounter.vue";
 import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
 import type {
@@ -162,11 +163,9 @@ async function getKongRoutes() {
     .catch(() => undefined)) as ListRoutes;
   if (kongRoutesResp && kongRoutesResp.data) {
     const projIds: string[] = [];
-    kongRoutesResp.data.forEach((proj: Route) => {
-      const nameChunks = proj.name?.split("-");
-      if (nameChunks && nameChunks.length > 1) {
-        nameChunks.pop(); // Remove suffix, either "fhir" or "s3"
-        const projUuid = nameChunks.join("-");
+    kongRoutesResp.data.forEach((route: Route) => {
+      const projUuid = parseKongTags(route.tags).project;
+      if (projUuid) {
         projIds.push(projUuid);
       }
     });
@@ -686,7 +685,6 @@ const onCloseNavToast = () => {
             :showFilterOperator="false"
             field="execution_status"
             filterField="execution_status"
-            headerStyle="text-align: center"
           >
             <template #header>
               <span
@@ -762,7 +760,8 @@ const onCloseNavToast = () => {
                 <Badge
                   :severity="datastoreBadgeSeverity"
                   class="w-8 h-8 rounded-full"
-                  ><button
+                >
+                  <button
                     v-tooltip.top="datastoreBadgeTooltip"
                     type="button"
                     :disabled="!datastoreRequired"
@@ -773,8 +772,9 @@ const onCloseNavToast = () => {
                     ]"
                     @click="onCreateDataStore(data.analysis.project_id)"
                   >
-                    <i class="pi pi-times"></i></button
-                ></Badge>
+                    <i class="pi pi-times"></i>
+                  </button>
+                </Badge>
               </div>
             </template>
           </Column>

@@ -5,8 +5,8 @@ import DetailedDataStoreTable from "~/components/data-stores/DetailedDataStoreTa
 const { dataStores, projectNameMap, loading, refresh } =
   await useDataStoreList();
 
-function onDeleteDataStore(dsName: string) {
-  dataStores.value = dataStores.value.filter((store) => store.name !== dsName);
+function onDeleteDataStore(dsId: string) {
+  dataStores.value = dataStores.value.filter((store) => store.id !== dsId);
   refresh();
 }
 </script>

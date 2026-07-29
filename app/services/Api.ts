@@ -17,6 +17,7 @@
 export enum ServiceTag {
   Auth = "Auth",
   Autostart = "Autostart",
+  KongCleanup = "Kong Cleanup",
   Logs = "Logs",
   Health = "Health",
   Hub = "Hub",
@@ -243,6 +244,8 @@ export interface Analysis {
    * @format uuid
    */
   user_id: string;
+  /** Client Id */
+  client_id: string | null;
   project?: Project;
   master_image?: MasterImage | null;
 }
@@ -512,8 +515,8 @@ export interface BodyKongDatastoreCreateKongDatastorePost {
   datastore: ServiceRequest;
   /** Data store type. Either 's3' or 'fhir' */
   ds_type: DataStoreType;
-  /** Minio configuration */
-  minio_config?: MinioConfig | null;
+  /** S3 configuration */
+  s3_config?: S3Config | null;
 }
 
 /** Body_kong_initialize_kong_initialize_post */
@@ -529,29 +532,24 @@ export interface BodyKongInitializeKongInitializePost {
    * @default ["http"]
    */
   protocols?: ProtocolCode[];
-  /** Data store type. Either 's3' or 'fhir' */
-  ds_type: DataStoreType;
+  /**
+   * Methods
+   * List of acceptable HTTP methods
+   */
+  methods?: HttpMethodCode[] | null;
   /**
    * Data store metadata.
    * Required information for creating a new data store.
    */
   datastore: ServiceRequest;
-  /** Minio configuration */
-  minio_config?: MinioConfig | null;
+  /** Data store type. Either 's3' or 'fhir' */
+  ds_type: DataStoreType;
+  /** S3 configuration */
+  s3_config?: S3Config | null;
 }
 
-/** Body_kong_project_create_kong_project_post */
-export interface BodyKongProjectCreateKongProjectPost {
-  /**
-   * Data Store Id
-   * UUID of the data store or 'service'
-   */
-  data_store_id: string;
-  /**
-   * Project Id
-   * UUID of the project
-   */
-  project_id: string;
+/** Body_kong_project_link_kong_project__project_id__datastore__datastore_id__post */
+export interface BodyKongProjectLinkKongProjectProjectIdDatastoreDatastoreIdPost {
   /**
    * Methods
    * List of acceptable HTTP methods
@@ -562,11 +560,6 @@ export interface BodyKongProjectCreateKongProjectPost {
    * List of acceptable transfer protocols. A combo of 'http', 'grpc', 'grpcs', 'tls', 'tcp'
    */
   protocols?: ProtocolCode[] | null;
-  /**
-   * Data store type. Either 's3' or 'fhir'
-   * @default "fhir"
-   */
-  ds_type?: DataStoreType;
 }
 
 /** Body_podorc_pods_create_po_post */
@@ -648,27 +641,6 @@ export interface Consumer {
 export interface CreateServiceRequestClientCertificate {
   /** Id */
   id?: string | null;
-}
-
-/**
- * DeleteProject
- * Response from disconnecting a project from a datastore.
- */
-export interface DeleteProject {
-  removed: Route | null;
-  /** Status */
-  status?: number | null;
-}
-
-/**
- * DeleteService
- * Response for deleting orphaned services.
- */
-export interface DeleteService {
-  /** Deleted */
-  deleted: Record<string, any>[];
-  /** Count */
-  count: number;
 }
 
 /**
@@ -779,6 +751,8 @@ export interface DetailedAnalysis {
    * @format uuid
    */
   user_id: string;
+  /** Client Id */
+  client_id: string | null;
   project?: Project | null;
   master_image?: MasterImage | null;
 }
@@ -1008,12 +982,22 @@ export interface DetailedService {
  * Response model for downstream health checks.
  */
 export interface DownstreamHealthCheck {
-  /** Po */
-  po: HealthCheck | string;
-  /** Storage */
-  storage: HealthCheck | string;
-  /** Kong */
-  kong: HealthCheck | string;
+  /** Response model to validate and return when performing a health check. */
+  po: HealthCheck;
+  /** Response model to validate and return when performing a health check. */
+  storage: HealthCheck;
+  /** Response model to validate and return when performing a health check. */
+  hub_core: HealthCheck;
+  /** Response model to validate and return when performing a health check. */
+  hub_auth: HealthCheck;
+  /** Response model to validate and return when performing a health check. */
+  idp: HealthCheck;
+  /** Response model to validate and return when performing a health check. */
+  kong: HealthCheck;
+  victoria_logs?: HealthCheck | null;
+  message_broker?: HealthCheck | null;
+  s3?: HealthCheck | null;
+  fhir?: HealthCheck | null;
 }
 
 /**
@@ -1064,11 +1048,12 @@ export interface HTTPValidationError {
  * Response model to validate and return when performing a health check.
  */
 export interface HealthCheck {
-  /**
-   * Status
-   * @default "OK"
-   */
-  status?: string;
+  /** Status */
+  status: "OK" | "WARNING" | "ERROR" | "CRITICAL";
+  /** Status Code */
+  status_code?: number | null;
+  /** Message */
+  message?: string | null;
 }
 
 /** InitializeAnalysis */
@@ -1111,6 +1096,19 @@ export interface KeyAuth {
 export interface KeyAuthConsumer {
   /** Id */
   id?: string | null;
+}
+
+/**
+ * KongCleanupSettings
+ * Settings for the background sweep that deletes Kong analysis consumers once their analysis
+ * reaches a terminal status. Always runs; only the interval is configurable.
+ */
+export interface KongCleanupSettings {
+  /**
+   * Interval
+   * @default 30
+   */
+  interval?: number | null;
 }
 
 /** LinkDataStoreProject */
@@ -1275,37 +1273,6 @@ export interface Meta {
   offset?: number | null;
 }
 
-/**
- * MinioConfig
- * Credentials for accessing a private S3 bucket hosted on MinIO.
- */
-export interface MinioConfig {
-  /**
-   * Minio Access Key
-   * @format password
-   */
-  minio_access_key: string;
-  /**
-   * Minio Secret Key
-   * @format password
-   */
-  minio_secret_key: string;
-  /**
-   * Minio Region
-   * @default "us-east-1"
-   */
-  minio_region?: string;
-  /** Bucket Name */
-  bucket_name?: string | null;
-  /**
-   * Timeout
-   * @default 100000
-   */
-  timeout?: number;
-  /** Strip Path Pattern */
-  strip_path_pattern?: string | null;
-}
-
 /** NetStatResponse */
 export interface NetStatResponse {
   /** Data */
@@ -1375,8 +1342,6 @@ export interface Node {
   /** Registry Project Id */
   registry_project_id: string | null;
   registry_project?: RegistryProject | null;
-  /** Robot Id */
-  robot_id: string | null;
   /** Client Id */
   client_id: string | null;
   /**
@@ -1461,8 +1426,6 @@ export interface Project {
   realm_id: string;
   /** User Id */
   user_id: string | null;
-  /** Robot Id */
-  robot_id: string | null;
 }
 
 /** ProjectNode */
@@ -1734,6 +1697,37 @@ export interface RunLogs {
 }
 
 /**
+ * S3Config
+ * Credentials for accessing a private S3 bucket.
+ */
+export interface S3Config {
+  /**
+   * S3 Access Key
+   * @format password
+   */
+  s3_access_key: string;
+  /**
+   * S3 Secret Key
+   * @format password
+   */
+  s3_secret_key: string;
+  /**
+   * S3 Region
+   * @default "us-east-1"
+   */
+  s3_region?: string;
+  /** Bucket Name */
+  bucket_name?: string | null;
+  /**
+   * Timeout
+   * @default 100000
+   */
+  timeout?: number;
+  /** Strip Path Pattern */
+  strip_path_pattern?: string | null;
+}
+
+/**
  * Service
  * service entities are abstractions of upstream services. The main attribute of a service is its URL which can be set as a single string or by specifying the `protocol`, `host`, `port` and `path` individually.
  */
@@ -1941,6 +1935,22 @@ export interface Token {
 }
 
 /**
+ * UnlinkResponse
+ * Response for unlinking a data store from a project or deleting a whole project.
+ */
+export interface UnlinkResponse {
+  /** Removed Routes */
+  removed_routes: Route[];
+  /**
+   * Removed Consumers
+   * @default []
+   */
+  removed_consumers?: Consumer[];
+  /** Status */
+  status?: number | null;
+}
+
+/**
  * UserSettings
  * Node configuration settings set by the user.
  */
@@ -1952,6 +1962,8 @@ export interface UserSettings {
   require_data_store?: boolean | null;
   /** @default {"enabled":false,"interval":60} */
   autostart?: AutostartSettings | null;
+  /** @default {"interval":30} */
+  kong_cleanup?: KongCleanupSettings | null;
 }
 
 /** ValidationError */
@@ -3106,7 +3118,7 @@ export class Api<
   };
   local = {
     /**
-     * @description Delete all objects in MinIO and all Postgres database entries related to the specified project. Returns a 200 on success, a 400 if the project is still available on the Hub and a 403 if it is not the Hub Adapter client that sends the request. In both error cases nothing is deleted at all.
+     * @description Delete all objects in S3 and all Postgres database entries related to the specified project. Returns a 200 on success, a 400 if the project is still available on the Hub and a 403 if it is not the Hub Adapter client that sends the request. In both error cases nothing is deleted at all.
      *
      * @tags Storage
      * @name StorageLocalDeleteLocalDelete
@@ -3146,8 +3158,13 @@ export class Api<
     kongDatastoreGetKongDatastoreGet: (
       query?: {
         /**
+         * Ds Type
+         * Filter by data store type
+         */
+        ds_type?: DataStoreType | null;
+        /**
          * Detailed
-         * Whether to include detailed information on projects
+         * Whether to include linked projects (routes)
          * @default false
          */
         detailed?: boolean;
@@ -3164,27 +3181,7 @@ export class Api<
       }),
 
     /**
-     * @description Delete all data stores (services) that have no associated project (route).
-     *
-     * @tags Kong
-     * @name KongDatastoreDeleteOrphanedKongDatastoreDelete
-     * @summary Kong.Datastore.Delete Orphaned
-     * @request DELETE:/kong/datastore
-     * @secure
-     */
-    kongDatastoreDeleteOrphanedKongDatastoreDelete: (
-      params: RequestParams = {},
-    ) =>
-      this.request<DeleteService, void>({
-        path: `/kong/datastore`,
-        method: "DELETE",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Create a datastore (referred to as services by kong) by providing necessary metadata.
+     * @description Create a data store (service), independent of any project. The admin chosen display name must not be a bare UUID, the Kong service ID returned in the response is the main identifier.
      *
      * @tags Kong
      * @name KongDatastoreCreateKongDatastorePost
@@ -3207,20 +3204,20 @@ export class Api<
       }),
 
     /**
-     * @description Retrieve a specific data store using the project UUID
+     * @description Retrieve a specific data store by its Kong service ID or display name. For backwards compatibility, a project ID is also accepted. If no service matches directly, all data stores currently linked to that project are returned instead.
      *
      * @tags Kong
-     * @name KongDatastoreGetKongDatastoreProjectIdGet
+     * @name KongDatastoreGetKongDatastoreDatastoreIdOrNameGet
      * @summary Kong.Datastore.Get
-     * @request GET:/kong/datastore/{project_id}
+     * @request GET:/kong/datastore/{datastore_id_or_name}
      * @secure
      */
-    kongDatastoreGetKongDatastoreProjectIdGet: (
-      projectId: string,
+    kongDatastoreGetKongDatastoreDatastoreIdOrNameGet: (
+      datastoreIdOrName: string,
       query?: {
         /**
          * Detailed
-         * Whether to include detailed information on projects
+         * Whether to include linked projects (routes)
          * @default false
          */
         detailed?: boolean;
@@ -3228,7 +3225,7 @@ export class Api<
       params: RequestParams = {},
     ) =>
       this.request<ListServices, void | HTTPValidationError>({
-        path: `/kong/datastore/${projectId}`,
+        path: `/kong/datastore/${datastoreIdOrName}`,
         method: "GET",
         query: query,
         secure: true,
@@ -3237,21 +3234,30 @@ export class Api<
       }),
 
     /**
-     * @description Delete the listed data store (referred to as services by kong).
+     * @description Delete a data store (service). Refused with 409 while projects link it, unless cascade=true. Cascading removes the link routes only, consumers (analyses) belong to projects and are untouched. For backwards compatibility, a project ID is also accepted in place of the data store id/name, but only if it resolves to exactly one linked data store, otherwise refused with 409 if the project is linked to more than 1
      *
      * @tags Kong
-     * @name KongDatastoreDeleteKongDatastoreDataStoreNameDelete
+     * @name KongDatastoreDeleteKongDatastoreDatastoreIdOrNameDelete
      * @summary Kong.Datastore.Delete
-     * @request DELETE:/kong/datastore/{data_store_name}
+     * @request DELETE:/kong/datastore/{datastore_id_or_name}
      * @secure
      */
-    kongDatastoreDeleteKongDatastoreDataStoreNameDelete: (
-      dataStoreName: string,
+    kongDatastoreDeleteKongDatastoreDatastoreIdOrNameDelete: (
+      datastoreIdOrName: string,
+      query?: {
+        /**
+         * Cascade
+         * Also delete existing project links (routes)
+         * @default false
+         */
+        cascade?: boolean;
+      },
       params: RequestParams = {},
     ) =>
       this.request<any, void | HTTPValidationError>({
-        path: `/kong/datastore/${dataStoreName}`,
+        path: `/kong/datastore/${datastoreIdOrName}`,
         method: "DELETE",
+        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -3287,29 +3293,6 @@ export class Api<
       }),
 
     /**
-     * @description Connect a project to a data store (referred to as a route by kong).
-     *
-     * @tags Kong
-     * @name KongProjectCreateKongProjectPost
-     * @summary Kong.Project.Create
-     * @request POST:/kong/project
-     * @secure
-     */
-    kongProjectCreateKongProjectPost: (
-      data: BodyKongProjectCreateKongProjectPost,
-      params: RequestParams = {},
-    ) =>
-      this.request<LinkDataStoreProject, void | HTTPValidationError>({
-        path: `/kong/project`,
-        method: "POST",
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-
-    /**
      * @description List a specific projects (referred to as routes by kong) using the project UUID. Set "detailed" to True to include detailed information on the linked kong service.
      *
      * @tags Kong
@@ -3340,6 +3323,74 @@ export class Api<
       }),
 
     /**
+     * @description Disconnect a project from all data stores and delete all its consumers (analyses + health).
+     *
+     * @tags Kong
+     * @name KongProjectDeleteKongProjectProjectIdDelete
+     * @summary Kong.Project.Delete
+     * @request DELETE:/kong/project/{project_id}
+     * @secure
+     */
+    kongProjectDeleteKongProjectProjectIdDelete: (
+      projectId: string,
+      params: RequestParams = {},
+    ) =>
+      this.request<UnlinkResponse, void | HTTPValidationError>({
+        path: `/kong/project/${projectId}`,
+        method: "DELETE",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Link a project to a data store by creating a route on the store's service. A data store can only be linked to one project at a time. The route's matching path is "/{service_name}/{type}" with no project identifier in it.
+     *
+     * @tags Kong
+     * @name KongProjectLinkKongProjectProjectIdDatastoreDatastoreIdPost
+     * @summary Kong.Project.Link
+     * @request POST:/kong/project/{project_id}/datastore/{datastore_id}
+     * @secure
+     */
+    kongProjectLinkKongProjectProjectIdDatastoreDatastoreIdPost: (
+      projectId: string,
+      datastoreId: string,
+      data: BodyKongProjectLinkKongProjectProjectIdDatastoreDatastoreIdPost,
+      params: RequestParams = {},
+    ) =>
+      this.request<LinkDataStoreProject, void | HTTPValidationError>({
+        path: `/kong/project/${projectId}/datastore/${datastoreId}`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Unlink a single data store from a project. Consumers (analyses) are kept.
+     *
+     * @tags Kong
+     * @name KongProjectUnlinkKongProjectProjectIdDatastoreDatastoreIdDelete
+     * @summary Kong.Project.Unlink
+     * @request DELETE:/kong/project/{project_id}/datastore/{datastore_id}
+     * @secure
+     */
+    kongProjectUnlinkKongProjectProjectIdDatastoreDatastoreIdDelete: (
+      projectId: string,
+      datastoreId: string,
+      params: RequestParams = {},
+    ) =>
+      this.request<UnlinkResponse, void | HTTPValidationError>({
+        path: `/kong/project/${projectId}/datastore/${datastoreId}`,
+        method: "DELETE",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
      * @description Creates a new datastore (service) and a new project (route), then links them together with a health consumer.
      *
      * @tags Kong
@@ -3363,28 +3414,7 @@ export class Api<
       }),
 
     /**
-     * @description Disconnect a project (route) from all data stores (services) and delete associated analyses (consumers).
-     *
-     * @tags Kong
-     * @name KongProjectDeleteKongProjectProjectRouteIdDelete
-     * @summary Kong.Project.Delete
-     * @request DELETE:/kong/project/{project_route_id}
-     * @secure
-     */
-    kongProjectDeleteKongProjectProjectRouteIdDelete: (
-      projectRouteId: string,
-      params: RequestParams = {},
-    ) =>
-      this.request<DeleteProject, void | HTTPValidationError>({
-        path: `/kong/project/${projectRouteId}`,
-        method: "DELETE",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description List all analyses (referred to as consumers by kong) available. Can be filtered by project UUID using tag.
+     * @description List all analyses (referred to as consumers by kong) available. Can be filtered by project UUID.
      *
      * @tags Kong
      * @name KongAnalysisGetKongAnalysisGet
@@ -3395,10 +3425,10 @@ export class Api<
     kongAnalysisGetKongAnalysisGet: (
       query?: {
         /**
-         * Tag
-         * Filter consumers by project using the project UUID
+         * Project Id
+         * Filter consumers by project UUID
          */
-        tag?: string | null;
+        project_id?: string | null;
       },
       params: RequestParams = {},
     ) =>
@@ -3447,10 +3477,10 @@ export class Api<
       analysisId: string | null,
       query?: {
         /**
-         * Tag
-         * Filter consumers by project using the project UUID
+         * Project Id
+         * Filter consumers by project UUID
          */
-        tag?: string | null;
+        project_id?: string | null;
       },
       params: RequestParams = {},
     ) =>
@@ -3464,7 +3494,7 @@ export class Api<
       }),
 
     /**
-     * @description Delete the listed analysis.
+     * @description Delete the listed analysis (consumer), resolved via its tag.
      *
      * @tags Kong
      * @name KongAnalysisDeleteKongAnalysisAnalysisIdDelete
@@ -3485,21 +3515,21 @@ export class Api<
       }),
 
     /**
-     * @description Test whether Kong can read the requested data source. Because we use the key-auth plugin, a consumer is required for pinging the data service.
+     * @description Test whether Kong can read the given data store through the project's link. Because we use the key-auth plugin, a consumer is required for pinging the data service.
      *
      * @tags Kong
-     * @name KongProbeKongProjectProjectIdDsTypeHealthGet
+     * @name KongProbeKongProjectProjectIdDatastoreDatastoreIdHealthGet
      * @summary Kong.Probe
-     * @request GET:/kong/project/{project_id}/{ds_type}/health
+     * @request GET:/kong/project/{project_id}/datastore/{datastore_id}/health
      * @secure
      */
-    kongProbeKongProjectProjectIdDsTypeHealthGet: (
+    kongProbeKongProjectProjectIdDatastoreDatastoreIdHealthGet: (
       projectId: string,
-      dsType: DataStoreType,
+      datastoreId: string,
       params: RequestParams = {},
     ) =>
       this.request<any, void | HTTPValidationError>({
-        path: `/kong/project/${projectId}/${dsType}/health`,
+        path: `/kong/project/${projectId}/datastore/${datastoreId}/health`,
         method: "GET",
         secure: true,
         format: "json",

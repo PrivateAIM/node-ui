@@ -60,7 +60,8 @@ describe("CleanupDialog.vue", () => {
       expect(spy).toHaveBeenCalledWith({
         severity: "success",
         summary: "Cleanup Started",
-        detail: "Cleanup request successfully submitted",
+        detail:
+          "Cleanup request successfully submitted, number of modified resources: Valid response",
         life: 5000,
       });
     }

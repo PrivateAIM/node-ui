@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type CleanupPodResponse, type DeleteService } from "~/services/Api";
+import { type CleanupPodResponse } from "~/services/Api";
 import { useToast } from "primevue/usetoast";
 import { useNuxtApp } from "nuxt/app";
 import Dialog from "primevue/dialog";
@@ -53,13 +53,6 @@ const cleanUpOptions = ref<cleanUpOption[]>([
     },
   },
   {
-    name: "Data Stores",
-    data: {
-      ep: "datastore",
-      message: "All orphaned data stores will be removed!",
-    },
-  },
-  {
     name: "Keycloak",
     data: {
       ep: "keycloak",
@@ -87,44 +80,23 @@ const handleCleanupShow = () => {
 
 async function cleanUpResource(endpoint: string) {
   loading.value = true;
-  let cleanupResponse: CleanupPodResponse | DeleteService | null;
   let modifiedResources: number | string = 0;
 
-  // Only one kong cleanup endpoint
-  if (endpoint === "datastore") {
-    cleanupResponse = (await useNuxtApp()
-      .$hubApi(`/kong/${endpoint}`, {
-        method: "DELETE",
-      })
-      .catch(() => {
-        toast.add({
-          severity: "error",
-          summary: "Unable to perform cleanup",
-          detail:
-            "There was an error while deleting or restarting the resource.",
-          life: 5000,
-        });
-      })) as DeleteService;
-    if (cleanupResponse) {
-      modifiedResources = cleanupResponse.count;
-    }
-  } else {
-    cleanupResponse = (await useNuxtApp()
-      .$hubApi(`/po/cleanup/${endpoint}`, {
-        method: "DELETE",
-      })
-      .catch(() => {
-        toast.add({
-          severity: "error",
-          summary: "Unable to perform cleanup",
-          detail:
-            "There was an error while deleting or restarting the resource.",
-          life: 5000,
-        });
-      })) as CleanupPodResponse;
-    if (cleanupResponse && cleanupResponse.zombies) {
-      modifiedResources = cleanupResponse.zombies;
-    }
+  const cleanupResponse = (await useNuxtApp()
+    .$hubApi(`/po/cleanup/${endpoint}`, {
+      method: "DELETE",
+    })
+    .catch(() => {
+      toast.add({
+        severity: "error",
+        summary: "Unable to perform cleanup",
+        detail: "There was an error while deleting or restarting the resource.",
+        life: 5000,
+      });
+    })) as CleanupPodResponse;
+  if (cleanupResponse) {
+    const count = cleanupResponse[endpoint as keyof CleanupPodResponse];
+    if (count) modifiedResources = count;
   }
 
   if (cleanupResponse) {

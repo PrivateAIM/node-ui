@@ -9,7 +9,6 @@ import { fakeDataStoreResp, fakeProjectResp } from "./constants";
 vi.mock("~/composables/useAPIFetch", () => ({
   getProjects: vi.fn(),
   getAnalyses: vi.fn(),
-  getAnalysesFromKong: vi.fn(),
   getDataStores: vi.fn(),
 }));
 

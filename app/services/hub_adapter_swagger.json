@@ -2151,7 +2151,7 @@
       "delete": {
         "tags": ["Storage"],
         "summary": "Storage.Local.Delete",
-        "description": "Delete all objects in MinIO and all Postgres database entries related to the specified project.\n\nReturns a 200 on success, a 400 if the project is still available on the Hub and a 403 if it is not the\nHub Adapter client that sends the request. In both error cases nothing is deleted at all.",
+        "description": "Delete all objects in S3 and all Postgres database entries related to the specified project.\n\nReturns a 200 on success, a 400 if the project is still available on the Hub and a 403 if it is not the\nHub Adapter client that sends the request. In both error cases nothing is deleted at all.",
         "operationId": "storage_local_delete_local_delete",
         "security": [
           {
@@ -2217,16 +2217,34 @@
         ],
         "parameters": [
           {
+            "name": "ds_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/DataStoreType"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by data store type",
+              "title": "Ds Type"
+            },
+            "description": "Filter by data store type"
+          },
+          {
             "name": "detailed",
             "in": "query",
             "required": false,
             "schema": {
               "type": "boolean",
-              "description": "Whether to include detailed information on projects",
+              "description": "Whether to include linked projects (routes)",
               "default": false,
               "title": "Detailed"
             },
-            "description": "Whether to include detailed information on projects"
+            "description": "Whether to include linked projects (routes)"
           }
         ],
         "responses": {
@@ -2255,36 +2273,10 @@
           }
         }
       },
-      "delete": {
-        "tags": ["Kong"],
-        "summary": "Kong.Datastore.Delete Orphaned",
-        "description": "Delete all data stores (services) that have no associated project (route).",
-        "operationId": "kong_datastore_delete_orphaned_kong_datastore_delete",
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DeleteService"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found"
-          }
-        }
-      },
       "post": {
         "tags": ["Kong"],
         "summary": "Kong.Datastore.Create",
-        "description": "Create a datastore (referred to as services by kong) by providing necessary metadata.",
+        "description": "Create a data store (service), independent of any project.\n\nThe admin chosen display name must not be a bare UUID, the Kong service ID returned in the response is the main\nidentifier.",
         "operationId": "kong_datastore_create_kong_datastore_post",
         "security": [
           {
@@ -2328,12 +2320,12 @@
         }
       }
     },
-    "/kong/datastore/{project_id}": {
+    "/kong/datastore/{datastore_id_or_name}": {
       "get": {
         "tags": ["Kong"],
         "summary": "Kong.Datastore.Get",
-        "description": "Retrieve a specific data store using the project UUID",
-        "operationId": "kong_datastore_get_kong_datastore__project_id__get",
+        "description": "Retrieve a specific data store by its Kong service ID or display name.\n\nFor backwards compatibility, a project ID is also accepted. If no service matches directly,\nall data stores currently linked to that project are returned instead.",
+        "operationId": "kong_datastore_get_kong_datastore__datastore_id_or_name__get",
         "security": [
           {
             "JWT": []
@@ -2341,23 +2333,15 @@
         ],
         "parameters": [
           {
-            "name": "project_id",
+            "name": "datastore_id_or_name",
             "in": "path",
             "required": true,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "format": "uuid"
-                },
-                {
-                  "type": "string"
-                }
-              ],
-              "description": "UUID of the associated project.",
-              "title": "Project Id"
+              "type": "string",
+              "description": "Kong service ID or display name of the data store.",
+              "title": "Datastore Id Or Name"
             },
-            "description": "UUID of the associated project."
+            "description": "Kong service ID or display name of the data store."
           },
           {
             "name": "detailed",
@@ -2365,11 +2349,11 @@
             "required": false,
             "schema": {
               "type": "boolean",
-              "description": "Whether to include detailed information on projects",
+              "description": "Whether to include linked projects (routes)",
               "default": false,
               "title": "Detailed"
             },
-            "description": "Whether to include detailed information on projects"
+            "description": "Whether to include linked projects (routes)"
           }
         ],
         "responses": {
@@ -2397,14 +2381,12 @@
             }
           }
         }
-      }
-    },
-    "/kong/datastore/{data_store_name}": {
+      },
       "delete": {
         "tags": ["Kong"],
         "summary": "Kong.Datastore.Delete",
-        "description": "Delete the listed data store (referred to as services by kong).",
-        "operationId": "kong_datastore_delete_kong_datastore__data_store_name__delete",
+        "description": "Delete a data store (service). Refused with 409 while projects link it, unless cascade=true.\n\nCascading removes the link routes only, consumers (analyses) belong to projects and are untouched.\n\nFor backwards compatibility, a project ID is also accepted in place of the data store id/name, but only if\nit resolves to exactly one linked data store, otherwise refused with 409 if the project is linked to more than 1",
+        "operationId": "kong_datastore_delete_kong_datastore__datastore_id_or_name__delete",
         "security": [
           {
             "JWT": []
@@ -2412,15 +2394,27 @@
         ],
         "parameters": [
           {
-            "name": "data_store_name",
+            "name": "datastore_id_or_name",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string",
-              "description": "Unique name of the data store.",
-              "title": "Data Store Name"
+              "description": "Kong service ID or display name of the data store.",
+              "title": "Datastore Id Or Name"
             },
-            "description": "Unique name of the data store."
+            "description": "Kong service ID or display name of the data store."
+          },
+          {
+            "name": "cascade",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Also delete existing project links (routes)",
+              "default": false,
+              "title": "Cascade"
+            },
+            "description": "Also delete existing project links (routes)"
           }
         ],
         "responses": {
@@ -2480,52 +2474,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ListRoutes"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found"
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": ["Kong"],
-        "summary": "Kong.Project.Create",
-        "description": "Connect a project to a data store (referred to as a route by kong).",
-        "operationId": "kong_project_create_kong_project_post",
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Body_kong_project_create_kong_project_post"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LinkDataStoreProject"
                 }
               }
             }
@@ -2615,6 +2563,226 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": ["Kong"],
+        "summary": "Kong.Project.Delete",
+        "description": "Disconnect a project from all data stores and delete all its consumers (analyses + health).",
+        "operationId": "kong_project_delete_kong_project__project_id__delete",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "description": "UUID of the project",
+              "title": "Project Id"
+            },
+            "description": "UUID of the project"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnlinkResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/kong/project/{project_id}/datastore/{datastore_id}": {
+      "post": {
+        "tags": ["Kong"],
+        "summary": "Kong.Project.Link",
+        "description": "Link a project to a data store by creating a route on the store's service.\n\nA data store can only be linked to one project at a time.\nThe route's matching path is \"/{service_name}/{type}\" with no project identifier in it.",
+        "operationId": "kong_project_link_kong_project__project_id__datastore__datastore_id__post",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "description": "UUID of the project",
+              "title": "Project Id"
+            },
+            "description": "UUID of the project"
+          },
+          {
+            "name": "datastore_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "description": "Kong service ID of the data store",
+              "title": "Datastore Id"
+            },
+            "description": "Kong service ID of the data store"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_kong_project_link_kong_project__project_id__datastore__datastore_id__post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkDataStoreProject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Kong"],
+        "summary": "Kong.Project.Unlink",
+        "description": "Unlink a single data store from a project. Consumers (analyses) are kept.",
+        "operationId": "kong_project_unlink_kong_project__project_id__datastore__datastore_id__delete",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "description": "UUID of the project",
+              "title": "Project Id"
+            },
+            "description": "UUID of the project"
+          },
+          {
+            "name": "datastore_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "description": "Kong service ID of the data store",
+              "title": "Datastore Id"
+            },
+            "description": "Kong service ID of the data store"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnlinkResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/kong/initialize": {
@@ -2665,62 +2833,11 @@
         ]
       }
     },
-    "/kong/project/{project_route_id}": {
-      "delete": {
-        "tags": ["Kong"],
-        "summary": "Kong.Project.Delete",
-        "description": "Disconnect a project (route) from all data stores (services) and delete associated analyses (consumers).",
-        "operationId": "kong_project_delete_kong_project__project_route_id__delete",
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "project_route_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "description": "Unique identifier of the route to be deleted, must include datastore type hyphenated at the end",
-              "title": "Project Route Id"
-            },
-            "description": "Unique identifier of the route to be deleted, must include datastore type hyphenated at the end"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DeleteProject"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found"
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/kong/analysis": {
       "get": {
         "tags": ["Kong"],
         "summary": "Kong.Analysis.Get",
-        "description": "List all analyses (referred to as consumers by kong) available. Can be filtered by project UUID using tag.",
+        "description": "List all analyses (referred to as consumers by kong) available. Can be filtered by project UUID.",
         "operationId": "kong_analysis_get_kong_analysis_get",
         "security": [
           {
@@ -2729,7 +2846,7 @@
         ],
         "parameters": [
           {
-            "name": "tag",
+            "name": "project_id",
             "in": "query",
             "required": false,
             "schema": {
@@ -2741,10 +2858,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Filter consumers by project using the project UUID",
-              "title": "Tag"
+              "description": "Filter consumers by project UUID",
+              "title": "Project Id"
             },
-            "description": "Filter consumers by project using the project UUID"
+            "description": "Filter consumers by project UUID"
           }
         ],
         "responses": {
@@ -2855,7 +2972,7 @@
             "description": "UUID of the analysis."
           },
           {
-            "name": "tag",
+            "name": "project_id",
             "in": "query",
             "required": false,
             "schema": {
@@ -2867,10 +2984,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Filter consumers by project using the project UUID",
-              "title": "Tag"
+              "description": "Filter consumers by project UUID",
+              "title": "Project Id"
             },
-            "description": "Filter consumers by project using the project UUID"
+            "description": "Filter consumers by project UUID"
           }
         ],
         "responses": {
@@ -2902,7 +3019,7 @@
       "delete": {
         "tags": ["Kong"],
         "summary": "Kong.Analysis.Delete",
-        "description": "Delete the listed analysis.",
+        "description": "Delete the listed analysis (consumer), resolved via its tag.",
         "operationId": "kong_analysis_delete_kong_analysis__analysis_id__delete",
         "security": [
           {
@@ -2924,10 +3041,10 @@
                   "format": "uuid"
                 }
               ],
-              "description": "UUID or unique name of the analysis.",
+              "description": "UUID of the analysis.",
               "title": "Analysis Id"
             },
-            "description": "UUID or unique name of the analysis."
+            "description": "UUID of the analysis."
           }
         ],
         "responses": {
@@ -2955,12 +3072,12 @@
         }
       }
     },
-    "/kong/project/{project_id}/{ds_type}/health": {
+    "/kong/project/{project_id}/datastore/{datastore_id}/health": {
       "get": {
         "tags": ["Kong"],
         "summary": "Kong.Probe",
-        "description": "Test whether Kong can read the requested data source.\n\nBecause we use the key-auth plugin, a consumer is required for pinging the data service.",
-        "operationId": "kong_probe_kong_project__project_id___ds_type__health_get",
+        "description": "Test whether Kong can read the given data store through the project's link.\n\nBecause we use the key-auth plugin, a consumer is required for pinging the data service.",
+        "operationId": "kong_probe_kong_project__project_id__datastore__datastore_id__health_get",
         "security": [
           {
             "JWT": []
@@ -2981,20 +3098,29 @@
                   "format": "uuid"
                 }
               ],
-              "description": "UUID or unique name of the project.",
+              "description": "UUID of the project.",
               "title": "Project Id"
             },
-            "description": "UUID or unique name of the project."
+            "description": "UUID of the project."
           },
           {
-            "name": "ds_type",
+            "name": "datastore_id",
             "in": "path",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/DataStoreType",
-              "description": "Either \"fhir\" or \"s3\""
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              ],
+              "description": "Kong service ID of the data store.",
+              "title": "Datastore Id"
             },
-            "description": "Either \"fhir\" or \"s3\""
+            "description": "Kong service ID of the data store."
           }
         ],
         "responses": {
@@ -4182,6 +4308,18 @@
             "format": "uuid",
             "title": "User Id"
           },
+          "client_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Id"
+          },
           "project": {
             "$ref": "#/components/schemas/Project"
           },
@@ -4226,7 +4364,8 @@
           "created_at",
           "updated_at",
           "realm_id",
-          "user_id"
+          "user_id",
+          "client_id"
         ],
         "title": "Analysis"
       },
@@ -4593,7 +4732,8 @@
           "interval": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "integer",
+                "exclusiveMinimum": 0.0
               },
               {
                 "type": "null"
@@ -4746,16 +4886,16 @@
             "$ref": "#/components/schemas/DataStoreType",
             "description": "Data store type. Either 's3' or 'fhir'"
           },
-          "minio_config": {
+          "s3_config": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/MinioConfig"
+                "$ref": "#/components/schemas/S3Config"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Minio configuration"
+            "description": "S3 configuration"
           }
         },
         "type": "object",
@@ -4786,59 +4926,48 @@
             "description": "List of acceptable transfer protocols. A combo of 'http', 'grpc', 'grpcs', 'tls', 'tcp'",
             "default": ["http"]
           },
-          "ds_type": {
-            "$ref": "#/components/schemas/DataStoreType",
-            "description": "Data store type. Either 's3' or 'fhir'"
+          "methods": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/HttpMethodCode"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Methods",
+            "description": "List of acceptable HTTP methods"
           },
           "datastore": {
             "$ref": "#/components/schemas/ServiceRequest",
             "title": "Data store metadata.",
             "description": "Required information for creating a new data store."
           },
-          "minio_config": {
+          "ds_type": {
+            "$ref": "#/components/schemas/DataStoreType",
+            "description": "Data store type. Either 's3' or 'fhir'"
+          },
+          "s3_config": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/MinioConfig"
+                "$ref": "#/components/schemas/S3Config"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Minio configuration"
+            "description": "S3 configuration"
           }
         },
         "type": "object",
-        "required": ["project_id", "ds_type", "datastore"],
+        "required": ["project_id", "datastore", "ds_type"],
         "title": "Body_kong_initialize_kong_initialize_post"
       },
-      "Body_kong_project_create_kong_project_post": {
+      "Body_kong_project_link_kong_project__project_id__datastore__datastore_id__post": {
         "properties": {
-          "data_store_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "string"
-              }
-            ],
-            "title": "Data Store Id",
-            "description": "UUID of the data store or 'service'"
-          },
-          "project_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "string"
-              }
-            ],
-            "title": "Project Id",
-            "description": "UUID of the project"
-          },
           "methods": {
             "anyOf": [
               {
@@ -4868,16 +4997,10 @@
             ],
             "title": "Protocols",
             "description": "List of acceptable transfer protocols. A combo of 'http', 'grpc', 'grpcs', 'tls', 'tcp'"
-          },
-          "ds_type": {
-            "$ref": "#/components/schemas/DataStoreType",
-            "description": "Data store type. Either 's3' or 'fhir'",
-            "default": "fhir"
           }
         },
         "type": "object",
-        "required": ["data_store_id", "project_id"],
-        "title": "Body_kong_project_create_kong_project_post"
+        "title": "Body_kong_project_link_kong_project__project_id__datastore__datastore_id__post"
       },
       "Body_podorc_pods_create_po_post": {
         "properties": {
@@ -5109,55 +5232,6 @@
         "enum": ["s3", "fhir"],
         "title": "DataStoreType",
         "description": "Data store types."
-      },
-      "DeleteProject": {
-        "properties": {
-          "removed": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/Route"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "status": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Status"
-          }
-        },
-        "type": "object",
-        "required": ["removed"],
-        "title": "DeleteProject",
-        "description": "Response from disconnecting a project from a datastore."
-      },
-      "DeleteService": {
-        "properties": {
-          "deleted": {
-            "items": {
-              "additionalProperties": true,
-              "type": "object"
-            },
-            "type": "array",
-            "title": "Deleted"
-          },
-          "count": {
-            "type": "integer",
-            "title": "Count"
-          }
-        },
-        "type": "object",
-        "required": ["deleted", "count"],
-        "title": "DeleteService",
-        "description": "Response for deleting orphaned services."
       },
       "DetailedAnalysis": {
         "properties": {
@@ -5427,6 +5501,18 @@
             "format": "uuid",
             "title": "User Id"
           },
+          "client_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Id"
+          },
           "project": {
             "anyOf": [
               {
@@ -5478,7 +5564,8 @@
           "created_at",
           "updated_at",
           "realm_id",
-          "user_id"
+          "user_id",
+          "client_id"
         ],
         "title": "DetailedAnalysis",
         "description": "Model representing a single detailed analysis."
@@ -6038,41 +6125,66 @@
       "DownstreamHealthCheck": {
         "properties": {
           "po": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/HealthCheck"
-              },
-              {
-                "type": "string"
-              }
-            ],
-            "title": "Po"
+            "$ref": "#/components/schemas/HealthCheck"
           },
           "storage": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/HealthCheck"
-              },
-              {
-                "type": "string"
-              }
-            ],
-            "title": "Storage"
+            "$ref": "#/components/schemas/HealthCheck"
+          },
+          "hub_core": {
+            "$ref": "#/components/schemas/HealthCheck"
+          },
+          "hub_auth": {
+            "$ref": "#/components/schemas/HealthCheck"
+          },
+          "idp": {
+            "$ref": "#/components/schemas/HealthCheck"
           },
           "kong": {
+            "$ref": "#/components/schemas/HealthCheck"
+          },
+          "victoria_logs": {
             "anyOf": [
               {
                 "$ref": "#/components/schemas/HealthCheck"
               },
               {
-                "type": "string"
+                "type": "null"
               }
-            ],
-            "title": "Kong"
+            ]
+          },
+          "message_broker": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HealthCheck"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "s3": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HealthCheck"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "fhir": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HealthCheck"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
-        "required": ["po", "storage", "kong"],
+        "required": ["po", "storage", "hub_core", "hub_auth", "idp", "kong"],
         "title": "DownstreamHealthCheck",
         "description": "Response model for downstream health checks."
       },
@@ -6166,11 +6278,34 @@
         "properties": {
           "status": {
             "type": "string",
-            "title": "Status",
-            "default": "OK"
+            "enum": ["OK", "WARNING", "ERROR", "CRITICAL"],
+            "title": "Status"
+          },
+          "status_code": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status Code"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
           }
         },
         "type": "object",
+        "required": ["status"],
         "title": "HealthCheck",
         "description": "Response model to validate and return when performing a health check."
       },
@@ -6306,6 +6441,27 @@
         "type": "object",
         "title": "KeyAuthConsumer",
         "description": "The Consumer to which this Key is associated. A Consumer can have many Key-auth credentials."
+      },
+      "KongCleanupSettings": {
+        "properties": {
+          "interval": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interval",
+            "default": 30
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "KongCleanupSettings",
+        "description": "Settings for the background sweep that deletes Kong analysis consumers once their analysis\nreaches a terminal status. Always runs; only the interval is configurable."
       },
       "LinkDataStoreProject": {
         "properties": {
@@ -6670,58 +6826,6 @@
         "title": "Meta",
         "description": "Event log metadata model."
       },
-      "MinioConfig": {
-        "properties": {
-          "minio_access_key": {
-            "type": "string",
-            "format": "password",
-            "title": "Minio Access Key",
-            "writeOnly": true
-          },
-          "minio_secret_key": {
-            "type": "string",
-            "format": "password",
-            "title": "Minio Secret Key",
-            "writeOnly": true
-          },
-          "minio_region": {
-            "type": "string",
-            "title": "Minio Region",
-            "default": "us-east-1"
-          },
-          "bucket_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Bucket Name"
-          },
-          "timeout": {
-            "type": "integer",
-            "title": "Timeout",
-            "default": 100000
-          },
-          "strip_path_pattern": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Strip Path Pattern"
-          }
-        },
-        "type": "object",
-        "required": ["minio_access_key", "minio_secret_key"],
-        "title": "MinioConfig",
-        "description": "Credentials for accessing a private S3 bucket hosted on MinIO."
-      },
       "NetStatResponse": {
         "properties": {
           "data": {
@@ -6921,18 +7025,6 @@
               }
             ]
           },
-          "robot_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Robot Id"
-          },
           "client_id": {
             "anyOf": [
               {
@@ -6968,7 +7060,6 @@
           "public_key",
           "online",
           "registry_project_id",
-          "robot_id",
           "client_id",
           "created_at",
           "updated_at"
@@ -7064,8 +7155,6 @@
           "started",
           "stopping",
           "stopped",
-          "running",
-          "finished",
           "executing",
           "executed",
           "stuck",
@@ -7163,18 +7252,6 @@
               }
             ],
             "title": "User Id"
-          },
-          "robot_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Robot Id"
           }
         },
         "type": "object",
@@ -7189,8 +7266,7 @@
           "created_at",
           "updated_at",
           "realm_id",
-          "user_id",
-          "robot_id"
+          "user_id"
         ],
         "title": "Project"
       },
@@ -7835,6 +7911,58 @@
         "title": "RunLogs",
         "description": "Logs for a single analysis run."
       },
+      "S3Config": {
+        "properties": {
+          "s3_access_key": {
+            "type": "string",
+            "format": "password",
+            "title": "S3 Access Key",
+            "writeOnly": true
+          },
+          "s3_secret_key": {
+            "type": "string",
+            "format": "password",
+            "title": "S3 Secret Key",
+            "writeOnly": true
+          },
+          "s3_region": {
+            "type": "string",
+            "title": "S3 Region",
+            "default": "us-east-1"
+          },
+          "bucket_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bucket Name"
+          },
+          "timeout": {
+            "type": "integer",
+            "title": "Timeout",
+            "default": 100000
+          },
+          "strip_path_pattern": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Strip Path Pattern"
+          }
+        },
+        "type": "object",
+        "required": ["s3_access_key", "s3_secret_key"],
+        "title": "S3Config",
+        "description": "Credentials for accessing a private S3 bucket."
+      },
       "Service": {
         "properties": {
           "ca_certificates": {
@@ -8290,6 +8418,7 @@
         "enum": [
           "Auth",
           "Autostart",
+          "Kong Cleanup",
           "Logs",
           "Health",
           "Hub",
@@ -8365,6 +8494,40 @@
         "title": "Token",
         "description": "IDP token model."
       },
+      "UnlinkResponse": {
+        "properties": {
+          "removed_routes": {
+            "items": {
+              "$ref": "#/components/schemas/Route"
+            },
+            "type": "array",
+            "title": "Removed Routes"
+          },
+          "removed_consumers": {
+            "items": {
+              "$ref": "#/components/schemas/Consumer"
+            },
+            "type": "array",
+            "title": "Removed Consumers",
+            "default": []
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": ["removed_routes"],
+        "title": "UnlinkResponse",
+        "description": "Response for unlinking a data store from a project or deleting a whole project."
+      },
       "UserSettings": {
         "properties": {
           "require_data_store": {
@@ -8391,6 +8554,19 @@
             "default": {
               "enabled": false,
               "interval": 60
+            }
+          },
+          "kong_cleanup": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/KongCleanupSettings"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": {
+              "interval": 30
             }
           }
         },
