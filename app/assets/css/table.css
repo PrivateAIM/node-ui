@@ -29,15 +29,19 @@
 }
 
 .structured-table {
-    th:not(:first-child) .p-datatable-column-header-content {
-        justify-content: center;
+    th:not(:first-child) {
+        text-align: center;
 
-        .p-datatable-popover-filter {
-            margin-inline-start: 0.2rem;
-        }
+        .p-datatable-column-header-content {
+            justify-content: center;
 
-        .p-button-icon-only {
-            width: 1.5rem;
+            .p-datatable-popover-filter {
+                margin-inline-start: 0.2rem;
+            }
+
+            .p-button-icon-only {
+                width: 1.5rem;
+            }
         }
     }
 

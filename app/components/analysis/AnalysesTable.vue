@@ -685,7 +685,6 @@ const onCloseNavToast = () => {
             :showFilterOperator="false"
             field="execution_status"
             filterField="execution_status"
-            headerStyle="text-align: center"
           >
             <template #header>
               <span
