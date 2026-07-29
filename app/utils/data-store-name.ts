@@ -96,6 +96,14 @@ function randomItem(items: readonly string[]): string {
   return items[Math.floor(Math.random() * items.length)]!;
 }
 
+const HEX_SUFFIX_LENGTH = 4;
+
+function randomHexSuffix(length: number = HEX_SUFFIX_LENGTH): string {
+  return Array.from({ length }, () =>
+    Math.floor(Math.random() * 16).toString(16)
+  ).join("");
+}
+
 export function generateRandomDataStoreName(projectName: string): string {
-  return `${generateDataStoreName(projectName)}-${randomItem(ADJECTIVES)}-${randomItem(NOUNS)}`;
+  return `${generateDataStoreName(projectName)}-${randomItem(ADJECTIVES)}-${randomItem(NOUNS)}-${randomHexSuffix()}`;
 }
