@@ -17,6 +17,7 @@
 export enum ServiceTag {
   Auth = "Auth",
   Autostart = "Autostart",
+  KongCleanup = "Kong Cleanup",
   Logs = "Logs",
   Health = "Health",
   Hub = "Hub",
@@ -243,6 +244,8 @@ export interface Analysis {
    * @format uuid
    */
   user_id: string;
+  /** Client Id */
+  client_id: string | null;
   project?: Project;
   master_image?: MasterImage | null;
 }
@@ -748,6 +751,8 @@ export interface DetailedAnalysis {
    * @format uuid
    */
   user_id: string;
+  /** Client Id */
+  client_id: string | null;
   project?: Project | null;
   master_image?: MasterImage | null;
 }
@@ -977,12 +982,22 @@ export interface DetailedService {
  * Response model for downstream health checks.
  */
 export interface DownstreamHealthCheck {
-  /** Po */
-  po: HealthCheck | string;
-  /** Storage */
-  storage: HealthCheck | string;
-  /** Kong */
-  kong: HealthCheck | string;
+  /** Response model to validate and return when performing a health check. */
+  po: HealthCheck;
+  /** Response model to validate and return when performing a health check. */
+  storage: HealthCheck;
+  /** Response model to validate and return when performing a health check. */
+  hub_core: HealthCheck;
+  /** Response model to validate and return when performing a health check. */
+  hub_auth: HealthCheck;
+  /** Response model to validate and return when performing a health check. */
+  idp: HealthCheck;
+  /** Response model to validate and return when performing a health check. */
+  kong: HealthCheck;
+  victoria_logs?: HealthCheck | null;
+  message_broker?: HealthCheck | null;
+  s3?: HealthCheck | null;
+  fhir?: HealthCheck | null;
 }
 
 /**
@@ -1033,11 +1048,12 @@ export interface HTTPValidationError {
  * Response model to validate and return when performing a health check.
  */
 export interface HealthCheck {
-  /**
-   * Status
-   * @default "OK"
-   */
-  status?: string;
+  /** Status */
+  status: "OK" | "WARNING" | "ERROR" | "CRITICAL";
+  /** Status Code */
+  status_code?: number | null;
+  /** Message */
+  message?: string | null;
 }
 
 /** InitializeAnalysis */
@@ -1080,6 +1096,19 @@ export interface KeyAuth {
 export interface KeyAuthConsumer {
   /** Id */
   id?: string | null;
+}
+
+/**
+ * KongCleanupSettings
+ * Settings for the background sweep that deletes Kong analysis consumers once their analysis
+ * reaches a terminal status. Always runs; only the interval is configurable.
+ */
+export interface KongCleanupSettings {
+  /**
+   * Interval
+   * @default 30
+   */
+  interval?: number | null;
 }
 
 /** LinkDataStoreProject */
@@ -1313,8 +1342,6 @@ export interface Node {
   /** Registry Project Id */
   registry_project_id: string | null;
   registry_project?: RegistryProject | null;
-  /** Robot Id */
-  robot_id: string | null;
   /** Client Id */
   client_id: string | null;
   /**
@@ -1399,8 +1426,6 @@ export interface Project {
   realm_id: string;
   /** User Id */
   user_id: string | null;
-  /** Robot Id */
-  robot_id: string | null;
 }
 
 /** ProjectNode */
@@ -1937,6 +1962,8 @@ export interface UserSettings {
   require_data_store?: boolean | null;
   /** @default {"enabled":false,"interval":60} */
   autostart?: AutostartSettings | null;
+  /** @default {"interval":30} */
+  kong_cleanup?: KongCleanupSettings | null;
 }
 
 /** ValidationError */

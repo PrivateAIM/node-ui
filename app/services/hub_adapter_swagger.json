@@ -4308,6 +4308,18 @@
             "format": "uuid",
             "title": "User Id"
           },
+          "client_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Id"
+          },
           "project": {
             "$ref": "#/components/schemas/Project"
           },
@@ -4352,7 +4364,8 @@
           "created_at",
           "updated_at",
           "realm_id",
-          "user_id"
+          "user_id",
+          "client_id"
         ],
         "title": "Analysis"
       },
@@ -5487,6 +5500,18 @@
             "format": "uuid",
             "title": "User Id"
           },
+          "client_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Id"
+          },
           "project": {
             "anyOf": [
               {
@@ -5538,7 +5563,8 @@
           "created_at",
           "updated_at",
           "realm_id",
-          "user_id"
+          "user_id",
+          "client_id"
         ],
         "title": "DetailedAnalysis",
         "description": "Model representing a single detailed analysis."
@@ -6098,41 +6124,66 @@
       "DownstreamHealthCheck": {
         "properties": {
           "po": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/HealthCheck"
-              },
-              {
-                "type": "string"
-              }
-            ],
-            "title": "Po"
+            "$ref": "#/components/schemas/HealthCheck"
           },
           "storage": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/HealthCheck"
-              },
-              {
-                "type": "string"
-              }
-            ],
-            "title": "Storage"
+            "$ref": "#/components/schemas/HealthCheck"
+          },
+          "hub_core": {
+            "$ref": "#/components/schemas/HealthCheck"
+          },
+          "hub_auth": {
+            "$ref": "#/components/schemas/HealthCheck"
+          },
+          "idp": {
+            "$ref": "#/components/schemas/HealthCheck"
           },
           "kong": {
+            "$ref": "#/components/schemas/HealthCheck"
+          },
+          "victoria_logs": {
             "anyOf": [
               {
                 "$ref": "#/components/schemas/HealthCheck"
               },
               {
-                "type": "string"
+                "type": "null"
               }
-            ],
-            "title": "Kong"
+            ]
+          },
+          "message_broker": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HealthCheck"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "s3": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HealthCheck"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "fhir": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HealthCheck"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
-        "required": ["po", "storage", "kong"],
+        "required": ["po", "storage", "hub_core", "hub_auth", "idp", "kong"],
         "title": "DownstreamHealthCheck",
         "description": "Response model for downstream health checks."
       },
@@ -6226,11 +6277,34 @@
         "properties": {
           "status": {
             "type": "string",
-            "title": "Status",
-            "default": "OK"
+            "enum": ["OK", "WARNING", "ERROR", "CRITICAL"],
+            "title": "Status"
+          },
+          "status_code": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status Code"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
           }
         },
         "type": "object",
+        "required": ["status"],
         "title": "HealthCheck",
         "description": "Response model to validate and return when performing a health check."
       },
@@ -6366,6 +6440,26 @@
         "type": "object",
         "title": "KeyAuthConsumer",
         "description": "The Consumer to which this Key is associated. A Consumer can have many Key-auth credentials."
+      },
+      "KongCleanupSettings": {
+        "properties": {
+          "interval": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interval",
+            "default": 30
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "KongCleanupSettings",
+        "description": "Settings for the background sweep that deletes Kong analysis consumers once their analysis\nreaches a terminal status. Always runs; only the interval is configurable."
       },
       "LinkDataStoreProject": {
         "properties": {
@@ -6929,18 +7023,6 @@
               }
             ]
           },
-          "robot_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Robot Id"
-          },
           "client_id": {
             "anyOf": [
               {
@@ -6976,7 +7058,6 @@
           "public_key",
           "online",
           "registry_project_id",
-          "robot_id",
           "client_id",
           "created_at",
           "updated_at"
@@ -7169,18 +7250,6 @@
               }
             ],
             "title": "User Id"
-          },
-          "robot_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Robot Id"
           }
         },
         "type": "object",
@@ -7195,8 +7264,7 @@
           "created_at",
           "updated_at",
           "realm_id",
-          "user_id",
-          "robot_id"
+          "user_id"
         ],
         "title": "Project"
       },
@@ -8348,6 +8416,7 @@
         "enum": [
           "Auth",
           "Autostart",
+          "Kong Cleanup",
           "Logs",
           "Health",
           "Hub",
@@ -8483,6 +8552,19 @@
             "default": {
               "enabled": false,
               "interval": 60
+            }
+          },
+          "kong_cleanup": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/KongCleanupSettings"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": {
+              "interval": 30
             }
           }
         },
