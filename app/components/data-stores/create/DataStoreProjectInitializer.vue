@@ -9,9 +9,16 @@ import InputNumber from "primevue/inputnumber";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import InputGroup from "primevue/inputgroup";
 import DataStoreHelpBox from "~/components/data-stores/create/DataStoreHelpBox.vue";
-import { type AvailableProject, HelpTextField } from "~/components/data-stores/create/index";
+import {
+  type AvailableProject,
+  HelpTextField,
+} from "~/components/data-stores/create/index";
 import { useToast } from "primevue/usetoast";
-import { type BodyKongInitializeKongInitializePost, DataStoreType, type ProjectNode } from "~/services/Api";
+import {
+  type BodyKongInitializeKongInitializePost,
+  DataStoreType,
+  type ProjectNode,
+} from "~/services/Api";
 import { getProjectNodes } from "~/composables/useAPIFetch";
 import {
   generateRandomDataStoreName,
@@ -601,6 +608,7 @@ async function onSubmitCreateDataStoreAndProject() {
   gap: 0.6rem;
   margin-bottom: 1rem;
 }
+
 .data-store-input-fields {
   width: 80%;
   margin-right: 24px;

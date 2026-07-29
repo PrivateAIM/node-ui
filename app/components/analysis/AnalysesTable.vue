@@ -761,7 +761,8 @@ const onCloseNavToast = () => {
                 <Badge
                   :severity="datastoreBadgeSeverity"
                   class="w-8 h-8 rounded-full"
-                  ><button
+                >
+                  <button
                     v-tooltip.top="datastoreBadgeTooltip"
                     type="button"
                     :disabled="!datastoreRequired"
@@ -772,8 +773,9 @@ const onCloseNavToast = () => {
                     ]"
                     @click="onCreateDataStore(data.analysis.project_id)"
                   >
-                    <i class="pi pi-times"></i></button
-                ></Badge>
+                    <i class="pi pi-times"></i>
+                  </button>
+                </Badge>
               </div>
             </template>
           </Column>
