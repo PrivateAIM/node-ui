@@ -20,6 +20,35 @@ export default [
       "vue/multi-word-component-names": 0,
       "no-unused-vars": "off",
       "no-undef": "off",
+      // `Api.ts` is regenerated from the hub-adapter's OpenAPI document, which
+      // still mirrors the Hub's entities. Those copies drift; the Hub's own
+      // packages do not. Re-export them from `~/services/hub` instead.
+      "@typescript-eslint/no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["**/services/Api"],
+              importNames: [
+                "Analysis",
+                "AnalysisBucket",
+                "AnalysisBucketType",
+                "AnalysisNode",
+                "DetailedAnalysis",
+                "MasterImage",
+                "MasterImageCommandArgument",
+                "Node",
+                "Project",
+                "ProjectNode",
+                "Registry",
+                "RegistryProject",
+              ],
+              message:
+                "Hub entities come from ~/services/hub (@privateaim/core-kit), not from the generated Api.ts.",
+            },
+          ],
+        },
+      ],
     },
     ignores: [
       "**/dist/*",

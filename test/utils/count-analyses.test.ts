@@ -6,7 +6,7 @@ import type { ModifiedAnalysisNode } from "~/services/modifiedApiInterfaces";
 function makeNode(
   status: PodStatus | null | undefined,
 ): ModifiedAnalysisNode {
-  return { execution_status: status } as ModifiedAnalysisNode;
+  return { executionStatus: status } as ModifiedAnalysisNode;
 }
 
 describe("countAnalysisContainers", () => {
@@ -56,7 +56,7 @@ describe("countAnalysisContainers", () => {
     expect(result.executed).toBe(1);
   });
 
-  it("skips nodes with null or undefined execution_status", () => {
+  it("skips nodes with null or undefined executionStatus", () => {
     const result = countAnalysisContainers([
       makeNode(null),
       makeNode(undefined),
@@ -70,7 +70,7 @@ describe("countAnalysisContainers", () => {
     });
   });
 
-  it("logs and ignores an unrecognised execution_status", () => {
+  it("logs and ignores an unrecognised executionStatus", () => {
     const spy = vi.spyOn(console, "log").mockImplementation(() => {});
     const result = countAnalysisContainers([
       makeNode("stuck" as PodStatus),

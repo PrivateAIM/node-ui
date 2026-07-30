@@ -6,3 +6,8 @@ allowBuilds:
   esbuild: true
   msw: true
   vue-demi: true
+
+minimumReleaseAgeExclude:
+  - '@privateaim/core-kit@0.13.0'
+  - '@privateaim/kit@0.13.0'
+  - '@privateaim/telemetry-kit@0.13.0'

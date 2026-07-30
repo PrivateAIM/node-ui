@@ -108,7 +108,7 @@ export const handlers = [
   http.get(`/analysis-nodes/${fakeAnalysisNodeId}`, () => {
     return HttpResponse.json({
       ...fakeBaseAnalysisNode,
-      execution_status: "executing",
+      executionStatus: "executing",
     });
   }),
 

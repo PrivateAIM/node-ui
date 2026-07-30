@@ -15,7 +15,7 @@ const props = defineProps({
   },
 });
 
-const currentFilters = ref(props.activeFilters.execution_status);
+const currentFilters = ref(props.activeFilters.executionStatus);
 const counts = computed(() =>
   countAnalysisContainers(props.analyses as ModifiedAnalysisNode[]),
 );

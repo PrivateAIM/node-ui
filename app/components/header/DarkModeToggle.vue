@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { useDark, useToggle } from "@vueuse/core";
-import ToggleSwitch from "primevue/toggleswitch";
 import Button from "primevue/button";
 
 const isDark = useDark({

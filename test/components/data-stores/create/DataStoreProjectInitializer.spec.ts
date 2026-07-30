@@ -52,8 +52,8 @@ describe("DataStoreProjectInitializer.vue", () => {
       // @ts-expect-error data is right
       data: ref(
         fakeParsedProjects.map((p) => ({
-          project: { display_name: p.name },
-          project_id: p.id,
+          project: { displayName: p.name },
+          projectId: p.id,
         })),
       ),
       pending: ref(false),

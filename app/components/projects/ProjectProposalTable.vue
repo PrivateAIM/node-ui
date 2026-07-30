@@ -2,7 +2,7 @@
 import { getProjectNodes } from "~/composables/useAPIFetch";
 import ApproveRejectToggle from "~/components/table/ApproveRejectToggle.vue";
 import { formatDataRow } from "~/utils/format-data-row";
-import { type ProjectNode } from "~/services/Api";
+import { type ProjectNode } from "~/services/hub";
 import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
 import { getApprovalStatusSeverity } from "~/utils/status-tag-severity";
@@ -11,7 +11,7 @@ import { ApprovalStatus } from "~/types/node";
 const proposals = ref();
 const expandedRows = ref({});
 
-const dataRowUnixCols = ["created_at", "updated_at"];
+const dataRowUnixCols = ["createdAt", "updatedAt"];
 const expandRowEntries = [];
 
 const filters = ref();
@@ -25,11 +25,11 @@ function parseData() {
       dataRowUnixCols,
       expandRowEntries,
     ) as unknown as
-      | Array<ProjectNode & { project_name?: string | null }>
+      | Array<ProjectNode & { projectName?: string | null }>
       | undefined;
     formatted?.forEach((row) => {
-      row.project_name =
-        row.project?.display_name ?? row.project?.name ?? row.project?.id;
+      row.projectName =
+        row.project?.displayName ?? row.project?.name ?? row.project?.id;
     });
     proposals.value = formatted;
   }
@@ -40,7 +40,7 @@ parseData();
 function updateTable(newData: ProjectNode) {
   for (let row of proposals.value) {
     if (row.id === newData.id) {
-      row.approval_status = newData.approval_status;
+      row.approvalStatus = newData.approvalStatus;
       return;
     }
   }
@@ -54,7 +54,7 @@ async function onTableRefresh() {
 // Table filters
 const defaultFilters = {
   global: { value: undefined, matchMode: FilterMatchMode.CONTAINS },
-  approval_status: { value: undefined, matchMode: FilterMatchMode.EQUALS },
+  approvalStatus: { value: undefined, matchMode: FilterMatchMode.EQUALS },
 };
 
 filters.value = defaultFilters;
@@ -101,7 +101,7 @@ const updateFilters = (filterText: string) => {
         <DataTable
           v-model:expandedRows="expandedRows"
           v-model:filters="filters"
-          :globalFilterFields="['id', 'project_name', 'node.name']"
+          :globalFilterFields="['id', 'projectName', 'node.name']"
           :rows="10"
           :rowsPerPageOptions="[10, 20, 50]"
           :value="proposals"
@@ -113,7 +113,7 @@ const updateFilters = (filterText: string) => {
         >
           <template #empty> No projects found.</template>
           <Column v-if="expandRowEntries.length" expander style="width: 5rem" />
-          <Column :sortable="true" field="project_name" style="width: 30rem">
+          <Column :sortable="true" field="projectName" style="width: 30rem">
             <template #header>
               <span v-tooltip.top="'Name of the project'" class="help-text">
                 <b>Project Name</b>
@@ -121,7 +121,7 @@ const updateFilters = (filterText: string) => {
             </template>
             <template #body="{ data }">
               <span v-tooltip.right="data.project.id" class="help-text">
-                {{ data.project_name }}
+                {{ data.projectName }}
               </span>
             </template>
           </Column>
@@ -147,7 +147,7 @@ const updateFilters = (filterText: string) => {
               </span>
             </template>
           </Column>
-          <Column :sortable="true" dataType="date" field="created_at.timestamp">
+          <Column :sortable="true" dataType="date" field="createdAt.timestamp">
             <template #header>
               <span
                 v-tooltip.top="'Date the project was registered with the Hub'"
@@ -157,12 +157,12 @@ const updateFilters = (filterText: string) => {
               </span>
             </template>
             <template #body="{ data }">
-              <p v-tooltip.top="data.created_at.long">
-                {{ data.created_at.short }}
+              <p v-tooltip.top="data.createdAt.long">
+                {{ data.createdAt.short }}
               </p>
             </template>
           </Column>
-          <Column :sortable="true" dataType="date" field="updated_at.timestamp">
+          <Column :sortable="true" dataType="date" field="updatedAt.timestamp">
             <template #header>
               <span
                 v-tooltip.top="'Date the project was last modified'"
@@ -172,8 +172,8 @@ const updateFilters = (filterText: string) => {
               </span>
             </template>
             <template #body="{ data }">
-              <p v-tooltip.top="data.updated_at.long">
-                {{ data.updated_at.short }}
+              <p v-tooltip.top="data.updatedAt.long">
+                {{ data.updatedAt.short }}
               </p>
             </template>
           </Column>
@@ -184,7 +184,7 @@ const updateFilters = (filterText: string) => {
             :showClearButton="false"
             :showFilterMatchModes="false"
             :showFilterOperator="false"
-            field="approval_status"
+            field="approvalStatus"
             style="min-width: 10em"
           >
             <template #header>
@@ -199,7 +199,7 @@ const updateFilters = (filterText: string) => {
             </template>
             <template #body="slotProps">
               <ApproveRejectToggle
-                :currentStatus="slotProps.data.approval_status"
+                :currentStatus="slotProps.data.approvalStatus"
                 :objectClass="'project'"
                 :objectId="slotProps.data.id"
                 @updatedRow="updateTable"

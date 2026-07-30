@@ -3,7 +3,8 @@ import { getDataStores, getProjects } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
 import { parseKongTags } from "~/utils/parse-kong-tags";
 import type { ModifiedDetailedService } from "~/services/modifiedApiInterfaces";
-import type { DetailedAnalysis, Project, Route } from "~/services/Api";
+import type { Route } from "~/services/Api";
+import type { DetailedAnalysis, Project } from "~/services/hub";
 
 export function buildProjectNameMap(
   projects: Project[] | DetailedAnalysis[],
@@ -11,7 +12,7 @@ export function buildProjectNameMap(
   const map = new Map<string, string | undefined>();
   projects.forEach((entry) => {
     if (entry.id) {
-      map.set(entry.id, entry.display_name ?? "N/A");
+      map.set(entry.id, entry.displayName ?? "N/A");
     }
   });
   return map;

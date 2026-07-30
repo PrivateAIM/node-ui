@@ -1,15 +1,17 @@
 import type {
-  AnalysisNode,
   BodyKongProjectLinkKongProjectProjectIdDatastoreDatastoreIdPost,
-  DetailedAnalysis,
   EventLogResponse,
   LinkDataStoreProject,
   ListServices,
-  Project,
-  ProjectNode,
   UnlinkResponse,
   UserSettings,
 } from "~/services/Api";
+import type {
+  AnalysisNode,
+  DetailedAnalysis,
+  Project,
+  ProjectNode,
+} from "~/services/hub";
 
 import { useFetch, type UseFetchOptions, useNuxtApp } from "nuxt/app";
 
@@ -59,7 +61,7 @@ export function getProjectNodes(opts?) {
     method: "GET",
     query: {
       include: "project,node",
-      sort: "-updated_at",
+      sort: "-updatedAt",
     },
   });
 }
@@ -69,7 +71,7 @@ export function getProjects(opts?) {
     ...opts,
     method: "GET",
     query: {
-      sort: "-updated_at",
+      sort: "-updatedAt",
     },
   });
 }
@@ -79,7 +81,7 @@ export function getAnalyses(opts?) {
     ...opts,
     method: "GET",
     query: {
-      sort: "-updated_at",
+      sort: "-updatedAt",
     },
   });
 }
@@ -91,7 +93,7 @@ export function getAnalysisNodes(opts?) {
       ...opts,
       method: "GET",
       query: {
-        sort: "-updated_at",
+        sort: "-updatedAt",
       },
     },
   );

@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import ContainerCounter from "~/components/analysis/ContainerCounter.vue";
 import { fakeAnalysisNodes } from "@/test/components/analysis/constants";
-import { type AnalysisNode } from "~/services/Api";
+import { type AnalysisNode } from "~/services/hub";
 
 interface filterData {
   value: string[] | undefined;
@@ -12,8 +12,8 @@ interface filterData {
 
 interface filterObject {
   global?: filterData;
-  execution_status: filterData;
-  approval_status?: filterData;
+  executionStatus: filterData;
+  approvalStatus?: filterData;
 }
 
 describe("ContainerCounter.vue", () => {
@@ -26,8 +26,8 @@ describe("ContainerCounter.vue", () => {
       executed: 0,
     };
     inputAnalyses.forEach((analysisNode) => {
-      if (analysisNode.execution_status) {
-        statusCounts[analysisNode.execution_status]++;
+      if (analysisNode.executionStatus) {
+        statusCounts[analysisNode.executionStatus]++;
       }
     });
     return statusCounts;
@@ -51,7 +51,7 @@ describe("ContainerCounter.vue", () => {
     let emitCounts = 0;
     const fillCounterDiv = wrapper.find(".counter-badge-all");
     ["Started", "Executing", "Stopped", "Failed", "Executed"].forEach(
-      (executionStatus, index) => {
+      (executionStatus) => {
         const displayedStatus = "";
         expect(fillCounterDiv.text()).toContain(displayedStatus);
         const lowerStatus = executionStatus.toLowerCase();
@@ -64,8 +64,8 @@ describe("ContainerCounter.vue", () => {
 
         // If not in filter list and filter list is not empty, then it should be opaque
         if (
-          mockFilters.execution_status.value &&
-          !mockFilters.execution_status.value.includes(lowerStatus)
+          mockFilters.executionStatus.value &&
+          !mockFilters.executionStatus.value.includes(lowerStatus)
         ) {
           expect(counterDiv.attributes("class")).toContain("opaque-badge");
         }
@@ -89,7 +89,7 @@ describe("ContainerCounter.vue", () => {
 
   it("No filters applied", () => {
     counterCheck(fakeAnalysisNodes, {
-      execution_status: {
+      executionStatus: {
         value: undefined,
         matchMode: "in",
       },
@@ -98,7 +98,7 @@ describe("ContainerCounter.vue", () => {
 
   it("Filters applied", () => {
     counterCheck(fakeAnalysisNodes, {
-      execution_status: {
+      executionStatus: {
         value: ["started", "executed"],
         matchMode: "in",
       },

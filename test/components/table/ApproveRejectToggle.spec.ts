@@ -46,7 +46,7 @@ describe("ApproveRejectToggle.vue", () => {
   it("dims the approved tag when the proposal is not approved", () => {
     const wrapper = mountToggle({
       objectClass: "project",
-      currentStatus: ApprovalStatus.Rejected,
+      currentStatus: ApprovalStatus.REJECTED,
     });
 
     expect(wrapper.find(".approval-tag-approved").classes()).toContain(
@@ -60,7 +60,7 @@ describe("ApproveRejectToggle.vue", () => {
   it("dims the rejected tag when the proposal is approved", () => {
     const wrapper = mountToggle({
       objectClass: "project",
-      currentStatus: ApprovalStatus.Approved,
+      currentStatus: ApprovalStatus.APPROVED,
     });
 
     expect(wrapper.find(".approval-tag-rejected").classes()).toContain(
@@ -75,7 +75,7 @@ describe("ApproveRejectToggle.vue", () => {
     const wrapper = mountToggle({
       objectId: fakeValidProposalId,
       objectClass: "project",
-      currentStatus: ApprovalStatus.Rejected,
+      currentStatus: ApprovalStatus.REJECTED,
     });
 
     await wrapper.find(".approval-toggle-switch").trigger("click");
@@ -103,7 +103,7 @@ describe("ApproveRejectToggle.vue", () => {
     const wrapper = mountToggle({
       objectId: fakeValidProposalId,
       objectClass: "project",
-      currentStatus: ApprovalStatus.Approved,
+      currentStatus: ApprovalStatus.APPROVED,
     });
 
     await wrapper.find(".approval-toggle-switch").trigger("click");
@@ -130,7 +130,7 @@ describe("ApproveRejectToggle.vue", () => {
     const wrapper = mountToggle({
       objectId: fakeValidProposalId,
       objectClass: "project",
-      currentStatus: ApprovalStatus.Rejected,
+      currentStatus: ApprovalStatus.REJECTED,
     });
 
     await wrapper.find(".approval-toggle-switch").trigger("click");
@@ -150,7 +150,7 @@ describe("ApproveRejectToggle.vue", () => {
     const wrapper = mountToggle({
       objectId: fakeInvalidProposalId,
       objectClass: "project",
-      currentStatus: ApprovalStatus.Rejected,
+      currentStatus: ApprovalStatus.REJECTED,
     });
 
     await wrapper.find(".approval-toggle-switch").trigger("click");

@@ -20,7 +20,7 @@ export function countAnalysisContainers(
     stopped: 0,
   };
   for (const analysis of currentAnalyses) {
-    const executionStatus = analysis.execution_status;
+    const executionStatus = analysis.executionStatus;
     if (executionStatus) {
       switch (executionStatus) {
         case PodStatus.Started:

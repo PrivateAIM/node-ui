@@ -24,7 +24,9 @@ describe("EventViewer.vue", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     mockToastAdd = vi.fn();
-    vi.mocked(useToast).mockReturnValue({ add: mockToastAdd } as any);
+    vi.mocked(useToast).mockReturnValue({
+      add: mockToastAdd,
+    } as unknown as ReturnType<typeof useToast>);
   });
 
   afterEach(() => {

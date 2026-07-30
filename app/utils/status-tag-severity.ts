@@ -1,34 +1,34 @@
 import { ApprovalStatus } from "~/types/node";
 import { PodStatus } from "~/services/Api";
-import { ProcessStatus } from "~/types/analysis";
+import { ProcessStatus } from "~/services/hub";
 
 export const getApprovalStatusSeverity = (status: ApprovalStatus) => {
   switch (status) {
-    case ApprovalStatus.Approved:
+    case ApprovalStatus.APPROVED:
       return "success";
 
-    case ApprovalStatus.Rejected:
+    case ApprovalStatus.REJECTED:
       return "danger";
   }
 };
 
 export const getBuildStatusSeverity = (status: ProcessStatus) => {
   switch (status) {
-    case ProcessStatus.Starting:
-    case ProcessStatus.Started:
+    case ProcessStatus.STARTING:
+    case ProcessStatus.STARTED:
       return "info";
 
-    case ProcessStatus.Stopping:
-    case ProcessStatus.Stopped:
+    case ProcessStatus.STOPPING:
+    case ProcessStatus.STOPPED:
       return "warning";
 
-    case ProcessStatus.Failed:
+    case ProcessStatus.FAILED:
       return "danger";
 
-    case ProcessStatus.Executing:
+    case ProcessStatus.EXECUTING:
       return "contrast";
 
-    case ProcessStatus.Executed:
+    case ProcessStatus.EXECUTED:
       return "success";
   }
 };

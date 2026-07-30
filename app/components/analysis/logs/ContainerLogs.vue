@@ -11,9 +11,8 @@ import { useNuxtApp } from "nuxt/app";
 import type {
   AnalysisLogHistoryResponse,
   AnalysisLogsResponse,
-  AnalysisNode,
 } from "~/services/Api";
-import { ProcessStatus } from "~/types/analysis";
+import { type AnalysisNode, ProcessStatus } from "~/services/hub";
 
 type FlatRunLogs = {
   run_number: number;
@@ -93,7 +92,7 @@ const { pause, resume, isActive } = useIntervalFn(
     refreshLogs();
   },
   5000,
-  { immediate: analysis.value?.execution_status === ProcessStatus.Executing },
+  { immediate: analysis.value?.executionStatus === ProcessStatus.EXECUTING },
 );
 
 async function refreshLogs() {
@@ -159,9 +158,9 @@ function onRefreshToggle() {
             class="log-debug-toggle"
           />
           <RefreshSwitch
-            :disabled="analysis?.execution_status !== ProcessStatus.Executing"
+            :disabled="analysis?.executionStatus !== ProcessStatus.EXECUTING"
             :startEnabled="
-              analysis?.execution_status === ProcessStatus.Executing
+              analysis?.executionStatus === ProcessStatus.EXECUTING
             "
             @change="onRefreshToggle"
           />

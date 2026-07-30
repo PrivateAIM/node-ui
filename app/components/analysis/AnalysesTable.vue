@@ -18,14 +18,13 @@ import {
   getExecutionStatusSeverity,
 } from "~/utils/status-tag-severity";
 import {
-  type AnalysisNode,
   type AnalysisStatus,
   type ListRoutes,
   type PodProgressResponse,
   PodStatus,
-  type Project,
   type Route,
 } from "~/services/Api";
+import { type AnalysisNode, ProcessStatus, type Project } from "~/services/hub";
 import { ApprovalStatus } from "~/types/node";
 import { parseKongTags } from "~/utils/parse-kong-tags";
 import ContainerCounter from "~/components/analysis/ContainerCounter.vue";
@@ -34,7 +33,6 @@ import type {
   HubStatuses,
   ModifiedAnalysisNode,
 } from "~/services/modifiedApiInterfaces";
-import { ProcessStatus } from "~/types/analysis";
 
 const toast = useToast();
 const tableLoading = ref(true);
@@ -87,13 +85,10 @@ const podStatuses = Object.values(PodStatus);
 
 // Combined "Hub Statuses" column filtering
 const HUB_STATUS_FILTER_MATCH_MODE = "hubStatusMatch";
-type HubStatusGroup =
-  | "approval_status"
-  | "build_status"
-  | "distribution_status";
+type HubStatusGroup = "approvalStatus" | "buildStatus" | "distributionStatus";
 
 function getHubStatusSeverity(group: HubStatusGroup, status: string) {
-  return group === "approval_status"
+  return group === "approvalStatus"
     ? getApprovalStatusSeverity(status as ApprovalStatus)
     : getBuildStatusSeverity(status as ProcessStatus);
 }
@@ -103,8 +98,8 @@ const hubStatusFilterOptions = [
     label: "Approval Status",
     items: approvalStatuses.map((status) => ({
       label: status,
-      value: `approval_status::${status}`,
-      group: "approval_status" as HubStatusGroup,
+      value: `approvalStatus::${status}`,
+      group: "approvalStatus" as HubStatusGroup,
       status,
     })),
   },
@@ -112,8 +107,8 @@ const hubStatusFilterOptions = [
     label: "Build Status",
     items: processStatuses.map((status) => ({
       label: status,
-      value: `build_status::${status}`,
-      group: "build_status" as HubStatusGroup,
+      value: `buildStatus::${status}`,
+      group: "buildStatus" as HubStatusGroup,
       status,
     })),
   },
@@ -121,8 +116,8 @@ const hubStatusFilterOptions = [
     label: "Distribution Status",
     items: processStatuses.map((status) => ({
       label: status,
-      value: `distribution_status::${status}`,
-      group: "distribution_status" as HubStatusGroup,
+      value: `distributionStatus::${status}`,
+      group: "distributionStatus" as HubStatusGroup,
       status,
     })),
   },
@@ -148,8 +143,8 @@ async function getProjects() {
     .$hubApi("/projects", {
       method: "GET",
       query: {
-        sort: "-updated_at",
-        fields: "id,name,display_name",
+        sort: "-updatedAt",
+        fields: "id,name,displayName",
       },
     })
     .catch(() => undefined)) as Project[];
@@ -187,7 +182,7 @@ async function parseProjects() {
   if (projData) {
     projData.forEach((proj: Project) => {
       if (proj.id) {
-        projMap.set(proj.id, proj.display_name ?? proj.name ?? proj.id);
+        projMap.set(proj.id, proj.displayName ?? proj.name ?? proj.id);
       }
     });
   }
@@ -219,16 +214,16 @@ async function getExecutionStatusesFromPodOrc(): Promise<
 
 function setProgress(analysis: ModifiedAnalysisNode): ModifiedAnalysisNode {
   // For testing: Math.round(Math.random() * 100);
-  analysis.execution_progress = analysis.execution_progress
-    ? analysis.execution_progress
+  analysis.executionProgress = analysis.executionProgress
+    ? analysis.executionProgress
     : 0;
 
-  const currentRunStatus = analysis.execution_status;
+  const currentRunStatus = analysis.executionStatus;
   if (currentRunStatus) {
     if (currentRunStatus === PodStatus.Failed) {
-      analysis.execution_progress = 0;
+      analysis.executionProgress = 0;
     } else if (currentRunStatus === PodStatus.Executed) {
-      analysis.execution_progress = 100;
+      analysis.executionProgress = 100;
     }
   }
   return analysis;
@@ -256,14 +251,14 @@ function parseAnalysis(
   analysisEntry: ModifiedAnalysisNode,
   executionStatuses: PodProgressResponse | undefined,
 ): ModifiedAnalysisNode {
-  const projId = analysisEntry.analysis?.project_id;
-  const analysisId = analysisEntry.analysis_id;
-  analysisEntry.analysis_name =
-    analysisEntry.analysis?.display_name ??
+  const projId = analysisEntry.analysis?.projectId;
+  const analysisId = analysisEntry.analysisId;
+  analysisEntry.analysisName =
+    analysisEntry.analysis?.displayName ??
     analysisEntry.analysis?.name ??
     analysisId;
   if (projId) {
-    analysisEntry.project_name = projMap.has(projId) ? projMap.get(projId) : "";
+    analysisEntry.projectName = projMap.has(projId) ? projMap.get(projId) : "";
     analysisEntry.datastore = kongRoutes.value.has(projId);
   }
   const acceptableHubStatuses: Array<PodStatus | null | undefined> = [
@@ -272,18 +267,18 @@ function parseAnalysis(
   ];
   if (executionStatuses && analysisId in executionStatuses) {
     const podStatus = executionStatuses[analysisId]!;
-    analysisEntry.execution_status = podStatus.status;
-    analysisEntry.execution_progress =
-      podStatus.progress ?? analysisEntry.execution_progress;
+    analysisEntry.executionStatus = podStatus.status;
+    analysisEntry.executionProgress =
+      podStatus.progress ?? analysisEntry.executionProgress;
   } else {
-    if (!acceptableHubStatuses.includes(analysisEntry.execution_status)) {
-      analysisEntry.execution_status = null;
+    if (!acceptableHubStatuses.includes(analysisEntry.executionStatus)) {
+      analysisEntry.executionStatus = null;
     }
   }
-  analysisEntry.hub_statuses = {
-    approval_status: analysisEntry.approval_status,
-    build_status: analysisEntry.analysis?.build_status ?? null,
-    distribution_status: analysisEntry.analysis?.distribution_status ?? null,
+  analysisEntry.hubStatuses = {
+    approvalStatus: analysisEntry.approvalStatus,
+    buildStatus: analysisEntry.analysis?.buildStatus ?? null,
+    distributionStatus: analysisEntry.analysis?.distributionStatus ?? null,
   };
   return setProgress(analysisEntry);
 }
@@ -314,13 +309,13 @@ async function compileAnalysisTable(
 
   const formattedAnalyses = formatDataRow(
     analysisData,
-    ["created_at", "updated_at"],
+    ["createdAt", "updatedAt"],
     expandRowEntries,
   ) as ModifiedAnalysisNode[];
   if (formattedAnalyses && projMap.size > 0) {
     formattedAnalyses.forEach((analysisEntry: ModifiedAnalysisNode) => {
       parsedAnalyses.set(
-        analysisEntry.analysis_id,
+        analysisEntry.analysisId,
         parseAnalysis(analysisEntry, currentExecutionStatuses),
       );
     });
@@ -385,7 +380,7 @@ async function getNextPage() {
           limit: queryLimit,
         },
         include: "analysis,node",
-        sort: "-updated_at",
+        sort: "-updatedAt",
       },
     })
     .catch(() => undefined)) as AnalysisNode[] | undefined;
@@ -405,8 +400,8 @@ async function getNextPage() {
 // Table filters
 const defaultFilters = {
   global: { value: undefined, matchMode: FilterMatchMode.CONTAINS },
-  hub_statuses: { value: undefined, matchMode: HUB_STATUS_FILTER_MATCH_MODE },
-  execution_status: { value: undefined, matchMode: FilterMatchMode.IN },
+  hubStatuses: { value: undefined, matchMode: HUB_STATUS_FILTER_MATCH_MODE },
+  executionStatus: { value: undefined, matchMode: FilterMatchMode.IN },
 };
 filters.value = defaultFilters;
 
@@ -432,18 +427,18 @@ function updateAnalysisRun(
   if (analysesMap.value.has(analysisId)) {
     const analysisToUpdate = analysesMap.value.get(analysisId)!; // Tell typescript we are sure there is a value
     if (newStatusData) {
-      analysisToUpdate.execution_status = newStatusData.status;
-      analysisToUpdate.execution_progress = newStatusData.progress || 0;
+      analysisToUpdate.executionStatus = newStatusData.status;
+      analysisToUpdate.executionProgress = newStatusData.progress || 0;
     }
     analysesMap.value.set(analysisId, setProgress(analysisToUpdate));
   }
 }
 
 function updateExecutionStatusFilter(filterText: string) {
-  const currentExecutionStatusFilters = filters.value.execution_status.value;
+  const currentExecutionStatusFilters = filters.value.executionStatus.value;
   if (!currentExecutionStatusFilters) {
     // If value is null then initialize with filter in array
-    filters.value.execution_status.value = [filterText];
+    filters.value.executionStatus.value = [filterText];
   } else {
     // Already run status filters present
     if (currentExecutionStatusFilters.includes(filterText)) {
@@ -453,13 +448,13 @@ function updateExecutionStatusFilter(filterText: string) {
       );
       if (filteredStatuses.length == 0) {
         // If empty array after filtering then set to null
-        filters.value.execution_status.value = undefined;
+        filters.value.executionStatus.value = undefined;
       } else {
-        filters.value.execution_status.value = filteredStatuses;
+        filters.value.executionStatus.value = filteredStatuses;
       }
     } else {
       // Apply filter since it isn't present
-      filters.value.execution_status.value.push(filterText);
+      filters.value.executionStatus.value.push(filterText);
     }
   }
 }
@@ -563,7 +558,7 @@ const onCloseNavToast = () => {
         <DataTable
           v-model:expandedRows="expandedRows"
           v-model:filters="filters"
-          :globalFilterFields="['analysis_name', 'project_name', 'node.name']"
+          :globalFilterFields="['analysisName', 'projectName', 'node.name']"
           :loading="tableLoading"
           :rows="10"
           :rowsPerPageOptions="[10, 20, 50]"
@@ -573,22 +568,22 @@ const onCloseNavToast = () => {
           dataKey="id"
           filterDisplay="menu"
           paginator
-          sortField="updated_at.timestamp"
+          sortField="updatedAt.timestamp"
           stripedRows
           tableStyle="min-width: 50rem"
           @page="onPage"
         >
           <template #empty> No analyses found.</template>
           <Column v-if="expandRowEntries.length" expander style="width: 5rem" />
-          <Column :sortable="true" field="analysis_name">
+          <Column :sortable="true" field="analysisName">
             <template #header>
               <span v-tooltip.top="'Name of the analysis'" class="help-text">
                 <b>Name</b>
               </span>
             </template>
             <template #body="{ data }">
-              <span v-tooltip.right="data.analysis_id" class="help-text">
-                {{ data.analysis_name }}
+              <span v-tooltip.right="data.analysisId" class="help-text">
+                {{ data.analysisName }}
               </span>
             </template>
           </Column>
@@ -598,8 +593,8 @@ const onCloseNavToast = () => {
             :showClearButton="false"
             :showFilterMatchModes="false"
             :showFilterOperator="false"
-            field="hub_statuses"
-            filterField="hub_statuses"
+            field="hubStatuses"
+            filterField="hubStatuses"
           >
             <template #header>
               <span
@@ -616,31 +611,31 @@ const onCloseNavToast = () => {
                 <div class="hub-status-line">
                   <span class="hub-status-label">Approval Status</span>
                   <Tag
-                    v-if="data.approval_status"
-                    :severity="getApprovalStatusSeverity(data.approval_status)"
-                    :value="data.approval_status"
+                    v-if="data.approvalStatus"
+                    :severity="getApprovalStatusSeverity(data.approvalStatus)"
+                    :value="data.approvalStatus"
                   />
                   <span v-else class="hub-status-empty">—</span>
                 </div>
                 <div class="hub-status-line">
                   <span class="hub-status-label">Build Status</span>
                   <Tag
-                    v-if="data.analysis.build_status"
+                    v-if="data.analysis.buildStatus"
                     :severity="
-                      getBuildStatusSeverity(data.analysis.build_status)
+                      getBuildStatusSeverity(data.analysis.buildStatus)
                     "
-                    :value="data.analysis.build_status"
+                    :value="data.analysis.buildStatus"
                   />
                   <span v-else class="hub-status-empty">—</span>
                 </div>
                 <div class="hub-status-line">
                   <span class="hub-status-label">Distribution Status</span>
                   <Tag
-                    v-if="data.analysis.distribution_status"
+                    v-if="data.analysis.distributionStatus"
                     :severity="
-                      getBuildStatusSeverity(data.analysis.distribution_status)
+                      getBuildStatusSeverity(data.analysis.distributionStatus)
                     "
-                    :value="data.analysis.distribution_status"
+                    :value="data.analysis.distributionStatus"
                   />
                   <span v-else class="hub-status-empty">—</span>
                 </div>
@@ -683,8 +678,8 @@ const onCloseNavToast = () => {
             :showClearButton="false"
             :showFilterMatchModes="false"
             :showFilterOperator="false"
-            field="execution_status"
-            filterField="execution_status"
+            field="executionStatus"
+            filterField="executionStatus"
           >
             <template #header>
               <span
@@ -696,9 +691,9 @@ const onCloseNavToast = () => {
             </template>
             <template #body="{ data }">
               <Tag
-                v-if="data.execution_status"
-                :severity="getExecutionStatusSeverity(data.execution_status)"
-                :value="data.execution_status"
+                v-if="data.executionStatus"
+                :severity="getExecutionStatusSeverity(data.executionStatus)"
+                :value="data.executionStatus"
               />
             </template>
             <template #filter="{ filterModel, filterCallback }">
@@ -722,7 +717,7 @@ const onCloseNavToast = () => {
               </MultiSelect>
             </template>
           </Column>
-          <Column :sortable="true" field="project_name">
+          <Column :sortable="true" field="projectName">
             <template #header>
               <span
                 v-tooltip.top="'Name of the associated project'"
@@ -732,8 +727,8 @@ const onCloseNavToast = () => {
               </span>
             </template>
             <template #body="{ data }">
-              <span v-tooltip.top="data.analysis.project_id" class="help-text">
-                {{ data.project_name }}
+              <span v-tooltip.top="data.analysis.projectId" class="help-text">
+                {{ data.projectName }}
               </span>
             </template>
           </Column>
@@ -770,7 +765,7 @@ const onCloseNavToast = () => {
                       'datastore-icon-btn',
                       { 'datastore-create-link': datastoreRequired },
                     ]"
-                    @click="onCreateDataStore(data.analysis.project_id)"
+                    @click="onCreateDataStore(data.analysis.projectId)"
                   >
                     <i class="pi pi-times"></i>
                   </button>
@@ -778,7 +773,7 @@ const onCloseNavToast = () => {
               </div>
             </template>
           </Column>
-          <Column :sortable="true" dataType="date" field="created_at.timestamp">
+          <Column :sortable="true" dataType="date" field="createdAt.timestamp">
             <template #header>
               <span
                 v-tooltip.top="'Date the analysis image was created'"
@@ -788,12 +783,12 @@ const onCloseNavToast = () => {
               </span>
             </template>
             <template #body="{ data }">
-              <p v-tooltip.top="data.created_at.long">
-                {{ data.created_at.short }}
+              <p v-tooltip.top="data.createdAt.long">
+                {{ data.createdAt.short }}
               </p>
             </template>
           </Column>
-          <Column :sortable="true" dataType="date" field="updated_at.timestamp">
+          <Column :sortable="true" dataType="date" field="updatedAt.timestamp">
             <template #header>
               <span
                 v-tooltip.top="
@@ -805,8 +800,8 @@ const onCloseNavToast = () => {
               </span>
             </template>
             <template #body="{ data }">
-              <p v-tooltip.top="data.updated_at.long">
-                {{ data.updated_at.short }}
+              <p v-tooltip.top="data.updatedAt.long">
+                {{ data.updatedAt.short }}
               </p>
             </template>
           </Column>
@@ -822,18 +817,18 @@ const onCloseNavToast = () => {
             <template #body="{ data }">
               <ProgressBar
                 :mode="
-                  data.execution_status === PodStatus.Executing &&
-                  !data.execution_progress
+                  data.executionStatus === PodStatus.Executing &&
+                  !data.executionProgress
                     ? 'indeterminate'
                     : 'determinate'
                 "
                 :style="
-                  data.execution_status === PodStatus.Executing &&
-                  !data.execution_progress
+                  data.executionStatus === PodStatus.Executing &&
+                  !data.executionProgress
                     ? {}
-                    : determineProgressBarColor(data.execution_progress)
+                    : determineProgressBarColor(data.executionProgress)
                 "
-                :value="data.execution_progress"
+                :value="data.executionProgress"
               />
             </template>
           </Column>
@@ -849,17 +844,17 @@ const onCloseNavToast = () => {
             <template #body="slotProps">
               <div class="control-buttons">
                 <AnalysisControlButtons
-                  :analysisBuildStatus="slotProps.data.analysis.build_status"
+                  :analysisBuildStatus="slotProps.data.analysis.buildStatus"
                   :analysisDistributionStatus="
-                    slotProps.data.analysis.distribution_status
+                    slotProps.data.analysis.distributionStatus
                   "
-                  :analysisExecutionStatus="slotProps.data.execution_status"
-                  :analysisId="slotProps.data.analysis_id"
+                  :analysisExecutionStatus="slotProps.data.executionStatus"
+                  :analysisId="slotProps.data.analysisId"
                   :analysisNodeId="slotProps.data.id"
-                  :approvalStatus="slotProps.data.approval_status"
+                  :approvalStatus="slotProps.data.approvalStatus"
                   :datastore="slotProps.data.datastore"
-                  :nodeId="slotProps.data.node_id"
-                  :projectId="slotProps.data.analysis.project_id"
+                  :nodeId="slotProps.data.nodeId"
+                  :projectId="slotProps.data.analysis.projectId"
                   :requireDatastore="datastoreRequired!"
                   @missingDataStore="showDataStoreNavToast"
                   @updateAnalysisRow="updateAnalysisRun"

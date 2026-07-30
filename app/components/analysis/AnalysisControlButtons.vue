@@ -2,7 +2,7 @@
 import AnalysisUpdateButton from "./AnalysisUpdateButton.vue";
 import { useToast } from "primevue/usetoast";
 import { useNuxtApp } from "nuxt/app";
-import { ProcessStatus } from "~/types/analysis";
+import { ProcessStatus } from "~/services/hub";
 import {
   type PodProgressResponse,
   PodStatus,
@@ -161,13 +161,13 @@ const buttonStatuses = computed<ButtonStates>(
 
 const notApproved = computed(
   () =>
-    !props.approvalStatus || props.approvalStatus === ApprovalStatus.Rejected,
+    !props.approvalStatus || props.approvalStatus === ApprovalStatus.REJECTED,
 );
 
 const disabledReason = computed<string | null>(() => {
-  if (props.analysisBuildStatus !== ProcessStatus.Executed)
+  if (props.analysisBuildStatus !== ProcessStatus.EXECUTED)
     return "Image not built";
-  if (props.analysisDistributionStatus !== ProcessStatus.Executed)
+  if (props.analysisDistributionStatus !== ProcessStatus.EXECUTED)
     return "Image not yet distributed to this node";
   if (props.requireDatastore && !props.datastore) return "Missing datastore";
   return null;

@@ -1,16 +1,15 @@
 import {
-  type Analysis,
-  type AnalysisNode,
   type Consumer,
   type DetailedService,
   PodStatus,
   type Route,
 } from "~/services/Api";
+import type { Analysis, AnalysisNode } from "~/services/hub";
 
 export interface HubStatuses {
-  approval_status: AnalysisNode["approval_status"];
-  build_status: Analysis["build_status"];
-  distribution_status: Analysis["distribution_status"];
+  approvalStatus: AnalysisNode["approvalStatus"];
+  buildStatus: Analysis["buildStatus"];
+  distributionStatus: Analysis["distributionStatus"];
 }
 
 export interface modifiedTimestamp {
@@ -46,23 +45,26 @@ export interface ModifiedRoute extends Omit<
 
 export interface ModifiedAnalysisNode extends Omit<
   AnalysisNode,
-  "execution_status"
+  "executionStatus"
 > {
-  project_name: string | undefined | null;
-  analysis_name: string | undefined | null;
+  projectName: string | undefined | null;
+  analysisName: string | undefined | null;
   expand: {
     [key: string]: string;
   };
   datastore: boolean;
-  execution_status: PodStatus | undefined | null;
+  // Deliberately the pod-orchestrator's status rather than the Hub's: the table
+  // shows what the local containers are doing and falls back to the Hub's
+  // `executionStatus` only when the pod-orchestrator has nothing to report.
+  executionStatus: PodStatus | undefined | null;
   progress: number;
-  hub_statuses: HubStatuses;
+  hubStatuses: HubStatuses;
 }
 
 export interface ModifiedParsedAnalysisNode extends Omit<
   ModifiedAnalysisNode,
-  "created_at" | "updated_at"
+  "createdAt" | "updatedAt"
 > {
-  created_at: modifiedTimestamp;
-  updated_at: modifiedTimestamp;
+  createdAt: modifiedTimestamp;
+  updatedAt: modifiedTimestamp;
 }

@@ -17,8 +17,8 @@ import { useToast } from "primevue/usetoast";
 import {
   type BodyKongInitializeKongInitializePost,
   DataStoreType,
-  type ProjectNode,
 } from "~/services/Api";
+import type { ProjectNode } from "~/services/hub";
 import { getProjectNodes } from "~/composables/useAPIFetch";
 import {
   generateRandomDataStoreName,
@@ -44,8 +44,8 @@ if (projStatus.value === "success") {
   const projectData = projects.value as unknown as Array<ProjectNode>;
   if (projectData.length > 0) {
     availableProjects.value = projectData.map((proj: ProjectNode) => ({
-      name: proj.project?.display_name ?? proj.project?.name ?? proj.project_id,
-      id: proj.project_id,
+      name: proj.project?.displayName ?? proj.project?.name ?? proj.projectId,
+      id: proj.projectId,
     }));
   }
 }

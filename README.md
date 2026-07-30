@@ -5,6 +5,35 @@ website, the administrators have access to an overview of the submitted projects
 the data at the data center, as well as have full control over the individual containers running on their systems and
 manage which projects/analyses have access to the various datasets.
 
+## API Types
+
+Types come from two places, and the split matters.
+
+**FLAME Hub entities** — `Analysis`, `AnalysisNode`, `Project`, `ProjectNode`, `Node`,
+`Registry`, `RegistryProject`, `MasterImage` and their status enums — are imported from
+`~/services/hub`, which re-exports the Hub's own published packages
+(`@privateaim/core-kit`, `@privateaim/kit`). The hub-adapter forwards Hub entities through
+unchanged, so the Hub is the source of truth for their shape, and its packages are versioned
+in lockstep with the API that produces them.
+
+**Everything the node owns** — kong, the pod-orchestrator, the event log, container logs,
+node settings, health and auth — comes from `app/services/Api.ts`, generated from the
+hub-adapter's OpenAPI document:
+
+```bash
+pnpm build-api
+```
+
+That document also carries the adapter's own copies of the Hub entities. They are still
+generated but must not be used: an ESLint `no-restricted-imports` rule fails the lint if a
+Hub entity name is imported from `~/services/Api`, because those copies drift from the Hub
+whenever the adapter lags behind a release.
+
+Hub fields are **camelCase** (`displayName`, `createdAt`, `buildStatus`) as of Hub 0.13.0.
+Node-local fields are still snake_case (`created_at` on a kong route, `event_name`,
+`start_date`). The two look alike and sit side by side in the same components — check which
+service owns a field before renaming it.
+
 ## Required Environment Variables
 
 This frontend requires the following environment variables to be set. The SSR framework used for this project (Nuxt)

@@ -6,12 +6,8 @@
  * @param rowExpansionKeys - data keys that will be moved to an expandable subset
  */
 import { useTimeAgo } from "@vueuse/core";
-import type {
-  AnalysisNode,
-  DetailedService,
-  ProjectNode,
-  Route,
-} from "~/services/Api";
+import type { DetailedService, Route } from "~/services/Api";
+import type { AnalysisNode, ProjectNode } from "~/services/hub";
 import type { ModifiedDetailedService } from "~/services/modifiedApiInterfaces";
 
 type FormattableRow =

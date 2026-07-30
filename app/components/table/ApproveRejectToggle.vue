@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useNuxtApp } from "nuxt/app";
 import { useToast } from "primevue/usetoast";
-import type { AnalysisNode, ProjectNode } from "~/services/Api";
+import type { AnalysisNode, ProjectNode } from "~/services/hub";
 import { ApprovalStatus } from "~/types/node";
 import { getApprovalStatusSeverity } from "~/utils/status-tag-severity";
 import Tag from "primevue/tag";
@@ -13,7 +13,7 @@ const props = defineProps<{
   currentStatus?: ApprovalStatus;
 }>();
 
-const checked = ref(props.currentStatus === ApprovalStatus.Approved);
+const checked = ref(props.currentStatus === ApprovalStatus.APPROVED);
 
 const toast = useToast();
 const confirm = useConfirm();
@@ -83,6 +83,10 @@ const confirmRejection = () => {
 async function onSubmitApproval(isApproved: boolean) {
   loading.value = true;
   const formData = new FormData();
+  // Stays snake_case: this is the hub-adapter's own FastAPI `Form(...)`
+  // parameter on POST /project-nodes/{id} and /analysis-nodes/{id}, not a Hub
+  // wire key. The *response* it returns is a Hub entity, so the guard below
+  // reads `approvalStatus`.
   formData.append("approval_status", isApproved ? "approved" : "rejected");
   let approvalResp: AnalysisNode | ProjectNode | undefined;
   let endpoint: string;
@@ -114,7 +118,7 @@ async function onSubmitApproval(isApproved: boolean) {
       return undefined;
     })) as AnalysisNode | ProjectNode | undefined;
 
-  if (approvalResp && "approval_status" in approvalResp) {
+  if (approvalResp && "approvalStatus" in approvalResp) {
     showSuccessfulSubmission(isApproved);
     // Send data to parent component
     emit("updatedRow", approvalResp);
@@ -153,8 +157,8 @@ const showFailedSubmission = () => {
       :class="{ dimmed: checked }"
     >
       <Tag
-        :severity="getApprovalStatusSeverity(ApprovalStatus.Rejected)"
-        :value="ApprovalStatus.Rejected"
+        :severity="getApprovalStatusSeverity(ApprovalStatus.REJECTED)"
+        :value="ApprovalStatus.REJECTED"
       />
     </div>
     <ToggleSwitch
@@ -168,8 +172,8 @@ const showFailedSubmission = () => {
       :class="{ dimmed: !checked }"
     >
       <Tag
-        :severity="getApprovalStatusSeverity(ApprovalStatus.Approved)"
-        :value="ApprovalStatus.Approved"
+        :severity="getApprovalStatusSeverity(ApprovalStatus.APPROVED)"
+        :value="ApprovalStatus.APPROVED"
       />
     </div>
   </div>

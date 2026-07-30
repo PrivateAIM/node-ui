@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { AnalysisNode, Project } from "~/services/Api";
+import type { AnalysisNode, Project } from "~/services/hub";
 
 export const useHubStore = defineStore("hub", {
   state: () => ({

@@ -9,7 +9,7 @@ import {
   fakeMissingAnalysisId,
 } from "@/test/mockapi/handlers";
 import { PodStatus } from "~/services/Api";
-import { ProcessStatus } from "~/types/analysis";
+import { ProcessStatus } from "~/services/hub";
 
 interface ButtonStates {
   playActive: boolean;
@@ -65,10 +65,10 @@ describe("AnalysisControlButtons.vue", () => {
   ) {
     const wrapper = mount(AnalysisControlButtons, {
       props: {
-        analysisBuildStatus: ProcessStatus.Executed,
+        analysisBuildStatus: ProcessStatus.EXECUTED,
         analysisExecutionStatus: initialExecutionStatus,
         analysisNodeId: "8003eefe-e39b-4bd4-aec4-78046c63b39b",
-        analysisDistributionStatus: ProcessStatus.Executed,
+        analysisDistributionStatus: ProcessStatus.EXECUTED,
         analysisId: analysisId,
         approvalStatus: "approved",
         projectId: "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483",
@@ -331,10 +331,10 @@ describe("AnalysisControlButtons.vue", () => {
   function mountControls(analysisExecutionStatus: string | null) {
     return mount(AnalysisControlButtons, {
       props: {
-        analysisBuildStatus: ProcessStatus.Executed,
+        analysisBuildStatus: ProcessStatus.EXECUTED,
         analysisExecutionStatus,
         analysisNodeId: "8003eefe-e39b-4bd4-aec4-78046c63b39b",
-        analysisDistributionStatus: ProcessStatus.Executed,
+        analysisDistributionStatus: ProcessStatus.EXECUTED,
         analysisId: fakeAnalysisId,
         approvalStatus: "approved",
         projectId: "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483",
