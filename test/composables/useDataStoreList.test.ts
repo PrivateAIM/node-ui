@@ -1,6 +1,6 @@
 import { expect, test, describe } from "vitest";
 import { buildProjectNameMap } from "~/composables/useDataStoreList";
-import type { Project } from "~/services/hub";
+import type { Project } from "@privateaim/core-kit";
 
 describe("buildProjectNameMap", () => {
   test("maps project id to name", () => {

@@ -7,7 +7,7 @@
  */
 import { useTimeAgo } from "@vueuse/core";
 import type { DetailedService, Route } from "~/services/Api";
-import type { AnalysisNode, ProjectNode } from "~/services/hub";
+import type { AnalysisNode, ProjectNode } from "@privateaim/core-kit";
 import type { ModifiedDetailedService } from "~/services/modifiedApiInterfaces";
 
 type FormattableRow =

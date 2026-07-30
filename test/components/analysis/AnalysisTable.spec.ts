@@ -22,7 +22,8 @@ import {
 import { getAnalysisNodes } from "~/composables/useAPIFetch";
 import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
 import { PodStatus } from "~/services/Api";
-import { type AnalysisNode, ProcessStatus } from "~/services/hub";
+import { type AnalysisNode } from "@privateaim/core-kit";
+import { ProcessStatus } from "@privateaim/kit";
 import { testServer } from "@/test/mockapi/setup";
 import { fakeAnalysisId } from "@/test/mockapi/handlers";
 

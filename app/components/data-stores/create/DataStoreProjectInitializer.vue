@@ -18,7 +18,7 @@ import {
   type BodyKongInitializeKongInitializePost,
   DataStoreType,
 } from "~/services/Api";
-import type { ProjectNode } from "~/services/hub";
+import type { ProjectNode } from "@privateaim/core-kit";
 import { getProjectNodes } from "~/composables/useAPIFetch";
 import {
   generateRandomDataStoreName,

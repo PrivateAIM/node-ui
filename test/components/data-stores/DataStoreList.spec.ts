@@ -4,7 +4,7 @@ import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import DataStoreList from "~/components/data-stores/DataStoreList.vue";
 import { getDataStores, getProjects } from "~/composables/useAPIFetch";
 import type { ListServices } from "~/services/Api";
-import type { Project } from "~/services/hub";
+import type { Project } from "@privateaim/core-kit";
 import { fakeDataStoreResp, fakeProjectResp } from "./constants";
 
 vi.mock("~/composables/useAPIFetch", () => ({

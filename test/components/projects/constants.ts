@@ -1,4 +1,7 @@
-import { type ProjectNode, ProjectNodeApprovalStatus } from "~/services/hub";
+import {
+  type ProjectNode,
+  ProjectNodeApprovalStatus,
+} from "@privateaim/core-kit";
 
 export const fakeProposalsResp: ProjectNode[] = [
   {

@@ -9,7 +9,7 @@ import {
   fakeMissingAnalysisId,
 } from "@/test/mockapi/handlers";
 import { PodStatus } from "~/services/Api";
-import { ProcessStatus } from "~/services/hub";
+import { ProcessStatus } from "@privateaim/kit";
 
 interface ButtonStates {
   playActive: boolean;

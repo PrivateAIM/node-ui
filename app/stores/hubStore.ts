@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { AnalysisNode, Project } from "~/services/hub";
+import type { AnalysisNode, Project } from "@privateaim/core-kit";
 
 export const useHubStore = defineStore("hub", {
   state: () => ({

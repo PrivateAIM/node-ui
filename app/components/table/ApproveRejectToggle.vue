@@ -1,19 +1,25 @@
 <script lang="ts" setup>
 import { useNuxtApp } from "nuxt/app";
 import { useToast } from "primevue/usetoast";
-import type { AnalysisNode, ProjectNode } from "~/services/hub";
-import { ApprovalStatus } from "~/types/node";
-import { getApprovalStatusSeverity } from "~/utils/status-tag-severity";
+import {
+  ProjectNodeApprovalStatus,
+  type AnalysisNode,
+  type ProjectNode,
+} from "@privateaim/core-kit";
+import {
+  getApprovalStatusSeverity,
+  type ApprovalStatusValue,
+} from "~/utils/status-tag-severity";
 import Tag from "primevue/tag";
 import { useConfirm } from "primevue/useconfirm";
 
 const props = defineProps<{
   objectId?: string;
   objectClass?: string;
-  currentStatus?: ApprovalStatus;
+  currentStatus?: ApprovalStatusValue;
 }>();
 
-const checked = ref(props.currentStatus === ApprovalStatus.APPROVED);
+const checked = ref(props.currentStatus === ProjectNodeApprovalStatus.APPROVED);
 
 const toast = useToast();
 const confirm = useConfirm();
@@ -157,8 +163,8 @@ const showFailedSubmission = () => {
       :class="{ dimmed: checked }"
     >
       <Tag
-        :severity="getApprovalStatusSeverity(ApprovalStatus.REJECTED)"
-        :value="ApprovalStatus.REJECTED"
+        :severity="getApprovalStatusSeverity(ProjectNodeApprovalStatus.REJECTED)"
+        :value="ProjectNodeApprovalStatus.REJECTED"
       />
     </div>
     <ToggleSwitch
@@ -172,8 +178,8 @@ const showFailedSubmission = () => {
       :class="{ dimmed: !checked }"
     >
       <Tag
-        :severity="getApprovalStatusSeverity(ApprovalStatus.APPROVED)"
-        :value="ApprovalStatus.APPROVED"
+        :severity="getApprovalStatusSeverity(ProjectNodeApprovalStatus.APPROVED)"
+        :value="ProjectNodeApprovalStatus.APPROVED"
       />
     </div>
   </div>

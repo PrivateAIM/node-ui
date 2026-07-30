@@ -16,6 +16,7 @@ import {
   getApprovalStatusSeverity,
   getBuildStatusSeverity,
   getExecutionStatusSeverity,
+  type ApprovalStatusValue,
 } from "~/utils/status-tag-severity";
 import {
   type AnalysisStatus,
@@ -24,8 +25,12 @@ import {
   PodStatus,
   type Route,
 } from "~/services/Api";
-import { type AnalysisNode, ProcessStatus, type Project } from "~/services/hub";
-import { ApprovalStatus } from "~/types/node";
+import {
+  AnalysisNodeApprovalStatus,
+  type AnalysisNode,
+  type Project,
+} from "@privateaim/core-kit";
+import { ProcessStatus } from "@privateaim/kit";
 import { parseKongTags } from "~/utils/parse-kong-tags";
 import ContainerCounter from "~/components/analysis/ContainerCounter.vue";
 import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
@@ -79,7 +84,7 @@ let currentOffset = 50; // Start with query limit and will increment by same amo
 const kongRoutes = ref<Set<string>>(new Set());
 
 // Imported values
-const approvalStatuses = Object.values(ApprovalStatus);
+const approvalStatuses = Object.values(AnalysisNodeApprovalStatus);
 const processStatuses = Object.values(ProcessStatus);
 const podStatuses = Object.values(PodStatus);
 
@@ -89,7 +94,7 @@ type HubStatusGroup = "approvalStatus" | "buildStatus" | "distributionStatus";
 
 function getHubStatusSeverity(group: HubStatusGroup, status: string) {
   return group === "approvalStatus"
-    ? getApprovalStatusSeverity(status as ApprovalStatus)
+    ? getApprovalStatusSeverity(status as ApprovalStatusValue)
     : getBuildStatusSeverity(status as ProcessStatus);
 }
 

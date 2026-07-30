@@ -12,7 +12,8 @@ import type {
   AnalysisLogHistoryResponse,
   AnalysisLogsResponse,
 } from "~/services/Api";
-import { type AnalysisNode, ProcessStatus } from "~/services/hub";
+import { type AnalysisNode } from "@privateaim/core-kit";
+import { ProcessStatus } from "@privateaim/kit";
 
 type FlatRunLogs = {
   run_number: number;

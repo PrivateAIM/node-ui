@@ -22,7 +22,7 @@ export default [
       "no-undef": "off",
       // `Api.ts` is regenerated from the hub-adapter's OpenAPI document, which
       // still mirrors the Hub's entities. Those copies drift; the Hub's own
-      // packages do not. Re-export them from `~/services/hub` instead.
+      // packages do not. Import them from `@privateaim/core-kit` instead.
       "@typescript-eslint/no-restricted-imports": [
         "error",
         {
@@ -44,7 +44,7 @@ export default [
                 "RegistryProject",
               ],
               message:
-                "Hub entities come from ~/services/hub (@privateaim/core-kit), not from the generated Api.ts.",
+                "Hub entities come from @privateaim/core-kit, not from the generated Api.ts.",
             },
           ],
         },

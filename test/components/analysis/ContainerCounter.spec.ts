@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import ContainerCounter from "~/components/analysis/ContainerCounter.vue";
 import { fakeAnalysisNodes } from "@/test/components/analysis/constants";
-import { type AnalysisNode } from "~/services/hub";
+import { type AnalysisNode } from "@privateaim/core-kit";
 
 interface filterData {
   value: string[] | undefined;

@@ -4,10 +4,10 @@ import { formatDataRow } from "~/utils/format-data-row";
 import { parseKongTags } from "~/utils/parse-kong-tags";
 import type { ModifiedDetailedService } from "~/services/modifiedApiInterfaces";
 import type { Route } from "~/services/Api";
-import type { DetailedAnalysis, Project } from "~/services/hub";
+import type { Analysis, Project } from "@privateaim/core-kit";
 
 export function buildProjectNameMap(
-  projects: Project[] | DetailedAnalysis[],
+  projects: Project[] | Analysis[],
 ): Map<string, string | undefined> {
   const map = new Map<string, string | undefined>();
   projects.forEach((entry) => {

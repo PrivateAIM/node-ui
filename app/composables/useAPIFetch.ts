@@ -7,11 +7,11 @@ import type {
   UserSettings,
 } from "~/services/Api";
 import type {
+  Analysis,
   AnalysisNode,
-  DetailedAnalysis,
   Project,
   ProjectNode,
-} from "~/services/hub";
+} from "@privateaim/core-kit";
 
 import { useFetch, type UseFetchOptions, useNuxtApp } from "nuxt/app";
 
@@ -77,7 +77,7 @@ export function getProjects(opts?) {
 }
 
 export function getAnalyses(opts?) {
-  return useAPIFetch<DetailedAnalysis[]>("/analyses", {
+  return useAPIFetch<Analysis[]>("/analyses", {
     ...opts,
     method: "GET",
     query: {

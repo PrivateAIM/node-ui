@@ -3,7 +3,7 @@ import { useConfirm } from "primevue/useconfirm";
 import { flushPromises, mount } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import ApproveRejectToggle from "~/components/table/ApproveRejectToggle.vue";
-import { ApprovalStatus } from "~/types/node";
+import { ProjectNodeApprovalStatus } from "@privateaim/core-kit";
 import {
   fakeInvalidProposalId,
   fakeValidProposalId,
@@ -46,7 +46,7 @@ describe("ApproveRejectToggle.vue", () => {
   it("dims the approved tag when the proposal is not approved", () => {
     const wrapper = mountToggle({
       objectClass: "project",
-      currentStatus: ApprovalStatus.REJECTED,
+      currentStatus: ProjectNodeApprovalStatus.REJECTED,
     });
 
     expect(wrapper.find(".approval-tag-approved").classes()).toContain(
@@ -60,7 +60,7 @@ describe("ApproveRejectToggle.vue", () => {
   it("dims the rejected tag when the proposal is approved", () => {
     const wrapper = mountToggle({
       objectClass: "project",
-      currentStatus: ApprovalStatus.APPROVED,
+      currentStatus: ProjectNodeApprovalStatus.APPROVED,
     });
 
     expect(wrapper.find(".approval-tag-rejected").classes()).toContain(
@@ -75,7 +75,7 @@ describe("ApproveRejectToggle.vue", () => {
     const wrapper = mountToggle({
       objectId: fakeValidProposalId,
       objectClass: "project",
-      currentStatus: ApprovalStatus.REJECTED,
+      currentStatus: ProjectNodeApprovalStatus.REJECTED,
     });
 
     await wrapper.find(".approval-toggle-switch").trigger("click");
@@ -103,7 +103,7 @@ describe("ApproveRejectToggle.vue", () => {
     const wrapper = mountToggle({
       objectId: fakeValidProposalId,
       objectClass: "project",
-      currentStatus: ApprovalStatus.APPROVED,
+      currentStatus: ProjectNodeApprovalStatus.APPROVED,
     });
 
     await wrapper.find(".approval-toggle-switch").trigger("click");
@@ -130,7 +130,7 @@ describe("ApproveRejectToggle.vue", () => {
     const wrapper = mountToggle({
       objectId: fakeValidProposalId,
       objectClass: "project",
-      currentStatus: ApprovalStatus.REJECTED,
+      currentStatus: ProjectNodeApprovalStatus.REJECTED,
     });
 
     await wrapper.find(".approval-toggle-switch").trigger("click");
@@ -150,7 +150,7 @@ describe("ApproveRejectToggle.vue", () => {
     const wrapper = mountToggle({
       objectId: fakeInvalidProposalId,
       objectClass: "project",
-      currentStatus: ApprovalStatus.REJECTED,
+      currentStatus: ProjectNodeApprovalStatus.REJECTED,
     });
 
     await wrapper.find(".approval-toggle-switch").trigger("click");

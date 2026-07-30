@@ -10,11 +10,10 @@ manage which projects/analyses have access to the various datasets.
 Types come from two places, and the split matters.
 
 **FLAME Hub entities** — `Analysis`, `AnalysisNode`, `Project`, `ProjectNode`, `Node`,
-`Registry`, `RegistryProject`, `MasterImage` and their status enums — are imported from
-`~/services/hub`, which re-exports the Hub's own published packages
-(`@privateaim/core-kit`, `@privateaim/kit`). The hub-adapter forwards Hub entities through
-unchanged, so the Hub is the source of truth for their shape, and its packages are versioned
-in lockstep with the API that produces them.
+`Registry`, `RegistryProject`, `MasterImage` and their approval enums — are imported directly
+from `@privateaim/core-kit`, and the shared `ProcessStatus` from `@privateaim/kit`. The
+hub-adapter forwards Hub entities through unchanged, so the Hub is the source of truth for
+their shape, and its packages are versioned in lockstep with the API that produces them.
 
 **Everything the node owns** — kong, the pod-orchestrator, the event log, container logs,
 node settings, health and auth — comes from `app/services/Api.ts`, generated from the

@@ -4,9 +4,9 @@ import {
   type AnalysisNode,
   AnalysisNodeApprovalStatus,
   type Node,
-  ProcessStatus,
   type Project,
-} from "~/services/hub";
+} from "@privateaim/core-kit";
+import { ProcessStatus } from "@privateaim/kit";
 
 export const fakeLogs =
   'Starting FlameCoreSDK\n\tExtracting node config\n\tConnecting to nginx...success\n\tConnecting to MessageBroker...success\n\tConnecting to ResultService...success\n\tConnecting to DataApi...success\n\tStarting FlameApi thread...success\nFlameCoreSDK ready\nINFO:     Started server process [1]\nINFO:     Waiting for application startup.\nINFO:     Application startup complete.\nINFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)\nfinished: False, False\nINFO:     10.1.30.117:44596 - "GET /healthz HTTP/1.0" 200 OK\n';

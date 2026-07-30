@@ -5,8 +5,8 @@ import {
   getDataStoreTypeSeverity,
   getExecutionStatusSeverity,
 } from "~/utils/status-tag-severity";
-import { ProcessStatus } from "~/types/analysis";
-import { ApprovalStatus } from "~/types/node";
+import { ProjectNodeApprovalStatus } from "@privateaim/core-kit";
+import { ProcessStatus } from "@privateaim/kit";
 import { PodStatus } from "~/services/Api";
 
 test("Approval status severity tag", () => {
@@ -14,7 +14,7 @@ test("Approval status severity tag", () => {
     approved: "success",
     rejected: "danger",
   };
-  for (const approvalStatus of Object.values(ApprovalStatus)) {
+  for (const approvalStatus of Object.values(ProjectNodeApprovalStatus)) {
     expect(getApprovalStatusSeverity(approvalStatus)).toStrictEqual(
       expectations[approvalStatus],
     );

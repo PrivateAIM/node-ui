@@ -2,11 +2,13 @@
 import { getProjectNodes } from "~/composables/useAPIFetch";
 import ApproveRejectToggle from "~/components/table/ApproveRejectToggle.vue";
 import { formatDataRow } from "~/utils/format-data-row";
-import { type ProjectNode } from "~/services/hub";
+import {
+  ProjectNodeApprovalStatus,
+  type ProjectNode,
+} from "@privateaim/core-kit";
 import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
 import { getApprovalStatusSeverity } from "~/utils/status-tag-severity";
-import { ApprovalStatus } from "~/types/node";
 
 const proposals = ref();
 const expandedRows = ref({});
@@ -208,7 +210,7 @@ const updateFilters = (filterText: string) => {
             <template #filter="{ filterModel, filterCallback }">
               <Select
                 v-model="filterModel.value"
-                :options="Object.values(ApprovalStatus)"
+                :options="Object.values(ProjectNodeApprovalStatus)"
                 :showClear="true"
                 class="p-column-filter"
                 placeholder="Select One"

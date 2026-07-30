@@ -2,13 +2,13 @@
 import AnalysisUpdateButton from "./AnalysisUpdateButton.vue";
 import { useToast } from "primevue/usetoast";
 import { useNuxtApp } from "nuxt/app";
-import { ProcessStatus } from "~/services/hub";
+import { AnalysisNodeApprovalStatus } from "@privateaim/core-kit";
+import { ProcessStatus } from "@privateaim/kit";
 import {
   type PodProgressResponse,
   PodStatus,
   type StatusOnlyResponse,
 } from "~/services/Api";
-import { ApprovalStatus } from "~/types/node";
 
 type ToastSeverity = "success" | "info" | "warn" | "error" | undefined;
 
@@ -161,7 +161,7 @@ const buttonStatuses = computed<ButtonStates>(
 
 const notApproved = computed(
   () =>
-    !props.approvalStatus || props.approvalStatus === ApprovalStatus.REJECTED,
+    !props.approvalStatus || props.approvalStatus === AnalysisNodeApprovalStatus.REJECTED,
 );
 
 const disabledReason = computed<string | null>(() => {

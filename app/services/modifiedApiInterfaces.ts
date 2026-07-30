@@ -4,7 +4,7 @@ import {
   PodStatus,
   type Route,
 } from "~/services/Api";
-import type { Analysis, AnalysisNode } from "~/services/hub";
+import type { Analysis, AnalysisNode } from "@privateaim/core-kit";
 
 export interface HubStatuses {
   approvalStatus: AnalysisNode["approvalStatus"];
