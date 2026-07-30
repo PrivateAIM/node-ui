@@ -41,7 +41,7 @@ export default defineNuxtPlugin(() => {
 
   const hubApi = $fetch.create({
     baseURL: baseUrl,
-    timeout: 30000,
+    timeout: 60000, // matches HA
     async onRequest({ options }) {
       const sessionData = await getSession();
 
