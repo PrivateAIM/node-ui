@@ -35,7 +35,6 @@
     "next-auth": "~4.21.1",
     "node-fetch-native": "^1.6.7",
     "nuxt": "^4.4.7",
-    "nuxt-charts": "^2.2.0",
     "pinia": "^3.0.4",
     "prettier": "^3.6.2",
     "primeicons": "^7.0.0",
