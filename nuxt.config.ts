@@ -10,7 +10,12 @@ const projectRoot = fileURLToPath(new URL(".", import.meta.url));
 export default defineNuxtConfig({
   ssr: false,
   devtools: { enabled: false },
-  modules: ["@primevue/nuxt-module", "@sidebase/nuxt-auth", "@pinia/nuxt"],
+  modules: [
+    "@primevue/nuxt-module",
+    "@sidebase/nuxt-auth",
+    "@pinia/nuxt",
+    "nuxt-echarts",
+  ],
 
   plugins: ["./app/plugins/api.ts"],
 
@@ -63,6 +68,12 @@ export default defineNuxtConfig({
     directives: {
       include: ["Ripple", "Tooltip", "Toast"],
     },
+  },
+
+  echarts: {
+    renderer: ["canvas"],
+    charts: ["HeatmapChart"],
+    components: ["TooltipComponent", "VisualMapComponent", "GridComponent"],
   },
 
   css: [
