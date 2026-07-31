@@ -3267,6 +3267,26 @@
             "description": "Whether to include the raw datapoints alongside the summary"
           },
           {
+            "name": "resolution",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 86400,
+                  "exclusiveMinimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Aggregate checks into slices this many seconds wide instead of returning raw datapoints. Slices with no checks are omitted",
+              "title": "Resolution"
+            },
+            "description": "Aggregate checks into slices this many seconds wide instead of returning raw datapoints. Slices with no checks are omitted"
+          },
+          {
             "name": "limit",
             "in": "query",
             "required": false,
@@ -8364,6 +8384,83 @@
         "title": "ServiceClientCertificate",
         "description": "Certificate to be used as client certificate while TLS handshaking to the upstream server."
       },
+      "ServiceHealthBucket": {
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start",
+            "description": "Inclusive start of the slice"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End",
+            "description": "Exclusive end of the slice"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "successful": {
+            "type": "integer",
+            "title": "Successful"
+          },
+          "failed": {
+            "type": "integer",
+            "title": "Failed"
+          },
+          "max_latency_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Latency Ms"
+          },
+          "avg_latency_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Latency Ms"
+          },
+          "worst_status": {
+            "$ref": "#/components/schemas/ServiceCheckStatus",
+            "description": "ERROR when any check in the slice failed, otherwise OK"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Error text of the earliest failed check in the slice, if any"
+          }
+        },
+        "type": "object",
+        "required": [
+          "start",
+          "end",
+          "total",
+          "successful",
+          "failed",
+          "worst_status"
+        ],
+        "title": "ServiceHealthBucket",
+        "description": "Aggregate of every recorded probe falling inside one time slice.\n\nComputed in SQL over all rows in the slice, so the counts stay honest regardless of any\nlimit applied to the raw datapoints."
+      },
       "ServiceHealthHistory": {
         "properties": {
           "monitoring_enabled": {
@@ -8677,6 +8774,14 @@
             "type": "array",
             "title": "Checks",
             "description": "Raw datapoints in the timeframe, newest first, capped by the limit parameter"
+          },
+          "buckets": {
+            "items": {
+              "$ref": "#/components/schemas/ServiceHealthBucket"
+            },
+            "type": "array",
+            "title": "Buckets",
+            "description": "Per-slice aggregates, only populated when a resolution was requested"
           }
         },
         "type": "object",

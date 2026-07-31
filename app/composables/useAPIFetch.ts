@@ -7,6 +7,7 @@ import type {
   ListServices,
   Project,
   ProjectNode,
+  ServiceHealthHistory,
   UnlinkResponse,
   UserSettings,
 } from "~/services/Api";
@@ -49,6 +50,25 @@ export function getNodeConfiguration(opts?) {
   return useAPIFetch<UserSettings>("/node/settings", {
     ...opts,
     method: "GET",
+  });
+}
+
+// Health endpoints
+export function getServiceHealthHistory(
+  query: {
+    start_date?: string;
+    end_date?: string;
+    service?: string[];
+    include_checks?: boolean;
+    limit?: number;
+    resolution?: number;
+  } = {},
+  opts?,
+) {
+  return useAPIFetch<ServiceHealthHistory>("/health/services/history", {
+    ...opts,
+    method: "GET",
+    query,
   });
 }
 

@@ -1878,6 +1878,45 @@ export interface ServiceClientCertificate {
 }
 
 /**
+ * ServiceHealthBucket
+ * Aggregate of every recorded probe falling inside one time slice.
+ *
+ * Computed in SQL over all rows in the slice, so the counts stay honest regardless of any
+ * limit applied to the raw datapoints.
+ */
+export interface ServiceHealthBucket {
+  /**
+   * Start
+   * Inclusive start of the slice
+   * @format date-time
+   */
+  start: string;
+  /**
+   * End
+   * Exclusive end of the slice
+   * @format date-time
+   */
+  end: string;
+  /** Total */
+  total: number;
+  /** Successful */
+  successful: number;
+  /** Failed */
+  failed: number;
+  /** Max Latency Ms */
+  max_latency_ms?: number | null;
+  /** Avg Latency Ms */
+  avg_latency_ms?: number | null;
+  /** ERROR when any check in the slice failed, otherwise OK */
+  worst_status: ServiceCheckStatus;
+  /**
+   * Message
+   * Error text of the earliest failed check in the slice, if any
+   */
+  message?: string | null;
+}
+
+/**
  * ServiceHealthHistory
  * Response model for the stored health history of the downstream services.
  */
@@ -2022,6 +2061,11 @@ export interface ServiceHealthSummary {
    * Raw datapoints in the timeframe, newest first, capped by the limit parameter
    */
   checks?: ServiceHealthPoint[];
+  /**
+   * Buckets
+   * Per-slice aggregates, only populated when a resolution was requested
+   */
+  buckets?: ServiceHealthBucket[];
 }
 
 /**
@@ -3789,6 +3833,11 @@ export class Api<
          * @default true
          */
         include_checks?: boolean;
+        /**
+         * Resolution
+         * Aggregate checks into slices this many seconds wide instead of returning raw datapoints. Slices with no checks are omitted
+         */
+        resolution?: number | null;
         /**
          * Limit
          * Maximum number of raw datapoints to return per service, newest first
