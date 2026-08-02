@@ -1,9 +1,16 @@
 import { flushPromises, mount } from "@vue/test-utils";
 import { useRuntimeConfig } from "nuxt/app";
 import { beforeAll, describe, expect, it, vi } from "vitest";
+import Menubar from "primevue/menubar";
 import MenuHeader from "~/components/header/MenuHeader.vue";
 import { type DefineComponent, defineComponent, ref } from "vue";
 import { useAuthState } from "@/test/mockapi/nuxt-auth-mock";
+
+/** One row of `allLinks`; only the fields the nav assertions care about. */
+interface MenuLink {
+  label: string;
+  route?: string;
+}
 
 describe("MenuHeader.vue", () => {
   vi.mocked(useRuntimeConfig);
@@ -24,8 +31,9 @@ describe("MenuHeader.vue", () => {
       "Home",
       "Projects",
       "Analyses",
-      "Events",
       "Data Stores",
+      "Events",
+      "Uptime",
     ];
 
     vi.mocked(useAuthState).mockReturnValue({
@@ -62,5 +70,32 @@ describe("MenuHeader.vue", () => {
 
   it("Authenticated menu header", async () => {
     await menuHeaderChecks(true);
+  });
+
+  it("points the Uptime tab at the uptime page", async () => {
+    vi.mocked(useAuthState).mockReturnValue({
+      status: ref("authenticated"),
+      data: ref(null),
+    });
+
+    const wrapper = mount(MenuHeaderTestComponent, {
+      global: {
+        stubs: {
+          AvatarButton: true,
+          DarkModeToggle: true,
+          PreferencesDialog: true,
+        },
+      },
+    });
+    await flushPromises();
+
+    // Read the route off the model rather than the rendered `href`: the custom `#item`
+    // slot renders a `router-link`, which the test router resolves to "/" for any route
+    // this suite has not registered - so a typo'd path would still render plausibly.
+    const model = wrapper.findComponent(Menubar).props("model") as MenuLink[];
+
+    expect(model.find((item) => item.label === "Uptime")?.route).toBe(
+      "/uptime",
+    );
   });
 });
