@@ -2,9 +2,9 @@
 import IconField from "primevue/iconfield";
 import InputIcon from "primevue/inputicon";
 
-const props = defineProps({
-  searchTerm: [String, undefined],
-});
+const props = defineProps<{
+  searchTerm?: string;
+}>();
 
 const emit = defineEmits(["clearFilters", "updateSearch"]);
 

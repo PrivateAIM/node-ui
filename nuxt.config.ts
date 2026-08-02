@@ -35,6 +35,10 @@ export default defineNuxtConfig({
     },
   },
 
+  typescript: {
+    typeCheck: true,
+  },
+
   auth: {
     isEnabled: true,
     originEnvKey: "NUXT_PUBLIC_ORIGIN",
