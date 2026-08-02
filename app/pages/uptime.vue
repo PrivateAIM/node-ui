@@ -30,11 +30,6 @@ const monitoringEnabled = computed(
 const intervalSeconds = computed(() => history.value?.interval_seconds ?? null);
 const services = computed(() => Object.entries(history.value?.services ?? {}));
 
-/**
- * The adapter caps raw datapoints, but buckets are computed over the whole window, so the
- * only way to exceed the cap here is a probe interval fast enough that one slice would hold
- * more checks than the cap allows. Warn rather than silently render a partial window.
- */
 const truncationWarning = computed(() => {
   const interval = history.value?.interval_seconds;
   const first = slots.value[0];
@@ -49,13 +44,26 @@ const truncationWarning = computed(() => {
     : null;
 });
 
+const svcNameMap = new Map<string, string>([
+  ["fhir", "FHIR Server"],
+  ["hub_core", "Hub - Core Service"],
+  ["hub_auth", "Hub - Auth Service"],
+  ["idp", "Internal Keycloak"],
+  ["kong", "Kong Gateway API"],
+  ["message_broker", "Message Broker Service"],
+  ["po", "Pod Orchestrator"],
+  ["s3", "S3 Server"],
+  ["storage", "Storage Service"],
+  ["victoria_logs", "Victoria Logs"],
+]);
+
+function mapServiceName(svcKey: string) {
+  return svcNameMap.has(svcKey) ? svcNameMap.get(svcKey) : svcKey;
+}
+
 async function load({ start, end }: { start: Date; end: Date }) {
   const resolution = resolutionFor(end.getTime() - start.getTime());
 
-  // The adapter floors every bucket to an epoch multiple of `resolution`, so the slots are
-  // built on that same grid - and the request must use the floored start, not the raw one.
-  // Asking from an unaligned start leaves the first slot permanently empty, because the
-  // bucket covering it begins before the requested window and is never returned.
   const gridStart = floorToGrid(start, resolution);
   slots.value = buildSlots(gridStart, end, resolution);
   loading.value = true;
@@ -116,7 +124,7 @@ function openDrilldown(payload: {
       <ServiceUptimeCard
         v-for="[name, summary] in services"
         :key="name"
-        :name="name"
+        :name="mapServiceName(name) ?? name"
         :summary="summary"
         :slots="slots"
         @cell-click="openDrilldown"

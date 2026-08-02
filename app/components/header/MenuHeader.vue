@@ -27,11 +27,6 @@ const allLinks = [
     route: "/analyses",
   },
   {
-    label: "Events",
-    icon: "pi pi-list",
-    route: "/events",
-  },
-  {
     label: "Data Stores",
     icon: "pi pi-warehouse",
     items: [
@@ -46,6 +41,16 @@ const allLinks = [
         route: "/data-stores",
       },
     ],
+  },
+  {
+    label: "Events",
+    icon: "pi pi-list",
+    route: "/events",
+  },
+  {
+    label: "Uptime",
+    icon: "pi pi-wave-pulse",
+    route: "/uptime",
   },
 ];
 
@@ -136,7 +141,9 @@ const links = computed(() =>
 
 .menu-bar-header {
   border-radius: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 .menu-bar-header .menu-bar-item {

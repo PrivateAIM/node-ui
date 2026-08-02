@@ -27,12 +27,12 @@ const buckets = computed(() =>
 const uptimeLabel = computed(() =>
   props.summary.uptime_percentage === null ||
   props.summary.uptime_percentage === undefined
-    ? "—"
+    ? "-"
     : `${props.summary.uptime_percentage.toFixed(2)}%`,
 );
 
 const lastCheckedLabel = computed(() => {
-  if (!props.summary.last_checked_at) return "—";
+  if (!props.summary.last_checked_at) return "-";
 
   const checked = new Date(props.summary.last_checked_at);
 

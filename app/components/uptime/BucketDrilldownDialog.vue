@@ -72,7 +72,7 @@ const hasNext = computed(
 );
 
 const headerLabel = computed(() =>
-  props.service ? `${props.service} — individual checks` : "Checks",
+  props.service ? `${props.service} - individual checks` : "Checks",
 );
 
 const windowLabel = computed(() => {
@@ -169,11 +169,10 @@ watch(() => [props.visible, props.service, props.slotRange], loadChecks, {
       <Column field="latency_ms" header="Latency (ms)">
         <template #body="{ data }">
           <span :class="{ 'bucket-drilldown-slow': isSlow(data.latency_ms) }">
-            {{ data.latency_ms ?? "—" }}
+            {{ data.latency_ms ?? "-" }}
           </span>
         </template>
       </Column>
-      <!-- The reason a cell is red, straight from the adapter. -->
       <Column field="message" header="Message" />
 
       <template #empty>No checks recorded in this window.</template>
@@ -196,11 +195,11 @@ watch(() => [props.visible, props.service, props.slotRange], loadChecks, {
 }
 
 .bucket-drilldown-slow {
-  color: var(--p-amber-600);
+  color: var(--p-amber-700);
   font-weight: 700;
 }
 
-:global(html.flame-dark) .bucket-drilldown-slow {
+:global(html.flame-dark .bucket-drilldown-slow) {
   color: var(--p-amber-400);
 }
 </style>
