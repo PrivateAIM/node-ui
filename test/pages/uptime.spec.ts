@@ -160,7 +160,7 @@ describe("uptime.vue", () => {
       .map((card) => card.props("name"));
 
     // `fhir` is unconfigured; it has to appear as a disabled track, not vanish.
-    expect(names).toContain("fhir");
+    expect(names).toContain("FHIR Server");
     expect(wrapper.text().toLowerCase()).toContain("disabled");
   });
 
@@ -172,7 +172,7 @@ describe("uptime.vue", () => {
       .findAllComponents(ServiceUptimeCard)
       .map((card) => card.props("name"));
 
-    expect(names).toEqual(["kong", "fhir"]);
+    expect(names).toEqual(["Kong Gateway API", "FHIR Server"]);
   });
 
   it("hands every card the same slot list it built for the request", async () => {
@@ -393,9 +393,6 @@ describe("uptime.vue", () => {
     const wrapper = mountPage();
     await flushPromises();
 
-    // Every other spec in this suite stubs its child, so this is the only place the
-    // card-to-track seam is exercised: that the track accepts `(UptimeBucket | null)[]`
-    // at runtime and that the kebab binding matches the child's `cellClick` emit.
     expect(wrapper.findAllComponents(VChartStub).length).toBe(2);
   });
 
@@ -404,13 +401,12 @@ describe("uptime.vue", () => {
     await flushPromises();
 
     const chart = wrapper.findAllComponents(VChartStub)[0]!;
-    // The shape ECharts hands a click handler: the track encodes the slot index into
-    // the fourth tuple slot of every point.
+
     chart.vm.$emit("click", { data: [0, 0, 1, 0] });
     await flushPromises();
 
     const dialog = wrapper.findComponent(BucketDrilldownDialog);
     expect(dialog.props("visible")).toBe(true);
-    expect(dialog.props("service")).toBe("kong");
+    expect(dialog.props("service")).toBe("Kong Gateway API");
   });
 });
