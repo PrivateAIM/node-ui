@@ -52,7 +52,7 @@ describe("generateRandomDataStoreName", () => {
 
   test("prefixes the sanitized project name and appends an adjective-noun pair", () => {
     expect(generateRandomDataStoreName("My Fancy Project!")).toMatch(
-      /^My-Fancy-Project-[a-z]+-[a-z]+$/,
+      /^My-Fancy-Project-[a-z]+-[a-z]+-[0-9a-f]+$/,
     );
   });
 
@@ -61,7 +61,7 @@ describe("generateRandomDataStoreName", () => {
     const first = generateRandomDataStoreName("proj");
     const second = generateRandomDataStoreName("proj");
     expect(first).toBe(second);
-    expect(first).toMatch(/^proj-[a-z]+-[a-z]+$/);
+    expect(first).toMatch(/^proj-[a-z]+-[a-z]+-[0-9a-f]+$/);
   });
 
   test("varies with the random source", () => {
