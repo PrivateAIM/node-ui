@@ -12,6 +12,7 @@ import { ServiceCheckStatus, type ServiceHealthPoint } from "~/services/Api";
 const props = withDefaults(
   defineProps<{
     visible: boolean;
+    serviceTitle: string | null;
     service: string | null;
     slotRange: UptimeSlot | null;
     slots?: UptimeSlot[];
@@ -72,14 +73,14 @@ const hasNext = computed(
 );
 
 const headerLabel = computed(() =>
-  props.service ? `${props.service} - individual checks` : "Checks",
+  props.service ? `${props.serviceTitle} Health Checks` : "Health Checks",
 );
 
 const windowLabel = computed(() => {
   const range = props.slotRange;
   if (!range) return "";
 
-  const window = `${formatClockTime(range.start)}–${formatClockTime(range.end)}`;
+  const window = `${formatClockTime(range.start)} - ${formatClockTime(range.end)}`;
 
   return currentIndex.value < 0
     ? window
@@ -111,34 +112,35 @@ watch(() => [props.visible, props.service, props.slotRange], loadChecks, {
 
 <template>
   <Dialog
-    :visible="visible"
-    modal
-    dismissable-mask
     :header="headerLabel"
     :style="{ width: '48rem' }"
+    :visible="visible"
+    dismissable-mask
+    modal
     @update:visible="emit('update:visible', $event)"
   >
     <div class="bucket-drilldown-nav">
       <Button
+        :disabled="!hasPrevious"
         data-testid="uptime-drilldown-prev"
         icon="pi pi-chevron-left"
         label="Previous slice"
         severity="secondary"
         size="small"
         text
-        :disabled="!hasPrevious"
         @click="step(-1)"
       />
 
       <span
-        data-testid="uptime-drilldown-window"
-        class="bucket-drilldown-window"
         aria-live="polite"
+        class="bucket-drilldown-window"
+        data-testid="uptime-drilldown-window"
       >
         {{ windowLabel }}
       </span>
 
       <Button
+        :disabled="!hasNext"
         data-testid="uptime-drilldown-next"
         icon="pi pi-chevron-right"
         icon-pos="right"
@@ -146,12 +148,11 @@ watch(() => [props.visible, props.service, props.slotRange], loadChecks, {
         severity="secondary"
         size="small"
         text
-        :disabled="!hasNext"
         @click="step(1)"
       />
     </div>
 
-    <DataTable :value="checks" :loading="loading" size="small">
+    <DataTable :loading="loading" :value="checks" size="small">
       <Column field="checked_at" header="Checked at">
         <template #body="{ data }">{{ formatTime(data.checked_at) }}</template>
       </Column>

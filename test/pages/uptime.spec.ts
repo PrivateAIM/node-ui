@@ -407,6 +407,6 @@ describe("uptime.vue", () => {
 
     const dialog = wrapper.findComponent(BucketDrilldownDialog);
     expect(dialog.props("visible")).toBe(true);
-    expect(dialog.props("service")).toBe("Kong Gateway API");
+    expect(dialog.props("service")).toBe("kong");
   });
 });

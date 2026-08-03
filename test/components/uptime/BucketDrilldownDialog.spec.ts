@@ -57,6 +57,7 @@ function mountDialog(props: Record<string, unknown> = {}) {
     props: {
       visible: true,
       service: "kong",
+      serviceTitle: "Kong Gateway API",
       slotRange: slots[0]!,
       slots,
       ...props,
@@ -277,7 +278,7 @@ describe("BucketDrilldownDialog.vue", () => {
     it("names the service it is showing", async () => {
       const wrapper = await mountOpen();
 
-      expect(wrapper.text()).toContain("kong");
+      expect(wrapper.text()).toContain("Kong Gateway API");
     });
 
     it("names the slice it is showing, and its place in the range", async () => {
@@ -285,11 +286,9 @@ describe("BucketDrilldownDialog.vue", () => {
       const window = wrapper.get("[data-testid='uptime-drilldown-window']");
 
       expect(window.text()).toContain(
-        `${formatClockTime(slots[1]!.start)}–${formatClockTime(slots[1]!.end)}`,
+        `${formatClockTime(slots[1]!.start)} - ${formatClockTime(slots[1]!.end)}`,
       );
       expect(window.text()).toContain("2 of 3");
-      // Stepping swaps the table out underneath a keyboard reader with no other
-      // signal that anything moved.
       expect(window.attributes("aria-live")).toBe("polite");
     });
 

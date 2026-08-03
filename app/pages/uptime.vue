@@ -23,6 +23,9 @@ const loading = ref(false);
 const drilldownVisible = ref(false);
 const drilldownService = ref<string | null>(null);
 const drilldownSlot = ref<UptimeSlot | null>(null);
+const drilldownTitle = computed(() =>
+  drilldownService.value ? mapServiceName(drilldownService.value) : null,
+);
 
 const monitoringEnabled = computed(
   () => history.value?.monitoring_enabled ?? true,
@@ -58,7 +61,7 @@ const svcNameMap = new Map<string, string>([
 ]);
 
 function mapServiceName(svcKey: string) {
-  return svcNameMap.has(svcKey) ? svcNameMap.get(svcKey) : svcKey;
+  return svcNameMap.get(svcKey) ?? svcKey;
 }
 
 async function load({ start, end }: { start: Date; end: Date }) {
@@ -94,15 +97,15 @@ function openDrilldown(payload: {
 <template>
   <div class="uptime-page">
     <UptimeToolbar
-      :loading="loading"
       :interval-seconds="intervalSeconds"
+      :loading="loading"
       @range-change="load"
     />
 
     <Message
       v-if="!monitoringEnabled"
-      severity="warn"
       class="uptime-page-message"
+      severity="warn"
     >
       {{
         history?.monitoring_detail ??
@@ -113,8 +116,8 @@ function openDrilldown(payload: {
     <template v-else>
       <Message
         v-if="truncationWarning"
-        severity="info"
         class="uptime-page-message"
+        severity="info"
       >
         {{ truncationWarning }}
       </Message>
@@ -125,16 +128,17 @@ function openDrilldown(payload: {
         v-for="[name, summary] in services"
         :key="name"
         :name="mapServiceName(name) ?? name"
-        :summary="summary"
         :slots="slots"
-        @cell-click="openDrilldown"
+        :summary="summary"
+        @cell-click="(payload) => openDrilldown({ ...payload, service: name })"
       />
     </template>
 
     <BucketDrilldownDialog
-      v-model:visible="drilldownVisible"
       v-model:slot-range="drilldownSlot"
+      v-model:visible="drilldownVisible"
       :service="drilldownService"
+      :serviceTitle="drilldownTitle"
       :slots="slots"
     />
   </div>
