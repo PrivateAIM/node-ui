@@ -1,5 +1,40 @@
 # Changelog
 
+## [0.8.0](https://github.com/PrivateAIM/node-ui/compare/v0.7.1...v0.8.0) (2026-08-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* **kong:** harden data store name generation
+
+### Features
+
+* **datastore:** add autofill buttons ([4126ef1](https://github.com/PrivateAIM/node-ui/commit/4126ef1ca0abea8cf525ab70bcbbaf2e9e5217b1))
+* **kong:** update kong request and repsonse parsing for multiple data stores ([9abd867](https://github.com/PrivateAIM/node-ui/commit/9abd867f6be7f358ad2a41e67aa4998c16a0e170))
+* **project:** add analysis overview and status tags to project table ([c0f519e](https://github.com/PrivateAIM/node-ui/commit/c0f519eccaf9570a65cf129c3735173a859578a3))
+* **uptime:** first working version ([0f4d805](https://github.com/PrivateAIM/node-ui/commit/0f4d805253622f788bb69208778eeba6bc33c2ee))
+
+
+### Bug Fixes
+
+* **ds:** ensure tooltip always shows ([27bafd1](https://github.com/PrivateAIM/node-ui/commit/27bafd109f8ded9779f254ad09aa10f6b9b7ac47))
+* **kong:** harden data store name generation ([3f2801d](https://github.com/PrivateAIM/node-ui/commit/3f2801d6180ffd2f06257d5d99b2dbd4c37c6143))
+* **project:** add stopped to checked stauses to avoid collision ([714a6c8](https://github.com/PrivateAIM/node-ui/commit/714a6c89935773e252ca40bf10e5ac5fbbca11e8))
+* **project:** handle stopped and share DS badge ([b155385](https://github.com/PrivateAIM/node-ui/commit/b15538531f1c7b5d5340889c7ecfd8ccc73ddb5e))
+* **project:** prevent errors from masquerading as end of results ([ecc5cc1](https://github.com/PrivateAIM/node-ui/commit/ecc5cc13f7c4465eade621a393e863c9f9a68b87))
+* **uptime:** show proper service name in bucket dialog ([e9e553d](https://github.com/PrivateAIM/node-ui/commit/e9e553d227d0ca7af1784393a2fb945913ebdd40))
+
+
+### Performance Improvements
+
+* **ds:** make sync reqs sync ([b0991c4](https://github.com/PrivateAIM/node-ui/commit/b0991c4a393d40afaf2b1c2e8d095a9246125694))
+* **uptime:** properly manage uptime slots and their overlaps ([c75d579](https://github.com/PrivateAIM/node-ui/commit/c75d5791ec3016e467031a981ad9a93e6a7d8eae))
+
+
+### Reverts
+
+* **charts:** remove nuxt charts deps since good stuff is behind a paywall ([cb314ec](https://github.com/PrivateAIM/node-ui/commit/cb314ec50be362db339903a60df4e741e305f05f))
+
 ## [0.7.1](https://github.com/PrivateAIM/node-ui/compare/v0.7.0...v0.7.1) (2026-07-01)
 
 
