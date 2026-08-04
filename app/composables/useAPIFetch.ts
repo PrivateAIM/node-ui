@@ -99,22 +99,3 @@ export function deleteDataStore(
     },
   });
 }
-
-// Results endpoints
-export function downloadLocalObject(objectId: string, opts?) {
-  return useNuxtApp().$hubApi<Blob>(`/local/${objectId}`, {
-    ...opts,
-    method: "GET",
-    headers: { "Content-Disposition": "application/octet-stream" },
-    responseType: "blob",
-  });
-}
-
-export function downloadIntermediateObject(objectId: string, opts?) {
-  return useNuxtApp().$hubApi<Blob>(`/intermediate/${objectId}`, {
-    ...opts,
-    method: "GET",
-    headers: { "Content-Disposition": "application/octet-stream" },
-    responseType: "blob",
-  });
-}

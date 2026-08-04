@@ -208,7 +208,7 @@ const updateFilters = (filterText: string) => {
     />
   </div>
   <div class="detailed-data-store-table">
-    <ConfirmDialog></ConfirmDialog>
+    <ConfirmDialog />
     <DataTable
       v-model:filters="filters"
       :globalFilterFields="[
