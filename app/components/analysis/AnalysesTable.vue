@@ -743,7 +743,7 @@ const onCloseNavToast = () => {
             </template>
             <template #body="{ data }">
               <DataStoreBadge
-                :hasDataStore="data.datastore"
+                :hasDataStore="!!data.datastore"
                 :projectId="data.analysis.project_id"
                 :required="datastoreRequired!"
                 @createDataStore="onCreateDataStore"

@@ -11,6 +11,7 @@ import {
 } from "~/utils/summarise-project-analyses";
 import { type ProjectNode } from "~/services/Api";
 import { FilterMatchMode } from "@primevue/core/api";
+import Message from "primevue/message";
 import SearchBar from "~/components/table/SearchBar.vue";
 import DataStoreBadge from "~/components/shared/DataStoreBadge.vue";
 
@@ -22,8 +23,13 @@ const expandRowEntries = [];
 
 const filters = ref();
 
-const { requireDataStore } = useDatastoreRequirement();
-const { refreshSummaries, summaryFor } = useProjectAnalysisSummary();
+const { nodeType, requireDataStore } = useDatastoreRequirement();
+const {
+  loading: summariesLoading,
+  truncated,
+  refreshSummaries,
+  summaryFor,
+} = useProjectAnalysisSummary();
 
 const METER_BUCKETS = [
   { key: "executed", label: "Executed" },
@@ -78,6 +84,8 @@ function parseData() {
 
 await refreshSummaries();
 parseData();
+
+watch(requireDataStore, () => parseData());
 
 async function onTableRefresh() {
   await Promise.all([refresh(), refreshSummaries()]);
@@ -140,7 +148,7 @@ const updateFilters = (filterText: string) => {
           <div class="card flex justify-content-center refresh-switch">
             <Button
               v-tooltip.top="'Refresh table'"
-              :loading="status === 'pending'"
+              :loading="status === 'pending' || summariesLoading"
               aria-label="Refresh table"
               icon="pi pi-refresh"
               severity="contrast"
@@ -148,17 +156,29 @@ const updateFilters = (filterText: string) => {
             />
           </div>
         </div>
+        <Message
+          v-if="truncated"
+          class="status-truncation-warning"
+          icon="pi pi-exclamation-triangle"
+          severity="warn"
+        >
+          More analyses are registered on this node than can be loaded at once.
+          The analysis counts and statuses below are partial and exclude the
+          least recently updated analyses.
+        </Message>
         <DataTable
           v-model:expandedRows="expandedRows"
           v-model:filters="filters"
           :globalFilterFields="['id', 'project_name', 'node.name']"
           :rows="10"
           :rowsPerPageOptions="[10, 20, 50]"
+          :sortOrder="1"
           :value="proposals"
           class="rounded-table project-table structured-table"
           dataKey="id"
           filterDisplay="menu"
           paginator
+          sortField="project_status.rank"
           tableStyle="min-width: 50rem"
         >
           <template #empty> No projects found.</template>
@@ -203,6 +223,7 @@ const updateFilters = (filterText: string) => {
             :showClearButton="false"
             :showFilterMatchModes="false"
             :showFilterOperator="false"
+            :sortable="true"
             field="project_status.rank"
             filterField="project_status.key"
           >
@@ -225,7 +246,9 @@ const updateFilters = (filterText: string) => {
                 <div
                   v-if="data.summary.total > 0"
                   v-tooltip.top="meterTooltip(data.summary)"
+                  :aria-label="meterTooltip(data.summary)"
                   class="status-meter"
+                  role="img"
                 >
                   <span
                     v-for="segment in meterSegments(data.summary)"
@@ -248,7 +271,11 @@ const updateFilters = (filterText: string) => {
               />
             </template>
           </Column>
-          <Column :sortable="true" field="summary.hasDataStore">
+          <Column
+            :hidden="nodeType === 'aggregator'"
+            :sortable="true"
+            field="summary.hasDataStore"
+          >
             <template #header>
               <span
                 v-tooltip.top="'Whether the project has a data store'"
@@ -303,6 +330,10 @@ const updateFilters = (filterText: string) => {
 </template>
 
 <style>
+.status-truncation-warning {
+  margin: 0.75rem 0;
+}
+
 .project-status {
   display: flex;
   flex-direction: column;

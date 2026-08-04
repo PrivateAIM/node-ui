@@ -90,6 +90,7 @@ export type ProjectStatusKey =
   | "failed"
   | "waiting"
   | "running"
+  | "stopped"
   | "idle"
   | "complete"
   | "noAnalyses";
@@ -114,9 +115,10 @@ const STATUS_RANK: Record<ProjectStatusKey, number> = {
   failed: 2,
   waiting: 3,
   running: 4,
-  idle: 5,
-  complete: 6,
-  noAnalyses: 7,
+  stopped: 5,
+  idle: 6,
+  complete: 7,
+  noAnalyses: 8,
 };
 
 const STATUS_SEVERITY: Record<ProjectStatusKey, ProjectStatusSeverity> = {
@@ -124,6 +126,7 @@ const STATUS_SEVERITY: Record<ProjectStatusKey, ProjectStatusSeverity> = {
   failed: "danger",
   waiting: "warn",
   running: "info",
+  stopped: "warn",
   idle: "secondary",
   complete: "success",
   noAnalyses: "secondary",
@@ -145,6 +148,8 @@ export function deriveProjectStatus(
     return status("running", `${summary.running} running`);
   if (summary.waiting > 0)
     return status("waiting", `${summary.waiting} waiting`);
+  if (summary.stopped > 0)
+    return status("stopped", `${summary.stopped} stopped`);
   if (summary.executed === summary.total) return status("complete", "Complete");
   return status("idle", "Idle");
 }
@@ -157,6 +162,7 @@ export const PROJECT_STATUS_FILTER_OPTIONS: Array<{
   { label: "Failed", value: "failed" },
   { label: "Waiting on Hub", value: "waiting" },
   { label: "Running", value: "running" },
+  { label: "Stopped", value: "stopped" },
   { label: "Idle", value: "idle" },
   { label: "Complete", value: "complete" },
   { label: "No analyses", value: "noAnalyses" },

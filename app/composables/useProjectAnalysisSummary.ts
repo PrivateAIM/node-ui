@@ -27,10 +27,16 @@ const FINISHED_STATUSES: Array<PodStatus | null | undefined> = [
   PodStatus.Executed,
 ];
 
+export interface AnalysisNodeFetchResult {
+  nodes: AnalysisNode[];
+  truncated: boolean;
+}
+
 export async function fetchAllAnalysisNodes(
   hubApi: HubFetch,
-): Promise<AnalysisNode[]> {
+): Promise<AnalysisNodeFetchResult> {
   const allNodes: AnalysisNode[] = [];
+  let truncated = false;
 
   for (let pageIndex = 0; pageIndex < MAX_PAGES; pageIndex++) {
     const nextPage = (await hubApi("/analysis-nodes", {
@@ -45,9 +51,11 @@ export async function fetchAllAnalysisNodes(
     if (!nextPage || nextPage.length === 0) break;
     allNodes.push(...nextPage);
     if (nextPage.length < PAGE_LIMIT) break;
+    // Full set = yet more results to fetch
+    if (pageIndex === MAX_PAGES - 1) truncated = true;
   }
 
-  return allNodes;
+  return { nodes: allNodes, truncated };
 }
 
 export async function fetchDataStoreProjectIds(
@@ -98,12 +106,13 @@ export function useProjectAnalysisSummary() {
   const summaries = ref<Map<string, ProjectAnalysisSummary>>(new Map());
   const dataStoreProjectIds = ref<Set<string>>(new Set());
   const loading = ref(false);
+  const truncated = ref(false);
 
   async function refreshSummaries() {
     loading.value = true;
     try {
       const hubApi = useNuxtApp().$hubApi as unknown as HubFetch;
-      const [analysisNodes, projectIdsWithDataStore, executionStatuses] =
+      const [analysisNodeResult, projectIdsWithDataStore, executionStatuses] =
         await Promise.all([
           fetchAllAnalysisNodes(hubApi),
           fetchDataStoreProjectIds(hubApi),
@@ -111,8 +120,9 @@ export function useProjectAnalysisSummary() {
         ]);
 
       dataStoreProjectIds.value = projectIdsWithDataStore;
+      truncated.value = analysisNodeResult.truncated;
       summaries.value = summariseProjectAnalyses(
-        mergeExecutionStatuses(analysisNodes, executionStatuses),
+        mergeExecutionStatuses(analysisNodeResult.nodes, executionStatuses),
         projectIdsWithDataStore,
       );
     } finally {
@@ -135,6 +145,7 @@ export function useProjectAnalysisSummary() {
     summaries,
     dataStoreProjectIds,
     loading,
+    truncated,
     refreshSummaries,
     summaryFor,
   };
