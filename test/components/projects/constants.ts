@@ -1,5 +1,8 @@
 import type { ProjectNode } from "~/services/Api";
 
+export const FAKE_PROJECT_ID = "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483";
+export const SECOND_FAKE_PROJECT_ID = "0d4c1e57-8b2a-4d16-9e33-5f7a1c8b2e90";
+
 export const fakeProposalsResp: ProjectNode[] = [
   {
     id: "73497486-a46d-49b4-b6ec-9f463e18d7dd",
@@ -40,6 +43,24 @@ export const fakeProposalsResp: ProjectNode[] = [
       robot_id: "c82d7fda-d69f-4fda-bb4c-1b2b9d910972",
       realm_id: "ab1fbc92-3dc8-4bdd-9d51-3b571c2d7aaa",
       public_key: undefined,
+    },
+  },
+];
+
+// Two projects, deliberately supplied in the API's `-updated_at` order so that
+// the healthy one comes FIRST in the raw response. Any test asserting
+// worst-first order therefore fails if the table stops sorting by status rank.
+export const fakeTwoProposalsResp: ProjectNode[] = [
+  fakeProposalsResp[0]!,
+  {
+    ...fakeProposalsResp[0]!,
+    id: "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+    project_id: SECOND_FAKE_PROJECT_ID,
+    project: {
+      ...fakeProposalsResp[0]!.project!,
+      id: SECOND_FAKE_PROJECT_ID,
+      name: "second-project",
+      display_name: "second-project",
     },
   },
 ];
