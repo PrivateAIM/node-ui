@@ -20,16 +20,16 @@ const props = defineProps({
 const toast = useToast();
 
 async function onDownloadObject() {
-  const { data: response, status } = props.isLocal
-    ? await downloadLocalObject(props.objectId!)
-    : await downloadIntermediateObject(props.objectId!);
+  try {
+    const response = props.isLocal
+      ? await downloadLocalObject(props.objectId!)
+      : await downloadIntermediateObject(props.objectId!);
 
-  if (status.value === "success") {
     const a = document.createElement("a");
-    a.href = window.URL.createObjectURL(response.value as Blob);
+    a.href = window.URL.createObjectURL(response);
     a.download = props.objectId!;
     a.click();
-  } else {
+  } catch {
     toast.add({
       severity: "error",
       summary: "Download failed",

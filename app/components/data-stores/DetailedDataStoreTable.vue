@@ -96,9 +96,10 @@ const dataStores = computed(() => {
 async function onConfirmDeleteDataStore(row: DetailedDataStoreTableRow) {
   const dsId = row.datastoreId ?? row.name!;
   deleteLoadingFor.value = dsId;
-  // Cascade removes the project links (routes) along with the store
-  const { status } = await deleteDataStore(dsId, true);
-  if (status.value === "success") {
+
+  try {
+    // Cascade removes the project links (routes) along with the store
+    await deleteDataStore(dsId, true);
     toast.add({
       severity: "success",
       summary: "Delete success",
@@ -106,15 +107,16 @@ async function onConfirmDeleteDataStore(row: DetailedDataStoreTableRow) {
       life: 3000,
     });
     emit("deleteDataStore", dsId);
-  } else {
+  } catch {
     toast.add({
       severity: "error",
       summary: "Delete failure",
       detail: "An error occurred while trying to delete the data store",
       life: 3000,
     });
+  } finally {
+    deleteLoadingFor.value = null;
   }
-  deleteLoadingFor.value = null;
 }
 
 const confirmDelete = (row: DetailedDataStoreTableRow) => {
