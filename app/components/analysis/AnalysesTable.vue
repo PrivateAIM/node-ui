@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { useNuxtApp, useState } from "nuxt/app";
-import Badge from "primevue/badge";
 import { useToast } from "primevue/usetoast";
 import ProgressBar from "primevue/progressbar";
 import { getAnalysisNodes } from "~/composables/useAPIFetch";
@@ -29,6 +28,7 @@ import {
 import { ApprovalStatus } from "~/types/node";
 import { parseKongTags } from "~/utils/parse-kong-tags";
 import ContainerCounter from "~/components/analysis/ContainerCounter.vue";
+import DataStoreBadge from "~/components/shared/DataStoreBadge.vue";
 import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
 import type {
   HubStatuses,
@@ -42,15 +42,6 @@ const tableLoading = ref(true);
 // Data Store Requirement Check
 const { nodeType, requireDataStore: datastoreRequired } =
   useDatastoreRequirement();
-
-const datastoreBadgeSeverity = computed(() =>
-  datastoreRequired.value ? "danger" : "secondary",
-);
-const datastoreBadgeTooltip = computed(() =>
-  datastoreRequired.value
-    ? "Data store missing, click here to create a data store for this project"
-    : "Data store missing, but not required",
-);
 
 const analysesMap = ref<Map<string, ModifiedAnalysisNode>>(new Map());
 const analyses = computed(() => Array.from(analysesMap.value.values()));
@@ -128,7 +119,7 @@ const hubStatusFilterOptions = [
   },
 ];
 
-// Match a row when ANY of the selected statuses matches its respective column
+// Match a row when any of the selected statuses matches its respective column
 FilterService.register(
   HUB_STATUS_FILTER_MATCH_MODE,
   (value: HubStatuses | undefined, filter: string[] | undefined | null) => {
@@ -482,7 +473,7 @@ const onNavigate = () => {
 };
 
 // Navigate to data store creation with the analysis' project preselected
-const onCreateDataStore = (projectId: string | undefined) => {
+const onCreateDataStore = (projectId: string | null | undefined) => {
   navigateTo({
     path: "/data-stores/create",
     query: projectId ? { projectId } : undefined,
@@ -751,31 +742,12 @@ const onCloseNavToast = () => {
               </span>
             </template>
             <template #body="{ data }">
-              <div v-if="data.datastore" class="datastore-badge">
-                <Badge class="w-8 h-8 rounded-full" severity="success"
-                  ><i v-tooltip.top="'Data store found'" class="pi pi-check"></i
-                ></Badge>
-              </div>
-              <div v-else class="datastore-badge">
-                <Badge
-                  :severity="datastoreBadgeSeverity"
-                  class="w-8 h-8 rounded-full"
-                >
-                  <button
-                    v-tooltip.top="datastoreBadgeTooltip"
-                    type="button"
-                    :disabled="!datastoreRequired"
-                    :aria-label="datastoreBadgeTooltip"
-                    :class="[
-                      'datastore-icon-btn',
-                      { 'datastore-create-link': datastoreRequired },
-                    ]"
-                    @click="onCreateDataStore(data.analysis.project_id)"
-                  >
-                    <i class="pi pi-times"></i>
-                  </button>
-                </Badge>
-              </div>
+              <DataStoreBadge
+                :hasDataStore="data.datastore"
+                :projectId="data.analysis.project_id"
+                :required="datastoreRequired!"
+                @createDataStore="onCreateDataStore"
+              />
             </template>
           </Column>
           <Column :sortable="true" dataType="date" field="created_at.timestamp">
@@ -882,30 +854,6 @@ const onCloseNavToast = () => {
    the block-level progress bar to its content width. Force it to fill the cell. */
 .analysis-table .p-progressbar {
   width: 100%;
-}
-
-.datastore-badge {
-  display: flex;
-  justify-content: center;
-}
-
-.datastore-icon-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  background: none;
-  border: none;
-  color: inherit;
-  font: inherit;
-}
-
-.datastore-icon-btn:disabled {
-  cursor: default;
-}
-
-.datastore-create-link {
-  cursor: pointer;
 }
 
 .hub-statuses {
