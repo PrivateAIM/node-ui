@@ -13,7 +13,7 @@ vi.mock("~/composables/useAPIFetch", () => ({
 
 describe("ProjectsTable.vue", () => {
   let mockToast;
-  let ProjectProposalTableTestComponent;
+  let ProjectsTableTestComponent;
 
   beforeEach(() => {
     vi.restoreAllMocks(); // Reset mocks before each test
@@ -22,8 +22,8 @@ describe("ProjectsTable.vue", () => {
 
   // Render the component with the fake params
   beforeAll(async () => {
-    ProjectProposalTableTestComponent = defineComponent({
-      components: { ProjectProposalTable: ProjectsTable },
+    ProjectsTableTestComponent = defineComponent({
+      components: { ProjectsTable },
       template: "<Suspense><ProjectsTable/></Suspense>",
     });
   });
@@ -39,11 +39,11 @@ describe("ProjectsTable.vue", () => {
       clear: vi.fn(),
     });
 
-    const wrapper = mount(ProjectProposalTableTestComponent);
+    const wrapper = mount(ProjectsTableTestComponent);
     await flushPromises();
 
-    expect(ProjectProposalTableTestComponent).toBeTruthy();
-    expect(wrapper.text()).toContain("Project Proposals"); // H1 of the page
+    expect(ProjectsTableTestComponent).toBeTruthy();
+    expect(wrapper.text()).toContain("Projects"); // Card title
 
     // Find header and all rows
     const rows = wrapper.findAll("tbody tr");
@@ -53,23 +53,18 @@ describe("ProjectsTable.vue", () => {
     const headerRow = wrapper.findAll("thead tr");
     expect(headerRow.length).toBe(1);
     const headerCols = headerRow[0].findAll("th");
-    expect(headerCols.length).toBe(6);
+    expect(headerCols.length).toBe(5);
     expect(headerCols[0].text()).toBe("Project Name");
     expect(headerCols[1].text()).toBe("Number of Analyses");
     expect(headerCols[2].text()).toBe("Number of Nodes");
     expect(headerCols[3].text()).toBe("Created On");
     expect(headerCols[4].text()).toBe("Last Updated");
-    expect(headerCols[5].text()).toBe("Set Approval");
 
     // Verify the row's content
     const rowCells = rows[0].findAll("td");
     expect(rowCells[0].text()).toBe("fake-project"); // Project name
     expect(rowCells[1].text()).toBe("17"); // Number of analyses
     expect(rowCells[2].text()).toBe("0"); // Number of nodes
-
-    // The "Set Approval" column renders the toggle with both status tags
-    expect(rowCells[5].text()).toContain("approved");
-    expect(rowCells[5].text()).toContain("rejected");
   });
 
   test("No projects returned", async () => {
@@ -84,10 +79,10 @@ describe("ProjectsTable.vue", () => {
       clear: vi.fn(),
     });
 
-    const wrapper = mount(ProjectProposalTableTestComponent);
+    const wrapper = mount(ProjectsTableTestComponent);
     await flushPromises();
 
-    expect(ProjectProposalTableTestComponent).toBeTruthy();
+    expect(ProjectsTableTestComponent).toBeTruthy();
     expect(wrapper.text()).toContain("No projects found"); // H1 of the page
   });
 
@@ -102,10 +97,10 @@ describe("ProjectsTable.vue", () => {
       clear: vi.fn(),
     });
 
-    const wrapper = mount(ProjectProposalTableTestComponent);
+    const wrapper = mount(ProjectsTableTestComponent);
     await flushPromises();
 
-    expect(ProjectProposalTableTestComponent).toBeTruthy();
+    expect(ProjectsTableTestComponent).toBeTruthy();
     expect(wrapper.text()).toContain("No projects found"); // H1 of the page
   });
 });
