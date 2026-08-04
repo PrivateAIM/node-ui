@@ -1,12 +1,9 @@
 <script lang="ts" setup>
 import { getProjectNodes } from "~/composables/useAPIFetch";
-import ApproveRejectToggle from "~/components/table/ApproveRejectToggle.vue";
 import { formatDataRow } from "~/utils/format-data-row";
 import { type ProjectNode } from "~/services/Api";
 import { FilterMatchMode } from "@primevue/core/api";
 import SearchBar from "~/components/table/SearchBar.vue";
-import { getApprovalStatusSeverity } from "~/utils/status-tag-severity";
-import { ApprovalStatus } from "~/types/node";
 
 const proposals = ref();
 const expandedRows = ref({});
@@ -36,15 +33,6 @@ function parseData() {
 }
 
 parseData();
-
-function updateTable(newData: ProjectNode) {
-  for (let row of proposals.value) {
-    if (row.id === newData.id) {
-      row.approval_status = newData.approval_status;
-      return;
-    }
-  }
-}
 
 async function onTableRefresh() {
   await refresh();
@@ -175,52 +163,6 @@ const updateFilters = (filterText: string) => {
               <p v-tooltip.top="data.updated_at.long">
                 {{ data.updated_at.short }}
               </p>
-            </template>
-          </Column>
-          <Column
-            :exportable="false"
-            :showAddButton="false"
-            :showApplyButton="false"
-            :showClearButton="false"
-            :showFilterMatchModes="false"
-            :showFilterOperator="false"
-            field="approval_status"
-            style="min-width: 10em"
-          >
-            <template #header>
-              <span
-                v-tooltip.top="
-                  'Set it so that the project is either approved for running on this node or rejected'
-                "
-                class="help-text"
-              >
-                <b>Set Approval</b>
-              </span>
-            </template>
-            <template #body="slotProps">
-              <ApproveRejectToggle
-                :currentStatus="slotProps.data.approval_status"
-                :objectClass="'project'"
-                :objectId="slotProps.data.id"
-                @updatedRow="updateTable"
-              />
-            </template>
-            <template #filter="{ filterModel, filterCallback }">
-              <Select
-                v-model="filterModel.value"
-                :options="Object.values(ApprovalStatus)"
-                :showClear="true"
-                class="p-column-filter"
-                placeholder="Select One"
-                @change="filterCallback()"
-              >
-                <template #option="slotProps">
-                  <Tag
-                    :severity="getApprovalStatusSeverity(slotProps.option)"
-                    :value="slotProps.option"
-                  />
-                </template>
-              </Select>
             </template>
           </Column>
         </DataTable>
