@@ -39,7 +39,7 @@ describe("fetchAllAnalysisNodes", () => {
     expect(result.truncated).toBe(false);
   });
 
-  it("returns what it has when a page request fails", async () => {
+  it("returns what it has when a page request fails, flagged as incomplete", async () => {
     const hubApi = vi
       .fn()
       .mockResolvedValueOnce(page(50))
@@ -47,6 +47,7 @@ describe("fetchAllAnalysisNodes", () => {
     const result = await fetchAllAnalysisNodes(hubApi);
     expect(result.nodes).toHaveLength(50);
     expect(result.truncated).toBe(false);
+    expect(result.incomplete).toBe(true);
   });
 
   it("caps pagination so a misbehaving API cannot loop forever", async () => {
@@ -84,12 +85,15 @@ describe("fetchDataStoreProjectIds", () => {
       ],
     });
     const result = await fetchDataStoreProjectIds(hubApi);
-    expect(result).toEqual(new Set(["proj-1", "proj-2"]));
+    expect(result.projectIds).toEqual(new Set(["proj-1", "proj-2"]));
+    expect(result.unavailable).toBe(false);
   });
 
-  it("returns an empty set when Kong is unreachable", async () => {
+  it("returns an empty set flagged unavailable when Kong is unreachable", async () => {
     const hubApi = vi.fn().mockRejectedValue(new Error("boom"));
-    expect(await fetchDataStoreProjectIds(hubApi)).toEqual(new Set());
+    const result = await fetchDataStoreProjectIds(hubApi);
+    expect(result.projectIds).toEqual(new Set());
+    expect(result.unavailable).toBe(true);
   });
 });
 
@@ -131,9 +135,11 @@ describe("mergeExecutionStatuses", () => {
     expect(result[0].execution_status).toBeNull();
   });
 
-  it("discards non-terminal Hub statuses when the pod orchestrator is unreachable", () => {
+  it("preserves non-terminal Hub statuses when the pod orchestrator is unreachable", () => {
+    // Unlike a reachable orchestrator with no entry, "unreachable" tells us
+    // nothing - discarding here would hide genuinely running analyses.
     const result = mergeExecutionStatuses([node("a-1", PodStatus.Executing)], undefined);
-    expect(result[0].execution_status).toBeNull();
+    expect(result[0].execution_status).toBe(PodStatus.Executing);
   });
 
   it("does not mutate the input nodes", () => {

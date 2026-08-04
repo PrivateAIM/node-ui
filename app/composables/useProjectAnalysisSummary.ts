@@ -1,17 +1,11 @@
 import { ref } from "vue";
 import { useNuxtApp } from "nuxt/app";
-import {
-  type AnalysisNode,
-  type ListRoutes,
-  type PodProgressResponse,
-  PodStatus,
-  type Route,
-} from "~/services/Api";
+import { type AnalysisNode, type ListRoutes, type PodProgressResponse, PodStatus, type Route } from "~/services/Api";
 import { parseKongTags } from "~/utils/parse-kong-tags";
 import {
   emptyProjectAnalysisSummary,
   type ProjectAnalysisSummary,
-  summariseProjectAnalyses,
+  summariseProjectAnalyses
 } from "~/utils/summarise-project-analyses";
 
 export type HubFetch = (
@@ -31,6 +25,7 @@ const FINISHED_STATUSES: Array<PodStatus | null | undefined> = [
 export interface AnalysisNodeFetchResult {
   nodes: AnalysisNode[];
   truncated: boolean;
+  incomplete: boolean;
 }
 
 export async function fetchAllAnalysisNodes(
@@ -38,16 +33,24 @@ export async function fetchAllAnalysisNodes(
 ): Promise<AnalysisNodeFetchResult> {
   const allNodes: AnalysisNode[] = [];
   let truncated = false;
+  let incomplete = false;
 
   for (let pageIndex = 0; pageIndex < MAX_PAGES; pageIndex++) {
-    const nextPage = (await hubApi("/analysis-nodes", {
-      method: "GET",
-      query: {
-        include: "analysis",
-        sort: "-updated_at",
-        page: { offset: pageIndex * PAGE_LIMIT, limit: PAGE_LIMIT },
-      },
-    }).catch(() => undefined)) as AnalysisNode[] | undefined;
+    let nextPage: AnalysisNode[] | undefined;
+    try {
+      nextPage = (await hubApi("/analysis-nodes", {
+        method: "GET",
+        query: {
+          include: "analysis",
+          sort: "-updated_at",
+          page: { offset: pageIndex * PAGE_LIMIT, limit: PAGE_LIMIT },
+        },
+      })) as AnalysisNode[];
+    } catch {
+      // To avoid it thinking it's the end of the result set
+      incomplete = true;
+      break;
+    }
 
     if (!nextPage || nextPage.length === 0) break;
     allNodes.push(...nextPage);
@@ -56,14 +59,23 @@ export async function fetchAllAnalysisNodes(
     if (pageIndex === MAX_PAGES - 1) truncated = true;
   }
 
-  return { nodes: allNodes, truncated };
+  return { nodes: allNodes, truncated, incomplete };
+}
+
+export interface DataStoreProjectIdsResult {
+  projectIds: Set<string>;
+  unavailable: boolean;
 }
 
 export async function fetchDataStoreProjectIds(
   hubApi: HubFetch,
-): Promise<Set<string>> {
+): Promise<DataStoreProjectIdsResult> {
+  let unavailable = false;
   const routesResp = (await hubApi("/kong/project", { method: "GET" }).catch(
-    () => undefined,
+    () => {
+      unavailable = true;
+      return undefined;
+    },
   )) as ListRoutes | undefined;
 
   const projectIds = new Set<string>();
@@ -71,7 +83,7 @@ export async function fetchDataStoreProjectIds(
     const projectId = parseKongTags(route.tags).project;
     if (projectId) projectIds.add(projectId);
   });
-  return projectIds;
+  return { projectIds, unavailable };
 }
 
 export async function fetchExecutionStatuses(
@@ -86,6 +98,8 @@ export function mergeExecutionStatuses(
   analysisNodes: AnalysisNode[],
   executionStatuses: PodProgressResponse | undefined,
 ): AnalysisNode[] {
+  const orchestratorReachable = executionStatuses !== undefined;
+
   return analysisNodes.map((analysisNode) => {
     const merged = { ...analysisNode };
     const analysisId = merged.analysis_id;
@@ -94,6 +108,7 @@ export function mergeExecutionStatuses(
       merged.execution_status = executionStatuses[analysisId]!
         .status as AnalysisNode["execution_status"];
     } else if (
+      orchestratorReachable &&
       !FINISHED_STATUSES.includes(merged.execution_status as PodStatus)
     ) {
       merged.execution_status = null;
@@ -108,23 +123,29 @@ export function useProjectAnalysisSummary() {
   const dataStoreProjectIds = ref<Set<string>>(new Set());
   const loading = ref(false);
   const truncated = ref(false);
+  const incomplete = ref(false);
+
+  // Kong could not be reached, so dataStoreProjectIds is not reliable
+  const dataStoreUnavailable = ref(false);
 
   async function refreshSummaries() {
     loading.value = true;
     try {
       const hubApi = useNuxtApp().$hubApi as unknown as HubFetch;
-      const [analysisNodeResult, projectIdsWithDataStore, executionStatuses] =
+      const [analysisNodeResult, dataStoreResult, executionStatuses] =
         await Promise.all([
           fetchAllAnalysisNodes(hubApi),
           fetchDataStoreProjectIds(hubApi),
           fetchExecutionStatuses(hubApi),
         ]);
 
-      dataStoreProjectIds.value = projectIdsWithDataStore;
+      dataStoreProjectIds.value = dataStoreResult.projectIds;
+      dataStoreUnavailable.value = dataStoreResult.unavailable;
       truncated.value = analysisNodeResult.truncated;
+      incomplete.value = analysisNodeResult.incomplete;
       summaries.value = summariseProjectAnalyses(
         mergeExecutionStatuses(analysisNodeResult.nodes, executionStatuses),
-        projectIdsWithDataStore,
+        dataStoreResult.projectIds,
       );
     } finally {
       loading.value = false;
@@ -147,6 +168,8 @@ export function useProjectAnalysisSummary() {
     dataStoreProjectIds,
     loading,
     truncated,
+    incomplete,
+    dataStoreUnavailable,
     refreshSummaries,
     summaryFor,
   };
