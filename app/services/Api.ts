@@ -96,9 +96,6 @@ export enum HttpMethodCode {
 /**
  * HealthStatus
  * Health of a service as reported by a live probe.
- *
- * Defined as an enum rather than a Literal so that it appears as a named schema in openapi.json
- * and the frontend can import it instead of hardcoding the strings.
  */
 export enum HealthStatus {
   OK = "OK",
@@ -1080,12 +1077,7 @@ export interface HTTPValidationError {
  * Response model to validate and return when performing a health check.
  */
 export interface HealthCheck {
-  /**
-   * Health of a service as reported by a live probe.
-   *
-   * Defined as an enum rather than a Literal so that it appears as a named schema in openapi.json
-   * and the frontend can import it instead of hardcoding the strings.
-   */
+  /** Health of a service as reported by a live probe. */
   status: HealthStatus;
   /** Status Code */
   status_code?: number | null;
@@ -1420,13 +1412,13 @@ export interface PodLog {
  * PodProgressResponse
  * Response with dynamic UUID keys and dynamic analysis keys with progress/status
  */
-export type PodProgressResponse = Record<any, AnalysisStatus>;
+export type PodProgressResponse = Partial<Record<any, AnalysisStatus>>;
 
 /**
  * PodResponse
  * Response with a list of running pods for a given analysis ID
  */
-export type PodResponse = Record<any, (string | null)[]>;
+export type PodResponse = Partial<Record<any, (string | null)[]>>;
 
 /** Project */
 export interface Project {
@@ -1879,10 +1871,7 @@ export interface ServiceClientCertificate {
 
 /**
  * ServiceHealthBucket
- * Aggregate of every recorded probe falling inside one time slice.
- *
- * Computed in SQL over all rows in the slice, so the counts stay honest regardless of any
- * limit applied to the raw datapoints.
+ * Collection of every recorded probe falling inside a time slice.
  */
 export interface ServiceHealthBucket {
   /**
@@ -2063,7 +2052,7 @@ export interface ServiceHealthSummary {
   checks?: ServiceHealthPoint[];
   /**
    * Buckets
-   * Per-slice aggregates, only populated when a resolution was requested
+   * Individual aggregates, only present when resolution is defined
    */
   buckets?: ServiceHealthBucket[];
 }
@@ -2145,7 +2134,7 @@ export interface ServiceRequest {
  * StatusOnlyResponse
  * Response with dynamic UUID keys and dynamic analysis keys
  */
-export type StatusOnlyResponse = Record<any, PodStatus | null>;
+export type StatusOnlyResponse = Partial<Record<any, PodStatus | null>>;
 
 /**
  * Token
@@ -3770,7 +3759,7 @@ export class Api<
   };
   healthz = {
     /**
-     * @description Returns: HealthCheck: Returns a JSON response with the health status
+     * No description
      *
      * @tags Health
      * @name HealthStatusGetHealthzGet
