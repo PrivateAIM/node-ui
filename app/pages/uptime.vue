@@ -76,7 +76,7 @@ async function load({ start, end }: { start: Date; end: Date }) {
   loading.value = true;
 
   try {
-    const { data } = await getServiceHealthHistory({
+    const data = await getServiceHealthHistory({
       start_date: gridStart.toISOString(),
       end_date: end.toISOString(),
       resolution,
@@ -85,7 +85,7 @@ async function load({ start, end }: { start: Date; end: Date }) {
     if (request !== latestRequest) return;
 
     slots.value = buildSlots(gridStart, end, resolution);
-    history.value = data.value ?? null;
+    history.value = data ?? null;
     loadError.value = null;
   } catch {
     if (request !== latestRequest) return;

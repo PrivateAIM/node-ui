@@ -47,9 +47,7 @@ function check(
 
 /** The adapter's shape: checks live under the service key that was asked for. */
 function respondWith(checks: ServiceHealthPoint[], service = "kong") {
-  mockFetch.mockResolvedValue({
-    data: { value: { services: { [service]: { checks } } } },
-  });
+  mockFetch.mockResolvedValue({ services: { [service]: { checks } } });
 }
 
 function mountDialog(props: Record<string, unknown> = {}) {
@@ -143,6 +141,20 @@ describe("BucketDrilldownDialog.vue", () => {
       await flushPromises();
 
       expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
+
+    it("empties the table when a slice fails, rather than keeping the last one's probes", async () => {
+      respondWith([check({ message: "first window" })]);
+      const wrapper = await mountOpen({ slotRange: slots[0]! });
+      expect(wrapper.text()).toContain("first window");
+
+      mockFetch.mockRejectedValue(new Error("gateway is down"));
+      await wrapper.setProps({ slotRange: slots[1]! });
+      await flushPromises();
+
+      // Leaving the previous rows up would attribute one slice's probes to another.
+      expect(wrapper.text()).not.toContain("first window");
+      expect(wrapper.text()).toContain("No checks recorded in this window");
     });
 
     it("does not fetch without a slice to fetch", async () => {
@@ -427,9 +439,7 @@ describe("BucketDrilldownDialog.vue", () => {
       await flushPromises();
 
       const body = (message: string) => ({
-        data: {
-          value: { services: { kong: { checks: [check({ message })] } } },
-        },
+        services: { kong: { checks: [check({ message })] } },
       });
 
       // The second window answers first, the abandoned one afterwards.

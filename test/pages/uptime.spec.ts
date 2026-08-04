@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
-import { nextTick, ref } from "vue";
+import { nextTick } from "vue";
 import ProgressSpinner from "primevue/progressspinner";
 import UptimePage from "~/pages/uptime.vue";
 import ServiceUptimeCard from "~/components/uptime/ServiceUptimeCard.vue";
@@ -56,7 +56,7 @@ function queryOf(call = mockFetch.mock.calls.length - 1): HistoryQuery {
 describe("uptime.vue", () => {
   beforeEach(() => {
     mockFetch.mockReset();
-    mockFetch.mockResolvedValue({ data: ref(fakeServiceHealthHistory) });
+    mockFetch.mockResolvedValue(fakeServiceHealthHistory);
   });
 
   it("fetches as soon as the toolbar announces its opening range", async () => {
@@ -196,7 +196,7 @@ describe("uptime.vue", () => {
   });
 
   it("explains itself instead of rendering empty tracks when monitoring is off", async () => {
-    mockFetch.mockResolvedValue({ data: ref(fakeMonitoringDisabled) });
+    mockFetch.mockResolvedValue(fakeMonitoringDisabled);
 
     const wrapper = mountPage();
     await flushPromises();
@@ -207,7 +207,8 @@ describe("uptime.vue", () => {
 
   it("falls back to a general message when monitoring is off without a reason", async () => {
     mockFetch.mockResolvedValue({
-      data: ref({ ...fakeMonitoringDisabled, monitoring_detail: null }),
+      ...fakeMonitoringDisabled,
+      monitoring_detail: null,
     });
 
     const wrapper = mountPage();
@@ -232,7 +233,7 @@ describe("uptime.vue", () => {
     expect(wrapper.findComponent(ProgressSpinner).exists()).toBe(true);
     expect(wrapper.text()).not.toContain("not being recorded");
 
-    release({ data: ref(fakeServiceHealthHistory) });
+    release(fakeServiceHealthHistory);
     await flushPromises();
 
     expect(wrapper.findComponent(ProgressSpinner).exists()).toBe(false);
@@ -264,7 +265,8 @@ describe("uptime.vue", () => {
 
   it("keeps quiet about volume when the node reports no interval at all", async () => {
     mockFetch.mockResolvedValue({
-      data: ref({ ...fakeServiceHealthHistory, interval_seconds: null }),
+      ...fakeServiceHealthHistory,
+      interval_seconds: null,
     });
 
     const wrapper = mountPage();
@@ -367,7 +369,7 @@ describe("uptime.vue", () => {
 
     const wrapper = mountPage();
     await flushPromises();
-    pending[0]!({ data: ref(fakeServiceHealthHistory) });
+    pending[0]!(fakeServiceHealthHistory);
     await flushPromises();
 
     const toolbar = wrapper.findComponent(UptimeToolbar);
@@ -391,11 +393,9 @@ describe("uptime.vue", () => {
 
     // The newest range answers first; the range the user already moved off of
     // answers afterwards and must not overwrite it.
-    pending[2]!({ data: ref(fakeServiceHealthHistory) });
+    pending[2]!(fakeServiceHealthHistory);
     await flushPromises();
-    pending[1]!({
-      data: ref({ ...fakeServiceHealthHistory, interval_seconds: 15 }),
-    });
+    pending[1]!({ ...fakeServiceHealthHistory, interval_seconds: 15 });
     await flushPromises();
 
     const slots = wrapper
@@ -447,7 +447,7 @@ describe("uptime.vue", () => {
     toolbar.vm.$emit("rangeChange", range);
     await flushPromises();
 
-    mockFetch.mockResolvedValue({ data: ref(fakeServiceHealthHistory) });
+    mockFetch.mockResolvedValue(fakeServiceHealthHistory);
     toolbar.vm.$emit("rangeChange", range);
     await flushPromises();
 
@@ -477,7 +477,7 @@ describe("uptime.vue", () => {
   });
 
   it("survives a response the adapter never delivered", async () => {
-    mockFetch.mockResolvedValue({ data: ref(null) });
+    mockFetch.mockResolvedValue(null);
 
     const wrapper = mountPage();
     await flushPromises();

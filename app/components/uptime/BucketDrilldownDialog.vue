@@ -43,7 +43,7 @@ async function loadChecks() {
   loading.value = true;
 
   try {
-    const { data } = await getServiceHealthHistory({
+    const data = await getServiceHealthHistory({
       start_date: range.start.toISOString(),
       end_date: range.end.toISOString(),
       service: [service],
@@ -52,7 +52,11 @@ async function loadChecks() {
 
     if (request !== latestRequest) return;
 
-    checks.value = data.value?.services?.[service]?.checks ?? [];
+    checks.value = data?.services?.[service]?.checks ?? [];
+  } catch {
+    // The API plugin already reports the failure; the dialog only has to avoid
+    // presenting the previous slice's probes as if they belonged to this one.
+    if (request === latestRequest) checks.value = [];
   } finally {
     if (request === latestRequest) loading.value = false;
   }

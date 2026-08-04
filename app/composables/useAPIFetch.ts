@@ -65,11 +65,14 @@ export function getServiceHealthHistory(
   } = {},
   opts?,
 ) {
-  return useAPIFetch<ServiceHealthHistory>("/health/services/history", {
-    ...opts,
-    method: "GET",
-    query,
-  });
+  return useNuxtApp().$hubApi<ServiceHealthHistory>(
+    "/health/services/history",
+    {
+      ...opts,
+      method: "GET",
+      query,
+    },
+  );
 }
 
 // Hub endpoints
