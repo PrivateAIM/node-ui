@@ -290,10 +290,8 @@ describe("DataStoreProjectInitializer.vue", () => {
 
     const vm = localWrapper.findComponent(DataStoreProjectInitializer).vm;
     expect(vm.selectedProject?.id).toBe(target.id);
-    // The generated data store name is derived from the selected project name
-    // plus a random adjective-noun suffix
     expect(vm.dataStoreName).toMatch(
-      new RegExp(`^${target.name}-[a-z]+-[a-z]+-[0-9a-f]+$`),
+      new RegExp(`^${target.name}-[a-z]+-[a-z]+-[0-9a-f]{4}$`),
     );
 
     localWrapper.unmount();
@@ -396,7 +394,9 @@ describe("DataStoreProjectInitializer.vue", () => {
     innerVm().selectedProject = project;
     await innerVm().$nextTick();
 
-    const namePattern = new RegExp(`^${project.name}-[a-z]+-[a-z]+-[0-9a-f]+$`);
+    const namePattern = new RegExp(
+      `^${project.name}-[a-z]+-[a-z]+-[0-9a-f]{4}$`,
+    );
     const firstName = innerVm().dataStoreName;
     expect(firstName).toMatch(namePattern);
     expect(

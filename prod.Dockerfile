@@ -7,19 +7,16 @@ RUN corepack enable
 
 WORKDIR /app
 
-# pnpm-workspace.yaml carries patchedDependencies and allowBuilds (pnpm v11+);
-# without it, patches are silently skipped and build scripts are not run.
+# for patchedDependencies
 COPY pnpm-lock.yaml package.json pnpm-workspace.yaml ./
 COPY patches /app/patches
-
-# Remove once corepack bug fixed https://github.com/nodejs/corepack/issues/612#issuecomment-2629613697
-ENV COREPACK_INTEGRITY_KEYS=0
 
 RUN pnpm install --frozen-lockfile
 
 COPY . .
 
-RUN pnpm build
+# always build from scratch
+RUN rm -rf .nuxt && pnpm build
 
 FROM node:24-alpine AS production
 RUN apk add --no-cache curl

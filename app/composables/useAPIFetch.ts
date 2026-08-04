@@ -1,14 +1,9 @@
 import type {
   AnalysisNode,
-  BodyKongProjectLinkKongProjectProjectIdDatastoreDatastoreIdPost,
-  DetailedAnalysis,
-  EventLogResponse,
-  LinkDataStoreProject,
   ListServices,
   Project,
   ProjectNode,
-  UnlinkResponse,
-  UserSettings,
+  ServiceHealthHistory,
 } from "~/services/Api";
 
 import { useFetch, type UseFetchOptions, useNuxtApp } from "nuxt/app";
@@ -23,33 +18,26 @@ export function useAPIFetch<T>(
   });
 }
 
-// Event endpoints
-export function getEvents(
+// Health endpoints
+export function getServiceHealthHistory(
   query: {
-    limit?: number;
-    offset?: number;
     start_date?: string;
     end_date?: string;
-    service_tag?: string;
+    service?: string[];
+    include_checks?: boolean;
+    limit?: number;
+    resolution?: number;
   } = {},
   opts?,
 ) {
-  return useAPIFetch<EventLogResponse>("/events", {
-    ...opts,
-    method: "GET",
-    query: {
-      limit: 50,
-      ...query,
+  return useNuxtApp().$hubApi<ServiceHealthHistory>(
+    "/health/services/history",
+    {
+      ...opts,
+      method: "GET",
+      query,
     },
-  });
-}
-
-// Node endpoints
-export function getNodeConfiguration(opts?) {
-  return useAPIFetch<UserSettings>("/node/settings", {
-    ...opts,
-    method: "GET",
-  });
+  );
 }
 
 // Hub endpoints
@@ -66,16 +54,6 @@ export function getProjectNodes(opts?) {
 
 export function getProjects(opts?) {
   return useAPIFetch<Project[]>("/projects", {
-    ...opts,
-    method: "GET",
-    query: {
-      sort: "-updated_at",
-    },
-  });
-}
-
-export function getAnalyses(opts?) {
-  return useAPIFetch<DetailedAnalysis[]>("/analyses", {
     ...opts,
     method: "GET",
     query: {
@@ -113,51 +91,11 @@ export function deleteDataStore(
   cascade: boolean = false,
   opts?,
 ) {
-  return useAPIFetch(`/kong/datastore/${dataStoreIdOrName}`, {
+  return useNuxtApp().$hubApi(`/kong/datastore/${dataStoreIdOrName}`, {
     ...opts,
     method: "DELETE",
     query: {
       cascade,
     },
-  });
-}
-
-export function linkProjectToDataStore(
-  projectId: string,
-  datastoreId: string,
-  linkProps: BodyKongProjectLinkKongProjectProjectIdDatastoreDatastoreIdPost = {},
-  opts?,
-) {
-  return useAPIFetch<LinkDataStoreProject>(
-    `/kong/project/${projectId}/datastore/${datastoreId}`,
-    {
-      ...opts,
-      method: "POST",
-      body: linkProps,
-    },
-  );
-}
-
-export function deleteProjectFromKong(projectId: string, opts?) {
-  return useAPIFetch<UnlinkResponse>(`/kong/project/${projectId}`, {
-    ...opts,
-    method: "DELETE",
-  });
-}
-
-// Results endpoints
-export function downloadLocalObject(objectId: string, opts?) {
-  return useAPIFetch(`/local/${objectId}`, {
-    ...opts,
-    method: "GET",
-    headers: { "Content-Disposition": "application/octet-stream" },
-  });
-}
-
-export function downloadIntermediateObject(objectId: string, opts?) {
-  return useAPIFetch(`/intermediate/${objectId}`, {
-    ...opts,
-    method: "GET",
-    headers: { "Content-Disposition": "application/octet-stream" },
   });
 }

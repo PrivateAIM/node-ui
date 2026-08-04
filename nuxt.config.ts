@@ -10,7 +10,12 @@ const projectRoot = fileURLToPath(new URL(".", import.meta.url));
 export default defineNuxtConfig({
   ssr: false,
   devtools: { enabled: false },
-  modules: ["@primevue/nuxt-module", "@sidebase/nuxt-auth", "@pinia/nuxt"],
+  modules: [
+    "@primevue/nuxt-module",
+    "@sidebase/nuxt-auth",
+    "@pinia/nuxt",
+    "nuxt-echarts",
+  ],
 
   plugins: ["./app/plugins/api.ts"],
 
@@ -28,6 +33,10 @@ export default defineNuxtConfig({
       idpProvider: process.env.NUXT_PUBLIC_IDP_PROVIDER || "hub",
       victoriaLogsUrl: process.env.NUXT_PUBLIC_VICTORIA_LOGS_URL,
     },
+  },
+
+  typescript: {
+    typeCheck: true,
   },
 
   auth: {
@@ -65,6 +74,12 @@ export default defineNuxtConfig({
     },
   },
 
+  echarts: {
+    renderer: ["canvas"],
+    charts: ["HeatmapChart"],
+    components: ["TooltipComponent", "VisualMapComponent", "GridComponent"],
+  },
+
   css: [
     "~/assets/css/main.css",
     "primeicons/primeicons.css",
@@ -85,6 +100,10 @@ export default defineNuxtConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      // avoid a nasty dev only lazy import bug
+      exclude: ["@primevue/core/api"],
+    },
   },
 
   compatibilityDate: "2026-02-05",

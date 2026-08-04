@@ -12,7 +12,7 @@
 
 /**
  * ServiceTag
- * Service tags.
+ * Service tags
  */
 export enum ServiceTag {
   Auth = "Auth",
@@ -29,6 +29,24 @@ export enum ServiceTag {
   Storage = "Storage",
   IDP = "IDP",
   Unknown = "Unknown",
+}
+
+/**
+ * ServiceMonitoringStatus
+ * Whether a downstream service is being monitored on this node.
+ */
+export enum ServiceMonitoringStatus {
+  ACTIVE = "ACTIVE",
+  DISABLED = "DISABLED",
+}
+
+/**
+ * ServiceCheckStatus
+ * Outcome of a single recorded probe. Only these two values are ever stored.
+ */
+export enum ServiceCheckStatus {
+  OK = "OK",
+  ERROR = "ERROR",
 }
 
 /**
@@ -73,6 +91,20 @@ export enum HttpMethodCode {
   CONNECT = "CONNECT",
   TRACE = "TRACE",
   CUSTOM = "CUSTOM",
+}
+
+/**
+ * HealthStatus
+ * Health of a service as reported by a live probe.
+ *
+ * Defined as an enum rather than a Literal so that it appears as a named schema in openapi.json
+ * and the frontend can import it instead of hardcoding the strings.
+ */
+export enum HealthStatus {
+  OK = "OK",
+  WARNING = "WARNING",
+  ERROR = "ERROR",
+  CRITICAL = "CRITICAL",
 }
 
 /**
@@ -1011,7 +1043,7 @@ export interface EventLog {
   component: string;
   /** Event Name */
   event_name: string;
-  /** Service tags. */
+  /** Service tags */
   service: ServiceTag;
   /** Level */
   level: string;
@@ -1048,12 +1080,19 @@ export interface HTTPValidationError {
  * Response model to validate and return when performing a health check.
  */
 export interface HealthCheck {
-  /** Status */
-  status: "OK" | "WARNING" | "ERROR" | "CRITICAL";
+  /**
+   * Health of a service as reported by a live probe.
+   *
+   * Defined as an enum rather than a Literal so that it appears as a named schema in openapi.json
+   * and the frontend can import it instead of hardcoding the strings.
+   */
+  status: HealthStatus;
   /** Status Code */
   status_code?: number | null;
   /** Message */
   message?: string | null;
+  /** Latency Ms */
+  latency_ms?: number | null;
 }
 
 /** InitializeAnalysis */
@@ -1100,13 +1139,13 @@ export interface KeyAuthConsumer {
 
 /**
  * KongCleanupSettings
- * Settings for the background sweep that deletes Kong analysis consumers once their analysis
- * reaches a terminal status. Always runs; only the interval is configurable.
+ * Settings for the background sweep that deletes Kong analysis consumers once their analysis reaches a terminal
+ * status.
  */
 export interface KongCleanupSettings {
   /**
    * Interval
-   * @default 30
+   * @default 120
    */
   interval?: number | null;
 }
@@ -1839,6 +1878,197 @@ export interface ServiceClientCertificate {
 }
 
 /**
+ * ServiceHealthBucket
+ * Aggregate of every recorded probe falling inside one time slice.
+ *
+ * Computed in SQL over all rows in the slice, so the counts stay honest regardless of any
+ * limit applied to the raw datapoints.
+ */
+export interface ServiceHealthBucket {
+  /**
+   * Start
+   * Inclusive start of the slice
+   * @format date-time
+   */
+  start: string;
+  /**
+   * End
+   * Exclusive end of the slice
+   * @format date-time
+   */
+  end: string;
+  /** Total */
+  total: number;
+  /** Successful */
+  successful: number;
+  /** Failed */
+  failed: number;
+  /** Max Latency Ms */
+  max_latency_ms?: number | null;
+  /** Avg Latency Ms */
+  avg_latency_ms?: number | null;
+  /** ERROR when any check in the slice failed, otherwise OK */
+  worst_status: ServiceCheckStatus;
+  /**
+   * Message
+   * Error text of the earliest failed check in the slice, if any
+   */
+  message?: string | null;
+}
+
+/**
+ * ServiceHealthHistory
+ * Response model for the stored health history of the downstream services.
+ */
+export interface ServiceHealthHistory {
+  /**
+   * Monitoring Enabled
+   * Whether health checks are being recorded to Postgres
+   */
+  monitoring_enabled: boolean;
+  /**
+   * Monitoring Detail
+   * Why monitoring is disabled, if applicable
+   */
+  monitoring_detail?: string | null;
+  /**
+   * Interval Seconds
+   * How often the services are probed
+   */
+  interval_seconds?: number | null;
+  /**
+   * Retention Days
+   * How long recorded checks are kept
+   */
+  retention_days?: number | null;
+  /**
+   * Start
+   * @format date-time
+   */
+  start: string;
+  /**
+   * End
+   * @format date-time
+   */
+  end: string;
+  /** Services */
+  services: Record<string, ServiceHealthSummary>;
+}
+
+/**
+ * ServiceHealthPoint
+ * A single recorded probe of a downstream service.
+ */
+export interface ServiceHealthPoint {
+  /**
+   * Checked At
+   * @format date-time
+   */
+  checked_at: string;
+  /** Outcome of a single recorded probe. Only these two values are ever stored. */
+  status: ServiceCheckStatus;
+  /** Status Code */
+  status_code?: number | null;
+  /** Latency Ms */
+  latency_ms?: number | null;
+  /** Message */
+  message?: string | null;
+  /**
+   * Sweep Id
+   * Identifies the probe cycle this check belongs to, shared by every service checked at the same time
+   */
+  sweep_id?: string | null;
+}
+
+/**
+ * ServiceHealthSettings
+ * Settings for the background routine that probes the downstream services and stores the results in Postgres.
+ * Only runs when a Postgres connection could be established when the app started.
+ */
+export interface ServiceHealthSettings {
+  /**
+   * Interval
+   * @default 60
+   */
+  interval?: number | null;
+  /**
+   * Retention Days
+   * @default 30
+   */
+  retention_days?: number | null;
+}
+
+/**
+ * ServiceHealthSummary
+ * Aggregated health of a single downstream service over the requested timeframe.
+ */
+export interface ServiceHealthSummary {
+  /**
+   * Configured
+   * Whether a URL is configured for this service on this node
+   */
+  configured: boolean;
+  /** DISABLED means the service is not being monitored */
+  status: ServiceMonitoringStatus;
+  /**
+   * Url
+   * Health endpoint that is probed
+   */
+  url?: string | null;
+  /**
+   * Detail
+   * Why the service is not being monitored, if applicable
+   */
+  detail?: string | null;
+  /**
+   * Total Checks
+   * @default 0
+   */
+  total_checks?: number;
+  /**
+   * Successful Checks
+   * @default 0
+   */
+  successful_checks?: number;
+  /**
+   * Failed Checks
+   * @default 0
+   */
+  failed_checks?: number;
+  /** Uptime Percentage */
+  uptime_percentage?: number | null;
+  /** Min Latency Ms */
+  min_latency_ms?: number | null;
+  /** Avg Latency Ms */
+  avg_latency_ms?: number | null;
+  /** Max Latency Ms */
+  max_latency_ms?: number | null;
+  last_status?: ServiceCheckStatus | null;
+  /** Last Status Code */
+  last_status_code?: number | null;
+  /** Last Checked At */
+  last_checked_at?: string | null;
+  /** Last Error */
+  last_error?: string | null;
+  /**
+   * Checks Returned
+   * Number of raw datapoints included below
+   * @default 0
+   */
+  checks_returned?: number;
+  /**
+   * Checks
+   * Raw datapoints in the timeframe, newest first, capped by the limit parameter
+   */
+  checks?: ServiceHealthPoint[];
+  /**
+   * Buckets
+   * Per-slice aggregates, only populated when a resolution was requested
+   */
+  buckets?: ServiceHealthBucket[];
+}
+
+/**
  * ServiceRequest
  * Improved version of the CreateServiceRequest with better defaults.
  */
@@ -1962,8 +2192,10 @@ export interface UserSettings {
   require_data_store?: boolean | null;
   /** @default {"enabled":false,"interval":60} */
   autostart?: AutostartSettings | null;
-  /** @default {"interval":30} */
+  /** @default {"interval":120} */
   kong_cleanup?: KongCleanupSettings | null;
+  /** @default {"interval":60,"retention_days":30} */
+  service_health?: ServiceHealthSettings | null;
 }
 
 /** ValidationError */
@@ -3538,7 +3770,7 @@ export class Api<
   };
   healthz = {
     /**
-     * @description ## Perform a Health Check Endpoint to perform a healthcheck on. This endpoint can primarily be used Docker to ensure a robust container orchestration and management is in place. Other services which rely on proper functioning of the API service will not deploy if this endpoint returns any other HTTP status code except 200 (OK). Returns: HealthCheck: Returns a JSON response with the health status
+     * @description Returns: HealthCheck: Returns a JSON response with the health status
      *
      * @tags Health
      * @name HealthStatusGetHealthzGet
@@ -3566,6 +3798,61 @@ export class Api<
       this.request<DownstreamHealthCheck, any>({
         path: `/health/services`,
         method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Return the recorded health of the downstream microservices within a timeframe. Checks are recorded by a background routine which requires Postgres. When no database connection could be made at startup, monitoring_enabled is false and monitoring_detail explains why. Services with no URL configured on this node are reported as "disabled".
+     *
+     * @tags Health
+     * @name HealthStatusServicesHistoryGetHealthServicesHistoryGet
+     * @summary Fetch the recorded health of the downstream microservices
+     * @request GET:/health/services/history
+     */
+    healthStatusServicesHistoryGetHealthServicesHistoryGet: (
+      query?: {
+        /**
+         * Start Date
+         * Fetch checks from this timestamp using ISO8601 format. Defaults to 24 hours ago
+         */
+        start_date?: string | null;
+        /**
+         * End Date
+         * Fetch checks up to this timestamp using ISO8601 format. Defaults to now
+         */
+        end_date?: string | null;
+        /**
+         * Service
+         * Limit the response to these services. Can be repeated. Defaults to all services
+         */
+        service?: string[] | null;
+        /**
+         * Include Checks
+         * Whether to include the raw datapoints alongside the summary
+         * @default true
+         */
+        include_checks?: boolean;
+        /**
+         * Resolution
+         * Aggregate checks into slices this many seconds wide instead of returning raw datapoints. Slices with no checks are omitted
+         */
+        resolution?: number | null;
+        /**
+         * Limit
+         * Maximum number of raw datapoints to return per service, newest first
+         * @exclusiveMin 0
+         * @max 10000
+         * @default 500
+         */
+        limit?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ServiceHealthHistory, HTTPValidationError>({
+        path: `/health/services/history`,
+        method: "GET",
+        query: query,
         format: "json",
         ...params,
       }),

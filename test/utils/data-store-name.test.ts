@@ -50,9 +50,9 @@ describe("generateRandomDataStoreName", () => {
     vi.restoreAllMocks();
   });
 
-  test("prefixes the sanitized project name and appends an adjective-noun pair", () => {
+  test("prefixes the sanitized project name and appends an adjective-noun pair with a hex suffix", () => {
     expect(generateRandomDataStoreName("My Fancy Project!")).toMatch(
-      /^My-Fancy-Project-[a-z]+-[a-z]+-[0-9a-f]+$/,
+      /^My-Fancy-Project-[a-z]+-[a-z]+-[0-9a-f]{4}$/,
     );
   });
 
@@ -61,7 +61,7 @@ describe("generateRandomDataStoreName", () => {
     const first = generateRandomDataStoreName("proj");
     const second = generateRandomDataStoreName("proj");
     expect(first).toBe(second);
-    expect(first).toMatch(/^proj-[a-z]+-[a-z]+-[0-9a-f]+$/);
+    expect(first).toMatch(/^proj-[a-z]+-[a-z]+-[0-9a-f]{4}$/);
   });
 
   test("varies with the random source", () => {

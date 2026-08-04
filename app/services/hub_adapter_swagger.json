@@ -3152,7 +3152,7 @@
       "get": {
         "tags": ["Health"],
         "summary": "Perform a Health Check",
-        "description": "## Perform a Health Check\nEndpoint to perform a healthcheck on. This endpoint can primarily be used Docker\nto ensure a robust container orchestration and management is in place. Other\nservices which rely on proper functioning of the API service will not deploy if this\nendpoint returns any other HTTP status code except 200 (OK).\nReturns:\n    HealthCheck: Returns a JSON response with the health status",
+        "description": "Returns:\n    HealthCheck: Returns a JSON response with the health status",
         "operationId": "health_status_get_healthz_get",
         "responses": {
           "200": {
@@ -3181,6 +3181,143 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DownstreamHealthCheck"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/services/history": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Fetch the recorded health of the downstream microservices",
+        "description": "Return the recorded health of the downstream microservices within a timeframe.\n\nChecks are recorded by a background routine which requires Postgres. When no database connection could be made\nat startup, monitoring_enabled is false and monitoring_detail explains why.\n\nServices with no URL configured on this node are reported as \"disabled\".",
+        "operationId": "health_status_services_history_get_health_services_history_get",
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Fetch checks from this timestamp using ISO8601 format. Defaults to 24 hours ago",
+              "title": "Start Date"
+            },
+            "description": "Fetch checks from this timestamp using ISO8601 format. Defaults to 24 hours ago"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Fetch checks up to this timestamp using ISO8601 format. Defaults to now",
+              "title": "End Date"
+            },
+            "description": "Fetch checks up to this timestamp using ISO8601 format. Defaults to now"
+          },
+          {
+            "name": "service",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Limit the response to these services. Can be repeated. Defaults to all services",
+              "title": "Service"
+            },
+            "description": "Limit the response to these services. Can be repeated. Defaults to all services"
+          },
+          {
+            "name": "include_checks",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Whether to include the raw datapoints alongside the summary",
+              "default": true,
+              "title": "Include Checks"
+            },
+            "description": "Whether to include the raw datapoints alongside the summary"
+          },
+          {
+            "name": "resolution",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 86400,
+                  "exclusiveMinimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Aggregate checks into slices this many seconds wide instead of returning raw datapoints. Slices with no checks are omitted",
+              "title": "Resolution"
+            },
+            "description": "Aggregate checks into slices this many seconds wide instead of returning raw datapoints. Slices with no checks are omitted"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 10000,
+              "exclusiveMinimum": 0,
+              "description": "Maximum number of raw datapoints to return per service, newest first",
+              "default": 500,
+              "title": "Limit"
+            },
+            "description": "Maximum number of raw datapoints to return per service, newest first"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Per service uptime, latency statistics and raw datapoints for a timeframe",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceHealthHistory"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -6277,9 +6414,7 @@
       "HealthCheck": {
         "properties": {
           "status": {
-            "type": "string",
-            "enum": ["OK", "WARNING", "ERROR", "CRITICAL"],
-            "title": "Status"
+            "$ref": "#/components/schemas/HealthStatus"
           },
           "status_code": {
             "anyOf": [
@@ -6302,12 +6437,29 @@
               }
             ],
             "title": "Message"
+          },
+          "latency_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latency Ms"
           }
         },
         "type": "object",
         "required": ["status"],
         "title": "HealthCheck",
         "description": "Response model to validate and return when performing a health check."
+      },
+      "HealthStatus": {
+        "type": "string",
+        "enum": ["OK", "WARNING", "ERROR", "CRITICAL"],
+        "title": "HealthStatus",
+        "description": "Health of a service as reported by a live probe.\n\nDefined as an enum rather than a Literal so that it appears as a named schema in openapi.json\nand the frontend can import it instead of hardcoding the strings."
       },
       "HttpMethodCode": {
         "type": "string",
@@ -6455,13 +6607,13 @@
               }
             ],
             "title": "Interval",
-            "default": 30
+            "default": 120
           }
         },
         "additionalProperties": false,
         "type": "object",
         "title": "KongCleanupSettings",
-        "description": "Settings for the background sweep that deletes Kong analysis consumers once their analysis\nreaches a terminal status. Always runs; only the interval is configurable."
+        "description": "Settings for the background sweep that deletes Kong analysis consumers once their analysis reaches a terminal\nstatus."
       },
       "LinkDataStoreProject": {
         "properties": {
@@ -8208,6 +8360,12 @@
         "title": "Service",
         "description": "service entities are abstractions of upstream services. The main attribute of a service is its URL which can be set as a single string or by specifying the `protocol`, `host`, `port` and `path` individually."
       },
+      "ServiceCheckStatus": {
+        "type": "string",
+        "enum": ["OK", "ERROR"],
+        "title": "ServiceCheckStatus",
+        "description": "Outcome of a single recorded probe. Only these two values are ever stored."
+      },
       "ServiceClientCertificate": {
         "properties": {
           "id": {
@@ -8225,6 +8383,417 @@
         "type": "object",
         "title": "ServiceClientCertificate",
         "description": "Certificate to be used as client certificate while TLS handshaking to the upstream server."
+      },
+      "ServiceHealthBucket": {
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start",
+            "description": "Inclusive start of the slice"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End",
+            "description": "Exclusive end of the slice"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "successful": {
+            "type": "integer",
+            "title": "Successful"
+          },
+          "failed": {
+            "type": "integer",
+            "title": "Failed"
+          },
+          "max_latency_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Latency Ms"
+          },
+          "avg_latency_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Latency Ms"
+          },
+          "worst_status": {
+            "$ref": "#/components/schemas/ServiceCheckStatus",
+            "description": "ERROR when any check in the slice failed, otherwise OK"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Error text of the earliest failed check in the slice, if any"
+          }
+        },
+        "type": "object",
+        "required": [
+          "start",
+          "end",
+          "total",
+          "successful",
+          "failed",
+          "worst_status"
+        ],
+        "title": "ServiceHealthBucket",
+        "description": "Aggregate of every recorded probe falling inside one time slice.\n\nComputed in SQL over all rows in the slice, so the counts stay honest regardless of any\nlimit applied to the raw datapoints."
+      },
+      "ServiceHealthHistory": {
+        "properties": {
+          "monitoring_enabled": {
+            "type": "boolean",
+            "title": "Monitoring Enabled",
+            "description": "Whether health checks are being recorded to Postgres"
+          },
+          "monitoring_detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Monitoring Detail",
+            "description": "Why monitoring is disabled, if applicable"
+          },
+          "interval_seconds": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interval Seconds",
+            "description": "How often the services are probed"
+          },
+          "retention_days": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retention Days",
+            "description": "How long recorded checks are kept"
+          },
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End"
+          },
+          "services": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ServiceHealthSummary"
+            },
+            "type": "object",
+            "title": "Services"
+          }
+        },
+        "type": "object",
+        "required": ["monitoring_enabled", "start", "end", "services"],
+        "title": "ServiceHealthHistory",
+        "description": "Response model for the stored health history of the downstream services."
+      },
+      "ServiceHealthPoint": {
+        "properties": {
+          "checked_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Checked At"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ServiceCheckStatus"
+          },
+          "status_code": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status Code"
+          },
+          "latency_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latency Ms"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          },
+          "sweep_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sweep Id",
+            "description": "Identifies the probe cycle this check belongs to, shared by every service checked at the same time"
+          }
+        },
+        "type": "object",
+        "required": ["checked_at", "status"],
+        "title": "ServiceHealthPoint",
+        "description": "A single recorded probe of a downstream service."
+      },
+      "ServiceHealthSettings": {
+        "properties": {
+          "interval": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interval",
+            "default": 60
+          },
+          "retention_days": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retention Days",
+            "default": 30
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ServiceHealthSettings",
+        "description": "Settings for the background routine that probes the downstream services and stores the results in Postgres.\nOnly runs when a Postgres connection could be established when the app started."
+      },
+      "ServiceHealthSummary": {
+        "properties": {
+          "configured": {
+            "type": "boolean",
+            "title": "Configured",
+            "description": "Whether a URL is configured for this service on this node"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ServiceMonitoringStatus",
+            "description": "DISABLED means the service is not being monitored"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url",
+            "description": "Health endpoint that is probed"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail",
+            "description": "Why the service is not being monitored, if applicable"
+          },
+          "total_checks": {
+            "type": "integer",
+            "title": "Total Checks",
+            "default": 0
+          },
+          "successful_checks": {
+            "type": "integer",
+            "title": "Successful Checks",
+            "default": 0
+          },
+          "failed_checks": {
+            "type": "integer",
+            "title": "Failed Checks",
+            "default": 0
+          },
+          "uptime_percentage": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uptime Percentage"
+          },
+          "min_latency_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Latency Ms"
+          },
+          "avg_latency_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Latency Ms"
+          },
+          "max_latency_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Latency Ms"
+          },
+          "last_status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ServiceCheckStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "last_status_code": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Status Code"
+          },
+          "last_checked_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Checked At"
+          },
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error"
+          },
+          "checks_returned": {
+            "type": "integer",
+            "title": "Checks Returned",
+            "description": "Number of raw datapoints included below",
+            "default": 0
+          },
+          "checks": {
+            "items": {
+              "$ref": "#/components/schemas/ServiceHealthPoint"
+            },
+            "type": "array",
+            "title": "Checks",
+            "description": "Raw datapoints in the timeframe, newest first, capped by the limit parameter"
+          },
+          "buckets": {
+            "items": {
+              "$ref": "#/components/schemas/ServiceHealthBucket"
+            },
+            "type": "array",
+            "title": "Buckets",
+            "description": "Per-slice aggregates, only populated when a resolution was requested"
+          }
+        },
+        "type": "object",
+        "required": ["configured", "status"],
+        "title": "ServiceHealthSummary",
+        "description": "Aggregated health of a single downstream service over the requested timeframe."
+      },
+      "ServiceMonitoringStatus": {
+        "type": "string",
+        "enum": ["ACTIVE", "DISABLED"],
+        "title": "ServiceMonitoringStatus",
+        "description": "Whether a downstream service is being monitored on this node."
       },
       "ServiceRequest": {
         "properties": {
@@ -8432,7 +9001,7 @@
           "Unknown"
         ],
         "title": "ServiceTag",
-        "description": "Service tags."
+        "description": "Service tags"
       },
       "StatusOnlyResponse": {
         "additionalProperties": {
@@ -8566,7 +9135,21 @@
               }
             ],
             "default": {
-              "interval": 30
+              "interval": 120
+            }
+          },
+          "service_health": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ServiceHealthSettings"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": {
+              "interval": 60,
+              "retention_days": 30
             }
           }
         },

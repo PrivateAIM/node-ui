@@ -19,7 +19,7 @@ export function buildProjectNameMap(
 
 const DATA_ROW_UNIX_COLS = ["created_at", "updated_at"];
 
-export async function useDataStoreList() {
+export function useDataStoreList() {
   const dataStores = ref<ModifiedDetailedService[]>([]);
   const projectNameMap = ref<Map<string, string | undefined>>(new Map());
   const loading = ref(true);
@@ -29,9 +29,9 @@ export async function useDataStoreList() {
     status: dsStatus,
     error: dsError,
     refresh,
-  } = await getDataStores(true, { lazy: true });
+  } = getDataStores(true, { lazy: true });
 
-  const { data: projectResp } = await getProjects({ lazy: true });
+  const { data: projectResp } = getProjects({ lazy: true });
 
   watchEffect(() => {
     if (dsStatus.value === "pending") return;

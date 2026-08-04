@@ -5,6 +5,7 @@ import OktaProvider from "next-auth/providers/okta";
 import OneLoginProvider from "next-auth/providers/onelogin";
 import ZitadelProvider from "next-auth/providers/zitadel";
 import type { Account, Session, User } from "next-auth";
+import type { Provider } from "next-auth/providers/index";
 import type { JWT } from "next-auth/jwt";
 
 import { NuxtAuthHandler } from "#auth";
@@ -41,7 +42,7 @@ function buildProvider() {
   const clientIssuer =
     process.env.NUXT_PUBLIC_IDP_ISSUER ?? "http://localhost:8080/realms/flame";
 
-  const providers = [];
+  const providers: Provider[] = [];
 
   switch (idpProvider) {
     case "keycloak": {
@@ -95,7 +96,7 @@ function buildProvider() {
           };
         },
       };
-      providers.push(hubProvider);
+      providers.push(hubProvider as Provider);
       break;
     }
 
@@ -182,7 +183,7 @@ async function refreshAccessToken(token: JWT) {
 }
 
 export default NuxtAuthHandler({
-  secret: useRuntimeConfig().authSecret,
+  secret: useRuntimeConfig().authSecret as string | undefined,
   events: {
     async signIn({ account }: { account: Account | null }) {
       // After successful sign in
@@ -220,8 +221,8 @@ export default NuxtAuthHandler({
     async session({ session, token }: { session: Session; token: JWT }) {
       return {
         ...session,
-        accessToken: token.access_token,
-        expiresAt: token.expires_at,
+        accessToken: token.access_token as string | undefined,
+        expiresAt: token.expires_at as number | undefined,
       };
     },
     /* on JWT token creation or mutation */
