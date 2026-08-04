@@ -1,5 +1,8 @@
-name: Build docker Image
-description: Build and tag specific Docker images
+name: Build docker image
+description: Build, tag and optionally push a Docker image to GHCR
+
+# The caller is responsible for checking out the repository first and for
+# deciding which tags apply - this action does not inspect the triggering event.
 
 inputs:
   platforms:
@@ -12,36 +15,24 @@ inputs:
     required: false
   image_tags:
     default: ""
-    description: "The tags to apply to the image"
+    description: "Semver version to tag the image with (e.g. 1.2.3). Skipped when empty."
+    required: false
+  extra_tag:
+    default: ""
+    description: "An extra raw tag to apply to the image (e.g. edge, canary, pr-42)"
     required: false
   push:
     default: "false"
-    description: "Push the image to the registries"
+    description: "Push the image to the registry"
     required: false
   token:
     description: "Github token"
     required: true
-  tag_suffix:
-    default: ""
-    description: "Suffix to append to the image tags"
-    required: false
-  extra_tag:
-    default: ""
-    description: "An extra raw tag to apply to the image (e.g. edge, canary)"
-    required: false
 
 runs:
   using: composite
 
   steps:
-    - name: Checkout
-      uses: actions/checkout@v6
-      with:
-        persist-credentials: false
-
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v4
-
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v4
 
@@ -61,38 +52,17 @@ runs:
         images: ghcr.io/${{ github.repository }}
         tags: |
           type=sha
-          type=raw,value=canary,enable=${{ github.event_name == 'workflow_dispatch' }}
-          type=raw,event=workflow_dispatch,value=${{ github.event.inputs.dispatch-tag }}
-          type=semver,pattern={{version}},value=${{ inputs.image_tags }},branch=develop
+          type=semver,pattern={{version}},value=${{ inputs.image_tags }}
           type=raw,value=${{ inputs.extra_tag }},enable=${{ inputs.extra_tag != '' }}
 
-    - name: Clean variables
-      id: clean
-      shell: bash
-      run: |
-        # Replace illegal characters in tag suffix
-        echo suffix=$(echo "${{ inputs.tag_suffix }}" | sed -e 's/[^a-zA-Z0-9._-]/_/g') >> $GITHUB_OUTPUT
-
-    - name: Add suffix to image tags
-      id: tag_suffix
-      shell: bash
-      run: |
-        delimiter="$(openssl rand -hex 8)"
-        echo "tags<<${delimiter}" >> $GITHUB_OUTPUT
-        # if tag_suffix is set, append it to each tag
-        if [[ -n "${{ inputs.tag_suffix }}" ]]; then
-          echo "${{ steps.meta.outputs.tags }}" | sed -e "s/$/-${{ steps.clean.outputs.suffix }}/" >> $GITHUB_OUTPUT
-        else
-          echo "${{ steps.meta.outputs.tags }}" >> $GITHUB_OUTPUT
-        fi
-        echo "${delimiter}" >> $GITHUB_OUTPUT
-
-    - name: Build image for push
+    - name: Build image
       uses: docker/build-push-action@v7.2.0
       with:
+        context: .
         file: ${{ inputs.docker_file }}
-        tags: ${{ steps.tag_suffix.outputs.tags }}
+        tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         platforms: ${{ inputs.platforms }}
         push: ${{ inputs.push == 'true' }}
-
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
