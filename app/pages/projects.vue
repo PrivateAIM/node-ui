@@ -1,9 +1,9 @@
 <script setup>
-import ProjectProposalTable from "~/components/projects/ProjectProposalTable.vue";
+import ProjectsTable from "~/components/projects/ProjectsTable.vue";
 </script>
 
 <template>
-  <ProjectProposalTable />
+  <ProjectsTable />
 </template>
 
 <style scoped lang="scss"></style>

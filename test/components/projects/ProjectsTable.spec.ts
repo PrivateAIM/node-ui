@@ -2,7 +2,7 @@ import { useToast } from "primevue/usetoast";
 import { defineComponent } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
-import ProjectProposalTable from "~/components/projects/ProjectProposalTable.vue";
+import ProjectsTable from "~/components/projects/ProjectsTable.vue";
 import { getProjectNodes } from "~/composables/useAPIFetch";
 import type { ProjectNode } from "~/services/Api";
 import { fakeProposalsResp } from "@/test/components/projects/constants";
@@ -11,7 +11,7 @@ vi.mock("~/composables/useAPIFetch", () => ({
   getProjectNodes: vi.fn(),
 }));
 
-describe("ProjectProposalTable.vue", () => {
+describe("ProjectsTable.vue", () => {
   let mockToast;
   let ProjectProposalTableTestComponent;
 
@@ -23,8 +23,8 @@ describe("ProjectProposalTable.vue", () => {
   // Render the component with the fake params
   beforeAll(async () => {
     ProjectProposalTableTestComponent = defineComponent({
-      components: { ProjectProposalTable },
-      template: "<Suspense><ProjectProposalTable/></Suspense>",
+      components: { ProjectProposalTable: ProjectsTable },
+      template: "<Suspense><ProjectsTable/></Suspense>",
     });
   });
 

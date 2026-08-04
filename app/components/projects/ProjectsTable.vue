@@ -67,7 +67,7 @@ const updateFilters = (filterText: string) => {
   <ConfirmDialog />
   <div class="proposal-card">
     <Card class="content-card">
-      <template #title>Project Proposals</template>
+      <template #title>Projects</template>
       <template #content>
         <div class="table-header-row">
           <SearchBar
