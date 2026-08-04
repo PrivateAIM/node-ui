@@ -188,7 +188,7 @@ describe("deriveProjectStatus", () => {
     const status = deriveProjectStatus(summary({ total: 0 }), true);
     expect(status.key).toBe("noAnalyses");
     expect(status.severity).toBe("secondary");
-    expect(status.rank).toBe(7);
+    expect(status.rank).toBe(8);
   });
 
   it("reports a missing data store ahead of failures", () => {
@@ -242,17 +242,37 @@ describe("deriveProjectStatus", () => {
     expect(status.key).toBe("complete");
     expect(status.label).toBe("Complete");
     expect(status.severity).toBe("success");
-    expect(status.rank).toBe(6);
+    expect(status.rank).toBe(7);
+  });
+
+  it("reports stopped analyses ahead of complete", () => {
+    const status = deriveProjectStatus(
+      summary({ total: 4, executed: 2, stopped: 2 }),
+      true,
+    );
+    expect(status.key).toBe("stopped");
+    expect(status.label).toBe("2 stopped");
+    expect(status.severity).toBe("warn");
+    expect(status.rank).toBe(5);
+  });
+
+  it("reports waiting ahead of stopped", () => {
+    const status = deriveProjectStatus(
+      summary({ total: 4, waiting: 1, stopped: 3 }),
+      true,
+    );
+    expect(status.key).toBe("waiting");
   });
 
   it("falls through to idle", () => {
     const status = deriveProjectStatus(
-      summary({ total: 4, executed: 1, stopped: 1, idle: 2 }),
+      summary({ total: 4, executed: 1, idle: 3 }),
       true,
     );
     expect(status.key).toBe("idle");
     expect(status.label).toBe("Idle");
-    expect(status.rank).toBe(5);
+    expect(status.severity).toBe("secondary");
+    expect(status.rank).toBe(6);
   });
 
   it("sorts worst-first by rank", () => {
@@ -262,12 +282,13 @@ describe("deriveProjectStatus", () => {
       deriveProjectStatus(summary({ total: 1, failed: 1 }), true).rank,
       deriveProjectStatus(summary({ total: 1, waiting: 1 }), true).rank,
       deriveProjectStatus(summary({ total: 1, running: 1 }), true).rank,
+      deriveProjectStatus(summary({ total: 1, stopped: 1 }), true).rank,
       deriveProjectStatus(summary({ total: 2, executed: 1, idle: 1 }), true)
         .rank,
       deriveProjectStatus(summary({ total: 1, executed: 1 }), true).rank,
       deriveProjectStatus(summary({ total: 0 }), true).rank,
     ];
-    expect(ranks).toEqual([1, 2, 3, 4, 5, 6, 7]);
+    expect(ranks).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
   });
 });
 
@@ -278,6 +299,7 @@ describe("PROJECT_STATUS_FILTER_OPTIONS", () => {
       "failed",
       "waiting",
       "running",
+      "stopped",
       "idle",
       "complete",
       "noAnalyses",

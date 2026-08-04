@@ -22,7 +22,8 @@ describe("fetchAllAnalysisNodes", () => {
 
     const result = await fetchAllAnalysisNodes(hubApi);
 
-    expect(result).toHaveLength(57);
+    expect(result.nodes).toHaveLength(57);
+    expect(result.truncated).toBe(false);
     expect(hubApi).toHaveBeenCalledTimes(2);
     expect(hubApi.mock.calls[0][1].query.page).toEqual({ offset: 0, limit: 50 });
     expect(hubApi.mock.calls[1][1].query.page).toEqual({ offset: 50, limit: 50 });
@@ -33,7 +34,9 @@ describe("fetchAllAnalysisNodes", () => {
       .fn()
       .mockResolvedValueOnce(page(50))
       .mockResolvedValueOnce([]);
-    expect(await fetchAllAnalysisNodes(hubApi)).toHaveLength(50);
+    const result = await fetchAllAnalysisNodes(hubApi);
+    expect(result.nodes).toHaveLength(50);
+    expect(result.truncated).toBe(false);
   });
 
   it("returns what it has when a page request fails", async () => {
@@ -41,14 +44,32 @@ describe("fetchAllAnalysisNodes", () => {
       .fn()
       .mockResolvedValueOnce(page(50))
       .mockRejectedValueOnce(new Error("boom"));
-    expect(await fetchAllAnalysisNodes(hubApi)).toHaveLength(50);
+    const result = await fetchAllAnalysisNodes(hubApi);
+    expect(result.nodes).toHaveLength(50);
+    expect(result.truncated).toBe(false);
   });
 
   it("caps pagination so a misbehaving API cannot loop forever", async () => {
     const hubApi = vi.fn().mockResolvedValue(page(50));
     const result = await fetchAllAnalysisNodes(hubApi);
     expect(hubApi).toHaveBeenCalledTimes(40);
-    expect(result).toHaveLength(2000);
+    expect(result.nodes).toHaveLength(2000);
+  });
+
+  it("reports truncation when it stops at the page cap", async () => {
+    const hubApi = vi.fn().mockResolvedValue(page(50));
+    expect((await fetchAllAnalysisNodes(hubApi)).truncated).toBe(true);
+  });
+
+  it("does not report truncation when the last page lands exactly on the cap", async () => {
+    // 39 full pages then a short one: every row was read, so nothing is missing
+    const hubApi = vi.fn().mockImplementation((_url, opts) => {
+      const offset = opts.query.page.offset;
+      return Promise.resolve(offset < 39 * 50 ? page(50) : page(10));
+    });
+    const result = await fetchAllAnalysisNodes(hubApi);
+    expect(result.nodes).toHaveLength(39 * 50 + 10);
+    expect(result.truncated).toBe(false);
   });
 });
 
