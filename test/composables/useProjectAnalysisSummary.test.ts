@@ -112,13 +112,18 @@ describe("mergeExecutionStatuses", () => {
     expect(result[0].execution_status).toBe(PodStatus.Executing);
   });
 
-  it("keeps failed and executed Hub statuses when the pod orchestrator has no entry", () => {
+  it("keeps failed, executed and stopped Hub statuses when the pod orchestrator has no entry", () => {
     const result = mergeExecutionStatuses(
-      [node("a-1", PodStatus.Failed), node("a-2", PodStatus.Executed)],
+      [
+        node("a-1", PodStatus.Failed),
+        node("a-2", PodStatus.Executed),
+        node("a-3", PodStatus.Stopped),
+      ],
       {} as never,
     );
     expect(result[0].execution_status).toBe(PodStatus.Failed);
     expect(result[1].execution_status).toBe(PodStatus.Executed);
+    expect(result[2].execution_status).toBe(PodStatus.Stopped);
   });
 
   it("discards other Hub statuses when the pod orchestrator has no entry", () => {

@@ -25,6 +25,7 @@ const MAX_PAGES = 40;
 const FINISHED_STATUSES: Array<PodStatus | null | undefined> = [
   PodStatus.Failed,
   PodStatus.Executed,
+  PodStatus.Stopped,
 ];
 
 export interface AnalysisNodeFetchResult {
