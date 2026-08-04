@@ -358,6 +358,102 @@ describe("uptime.vue", () => {
     expect(dialog.props("visible")).toBe(false);
   });
 
+  it("keeps the newest range on screen when an older request answers last", async () => {
+    // Every call is parked so the two ranges below can be resolved out of order.
+    const pending: Array<(value: unknown) => void> = [];
+    mockFetch.mockImplementation(
+      () => new Promise((resolve) => pending.push(resolve)),
+    );
+
+    const wrapper = mountPage();
+    await flushPromises();
+    pending[0]!({ data: ref(fakeServiceHealthHistory) });
+    await flushPromises();
+
+    const toolbar = wrapper.findComponent(UptimeToolbar);
+
+    const staleEnd = new Date("2026-07-30T12:00:00Z");
+    toolbar.vm.$emit("rangeChange", {
+      start: new Date(staleEnd.getTime() - 24 * 60 * 60 * 1000),
+      end: staleEnd,
+      live: true,
+    });
+    await flushPromises();
+
+    const freshEnd = new Date("2026-07-31T06:00:00Z");
+    const freshStart = new Date(freshEnd.getTime() - 60 * 60 * 1000);
+    toolbar.vm.$emit("rangeChange", {
+      start: freshStart,
+      end: freshEnd,
+      live: true,
+    });
+    await flushPromises();
+
+    // The newest range answers first; the range the user already moved off of
+    // answers afterwards and must not overwrite it.
+    pending[2]!({ data: ref(fakeServiceHealthHistory) });
+    await flushPromises();
+    pending[1]!({
+      data: ref({ ...fakeServiceHealthHistory, interval_seconds: 15 }),
+    });
+    await flushPromises();
+
+    const slots = wrapper
+      .findAllComponents(ServiceUptimeCard)[0]!
+      .props("slots");
+
+    // `freshStart` is already on the 30s grid this span resolves to.
+    expect(slots[0]!.start.toISOString()).toBe(freshStart.toISOString());
+    expect(slots[slots.length - 1]!.end.toISOString()).toBe(
+      freshEnd.toISOString(),
+    );
+    expect(toolbar.props("intervalSeconds")).toBe(
+      fakeServiceHealthHistory.interval_seconds,
+    );
+
+    // The straggler must not re-arm the toolbar's spinners either.
+    expect(toolbar.props("loading")).toBe(false);
+  });
+
+  it("says so when a range fails instead of silently keeping the old one", async () => {
+    const wrapper = mountPage();
+    await flushPromises();
+
+    mockFetch.mockRejectedValue(new Error("gateway is down"));
+    wrapper.findComponent(UptimeToolbar).vm.$emit("rangeChange", {
+      start: new Date("2026-07-30T11:00:00Z"),
+      end: new Date("2026-07-30T12:00:00Z"),
+      live: true,
+    });
+    await flushPromises();
+
+    expect(wrapper.text()).toContain("Could not load uptime history");
+    expect(wrapper.findComponent(UptimeToolbar).props("loading")).toBe(false);
+  });
+
+  it("clears the failure notice once a range loads again", async () => {
+    const wrapper = mountPage();
+    await flushPromises();
+
+    const toolbar = wrapper.findComponent(UptimeToolbar);
+    const end = new Date("2026-07-30T12:00:00Z");
+    const range = {
+      start: new Date(end.getTime() - 60 * 60 * 1000),
+      end,
+      live: true,
+    };
+
+    mockFetch.mockRejectedValue(new Error("gateway is down"));
+    toolbar.vm.$emit("rangeChange", range);
+    await flushPromises();
+
+    mockFetch.mockResolvedValue({ data: ref(fakeServiceHealthHistory) });
+    toolbar.vm.$emit("rangeChange", range);
+    await flushPromises();
+
+    expect(wrapper.text()).not.toContain("Could not load uptime history");
+  });
+
   it("does not refetch when the toolbar merely reports a refresh", async () => {
     const wrapper = mountPage();
     await flushPromises();

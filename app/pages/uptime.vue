@@ -19,6 +19,9 @@ const MAX_EXPECTED_CHECKS = 10000;
 const history = ref<ServiceHealthHistory | null>(null);
 const slots = ref<UptimeSlot[]>([]);
 const loading = ref(false);
+const loadError = ref<string | null>(null);
+
+let latestRequest = 0;
 
 const drilldownVisible = ref(false);
 const drilldownService = ref<string | null>(null);
@@ -68,7 +71,8 @@ async function load({ start, end }: { start: Date; end: Date }) {
   const resolution = resolutionFor(end.getTime() - start.getTime());
 
   const gridStart = floorToGrid(start, resolution);
-  slots.value = buildSlots(gridStart, end, resolution);
+  const request = ++latestRequest;
+
   loading.value = true;
 
   try {
@@ -77,9 +81,18 @@ async function load({ start, end }: { start: Date; end: Date }) {
       end_date: end.toISOString(),
       resolution,
     });
+
+    if (request !== latestRequest) return;
+
+    slots.value = buildSlots(gridStart, end, resolution);
     history.value = data.value ?? null;
+    loadError.value = null;
+  } catch {
+    if (request !== latestRequest) return;
+
+    loadError.value = "Could not load uptime history for this range.";
   } finally {
-    loading.value = false;
+    if (request === latestRequest) loading.value = false;
   }
 }
 
@@ -101,6 +114,15 @@ function openDrilldown(payload: {
       :loading="loading"
       @range-change="load"
     />
+
+    <Message
+      v-if="loadError"
+      class="uptime-page-message"
+      severity="error"
+      role="alert"
+    >
+      {{ loadError }}
+    </Message>
 
     <Message
       v-if="!monitoringEnabled"
