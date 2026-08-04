@@ -23,14 +23,15 @@ describe("DataStoreBadge.vue", () => {
     expect(button.attributes("aria-label")).toContain("create a data store");
   });
 
-  test("disables the cross when a data store is not required", () => {
+  test("renders a non-interactive cross when a data store is not required", () => {
     const wrapper = mount(DataStoreBadge, {
       props: { hasDataStore: false, required: false, projectId: "proj-1" },
     });
 
-    const button = wrapper.find("button");
-    expect(button.attributes("disabled")).toBeDefined();
-    expect(button.attributes("aria-label")).toContain("not required");
+    expect(wrapper.find("button").exists()).toBe(false);
+    const span = wrapper.find("span.datastore-icon-btn");
+    expect(span.exists()).toBe(true);
+    expect(span.attributes("aria-label")).toContain("not required");
   });
 
   test("emits createDataStore with the project id when clicked", async () => {
@@ -58,7 +59,7 @@ describe("DataStoreBadge.vue", () => {
       props: { hasDataStore: false, required: false, projectId: "proj-1" },
     });
 
-    await wrapper.find("button").trigger("click");
+    await wrapper.find("span.datastore-icon-btn").trigger("click");
 
     expect(wrapper.emitted("createDataStore")).toBeUndefined();
   });

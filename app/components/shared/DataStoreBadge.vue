@@ -30,15 +30,23 @@ const missingTooltip = computed(() =>
       class="w-8 h-8 rounded-full"
     >
       <button
+        v-if="required"
         v-tooltip.top="missingTooltip"
         :aria-label="missingTooltip"
-        :class="['datastore-icon-btn', { 'datastore-create-link': required }]"
-        :disabled="!required"
+        class="datastore-icon-btn datastore-create-link"
         type="button"
         @click="emit('createDataStore', projectId)"
       >
         <i class="pi pi-times"></i>
       </button>
+      <span
+        v-else
+        v-tooltip.top="missingTooltip"
+        :aria-label="missingTooltip"
+        class="datastore-icon-btn"
+      >
+        <i class="pi pi-times"></i>
+      </span>
     </Badge>
   </div>
 </template>
@@ -58,10 +66,6 @@ const missingTooltip = computed(() =>
   border: none;
   color: inherit;
   font: inherit;
-}
-
-.datastore-icon-btn:disabled {
-  cursor: default;
 }
 
 .datastore-create-link {

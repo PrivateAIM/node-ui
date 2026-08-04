@@ -7,7 +7,7 @@ import {
   deriveProjectStatus,
   PROJECT_STATUS_FILTER_OPTIONS,
   type ProjectAnalysisSummary,
-  type ProjectStatus,
+  type ProjectStatus
 } from "~/utils/summarise-project-analyses";
 import { type ProjectNode } from "~/services/Api";
 import { FilterMatchMode } from "@primevue/core/api";
@@ -190,7 +190,7 @@ const updateFilters = (filterText: string) => {
               </span>
             </template>
             <template #body="{ data }">
-              <span v-tooltip.right="data.project.id" class="help-text">
+              <span v-tooltip.right="data.project?.id" class="help-text">
                 {{ data.project_name }}
               </span>
             </template>
