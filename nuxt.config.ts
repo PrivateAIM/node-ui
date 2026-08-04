@@ -100,6 +100,10 @@ export default defineNuxtConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      // avoid a nasty dev only lazy import bug
+      exclude: ["@primevue/core/api"],
+    },
   },
 
   compatibilityDate: "2026-02-05",
