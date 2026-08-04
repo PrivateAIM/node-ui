@@ -2,8 +2,7 @@
 import { useDataStoreList } from "~/composables/useDataStoreList";
 import DetailedDataStoreTable from "~/components/data-stores/DetailedDataStoreTable.vue";
 
-const { dataStores, projectNameMap, loading, refresh } =
-  await useDataStoreList();
+const { dataStores, projectNameMap, loading, refresh } = useDataStoreList();
 
 function onDeleteDataStore(dsId: string) {
   dataStores.value = dataStores.value.filter((store) => store.id !== dsId);

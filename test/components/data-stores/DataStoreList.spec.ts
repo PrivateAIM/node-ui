@@ -30,7 +30,7 @@ describe("DataStoreList.vue", () => {
     datastoreData: ListServices | undefined,
     projectData: Project[] | undefined,
   ) {
-    vi.mocked(getDataStores).mockResolvedValue({
+    vi.mocked(getDataStores).mockReturnValue({
       data: ref(datastoreData),
       pending: ref(false),
       error: ref(undefined),
@@ -40,7 +40,7 @@ describe("DataStoreList.vue", () => {
       clear: vi.fn(),
     });
 
-    vi.mocked(getProjects).mockResolvedValue({
+    vi.mocked(getProjects).mockReturnValue({
       data: ref(projectData),
       pending: ref(false),
       error: ref(undefined),
