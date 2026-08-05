@@ -119,7 +119,7 @@ describe("ProjectsTable.vue", () => {
     expect(headerCols[0].text()).toBe("Project Name");
     expect(headerCols[1].text()).toBe("Analyses");
     expect(headerCols[2].text()).toBe("Nodes");
-    expect(headerCols[3].text()).toBe("Status");
+    expect(headerCols[3].text()).toBe("Analyses Overview");
     expect(headerCols[4].text()).toBe("Data Store");
     expect(headerCols[5].text()).toBe("Created On");
     expect(headerCols[6].text()).toBe("Last Updated");

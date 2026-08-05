@@ -121,8 +121,8 @@ const updateFilters = (filterText: string) => {
             <span
               >The Projects overview gives a quick summary of the projects
               defined within the Hub and their associated analyses. The
-              <b>Status</b> column contains a distribution bar to show the
-              proportion of analyses in their various states.
+              <b>Analyses Overview</b> column contains a distribution bar to
+              show the proportion of analyses in their various states.
             </span>
           </div>
         </div>
@@ -222,7 +222,7 @@ const updateFilters = (filterText: string) => {
                 "
                 class="help-text"
               >
-                <b>Status</b>
+                <b>Analyses Overview</b>
               </span>
             </template>
             <template #body="{ data }">
