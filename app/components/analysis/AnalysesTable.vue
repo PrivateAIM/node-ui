@@ -516,7 +516,7 @@ const onCloseNavToast = () => {
     <Card class="content-card">
       <template #title>Analyses</template>
       <template #content>
-        <div class="analysis-description-box">
+        <div class="analysis-description-box description-box">
           <div class="analysis-description">
             <span
               >This table provides an overview of the analyses that are
@@ -889,14 +889,6 @@ const onCloseNavToast = () => {
 .hub-status-filter-group {
   font-weight: 700;
   font-size: 0.8rem;
-}
-
-.analysis-description-box {
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-  gap: 1rem;
-  margin-bottom: 2rem;
 }
 
 .analysis-description {

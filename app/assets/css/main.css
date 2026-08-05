@@ -15,3 +15,15 @@ html {
     --p-primary-color: #ea580c;
     --p-text-muted-color: #64748b;
 }
+
+.description-box {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.page-description {
+
+}

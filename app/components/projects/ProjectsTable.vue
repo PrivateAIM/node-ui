@@ -7,7 +7,7 @@ import {
   deriveProjectStatus,
   PROJECT_STATUS_FILTER_OPTIONS,
   type ProjectAnalysisSummary,
-  type ProjectStatus
+  type ProjectStatus,
 } from "~/utils/summarise-project-analyses";
 import { type ProjectNode } from "~/services/Api";
 import { FilterMatchMode } from "@primevue/core/api";
@@ -129,6 +129,18 @@ const updateFilters = (filterText: string) => {
     <Card class="content-card">
       <template #title>Projects</template>
       <template #content>
+        <div class="project-description-box description-box">
+          <div class="project-description">
+            <span
+              >The Projects overview gives a quick summary of the projects
+              defined within the Hub and their associated analyses. The
+              <b>Status</b> column will contain a warning badge indicating if
+              there is an issue preventing the project's analyses from executing
+              as well as a distribution bar to show the proportion of analyses
+              in various states.
+            </span>
+          </div>
+        </div>
         <div class="table-header-row">
           <SearchBar
             :searchTerm="defaultFilters.global.value"
