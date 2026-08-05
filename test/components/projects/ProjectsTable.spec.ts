@@ -2,19 +2,18 @@ import { useToast } from "primevue/usetoast";
 import { computed, defineComponent } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
-import { FilterMatchMode } from "@primevue/core/api";
 import ProjectsTable from "~/components/projects/ProjectsTable.vue";
 import { getProjectNodes } from "~/composables/useAPIFetch";
 import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
 import { useProjectAnalysisSummary } from "~/composables/useProjectAnalysisSummary";
-import { emptyProjectAnalysisSummary } from "~/utils/summarise-project-analyses";
 import type { ProjectAnalysisSummary } from "~/utils/summarise-project-analyses";
+import { emptyProjectAnalysisSummary } from "~/utils/summarise-project-analyses";
 import type { ProjectNode } from "~/services/Api";
 import {
   FAKE_PROJECT_ID,
-  SECOND_FAKE_PROJECT_ID,
   fakeProposalsResp,
   fakeTwoProposalsResp,
+  SECOND_FAKE_PROJECT_ID,
 } from "@/test/components/projects/constants";
 
 vi.mock("~/composables/useAPIFetch", () => ({
@@ -119,7 +118,7 @@ describe("ProjectsTable.vue", () => {
     expect(headerCols.length).toBe(7);
     expect(headerCols[0].text()).toBe("Project Name");
     expect(headerCols[1].text()).toBe("Analyses");
-    expect(headerCols[2].text()).toBe("Number of Nodes");
+    expect(headerCols[2].text()).toBe("Nodes");
     expect(headerCols[3].text()).toBe("Status");
     expect(headerCols[4].text()).toBe("Data Store");
     expect(headerCols[5].text()).toBe("Created On");
@@ -173,7 +172,7 @@ describe("ProjectsTable.vue", () => {
     expect(headerCols.map((col) => col.text())).not.toContain("Data Store");
   });
 
-  test("Re-derives the status when the data store requirement resolves late", async () => {
+  test("Follows the data store requirement when it resolves late", async () => {
     // The node settings plugin does not await fetchSettings(), so the getter
     // sits at its default `true` until the request lands.
     const requireDataStore = ref(true);
@@ -187,19 +186,17 @@ describe("ProjectsTable.vue", () => {
     const wrapper = mount(ProjectsTableTestComponent);
     await flushPromises();
 
-    const statusCell = () =>
-      wrapper.findAll("tbody tr")[0].findAll("td")[3].text();
-    expect(statusCell()).toContain("No data store");
+    const dataStoreCell = () => wrapper.findAll("tbody tr")[0].findAll("td")[4];
+    expect(dataStoreCell().find("button").exists()).toBe(true);
 
     requireDataStore.value = false;
     await flushPromises();
 
-    // The verdict must follow the setting, otherwise it contradicts the
-    // "not required" data store badge rendered from the same setting.
-    expect(statusCell()).toContain("2 failed");
+    // A data store that is not required must stop prompting for creation.
+    expect(dataStoreCell().find("button").exists()).toBe(false);
   });
 
-  test("Renders the status tag and one meter segment per non-empty bucket", async () => {
+  test("Renders one meter segment per non-empty bucket", async () => {
     mockSummary({ total: 6, executed: 3, failed: 2, idle: 1 });
     mockProjectNodes(fakeProposalsResp);
 
@@ -207,8 +204,6 @@ describe("ProjectsTable.vue", () => {
     await flushPromises();
 
     const statusCell = wrapper.findAll("tbody tr")[0].findAll("td")[3];
-    expect(statusCell.text()).toContain("2 failed");
-
     const segments = statusCell.findAll(".status-meter-seg");
     expect(segments.length).toBe(3); // executed, failed, idle — not the empty buckets
     expect(segments[0].classes()).toContain("status-meter-executed");
@@ -225,7 +220,7 @@ describe("ProjectsTable.vue", () => {
 
     const meter = wrapper.findAll("tbody tr")[0].find(".status-meter");
     expect(meter.attributes("role")).toBe("img");
-    expect(meter.attributes("aria-label")).toBe("3 executed, 2 failed, 1 idle");
+    expect(meter.attributes("aria-label")).toBe("3 executed\n2 failed\n1 idle");
   });
 
   test("Renders no meter when the project has no analyses on this node", async () => {
@@ -236,7 +231,6 @@ describe("ProjectsTable.vue", () => {
     await flushPromises();
 
     const statusCell = wrapper.findAll("tbody tr")[0].findAll("td")[3];
-    expect(statusCell.text()).toContain("No analyses");
     expect(statusCell.findAll(".status-meter-seg").length).toBe(0);
   });
 
@@ -272,12 +266,10 @@ describe("ProjectsTable.vue", () => {
     expect(wrapper.find(".status-truncation-warning").exists()).toBe(false);
   });
 
-  test("Sorts rows worst-first by status rank", async () => {
-    // Healthy project first in the API response, broken one second — so raw
-    // (unsorted) order and rank order disagree.
+  test("Sorts rows by project name", async () => {
     mockSummaries({
-      [FAKE_PROJECT_ID]: { total: 4, executed: 4 }, // Complete, rank 7
-      [SECOND_FAKE_PROJECT_ID]: { total: 3, failed: 3 }, // 3 failed, rank 2
+      [FAKE_PROJECT_ID]: { total: 4, executed: 4 },
+      [SECOND_FAKE_PROJECT_ID]: { total: 3, failed: 3 },
     });
     mockProjectNodes(fakeTwoProposalsResp);
 
@@ -287,57 +279,17 @@ describe("ProjectsTable.vue", () => {
     const names = () =>
       wrapper.findAll("tbody tr").map((row) => row.findAll("td")[0].text());
 
-    expect(names()).toEqual(["second-project", "fake-project"]);
-    expect(wrapper.findAll("tbody tr")[0].findAll("td")[3].text()).toContain(
-      "3 failed",
-    );
+    expect(names()).toEqual(["fake-project", "second-project"]);
 
     // The column must also be sortable, otherwise the default ordering is
     // fixed and the administrator cannot re-sort it.
-    const statusHeader = wrapper.findAll("thead tr")[0].findAll("th")[3];
-    expect(statusHeader.attributes("data-p-sortable-column")).toBe("true");
+    const nameHeader = wrapper.findAll("thead tr")[0].findAll("th")[0];
+    expect(nameHeader.attributes("data-p-sortable-column")).toBe("true");
 
-    await statusHeader.trigger("click");
+    await nameHeader.trigger("click");
     await flushPromises();
 
-    expect(names()).toEqual(["fake-project", "second-project"]);
-  });
-
-  test("Filters rows by the selected status", async () => {
-    mockSummaries({
-      [FAKE_PROJECT_ID]: { total: 4, executed: 4 }, // complete
-      [SECOND_FAKE_PROJECT_ID]: { total: 3, failed: 3 }, // failed
-    });
-    mockProjectNodes(fakeTwoProposalsResp);
-
-    const wrapper = mount(ProjectsTableTestComponent);
-    await flushPromises();
-
-    expect(wrapper.findAll("tbody tr").length).toBe(2);
-
-    // Drive the real filter menu rather than poking the filters object, so the
-    // column's filterField -> filterModel -> FilterMatchMode.IN wiring is
-    // exercised end to end.
-    const statusHeader = wrapper.findAll("thead tr")[0].findAll("th")[3];
-    await statusHeader
-      .find(".p-datatable-column-filter-button")
-      .trigger("click");
-    await flushPromises();
-
-    const statusFilter = wrapper.findComponent({ name: "MultiSelect" });
-    expect(statusFilter.exists()).toBe(true);
-    expect(
-      statusFilter.props("options").map((option) => option.value),
-    ).toContain("failed");
-
-    statusFilter.vm.$emit("update:modelValue", ["failed"]);
-    statusFilter.vm.$emit("change", { value: ["failed"] });
-    await flushPromises();
-
-    const rows = wrapper.findAll("tbody tr");
-    expect(rows.length).toBe(1);
-    expect(rows[0].findAll("td")[0].text()).toBe("second-project");
-    expect(rows[0].findAll("td")[3].text()).toContain("3 failed");
+    expect(names()).toEqual(["second-project", "fake-project"]);
   });
 
   test("No projects returned", async () => {

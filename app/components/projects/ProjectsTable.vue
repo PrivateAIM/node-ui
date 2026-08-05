@@ -3,12 +3,7 @@ import { getProjectNodes } from "~/composables/useAPIFetch";
 import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
 import { useProjectAnalysisSummary } from "~/composables/useProjectAnalysisSummary";
 import { formatDataRow } from "~/utils/format-data-row";
-import {
-  deriveProjectStatus,
-  PROJECT_STATUS_FILTER_OPTIONS,
-  type ProjectAnalysisSummary,
-  type ProjectStatus,
-} from "~/utils/summarise-project-analyses";
+import { type ProjectAnalysisSummary } from "~/utils/summarise-project-analyses";
 import { type ProjectNode } from "~/services/Api";
 import { FilterMatchMode } from "@primevue/core/api";
 import Message from "primevue/message";
@@ -49,7 +44,7 @@ function meterSegments(summary: ProjectAnalysisSummary) {
 function meterTooltip(summary: ProjectAnalysisSummary) {
   return meterSegments(summary)
     .map((segment) => `${segment.count} ${segment.label.toLowerCase()}`)
-    .join(", ");
+    .join("\n");
 }
 
 const { data: response, status, refresh } = await getProjectNodes();
@@ -65,7 +60,6 @@ function parseData() {
           ProjectNode & {
             project_name?: string | null;
             summary?: ProjectAnalysisSummary;
-            project_status?: ProjectStatus;
           }
         >
       | undefined;
@@ -73,10 +67,6 @@ function parseData() {
       row.project_name =
         row.project?.display_name ?? row.project?.name ?? row.project?.id;
       row.summary = summaryFor(row.project?.id);
-      row.project_status = deriveProjectStatus(
-        row.summary,
-        requireDataStore.value,
-      );
     });
     proposals.value = formatted;
   }
@@ -84,8 +74,6 @@ function parseData() {
 
 await refreshSummaries();
 parseData();
-
-watch(requireDataStore, () => parseData());
 
 async function onTableRefresh() {
   await Promise.all([refresh(), refreshSummaries()]);
@@ -102,7 +90,6 @@ function onCreateDataStore(projectId?: string | null) {
 // Table filters
 const defaultFilters = {
   global: { value: undefined, matchMode: FilterMatchMode.CONTAINS },
-  "project_status.key": { value: undefined, matchMode: FilterMatchMode.IN },
 };
 
 filters.value = defaultFilters;
@@ -134,10 +121,8 @@ const updateFilters = (filterText: string) => {
             <span
               >The Projects overview gives a quick summary of the projects
               defined within the Hub and their associated analyses. The
-              <b>Status</b> column will contain a warning badge indicating if
-              there is an issue preventing the project's analyses from executing
-              as well as a distribution bar to show the proportion of analyses
-              in various states.
+              <b>Status</b> column contains a distribution bar to show the
+              proportion of analyses in their various states.
             </span>
           </div>
         </div>
@@ -190,7 +175,7 @@ const updateFilters = (filterText: string) => {
           dataKey="id"
           filterDisplay="menu"
           paginator
-          sortField="project_status.rank"
+          sortField="project_name"
           tableStyle="min-width: 50rem"
         >
           <template #empty> No projects found.</template>
@@ -225,24 +210,15 @@ const updateFilters = (filterText: string) => {
                 v-tooltip.top="'Number of nodes associated with this project'"
                 class="help-text"
               >
-                <b>Number of Nodes</b>
+                <b>Nodes</b>
               </span>
             </template>
           </Column>
-          <Column
-            :showAddButton="false"
-            :showApplyButton="false"
-            :showClearButton="false"
-            :showFilterMatchModes="false"
-            :showFilterOperator="false"
-            :sortable="true"
-            field="project_status.rank"
-            filterField="project_status.key"
-          >
+          <Column>
             <template #header>
               <span
                 v-tooltip.top="
-                  'What needs attention in this project on this node'
+                  'Distribution of this project\'s analyses on this node'
                 "
                 class="help-text"
               >
@@ -251,10 +227,6 @@ const updateFilters = (filterText: string) => {
             </template>
             <template #body="{ data }">
               <div class="project-status">
-                <Tag
-                  :severity="data.project_status.severity"
-                  :value="data.project_status.label"
-                />
                 <div
                   v-if="data.summary.total > 0"
                   v-tooltip.top="meterTooltip(data.summary)"
@@ -270,17 +242,6 @@ const updateFilters = (filterText: string) => {
                   />
                 </div>
               </div>
-            </template>
-            <template #filter="{ filterModel, filterCallback }">
-              <MultiSelect
-                v-model="filterModel.value"
-                :options="PROJECT_STATUS_FILTER_OPTIONS"
-                class="p-column-filter"
-                optionLabel="label"
-                optionValue="value"
-                placeholder="Any status"
-                @change="filterCallback()"
-              />
             </template>
           </Column>
           <Column
@@ -348,16 +309,14 @@ const updateFilters = (filterText: string) => {
 
 .project-status {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 0.375rem;
   min-width: 8rem;
 }
 
 .status-meter {
   display: flex;
   width: 100%;
-  height: 0.4375rem;
+  height: 0.6375rem;
   border-radius: 0.25rem;
   overflow: hidden;
 }

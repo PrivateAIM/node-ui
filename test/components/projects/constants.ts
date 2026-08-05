@@ -47,11 +47,10 @@ export const fakeProposalsResp: ProjectNode[] = [
   },
 ];
 
-// Two projects, deliberately supplied in the API's `-updated_at` order so that
-// the healthy one comes FIRST in the raw response. Any test asserting
-// worst-first order therefore fails if the table stops sorting by status rank.
+// Two projects, deliberately supplied in reverse alphabetical order so that the
+// raw response and the table's name ordering disagree. Any test asserting the
+// displayed order therefore fails if the table stops sorting by project name.
 export const fakeTwoProposalsResp: ProjectNode[] = [
-  fakeProposalsResp[0]!,
   {
     ...fakeProposalsResp[0]!,
     id: "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
@@ -63,4 +62,5 @@ export const fakeTwoProposalsResp: ProjectNode[] = [
       display_name: "second-project",
     },
   },
+  fakeProposalsResp[0]!,
 ];
