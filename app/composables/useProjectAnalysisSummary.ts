@@ -1,11 +1,17 @@
 import { ref } from "vue";
 import { useNuxtApp } from "nuxt/app";
-import { type AnalysisNode, type ListRoutes, type PodProgressResponse, PodStatus, type Route } from "~/services/Api";
+import {
+  type AnalysisNode,
+  type ListRoutes,
+  type PodProgressResponse,
+  PodStatus,
+  type Route,
+} from "~/services/Api";
 import { parseKongTags } from "~/utils/parse-kong-tags";
 import {
   emptyProjectAnalysisSummary,
   type ProjectAnalysisSummary,
-  summariseProjectAnalyses
+  summariseProjectAnalyses,
 } from "~/utils/summarise-project-analyses";
 
 export type HubFetch = (
@@ -42,7 +48,7 @@ export async function fetchAllAnalysisNodes(
         method: "GET",
         query: {
           include: "analysis",
-          sort: "-updated_at",
+          sort: "-updatedAt",
           page: { offset: pageIndex * PAGE_LIMIT, limit: PAGE_LIMIT },
         },
       })) as AnalysisNode[];
