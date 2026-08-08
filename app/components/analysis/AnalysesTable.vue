@@ -139,7 +139,7 @@ async function getProjects() {
     .$hubApi("/projects", {
       method: "GET",
       query: {
-        sort: "-updated_at",
+        sort: "-updatedAt",
         fields: "id,name,display_name",
       },
     })
@@ -376,7 +376,7 @@ async function getNextPage() {
           limit: queryLimit,
         },
         include: "analysis,node",
-        sort: "-updated_at",
+        sort: "-updatedAt",
       },
     })
     .catch(() => undefined)) as AnalysisNode[] | undefined;

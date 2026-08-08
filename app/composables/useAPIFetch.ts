@@ -47,7 +47,7 @@ export function getProjectNodes(opts?) {
     method: "GET",
     query: {
       include: "project,node",
-      sort: "-updated_at",
+      sort: "-updatedAt",
     },
   });
 }
@@ -57,7 +57,7 @@ export function getProjects(opts?) {
     ...opts,
     method: "GET",
     query: {
-      sort: "-updated_at",
+      sort: "-updatedAt",
     },
   });
 }
@@ -69,7 +69,7 @@ export function getAnalysisNodes(opts?) {
       ...opts,
       method: "GET",
       query: {
-        sort: "-updated_at",
+        sort: "-updatedAt",
       },
     },
   );
