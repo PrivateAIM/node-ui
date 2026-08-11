@@ -21,12 +21,16 @@ export default defineEventHandler(async () => {
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
 
-    // Response was received
-    if (!response.ok) {
-      console.warn(`IDP discovery returned ${response.status}: ${wellKnown}`);
+    const { ok, status } = response;
+
+    // Free the connection
+    await response.body?.cancel().catch(() => {});
+
+    if (!ok) {
+      console.warn(`IDP discovery returned ${status}: ${wellKnown}`);
       return {
         reachable: false,
-        error: `The identity provider responded with ${response.status}`,
+        error: `The identity provider responded with ${status}`,
       };
     }
 
@@ -35,6 +39,9 @@ export default defineEventHandler(async () => {
     // try and parse error message for toast
     const message = describeFetchError(error);
     console.error(`IDP discovery unreachable at ${wellKnown}:`, message, error);
-    return { reachable: false, error: message };
+    return {
+      reachable: false,
+      error: "The identity provider could not be reached",
+    };
   }
 });
