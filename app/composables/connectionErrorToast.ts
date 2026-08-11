@@ -224,3 +224,21 @@ export const showHubSpecificErrorMessage = (
   });
   console.warn(msg);
 };
+
+// IDP error toasts
+
+export const showIdpUnreachableToast = (
+  toast: ToastServiceMethods,
+  msg?: string,
+) => {
+  const detail =
+    "Unable to contact the identity provider, this is likely a proxy configuration issue";
+
+  showConnectionErrorToast(toast, {
+    severity: "error",
+    summary: "Sign in failed",
+    detail: msg ? `${detail} (${msg})` : detail,
+    life: 8000,
+  });
+  console.warn("IDP is currently unreachable, sign in was not attempted");
+};

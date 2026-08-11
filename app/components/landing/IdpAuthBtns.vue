@@ -1,12 +1,18 @@
 <script lang="ts" setup>
 import { useRuntimeConfig } from "nuxt/app";
+import { useToast } from "primevue/usetoast";
 
 const { signIn, signOut } = useAuth();
 const { status } = useAuthState();
 const config = useRuntimeConfig();
+const toast = useToast();
 const idpProvider: string = config.public.idpProvider as string;
 const idpNameCapitalized: string =
   idpProvider.charAt(0).toUpperCase() + idpProvider.slice(1);
+
+const attemptSignIn = async () => {
+  if (await checkIdpReachable(toast)) await signIn(idpProvider);
+};
 </script>
 
 <template>
@@ -25,7 +31,7 @@ const idpNameCapitalized: string =
         class="idp-auth-success"
         outlined
         severity="success"
-        @click="signIn(idpProvider)"
+        @click="attemptSignIn"
         >Login with {{ idpNameCapitalized }}
       </Button>
     </div>
