@@ -2,10 +2,12 @@
 import Menu from "primevue/menu";
 import Button from "primevue/button";
 import { useRuntimeConfig } from "nuxt/app";
+import { useToast } from "primevue/usetoast";
 import CleanupDialog from "~/components/header/CleanupDialog.vue";
 
 const { signIn, signOut } = useAuth();
 const { status: authStatus, data: authData } = useAuthState();
+const toast = useToast();
 
 const menu = ref();
 const showCleanupDialog = ref(false);
@@ -21,6 +23,10 @@ const toggle = (event) => {
   menu.value.toggle(event);
 };
 
+const attemptSignIn = async () => {
+  if (await checkIdpReachable(toast)) await signIn(`${idpProvider}`);
+};
+
 const menuItems = computed(() => [
   {
     label: "Options",
@@ -32,7 +38,7 @@ const menuItems = computed(() => [
           // eslint-disable-next-line @typescript-eslint/no-unused-expressions
           isAuthenticated.value
             ? signOut({ callbackUrl: "/" })
-            : signIn(`${idpProvider}`);
+            : attemptSignIn();
         },
       },
       {
