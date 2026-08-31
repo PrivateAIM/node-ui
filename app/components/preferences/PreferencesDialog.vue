@@ -22,12 +22,21 @@ const draftAutostart = ref<AutostartSettings>({
   interval: store.autostartInterval,
 });
 
+const settingsLoaded = computed(() => store.settings !== null);
+
+function resetDrafts() {
+  draftRequireDataStore.value = store.requireDataStoreSetting;
+  draftAutostart.value.enabled = store.autostartEnabled;
+  draftAutostart.value.interval = store.autostartInterval;
+}
+
 watch(preferencesVisible, (visible) => {
-  if (visible) {
-    draftRequireDataStore.value = store.requireDataStoreSetting;
-    draftAutostart.value.enabled = store.autostartEnabled;
-    draftAutostart.value.interval = store.autostartInterval;
-  }
+  if (visible) resetDrafts();
+});
+
+// Update settings once fetched
+watch(settingsLoaded, (loaded) => {
+  if (loaded) resetDrafts();
 });
 
 async function onSubmitPreferences() {
@@ -88,6 +97,7 @@ async function onSubmitPreferences() {
           size="small"
           icon="pi pi-save"
           :loading="loading"
+          :disabled="!settingsLoaded"
           @click="onSubmitPreferences()"
         ></Button>
       </div>

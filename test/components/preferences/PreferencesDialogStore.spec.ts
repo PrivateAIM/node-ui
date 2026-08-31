@@ -22,7 +22,8 @@ const AutostartFieldStub = {
   name: "AutostartField",
   props: ["modelValue"],
   emits: ["update:modelValue"],
-  template: '<div class="autostart-stub" />',
+  template:
+    '<div class="autostart-stub" :data-enabled="String(modelValue.enabled)" :data-interval="String(modelValue.interval)" />',
 };
 
 const globalStubs = {
@@ -133,5 +134,102 @@ describe("PreferencesDialog.vue + nodeSettingsStore", () => {
     expect(
       wrapper.find(".require-datastore-stub").attributes("data-disabled"),
     ).toBe("true");
+  });
+
+  describe("when settings have not loaded yet", () => {
+    function seedUnloaded() {
+      const store = useNodeSettingsStore();
+      store.settings = null;
+      store.nodeType = "default";
+      store.updateSettings = vi.fn(async (patch: UserSettings) => {
+        store.settings = JSON.parse(JSON.stringify(patch));
+        return store.settings;
+      }) as never;
+      return store;
+    }
+
+    it("cannot be saved before the settings arrive", async () => {
+      seedUnloaded();
+
+      const wrapper = mount(PreferencesDialog, {
+        props: { preferencesVisible: true },
+        global: { stubs: globalStubs },
+      });
+
+      const button = wrapper.find(".preferences-update-btn button");
+      expect(button.attributes("disabled")).toBeDefined();
+    });
+
+    it("re-seeds the drafts when settings arrive while the dialog is open", async () => {
+      const store = seedUnloaded();
+
+      const wrapper = mount(PreferencesDialog, {
+        props: { preferencesVisible: false },
+        global: { stubs: globalStubs },
+      });
+      await wrapper.setProps({ preferencesVisible: true });
+      await flushPromises();
+
+      store.settings = {
+        require_data_store: false,
+        autostart: { enabled: true, interval: 30 },
+      };
+      await flushPromises();
+
+      expect(
+        wrapper.find(".require-datastore-stub").attributes("data-value"),
+      ).toBe("false");
+      const autostart = wrapper.find(".autostart-stub");
+      expect(autostart.attributes("data-enabled")).toBe("true");
+      expect(autostart.attributes("data-interval")).toBe("30");
+    });
+
+    it("saves the loaded values, not the pre-load defaults", async () => {
+      const store = seedUnloaded();
+
+      const wrapper = mount(PreferencesDialog, {
+        props: { preferencesVisible: true },
+        global: { stubs: globalStubs },
+      });
+
+      store.settings = {
+        require_data_store: false,
+        autostart: { enabled: true, interval: 30 },
+      };
+      await flushPromises();
+
+      await wrapper.find(".preferences-update-btn button").trigger("click");
+      await flushPromises();
+
+      expect(store.updateSettings).toHaveBeenCalledWith({
+        require_data_store: false,
+        autostart: { enabled: true, interval: 30 },
+      });
+    });
+  });
+
+  it("does not discard in-progress edits when a background refetch lands", async () => {
+    const store = seedStore("default", {
+      require_data_store: true,
+      autostart: { enabled: false, interval: 60 },
+    });
+
+    const wrapper = mount(PreferencesDialog, {
+      props: { preferencesVisible: true },
+      global: { stubs: globalStubs },
+    });
+
+    await wrapper.find(".require-datastore-stub").trigger("click"); // user edits
+
+    // A periodic session refresh re-runs fetchSettings and replaces `settings`.
+    store.settings = {
+      require_data_store: true,
+      autostart: { enabled: false, interval: 60 },
+    };
+    await flushPromises();
+
+    expect(
+      wrapper.find(".require-datastore-stub").attributes("data-value"),
+    ).toBe("false");
   });
 });
