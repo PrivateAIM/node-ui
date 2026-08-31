@@ -8,9 +8,12 @@ export const useNodeSettingsStore = defineStore("nodeSettings", {
     nodeType: null as string | null,
   }),
   getters: {
+    requireDataStoreSetting(state): boolean {
+      return Boolean(state.settings?.require_data_store ?? true);
+    },
     requireDataStore(state): boolean {
       if (state.nodeType === "aggregator") return false;
-      return Boolean(state.settings?.require_data_store ?? true);
+      return this.requireDataStoreSetting;
     },
     autostartEnabled(state): boolean {
       return Boolean(state.settings?.autostart?.enabled ?? false);

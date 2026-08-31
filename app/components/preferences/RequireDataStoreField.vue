@@ -2,6 +2,8 @@
 import ToggleSwitch from "primevue/toggleswitch";
 
 const model = defineModel<boolean>({ required: true });
+
+withDefaults(defineProps<{ disabled?: boolean }>(), { disabled: false });
 </script>
 
 <template>
@@ -12,9 +14,17 @@ const model = defineModel<boolean>({ required: true });
         >Toggle to control whether an analysis requires a data store before
         being started.</span
       >
+      <span v-if="disabled" class="setting-not-applicable-text"
+        >Aggregator nodes never require a data store, so this setting has no
+        effect here.</span
+      >
     </div>
     <div class="settings-control data-store-requirement-toggle">
-      <ToggleSwitch v-model="model" label="Require Data Store" />
+      <ToggleSwitch
+        v-model="model"
+        :disabled="disabled"
+        label="Require Data Store"
+      />
     </div>
   </div>
 </template>

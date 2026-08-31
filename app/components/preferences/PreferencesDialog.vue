@@ -12,18 +12,31 @@ const loading = ref(false);
 const toast = useToast();
 const store = useNodeSettingsStore();
 
-const draftRequireDataStore = ref(store.requireDataStore);
+const draftRequireDataStore = ref(store.requireDataStoreSetting);
+// Aggregator nodes never require a data store
+const requireDataStoreDisabled = computed(
+  () => store.nodeType === "aggregator",
+);
 const draftAutostart = ref<AutostartSettings>({
   enabled: store.autostartEnabled,
   interval: store.autostartInterval,
 });
 
+const settingsLoaded = computed(() => store.settings !== null);
+
+function resetDrafts() {
+  draftRequireDataStore.value = store.requireDataStoreSetting;
+  draftAutostart.value.enabled = store.autostartEnabled;
+  draftAutostart.value.interval = store.autostartInterval;
+}
+
 watch(preferencesVisible, (visible) => {
-  if (visible) {
-    draftRequireDataStore.value = store.requireDataStore;
-    draftAutostart.value.enabled = store.autostartEnabled;
-    draftAutostart.value.interval = store.autostartInterval;
-  }
+  if (visible) resetDrafts();
+});
+
+// Update settings once fetched
+watch(settingsLoaded, (loaded) => {
+  if (loaded) resetDrafts();
 });
 
 async function onSubmitPreferences() {
@@ -68,7 +81,10 @@ async function onSubmitPreferences() {
     >
       <Divider />
       <div class="data-store-requirement-section">
-        <RequireDataStoreField v-model="draftRequireDataStore" />
+        <RequireDataStoreField
+          v-model="draftRequireDataStore"
+          :disabled="requireDataStoreDisabled"
+        />
       </div>
       <Divider />
       <div class="autostart-section">
@@ -81,6 +97,7 @@ async function onSubmitPreferences() {
           size="small"
           icon="pi pi-save"
           :loading="loading"
+          :disabled="!settingsLoaded"
           @click="onSubmitPreferences()"
         ></Button>
       </div>
