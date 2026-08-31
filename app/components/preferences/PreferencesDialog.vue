@@ -12,7 +12,11 @@ const loading = ref(false);
 const toast = useToast();
 const store = useNodeSettingsStore();
 
-const draftRequireDataStore = ref(store.requireDataStore);
+const draftRequireDataStore = ref(store.requireDataStoreSetting);
+// Aggregator nodes never require a data store
+const requireDataStoreDisabled = computed(
+  () => store.nodeType === "aggregator",
+);
 const draftAutostart = ref<AutostartSettings>({
   enabled: store.autostartEnabled,
   interval: store.autostartInterval,
@@ -20,7 +24,7 @@ const draftAutostart = ref<AutostartSettings>({
 
 watch(preferencesVisible, (visible) => {
   if (visible) {
-    draftRequireDataStore.value = store.requireDataStore;
+    draftRequireDataStore.value = store.requireDataStoreSetting;
     draftAutostart.value.enabled = store.autostartEnabled;
     draftAutostart.value.interval = store.autostartInterval;
   }
@@ -68,7 +72,10 @@ async function onSubmitPreferences() {
     >
       <Divider />
       <div class="data-store-requirement-section">
-        <RequireDataStoreField v-model="draftRequireDataStore" />
+        <RequireDataStoreField
+          v-model="draftRequireDataStore"
+          :disabled="requireDataStoreDisabled"
+        />
       </div>
       <Divider />
       <div class="autostart-section">
