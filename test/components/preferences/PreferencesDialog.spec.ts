@@ -56,6 +56,7 @@ describe("PreferencesDialog.vue", () => {
     mockUpdateSettings = vi.fn().mockResolvedValue(defaultSettingsResponse);
     vi.mocked(useNodeSettingsStore).mockReturnValue({
       requireDataStore: true,
+      requireDataStoreSetting: true,
       autostartEnabled: false,
       autostartInterval: 60,
       updateSettings: mockUpdateSettings,
@@ -91,6 +92,7 @@ describe("PreferencesDialog.vue", () => {
   it("initializes RequireDataStoreField as false when store has false", () => {
     vi.mocked(useNodeSettingsStore).mockReturnValue({
       requireDataStore: false,
+      requireDataStoreSetting: false,
       autostartEnabled: true,
       autostartInterval: 30,
       updateSettings: mockUpdateSettings,
@@ -159,6 +161,7 @@ describe("PreferencesDialog.vue", () => {
   it("resets draft values from the store when the dialog reopens", async () => {
     vi.mocked(useNodeSettingsStore).mockReturnValue({
       requireDataStore: false,
+      requireDataStoreSetting: false,
       autostartEnabled: true,
       autostartInterval: 30,
       updateSettings: mockUpdateSettings,

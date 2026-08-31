@@ -3,15 +3,15 @@ import { describe, expect, it } from "vitest";
 import RequireDataStoreField from "~/components/preferences/RequireDataStoreField.vue";
 
 const ToggleSwitchStub = {
-  props: ["modelValue"],
+  props: ["modelValue", "disabled"],
   emits: ["update:modelValue"],
   template:
-    '<button class="mock-toggle" :data-checked="String(modelValue)" @click="$emit(\'update:modelValue\', !modelValue)" />',
+    '<button class="mock-toggle" :data-checked="String(modelValue)" :disabled="disabled" @click="$emit(\'update:modelValue\', !modelValue)" />',
 };
 
-function mountField(modelValue: boolean) {
+function mountField(modelValue: boolean, disabled = false) {
   return mount(RequireDataStoreField, {
-    props: { modelValue },
+    props: { modelValue, disabled },
     global: { stubs: { ToggleSwitch: ToggleSwitchStub } },
   });
 }
@@ -49,5 +49,23 @@ describe("RequireDataStoreField.vue", () => {
     const wrapper = mountField(false);
     await wrapper.find(".mock-toggle").trigger("click");
     expect(wrapper.emitted("update:modelValue")).toEqual([[true]]);
+  });
+
+  it("enables the toggle by default", () => {
+    const wrapper = mountField(true);
+    expect(wrapper.find(".mock-toggle").element.hasAttribute("disabled")).toBe(
+      false,
+    );
+    expect(wrapper.find(".setting-not-applicable-text").exists()).toBe(false);
+  });
+
+  it("disables the toggle and explains why when disabled", () => {
+    const wrapper = mountField(true, true);
+    expect(wrapper.find(".mock-toggle").element.hasAttribute("disabled")).toBe(
+      true,
+    );
+    expect(wrapper.find(".setting-not-applicable-text").text()).toContain(
+      "Aggregator nodes",
+    );
   });
 });
