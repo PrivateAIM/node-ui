@@ -5,6 +5,7 @@ import { useRoute } from "vue-router";
 import InputText from "primevue/inputtext";
 import RadioButton from "primevue/radiobutton";
 import Select from "primevue/select";
+import AutoComplete from "primevue/autocomplete";
 import InputNumber from "primevue/inputnumber";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import InputGroup from "primevue/inputgroup";
@@ -66,7 +67,32 @@ const selectedBucketAccessPolicy = ref<allowedBucketAccessPolicies>("Private");
 const bucketAccessKey = ref<string>("");
 const bucketSecretKey = ref<string>("");
 
-const selectedProject = ref<AvailableProject | undefined>();
+const selectedProject = ref<AvailableProject | string | null | undefined>();
+const selectedProjectOption = computed<AvailableProject | undefined>(() =>
+  selectedProject.value && typeof selectedProject.value === "object"
+    ? selectedProject.value
+    : undefined,
+);
+
+const sortedProjects = computed(() =>
+  [...availableProjects.value].sort((a, b) => {
+    if (!a.name) return 1;
+    if (!b.name) return -1;
+    return a.name.localeCompare(b.name);
+  }),
+);
+
+const projectSuggestions = ref<AvailableProject[]>([]);
+
+// Show all projs if empty
+function searchProjects(event: { query: string }) {
+  const query = event.query.trim().toLowerCase();
+  projectSuggestions.value = query
+    ? sortedProjects.value.filter((proj) =>
+        (proj.name ?? proj.id).toLowerCase().includes(query),
+      )
+    : [...sortedProjects.value];
+}
 
 const dataStoreSettingsMap: Map<string, string> = new Map([
   ["name", "Project"],
@@ -98,14 +124,15 @@ const acceptedProtocols = [
 ];
 
 function rerollDataStoreName() {
-  if (selectedProject.value) {
+  const project = selectedProjectOption.value;
+  if (project) {
     dataStoreName.value = generateRandomDataStoreName(
-      selectedProject.value.name ?? selectedProject.value.id,
+      project.name ?? project.id,
     );
   }
 }
 
-watch(selectedProject, rerollDataStoreName);
+watch(selectedProjectOption, rerollDataStoreName);
 
 // Preselect the project when navigated here with a projectId query parameter
 const route = useRoute();
@@ -179,7 +206,7 @@ async function onSubmitCreateDataStoreAndProject() {
 
   const configSettings: BodyKongInitializeKongInitializePost = {
     datastore: datastoreSettings,
-    project_id: selectedProject.value!.id,
+    project_id: selectedProjectOption.value!.id,
     ds_type: selectedDataStoreType.value,
   };
 
@@ -298,12 +325,16 @@ async function onSubmitCreateDataStoreAndProject() {
                 <i class="pi pi-pen-to-square"></i>
                 <p class="data-store-field-name-box">Project</p>
               </InputGroupAddon>
-              <Select
+              <AutoComplete
                 v-model="selectedProject"
-                :options="availableProjects"
+                :suggestions="projectSuggestions"
                 class="project-picker"
+                dropdown
+                fluid
+                forceSelection
                 optionLabel="name"
-                placeholder="Select a Project"
+                placeholder="Select or search for a project"
+                @complete="searchProjects"
               />
             </InputGroup>
             <InputGroup>
@@ -325,7 +356,7 @@ async function onSubmitCreateDataStoreAndProject() {
               />
               <Button
                 v-tooltip.top="'Suggest a new random name'"
-                :disabled="!selectedProject"
+                :disabled="!selectedProjectOption"
                 class="reroll-name-btn"
                 icon="pi pi-refresh"
                 severity="secondary"

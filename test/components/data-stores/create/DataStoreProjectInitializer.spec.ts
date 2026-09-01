@@ -112,15 +112,71 @@ describe("DataStoreProjectInitializer.vue", () => {
     });
   }
 
+  async function openProjectDropdown() {
+    await wrapper.find(".p-autocomplete-dropdown").trigger("click");
+    await flushPromises();
+  }
+
+  async function selectProject(project: AvailableProject) {
+    await openProjectDropdown();
+    const listItem = wrapper.find(
+      `.p-autocomplete-option[aria-label="${project.name}"]`,
+    );
+    expect(listItem.exists()).toBe(true);
+    await listItem.trigger("click");
+    await innerVm().$nextTick();
+    expect(innerVm().selectedProject.id).toBe(project.id);
+  }
+
   it("Create Data Store - Header", () => {
     expect(wrapper).toBeTruthy();
     expect(wrapper.text()).toContain("Create a Data Store for a Project");
     expect(wrapper.text()).toContain("Helpful tooltips");
   });
 
-  it("Check data store project dropdown options", () => {
+  it("Check data store project dropdown options", async () => {
+    expect(
+      wrapper.find(".p-autocomplete-input").attributes("placeholder"),
+    ).toBe("Select or search for a project");
+    expect(wrapper.find(".p-autocomplete-option").exists()).toBe(false);
+
+    await openProjectDropdown();
+
+    const options = wrapper.findAll(".p-autocomplete-option");
+    expect(options).toHaveLength(fakeParsedProjects.length);
     const dropDownOptions = fakeParsedProjects.map((item) => item.name);
-    checkDropdown(".project-picker", dropDownOptions, "Select a Project");
+    options.forEach((option) => {
+      expect(option.text()).toBeOneOf(dropDownOptions);
+    });
+  });
+
+  it("Filters the project suggestions by the typed query", async () => {
+    const target = fakeParsedProjects[1]!;
+    const autoComplete = wrapper.findComponent(".project-picker");
+
+    await autoComplete.vm.$emit("complete", { query: "-2" });
+    await innerVm().$nextTick();
+    expect(
+      innerVm().projectSuggestions.map((p: AvailableProject) => p.name),
+    ).toEqual([target.name]);
+
+    // An empty query (i.e. the dropdown button) falls back to every project
+    await autoComplete.vm.$emit("complete", { query: "" });
+    await innerVm().$nextTick();
+    expect(innerVm().projectSuggestions).toHaveLength(
+      fakeParsedProjects.length,
+    );
+  });
+
+  it("Sorts the project suggestions alphabetically", async () => {
+    const autoComplete = wrapper.findComponent(".project-picker");
+    await autoComplete.vm.$emit("complete", { query: "" });
+    await innerVm().$nextTick();
+
+    const names = innerVm().projectSuggestions.map(
+      (p: AvailableProject) => p.name,
+    );
+    expect(names).toEqual([...names].sort());
   });
 
   it("Check data store type dropdown options", () => {
@@ -160,23 +216,7 @@ describe("DataStoreProjectInitializer.vue", () => {
     protocol: string = "http",
     // methods?: string[],
   ) {
-    await wrapper.find(".project-picker").trigger("click"); // open dropdown menu
-    expect(wrapper.findAll(".p-select-option").length).toBe(
-      fakeParsedProjects.length,
-    );
-    const listItem = wrapper.find(`li[aria-label="${projectDropdown.name}"]`);
-    expect(listItem.exists()).toBe(true);
-    await listItem.trigger("click");
-    // Can't get manually clicking option to work so manually setting it
-    // Use the actual availableProjects entry to ensure object identity matches Select options
-    const matchingProject = innerVm().availableProjects.find(
-      (p: AvailableProject) => p.id === projectDropdown.id,
-    );
-    innerVm().selectedProject = matchingProject;
-    await innerVm().$nextTick();
-    expect(wrapper.find(".project-picker span").text()).toBe(
-      projectDropdown.name,
-    );
+    await selectProject(projectDropdown);
 
     // Set server name
     const serverWrapper = wrapper.find(".data-store-server-input");
