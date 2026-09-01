@@ -300,7 +300,13 @@ async function onSubmitCreateDataStoreAndProject() {
               </InputGroupAddon>
               <Select
                 v-model="selectedProject"
-                :options="availableProjects"
+                :options="
+                  availableProjects.sort((a, b) => {
+                    if (!a.name) return 1;
+                    if (!b.name) return -1;
+                    return a.name.localeCompare(b.name);
+                  })
+                "
                 class="project-picker"
                 optionLabel="name"
                 placeholder="Select a Project"
