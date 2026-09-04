@@ -5,7 +5,7 @@ import Panel from "primevue/panel";
 import PanelMenu from "primevue/panelmenu";
 import Checkbox from "primevue/checkbox";
 
-const modelValue = defineModel<EventTag[]>({ default: [] });
+const modelValue = defineModel<EventTag[]>({ default: () => [] });
 const emit = defineEmits(["clearTagFilter"]);
 
 const serviceTags = Object.values(ServiceTag);
