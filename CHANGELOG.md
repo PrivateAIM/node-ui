@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.8.2](https://github.com/PrivateAIM/node-ui/compare/v0.8.1...v0.8.2) (2026-09-04)
+
+
+### Features
+
+* **auth:** catch and show proxy error during sign in ([145d6cd](https://github.com/PrivateAIM/node-ui/commit/145d6cd624d91ccf4a172d55723c5d701f477d5d))
+* **ds:** allow input and search for datastore project name ([40884ec](https://github.com/PrivateAIM/node-ui/commit/40884ec16edb9fb497b42dff7502fae45925e4b5))
+* **ds:** sort project names alphabetically ([23b3ede](https://github.com/PrivateAIM/node-ui/commit/23b3ededa069f5989b9aba5aa074e9e0bc4420e9))
+
+
+### Bug Fixes
+
+* **settings:** refresh setting toggle for agg nodes ([7a74eae](https://github.com/PrivateAIM/node-ui/commit/7a74eae5c3a6ed6e05e13c305b6d7183cc8a505a))
+
+
+### Performance Improvements
+
+* **settings:** disable settings update button until they load ([5bc89a1](https://github.com/PrivateAIM/node-ui/commit/5bc89a1b9fbac2ec6420f5a7f303acd689a8c1ef))
+
 ## [0.8.1](https://github.com/PrivateAIM/node-ui/compare/v0.8.0...v0.8.1) (2026-08-08)
 
 
