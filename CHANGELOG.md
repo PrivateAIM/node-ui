@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.0](https://github.com/PrivateAIM/node-ui/compare/v0.8.2...v1.0.0) (2026-09-15)
+
+
+### Bug Fixes
+
+* refresh JWT correctly ([f3c6124](https://github.com/PrivateAIM/node-ui/commit/f3c6124734d29b6df5d712c7d76743a5ca4219fe))
+
 ## [0.8.2](https://github.com/PrivateAIM/node-ui/compare/v0.8.1...v0.8.2) (2026-09-04)
 
 
