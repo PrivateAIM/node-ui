@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/PrivateAIM/node-ui/compare/v1.0.0...v1.0.1) (2026-09-15)
+
+
+### Reverts
+
+* release please config ([d2c1648](https://github.com/PrivateAIM/node-ui/commit/d2c1648bc7f58145af08da469825aa1e4f486dcf))
+
 ## [1.0.0](https://github.com/PrivateAIM/node-ui/compare/v0.8.2...v1.0.0) (2026-09-15)
 
 
