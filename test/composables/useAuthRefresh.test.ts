@@ -112,22 +112,60 @@ describe("useAuthRefresh", () => {
       expect(result).toEqual({ success: true });
     });
 
-    it("returns 'Refresh in progress' when called concurrently", async () => {
+    it("shares a single in-flight refresh between concurrent callers", async () => {
       const expiry = Math.floor(Date.now() / 1000) + 3600;
       let resolveRefresh!: () => void;
-      const slowRefresh = () =>
-        new Promise<void>((res) => {
-          resolveRefresh = res;
-        });
+      const slowRefresh = vi.fn(
+        () =>
+          new Promise<void>((res) => {
+            resolveRefresh = res;
+          }),
+      );
       mockAuthAs("authenticated", expiry, slowRefresh);
       const { refreshToken } = useAuthRefresh();
 
-      const first = refreshToken(); // starts, isRefreshing → true
-      const second = refreshToken(); // should be blocked
+      const first = refreshToken();
+      const second = refreshToken();
       resolveRefresh();
       const [r1, r2] = await Promise.all([first, second]);
+      expect(slowRefresh).toHaveBeenCalledTimes(1);
       expect(r1).toEqual({ success: true });
-      expect(r2).toEqual({ success: false, error: "Refresh in progress" });
+      expect(r2).toEqual({ success: true });
+    });
+
+    it("starts a new refresh once the previous one has settled", async () => {
+      const expiry = Math.floor(Date.now() / 1000) + 3600;
+      const refreshFn = vi.fn().mockResolvedValue(undefined);
+      mockAuthAs("authenticated", expiry, refreshFn);
+      const { refreshToken } = useAuthRefresh();
+
+      await refreshToken();
+      await refreshToken();
+      expect(refreshFn).toHaveBeenCalledTimes(2);
+    });
+
+    it("returns the session error when the server failed to refresh", async () => {
+      const expiry = Math.floor(Date.now() / 1000) - 10;
+      const data = ref<{ expiresAt: number; error?: string }>({
+        expiresAt: expiry,
+      });
+      vi.mocked(useAuth).mockReturnValue({
+        status: ref("authenticated"),
+        data,
+        refresh: vi.fn(async () => {
+          data.value = { expiresAt: expiry, error: "RefreshAccessTokenError" };
+        }),
+        signIn: vi.fn(),
+        signOut: vi.fn(),
+      });
+      const { refreshToken, refreshError } = useAuthRefresh();
+
+      const result = await refreshToken();
+      expect(result).toEqual({
+        success: false,
+        error: "RefreshAccessTokenError",
+      });
+      expect(refreshError.value).toBe("RefreshAccessTokenError");
     });
 
     it("returns error when refresh() throws", async () => {

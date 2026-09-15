@@ -31,7 +31,7 @@ declare module "vue" {
 }
 
 export default defineNuxtPlugin(() => {
-  const { signIn, getSession } = useAuth();
+  const { signIn, getSession, data } = useAuth();
   const { shouldRefreshToken, refreshToken } = useAuthRefresh();
   const toast = useToast();
 
@@ -43,13 +43,16 @@ export default defineNuxtPlugin(() => {
     baseURL: baseUrl,
     timeout: 60000, // matches HA
     async onRequest({ options }) {
-      const sessionData = await getSession();
+      let sessionData = await getSession();
 
-      if (shouldRefreshToken(120)) {
+      if (sessionData?.error) {
+        await signIn(idpProvider);
+      } else if (shouldRefreshToken(120)) {
         const refreshStatus = await refreshToken();
         if (!refreshStatus.success) {
           await signIn(idpProvider); // Force sign in again if auto refresh fails
         }
+        sessionData = data.value;
       }
 
       // Annoying workaround to avoid typescript from complaining - cast to Headers then set explicitly
