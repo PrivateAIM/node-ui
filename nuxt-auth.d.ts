@@ -1,7 +1,7 @@
+// next-auth module definitions
 import type { DefaultSession } from "next-auth";
 
 declare module "next-auth" {
-  /* Returned by `useAuth`, `getSession` and `getServerSession` */
   interface Session extends DefaultSession {
     user: {
       name: string;
@@ -10,5 +10,6 @@ declare module "next-auth" {
     accessToken?: string;
     expires?: Date;
     expiresAt?: number;
+    error?: string;
   }
 }

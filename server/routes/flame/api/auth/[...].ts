@@ -144,7 +144,62 @@ function buildProvider() {
   return providers;
 }
 
-async function refreshAccessToken(token: JWT) {
+const REFRESH_BUFFER_SECONDS = 120;
+const REFRESH_RESULT_TTL_MS = 10_000;
+// Need to track them for edge cases
+const activeRefreshes = new Map<string, Promise<JWT>>();
+
+let tokenEndpointPromise: Promise<string> | undefined;
+
+function nowSeconds() {
+  return Math.floor(Date.now() / 1000);
+}
+
+function jwtExpiry(accessToken: unknown): number | undefined {
+  if (typeof accessToken !== "string") return undefined;
+  try {
+    const payload = JSON.parse(
+      Buffer.from(accessToken.split(".")[1] ?? "", "base64url").toString(),
+    );
+    return typeof payload.exp === "number" ? payload.exp : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function getTokenEndpoint(issuer: string, proxy: RequestInit) {
+  tokenEndpointPromise ??= fetch(
+    `${issuer}/.well-known/openid-configuration`,
+    proxy,
+  )
+    .then(async (r) => {
+      if (!r.ok) throw new Error(`OIDC discovery failed with ${r.status}`);
+      return (await r.json()).token_endpoint as string;
+    })
+    .catch((error) => {
+      tokenEndpointPromise = undefined;
+      throw error;
+    });
+  return tokenEndpointPromise;
+}
+
+// stop parallel requests from using the same refresh token
+function refreshAccessTokenOnce(token: JWT) {
+  const key = token.refresh_token as string;
+  let refresh = activeRefreshes.get(key);
+  if (!refresh) {
+    refresh = refreshAccessToken(token);
+    activeRefreshes.set(key, refresh);
+    refresh
+      .catch(() => undefined)
+      .finally(() =>
+        setTimeout(() => activeRefreshes.delete(key), REFRESH_RESULT_TTL_MS),
+      );
+  }
+  return refresh;
+}
+
+async function refreshAccessToken(token: JWT): Promise<JWT> {
   const clientId = process.env.NUXT_IDP_CLIENT_ID ?? "node-ui";
   const clientSecret = process.env.NUXT_IDP_CLIENT_SECRET ?? "";
   const clientIssuer =
@@ -152,11 +207,10 @@ async function refreshAccessToken(token: JWT) {
 
   const proxy = createProxy();
 
-  const discovery = await fetch(
-    `${clientIssuer}/.well-known/openid-configuration`,
+  const tokenEndpoint = await getTokenEndpoint(
+    clientIssuer,
     proxy as RequestInit,
-  ).then((r) => r.json());
-  const tokenEndpoint: string = discovery.token_endpoint;
+  );
 
   const response = await fetch(tokenEndpoint, {
     ...(proxy as RequestInit),
@@ -177,8 +231,12 @@ async function refreshAccessToken(token: JWT) {
   return {
     ...token,
     access_token: refreshedTokens.access_token,
-    expires_at: Date.now() + refreshedTokens.expires_in * 1000,
+    expires_at:
+      typeof refreshedTokens.expires_in === "number"
+        ? nowSeconds() + refreshedTokens.expires_in
+        : jwtExpiry(refreshedTokens.access_token),
     refresh_token: refreshedTokens.refresh_token ?? token.refresh_token,
+    error: undefined,
   };
 }
 
@@ -223,6 +281,7 @@ export default NuxtAuthHandler({
         ...session,
         accessToken: token.access_token as string | undefined,
         expiresAt: token.expires_at as number | undefined,
+        error: token.error as string | undefined,
       };
     },
     /* on JWT token creation or mutation */
@@ -232,12 +291,11 @@ export default NuxtAuthHandler({
       user,
     }: {
       token: JWT;
-      account: Account | null;
-      user: User;
+      account?: Account | null;
+      user?: User;
     }) {
       if (account && user) {
         if (account.type === "credentials") {
-          // CredentialsProvider (Hub password grant): tokens live on the user object
           const u = user as {
             access_token?: string;
             refresh_token?: string;
@@ -253,18 +311,21 @@ export default NuxtAuthHandler({
         return {
           ...token,
           access_token: account.access_token,
-          expires_at: account.expires_at as number,
+          expires_at: account.expires_at ?? jwtExpiry(account.access_token),
           refresh_token: account.refresh_token,
         };
       }
-      if (Date.now() < (token.expires_at as number)) {
-        // Subsequent logins, but the `access_token` is still valid
+
+      const expiresAt = token.expires_at as number | undefined;
+      if (!expiresAt || nowSeconds() < expiresAt - REFRESH_BUFFER_SECONDS) {
         return token;
       }
 
-      if (!token.refresh_token) throw new TypeError("Missing refresh_token");
+      if (!token.refresh_token) {
+        return { ...token, error: "RefreshAccessTokenError" };
+      }
       try {
-        return refreshAccessToken(token);
+        return await refreshAccessTokenOnce(token);
       } catch (error) {
         console.error("Error refreshing access_token", error);
         // If we fail to refresh the token, return an error so we can handle it on the page

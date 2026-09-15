@@ -10,29 +10,20 @@ export const useAuthRefresh = () => {
   const { status, data, refresh } = useAuth();
   const isRefreshing = ref(false);
   const refreshError = ref<string | undefined>(undefined);
+  let activeRefresh: Promise<RefreshResponse> | undefined;
 
-  const refreshToken = async (): Promise<RefreshResponse> => {
-    // Prevent multiple simultaneous refresh attempts
-    if (isRefreshing.value) {
-      return { success: false, error: "Refresh in progress" };
-    }
-
-    // Check if user is authenticated
-    if (status.value !== "authenticated") {
-      return { success: false, error: "No active session" };
-    }
-
+  const doRefresh = async (): Promise<RefreshResponse> => {
     isRefreshing.value = true;
     refreshError.value = undefined;
 
     try {
       await refresh(); // From sidebase methods
 
-      // Verify the refresh was successful
-      if (status.value === "authenticated") {
+      const sessionError = (data.value as Session | null)?.error;
+      if (status.value === "authenticated" && !sessionError) {
         return { success: true };
       } else {
-        refreshError.value = "Session refresh failed";
+        refreshError.value = sessionError ?? "Session refresh failed";
         return { success: false, error: refreshError.value };
       }
     } catch (error) {
@@ -43,7 +34,21 @@ export const useAuthRefresh = () => {
       return { success: false, error: errorMessage };
     } finally {
       isRefreshing.value = false;
+      activeRefresh = undefined;
     }
+  };
+
+  const refreshToken = (): Promise<RefreshResponse> => {
+    if (activeRefresh) {
+      return activeRefresh;
+    }
+
+    if (status.value !== "authenticated") {
+      return Promise.resolve({ success: false, error: "No active session" });
+    }
+
+    activeRefresh = doRefresh();
+    return activeRefresh;
   };
 
   const shouldRefreshToken = (bufferSeconds: number = 120): boolean => {
