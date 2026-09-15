@@ -47,10 +47,12 @@ export default defineNuxtPlugin(() => {
 
       if (sessionData?.error) {
         await signIn(idpProvider);
+        return;
       } else if (shouldRefreshToken(120)) {
         const refreshStatus = await refreshToken();
         if (!refreshStatus.success) {
           await signIn(idpProvider); // Force sign in again if auto refresh fails
+          return;
         }
         sessionData = data.value;
       }
