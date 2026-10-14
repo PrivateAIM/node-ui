@@ -78,15 +78,9 @@ describe("AvatarButton.vue", () => {
       throw new Error("Keycloak button not found in avatar menu");
     }
 
-    const links = menu.findAll("a");
-    const adminConsoleBtn = links.find(
-      (e1) => e1.text() === "Hub Admin Console",
-    );
-    expect(adminConsoleBtn?.attributes()["href"]).toBe(
-      "https://auth.fakehub.com/console/admin",
-    );
-
-    const accountBtn = links.find((e1) => e1.text() === "Hub Account");
+    const accountBtn = menu
+      .findAll("a")
+      .find((e1) => e1.text() === "Account");
     const accountUrl = new URL(accountBtn?.attributes()["href"] ?? "");
     expect(`${accountUrl.origin}${accountUrl.pathname}`).toBe(
       "https://auth.fakehub.com/console/account",

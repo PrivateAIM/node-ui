@@ -1,11 +1,6 @@
-export type HubConsoleLinks = {
-  admin: string;
-  account: string;
-};
-
 /**
- * Derive the Hub's Authup console links from the OIDC issuer the node UI signs in with,
- * e.g. "https://auth.privateaim.net/realms/my-realm".
+ * Derive the Hub's Authup account console link from the OIDC issuer the node UI signs in
+ * with, e.g. "https://auth.privateaim.net/realms/my-realm".
  *
  * The issuer carries both the Authup base URL and the realm. Authup only lets a user log
  * in through a client of the user's own realm, so the issuer realm is also the realm of
@@ -15,10 +10,10 @@ export type HubConsoleLinks = {
  *
  * Returns undefined when the issuer does not have the Authup realm shape.
  */
-export function buildHubConsoleLinks(
+export function buildHubAccountUrl(
   issuer: string | undefined,
   origin?: string,
-): HubConsoleLinks | undefined {
+): string | undefined {
   if (!issuer) return undefined;
 
   let url: URL;
@@ -31,14 +26,10 @@ export function buildHubConsoleLinks(
   const match = url.pathname.match(/^(.*)\/realms\/([^/]+)\/?$/);
   if (!match) return undefined;
 
-  const base = `${url.origin}${match[1]}`;
-  const realm = match[2] as string;
-
-  const query = new URLSearchParams({ realmId: decodeURIComponent(realm) });
+  const query = new URLSearchParams({
+    realmId: decodeURIComponent(match[2] as string),
+  });
   if (origin) query.set("ref", origin);
 
-  return {
-    admin: `${base}/console/admin`,
-    account: `${base}/console/account?${query.toString()}`,
-  };
+  return `${url.origin}${match[1]}/console/account?${query.toString()}`;
 }
