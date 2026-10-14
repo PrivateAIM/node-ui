@@ -14,7 +14,6 @@ const menu = ref();
 const showCleanupDialog = ref(false);
 
 const config = useRuntimeConfig();
-const baseUrl = new URL(config.public.baseUrl as string).origin;
 const idpProvider = config.public.idpProvider;
 const victoriaLogsUrl = config.public.victoriaLogsUrl as string;
 const hubAccountUrl =
@@ -55,12 +54,6 @@ const menuItems = computed(() => [
         url: hubAccountUrl,
         target: "_blank",
         visible: !!hubAccountUrl,
-      },
-      {
-        label: "Node Keycloak Admin",
-        icon: "pi pi-external-link",
-        url: `${baseUrl}/keycloak/admin`,
-        target: "_blank",
       },
       {
         label: "VictoriaLogs",

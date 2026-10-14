@@ -64,19 +64,7 @@ describe("AvatarButton.vue", () => {
     await flushPromises(); // use flushPromises here too for consistency
 
     const menu = wrapper.find(".avatar-menu");
-    expect(menu.text()).toContain("Keycloak");
     expect(menu.text()).toContain(logPrompt);
-
-    const keycloakAdminBtn = menu
-      .findAll("a")
-      .find((e1) => e1.text() === "Node Keycloak Admin");
-    if (keycloakAdminBtn) {
-      expect(keycloakAdminBtn.attributes()["href"]).toBe(
-        "https://fakenode.com/keycloak/admin",
-      );
-    } else {
-      throw new Error("Keycloak button not found in avatar menu");
-    }
 
     const accountBtn = menu
       .findAll("a")
