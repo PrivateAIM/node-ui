@@ -124,6 +124,8 @@ vi.mock("nuxt/app", () => ({
       primevue: vi.fn(),
       hubAdapterUrl: "https://fakenode.com/api",
       keycloakBaseUrl: "https://fakenode.com/keycloak/realms/flame",
+      idpProvider: "hub",
+      idpIssuer: "https://auth.fakehub.com/realms/fakerealm",
       auth: {
         baseURL: "https://fakenode.com/flame/api/auth",
         disableInternalRouting: false,

@@ -4,6 +4,7 @@ import Button from "primevue/button";
 import { useRuntimeConfig } from "nuxt/app";
 import { useToast } from "primevue/usetoast";
 import CleanupDialog from "~/components/header/CleanupDialog.vue";
+import { buildHubAccountUrl } from "~/utils/hub-console-url";
 
 const { signIn, signOut } = useAuth();
 const { status: authStatus, data: authData } = useAuthState();
@@ -13,9 +14,15 @@ const menu = ref();
 const showCleanupDialog = ref(false);
 
 const config = useRuntimeConfig();
-const baseUrl = new URL(config.public.baseUrl as string).origin;
 const idpProvider = config.public.idpProvider;
 const victoriaLogsUrl = config.public.victoriaLogsUrl as string;
+const hubAccountUrl =
+  idpProvider === "hub"
+    ? buildHubAccountUrl(
+        config.public.idpIssuer as string | undefined,
+        window.location.origin,
+      )
+    : undefined;
 
 const isAuthenticated = computed(() => authStatus.value === "authenticated");
 
@@ -42,10 +49,11 @@ const menuItems = computed(() => [
         },
       },
       {
-        label: "Node Keycloak Admin",
-        icon: "pi pi-external-link",
-        url: `${baseUrl}/keycloak/admin`,
+        label: "Account",
+        icon: "pi pi-user-edit",
+        url: hubAccountUrl,
         target: "_blank",
+        visible: !!hubAccountUrl,
       },
       {
         label: "VictoriaLogs",
