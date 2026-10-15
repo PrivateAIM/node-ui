@@ -8,7 +8,7 @@
  * `realmId` hint and skips its realm chooser; the node UI origin rides along as `ref`,
  * which the account console renders as a back link when the origin is trusted.
  *
- * Returns undefined when the issuer does not have the Authup realm shape.
+ * Returns undefined when the issuer is not an http(s) URL with the Authup realm shape.
  */
 export function buildHubAccountUrl(
   issuer: string | undefined,
@@ -23,12 +23,19 @@ export function buildHubAccountUrl(
     return undefined;
   }
 
+  if (url.protocol !== "http:" && url.protocol !== "https:") return undefined;
+
   const match = url.pathname.match(/^(.*)\/realms\/([^/]+)\/?$/);
   if (!match) return undefined;
 
-  const query = new URLSearchParams({
-    realmId: decodeURIComponent(match[2] as string),
-  });
+  let realm: string;
+  try {
+    realm = decodeURIComponent(match[2] as string);
+  } catch {
+    return undefined;
+  }
+
+  const query = new URLSearchParams({ realmId: realm });
   if (origin) query.set("ref", origin);
 
   return `${url.origin}${match[1]}/console/account?${query.toString()}`;

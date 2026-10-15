@@ -19,7 +19,14 @@ describe("buildHubAccountUrl", () => {
     );
   });
 
-  test.each([undefined, "", "not a url", "https://auth.privateaim.net"])(
+  test.each([
+    undefined,
+    "",
+    "not a url",
+    "https://auth.privateaim.net",
+    "javascript:/realms/master",
+    "https://auth.privateaim.net/realms/%ZZ",
+  ])(
     "returns undefined for %s",
     (issuer) => {
       expect(buildHubAccountUrl(issuer)).toBeUndefined();
