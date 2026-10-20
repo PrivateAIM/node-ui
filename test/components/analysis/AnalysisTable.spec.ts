@@ -264,13 +264,13 @@ describe("AnalysesTable.vue - PO calls and Progress", () => {
   const RUN_STATUS_COL = 2;
 
   test("Progress bar is indeterminate when executing and progress is 0", async () => {
-    // fakeBaseAnalysisNode.analysis_id matches fakeAnalysisId, so PodOrc
-    // reports it as "executing", Hub execution_progress is 0 -> indeterminate.
+    // fakeBaseAnalysisNode.analysisId matches fakeAnalysisId, so PodOrc
+    // reports it as "executing", Hub executionProgress is 0 -> indeterminate.
     mockNodes([
       {
         ...fakeBaseAnalysisNode,
-        execution_status: "started",
-        execution_progress: 0,
+        executionStatus: "started",
+        executionProgress: 0,
       },
     ]);
 
@@ -288,13 +288,13 @@ describe("AnalysesTable.vue - PO calls and Progress", () => {
   });
 
   test("Progress bar is determinate when executing and progress is non-zero", async () => {
-    // Same analysis_id as fakeAnalysisId — PodOrc sets execution_status to
-    // "executing". Hub has execution_progress: 50, which is preserved.
+    // Same analysisId as fakeAnalysisId — PodOrc sets executionStatus to
+    // "executing". Hub has executionProgress: 50, which is preserved.
     mockNodes([
       {
         ...fakeBaseAnalysisNode,
-        execution_status: "started",
-        execution_progress: 50,
+        executionStatus: "started",
+        executionProgress: 50,
       },
     ]);
 
@@ -312,14 +312,14 @@ describe("AnalysesTable.vue - PO calls and Progress", () => {
     expect(progressBar.attributes("data-value")).toBe("50");
   });
 
-  test("setProgress sets execution_progress to 100 for executed status", async () => {
+  test("setProgress sets executionProgress to 100 for executed status", async () => {
     // Unique ID not known to PodOrc. "executed" is terminal so parseAnalysis
-    // keeps it. setProgress then forces execution_progress to 100.
+    // keeps it. setProgress then forces executionProgress to 100.
     const executedNode: AnalysisNode = {
       ...fakeBaseAnalysisNode,
-      analysis_id: "aaaaaaaa-0000-0000-0000-000000000001",
-      execution_status: "executed",
-      execution_progress: 0,
+      analysisId: "aaaaaaaa-0000-0000-0000-000000000001",
+      executionStatus: "executed",
+      executionProgress: 0,
     };
     mockNodes([executedNode]);
 
@@ -336,13 +336,13 @@ describe("AnalysesTable.vue - PO calls and Progress", () => {
     expect(progressBar.attributes("data-value")).toBe("100");
   });
 
-  test("setProgress resets execution_progress to 0 for failed status", async () => {
+  test("setProgress resets executionProgress to 0 for failed status", async () => {
     // Hub reports 60% progress, but setProgress should zero it out for failed.
     const failedNode: AnalysisNode = {
       ...fakeBaseAnalysisNode,
-      analysis_id: "aaaaaaaa-0000-0000-0000-000000000002",
-      execution_status: "failed",
-      execution_progress: 60,
+      analysisId: "aaaaaaaa-0000-0000-0000-000000000002",
+      executionStatus: "failed",
+      executionProgress: 60,
     };
     mockNodes([failedNode]);
 
@@ -359,14 +359,14 @@ describe("AnalysesTable.vue - PO calls and Progress", () => {
     expect(progressBar.attributes("data-value")).toBe("0");
   });
 
-  test("PodOrc execution_status overrides hub execution_status in Run Status column", async () => {
+  test("PodOrc executionStatus overrides hub executionStatus in Run Status column", async () => {
     // Hub says "started"; PodOrc handler returns { status: "executing" } for the
-    // same analysis_id → parseAnalysis should use the PodOrc value.
+    // same analysisId → parseAnalysis should use the PodOrc value.
     mockNodes([
       {
         ...fakeBaseAnalysisNode,
-        execution_status: "started",
-        execution_progress: 0,
+        executionStatus: "started",
+        executionProgress: 0,
       },
     ]);
 
@@ -379,7 +379,7 @@ describe("AnalysesTable.vue - PO calls and Progress", () => {
     expect(runStatusCell.text()).toBe(PodStatus.Executing);
   });
 
-  test("Non-terminal execution_status is cleared when analysis is absent from PodOrc", async () => {
+  test("Non-terminal executionStatus is cleared when analysis is absent from PodOrc", async () => {
     // Override PodOrc to return an empty response so no analysis ID matches.
     // "started" is non-terminal → parseAnalysis nulls it → no Tag rendered.
     testServer.use(http.get("/po/status", () => HttpResponse.json({})));
@@ -387,8 +387,8 @@ describe("AnalysesTable.vue - PO calls and Progress", () => {
     mockNodes([
       {
         ...fakeBaseAnalysisNode,
-        execution_status: "started",
-        execution_progress: 0,
+        executionStatus: "started",
+        executionProgress: 0,
       },
     ]);
 
@@ -401,16 +401,16 @@ describe("AnalysesTable.vue - PO calls and Progress", () => {
     expect(runStatusCell.text()).toBe("");
   });
 
-  test("Terminal execution_status is preserved when analysis is absent from PodOrc", async () => {
+  test("Terminal executionStatus is preserved when analysis is absent from PodOrc", async () => {
     // Unique ID not in PodOrc response. "executed" is terminal → parseAnalysis
     // preserves it → Tag is rendered.
     testServer.use(http.get("/po/status", () => HttpResponse.json({})));
 
     const executedNode: AnalysisNode = {
       ...fakeBaseAnalysisNode,
-      analysis_id: "aaaaaaaa-0000-0000-0000-000000000003",
-      execution_status: "executed",
-      execution_progress: 0,
+      analysisId: "aaaaaaaa-0000-0000-0000-000000000003",
+      executionStatus: "executed",
+      executionProgress: 0,
     };
     mockNodes([executedNode]);
 
@@ -428,8 +428,8 @@ describe("AnalysesTable.vue - PO calls and Progress", () => {
     mockNodes([
       {
         ...fakeBaseAnalysisNode,
-        execution_status: "started",
-        execution_progress: 0,
+        executionStatus: "started",
+        executionProgress: 0,
       },
     ]);
 
@@ -442,7 +442,7 @@ describe("AnalysesTable.vue - PO calls and Progress", () => {
     expect(progressBarBefore.attributes("data-mode")).toBe("indeterminate");
 
     // Simulate AnalysisControlButtons emitting updateAnalysisRow with "executed".
-    // setProgress will force execution_progress to 100.
+    // setProgress will force executionProgress to 100.
     const controlButtons = wrapper.findComponent(AnalysisControlButtons);
     controlButtons.vm.$emit("updateAnalysisRow", fakeAnalysisId, {
       status: PodStatus.Executed,

@@ -8,7 +8,7 @@ import {
 } from "~/utils/analysis-row";
 import { fakeBaseAnalysisNode } from "../components/analysis/constants";
 
-const projectId = fakeBaseAnalysisNode.analysis!.project_id;
+const projectId = fakeBaseAnalysisNode.analysis!.projectId;
 
 function makeRow(
   overrides: Partial<ModifiedAnalysisNode> = {},
@@ -22,34 +22,34 @@ function makeRow(
 describe("setProgress", () => {
   it("defaults missing progress to 0", () => {
     const row = makeRow({
-      execution_status: PodStatus.Executing,
-      execution_progress: undefined,
+      executionStatus: PodStatus.Executing,
+      executionProgress: undefined,
     });
-    expect(setProgress(row).execution_progress).toBe(0);
+    expect(setProgress(row).executionProgress).toBe(0);
   });
 
   it("forces 100 for executed and 0 for failed", () => {
     expect(
       setProgress(
         makeRow({
-          execution_status: PodStatus.Executed,
-          execution_progress: 40,
+          executionStatus: PodStatus.Executed,
+          executionProgress: 40,
         }),
-      ).execution_progress,
+      ).executionProgress,
     ).toBe(100);
     expect(
       setProgress(
-        makeRow({ execution_status: PodStatus.Failed, execution_progress: 40 }),
-      ).execution_progress,
+        makeRow({ executionStatus: PodStatus.Failed, executionProgress: 40 }),
+      ).executionProgress,
     ).toBe(0);
   });
 
   it("keeps progress for running statuses", () => {
     const row = makeRow({
-      execution_status: PodStatus.Executing,
-      execution_progress: 42,
+      executionStatus: PodStatus.Executing,
+      executionProgress: 42,
     });
-    expect(setProgress(row).execution_progress).toBe(42);
+    expect(setProgress(row).executionProgress).toBe(42);
   });
 });
 
@@ -81,9 +81,9 @@ describe("parseAnalysis", () => {
     expect(row.project_name).toBe("use-case-1");
     expect(row.datastore).toBe(true);
     expect(row.hub_statuses).toEqual({
-      approval_status: "approved",
-      build_status: "starting",
-      distribution_status: null,
+      approvalStatus: "approved",
+      buildStatus: "starting",
+      distributionStatus: null,
     });
   });
 
@@ -96,9 +96,9 @@ describe("parseAnalysis", () => {
 
   it("takes status and progress from the pod orchestrator", () => {
     const row = parseAnalysis(
-      makeRow({ execution_status: PodStatus.Started, execution_progress: 0 }),
+      makeRow({ executionStatus: PodStatus.Started, executionProgress: 0 }),
       {
-        [fakeBaseAnalysisNode.analysis_id]: {
+        [fakeBaseAnalysisNode.analysisId]: {
           status: PodStatus.Executing,
           progress: 30,
         },
@@ -107,28 +107,28 @@ describe("parseAnalysis", () => {
       new Set(),
     );
 
-    expect(row.execution_status).toBe(PodStatus.Executing);
-    expect(row.execution_progress).toBe(30);
+    expect(row.executionStatus).toBe(PodStatus.Executing);
+    expect(row.executionProgress).toBe(30);
   });
 
   it("clears non-terminal statuses the pod orchestrator does not report", () => {
     const row = parseAnalysis(
-      makeRow({ execution_status: PodStatus.Started }),
+      makeRow({ executionStatus: PodStatus.Started }),
       {},
       projectNames,
       new Set(),
     );
-    expect(row.execution_status).toBeNull();
+    expect(row.executionStatus).toBeNull();
   });
 
   it("keeps terminal statuses the pod orchestrator does not report", () => {
     const row = parseAnalysis(
-      makeRow({ execution_status: PodStatus.Executed }),
+      makeRow({ executionStatus: PodStatus.Executed }),
       {},
       projectNames,
       new Set(),
     );
-    expect(row.execution_status).toBe(PodStatus.Executed);
-    expect(row.execution_progress).toBe(100);
+    expect(row.executionStatus).toBe(PodStatus.Executed);
+    expect(row.executionProgress).toBe(100);
   });
 });

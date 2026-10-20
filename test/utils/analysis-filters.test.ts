@@ -13,9 +13,9 @@ import { ApprovalStatus } from "~/types/node";
 import { ProcessStatus } from "~/types/analysis";
 
 const statuses = {
-  approval_status: "approved",
-  build_status: "executed",
-  distribution_status: null,
+  approvalStatus: "approved",
+  buildStatus: "executed",
+  distributionStatus: null,
 } as const;
 
 describe("matchesHubStatusFilter", () => {
@@ -26,19 +26,19 @@ describe("matchesHubStatusFilter", () => {
 
   it("rejects rows without statuses once a filter is selected", () => {
     expect(
-      matchesHubStatusFilter(undefined, ["approval_status::approved"]),
+      matchesHubStatusFilter(undefined, ["approvalStatus::approved"]),
     ).toBe(false);
   });
 
   it("matches when any selected status matches its column", () => {
     expect(
       matchesHubStatusFilter(statuses, [
-        "approval_status::rejected",
-        "build_status::executed",
+        "approvalStatus::rejected",
+        "buildStatus::executed",
       ]),
     ).toBe(true);
     expect(
-      matchesHubStatusFilter(statuses, ["distribution_status::executed"]),
+      matchesHubStatusFilter(statuses, ["distributionStatus::executed"]),
     ).toBe(false);
   });
 });
@@ -71,16 +71,16 @@ describe("hub status filter options", () => {
       "Distribution Status",
     ]);
     expect(hubStatusFilterOptions[0]!.items[0]!.value).toBe(
-      `approval_status::${Object.values(ApprovalStatus)[0]}`,
+      `approvalStatus::${Object.values(ApprovalStatus)[0]}`,
     );
   });
 
   it("uses the approval severity for approvals and build severity otherwise", () => {
     expect(
-      getHubStatusSeverity("approval_status", ApprovalStatus.Approved),
+      getHubStatusSeverity("approvalStatus", ApprovalStatus.Approved),
     ).toBe(getApprovalStatusSeverity(ApprovalStatus.Approved));
     expect(
-      getHubStatusSeverity("distribution_status", ProcessStatus.Failed),
+      getHubStatusSeverity("distributionStatus", ProcessStatus.Failed),
     ).toBe(getBuildStatusSeverity(ProcessStatus.Failed));
   });
 });

@@ -182,7 +182,7 @@ const updateFilters = (filterText: string) => {
         />
       </template>
     </Column>
-    <Column :sortable="true" dataType="date" field="created_at.timestamp">
+    <Column :sortable="true" dataType="date" field="createdAt.timestamp">
       <template #header>
         <span
           v-tooltip.top="'Date the project was registered with the Hub'"
@@ -192,12 +192,12 @@ const updateFilters = (filterText: string) => {
         </span>
       </template>
       <template #body="{ data }">
-        <p v-tooltip.top="data.created_at.long">
-          {{ data.created_at.short }}
+        <p v-tooltip.top="data.createdAt.long">
+          {{ data.createdAt.short }}
         </p>
       </template>
     </Column>
-    <Column :sortable="true" dataType="date" field="updated_at.timestamp">
+    <Column :sortable="true" dataType="date" field="updatedAt.timestamp">
       <template #header>
         <span
           v-tooltip.top="'Date the project was last modified'"
@@ -207,8 +207,8 @@ const updateFilters = (filterText: string) => {
         </span>
       </template>
       <template #body="{ data }">
-        <p v-tooltip.top="data.updated_at.long">
-          {{ data.updated_at.short }}
+        <p v-tooltip.top="data.updatedAt.long">
+          {{ data.updatedAt.short }}
         </p>
       </template>
     </Column>

@@ -6,9 +6,9 @@ import type {
 } from "~/services/Api";
 
 export interface HubStatuses {
-  approval_status: AnalysisNode["approval_status"];
-  build_status: Analysis["build_status"];
-  distribution_status: Analysis["distribution_status"];
+  approvalStatus: AnalysisNode["approvalStatus"];
+  buildStatus: Analysis["buildStatus"];
+  distributionStatus: Analysis["distributionStatus"];
 }
 
 export interface modifiedTimestamp {
@@ -28,7 +28,7 @@ export interface ModifiedDetailedService extends Omit<
 
 export interface ModifiedAnalysisNode extends Omit<
   AnalysisNode,
-  "execution_status"
+  "executionStatus"
 > {
   project_name: string | undefined | null;
   analysis_name: string | undefined | null;
@@ -36,7 +36,7 @@ export interface ModifiedAnalysisNode extends Omit<
     [key: string]: string;
   };
   datastore: boolean;
-  execution_status: PodStatus | undefined | null;
+  executionStatus: PodStatus | undefined | null;
   progress: number;
   hub_statuses: HubStatuses;
 }

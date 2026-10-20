@@ -40,7 +40,7 @@ const {
 const defaultFilters = {
   global: { value: undefined, matchMode: FilterMatchMode.CONTAINS },
   hub_statuses: { value: undefined, matchMode: HUB_STATUS_FILTER_MATCH_MODE },
-  execution_status: { value: undefined, matchMode: FilterMatchMode.IN },
+  executionStatus: { value: undefined, matchMode: FilterMatchMode.IN },
 };
 filters.value = defaultFilters;
 
@@ -60,8 +60,8 @@ const updateFilters = (filterText: string) => {
 };
 
 function updateExecutionStatusFilter(filterText: string) {
-  filters.value.execution_status.value = toggleStatusFilter(
-    filters.value.execution_status.value,
+  filters.value.executionStatus.value = toggleStatusFilter(
+    filters.value.executionStatus.value,
     filterText,
   );
 }
@@ -164,7 +164,7 @@ const onCloseNavToast = () => {
     dataKey="id"
     filterDisplay="menu"
     paginator
-    sortField="updated_at.timestamp"
+    sortField="updatedAt.timestamp"
     stripedRows
     tableStyle="min-width: 50rem"
     @page="onPage"
@@ -177,7 +177,7 @@ const onCloseNavToast = () => {
         </span>
       </template>
       <template #body="{ data }">
-        <span v-tooltip.right="data.analysis_id" class="help-text">
+        <span v-tooltip.right="data.analysisId" class="help-text">
           {{ data.analysis_name }}
         </span>
       </template>
@@ -206,29 +206,29 @@ const onCloseNavToast = () => {
           <div class="hub-status-line">
             <span class="hub-status-label">Approval Status</span>
             <Tag
-              v-if="data.approval_status"
-              :severity="getApprovalStatusSeverity(data.approval_status)"
-              :value="data.approval_status"
+              v-if="data.approvalStatus"
+              :severity="getApprovalStatusSeverity(data.approvalStatus)"
+              :value="data.approvalStatus"
             />
             <span v-else class="hub-status-empty">—</span>
           </div>
           <div class="hub-status-line">
             <span class="hub-status-label">Build Status</span>
             <Tag
-              v-if="data.analysis.build_status"
-              :severity="getBuildStatusSeverity(data.analysis.build_status)"
-              :value="data.analysis.build_status"
+              v-if="data.analysis.buildStatus"
+              :severity="getBuildStatusSeverity(data.analysis.buildStatus)"
+              :value="data.analysis.buildStatus"
             />
             <span v-else class="hub-status-empty">—</span>
           </div>
           <div class="hub-status-line">
             <span class="hub-status-label">Distribution Status</span>
             <Tag
-              v-if="data.analysis.distribution_status"
+              v-if="data.analysis.distributionStatus"
               :severity="
-                getBuildStatusSeverity(data.analysis.distribution_status)
+                getBuildStatusSeverity(data.analysis.distributionStatus)
               "
-              :value="data.analysis.distribution_status"
+              :value="data.analysis.distributionStatus"
             />
             <span v-else class="hub-status-empty">—</span>
           </div>
@@ -271,8 +271,8 @@ const onCloseNavToast = () => {
       :showClearButton="false"
       :showFilterMatchModes="false"
       :showFilterOperator="false"
-      field="execution_status"
-      filterField="execution_status"
+      field="executionStatus"
+      filterField="executionStatus"
     >
       <template #header>
         <span
@@ -284,9 +284,9 @@ const onCloseNavToast = () => {
       </template>
       <template #body="{ data }">
         <Tag
-          v-if="data.execution_status"
-          :severity="getExecutionStatusSeverity(data.execution_status)"
-          :value="data.execution_status"
+          v-if="data.executionStatus"
+          :severity="getExecutionStatusSeverity(data.executionStatus)"
+          :value="data.executionStatus"
         />
       </template>
       <template #filter="{ filterModel, filterCallback }">
@@ -320,7 +320,7 @@ const onCloseNavToast = () => {
         </span>
       </template>
       <template #body="{ data }">
-        <span v-tooltip.top="data.analysis.project_id" class="help-text">
+        <span v-tooltip.top="data.analysis.projectId" class="help-text">
           {{ data.project_name }}
         </span>
       </template>
@@ -341,13 +341,13 @@ const onCloseNavToast = () => {
       <template #body="{ data }">
         <DataStoreBadge
           :hasDataStore="!!data.datastore"
-          :projectId="data.analysis.project_id"
+          :projectId="data.analysis.projectId"
           :required="datastoreRequired!"
           @createDataStore="onCreateDataStore"
         />
       </template>
     </Column>
-    <Column :sortable="true" dataType="date" field="created_at.timestamp">
+    <Column :sortable="true" dataType="date" field="createdAt.timestamp">
       <template #header>
         <span
           v-tooltip.top="'Date the analysis image was created'"
@@ -357,12 +357,12 @@ const onCloseNavToast = () => {
         </span>
       </template>
       <template #body="{ data }">
-        <p v-tooltip.top="data.created_at.long">
-          {{ data.created_at.short }}
+        <p v-tooltip.top="data.createdAt.long">
+          {{ data.createdAt.short }}
         </p>
       </template>
     </Column>
-    <Column :sortable="true" dataType="date" field="updated_at.timestamp">
+    <Column :sortable="true" dataType="date" field="updatedAt.timestamp">
       <template #header>
         <span
           v-tooltip.top="
@@ -374,8 +374,8 @@ const onCloseNavToast = () => {
         </span>
       </template>
       <template #body="{ data }">
-        <p v-tooltip.top="data.updated_at.long">
-          {{ data.updated_at.short }}
+        <p v-tooltip.top="data.updatedAt.long">
+          {{ data.updatedAt.short }}
         </p>
       </template>
     </Column>
@@ -391,18 +391,18 @@ const onCloseNavToast = () => {
       <template #body="{ data }">
         <ProgressBar
           :mode="
-            data.execution_status === PodStatus.Executing &&
-            !data.execution_progress
+            data.executionStatus === PodStatus.Executing &&
+            !data.executionProgress
               ? 'indeterminate'
               : 'determinate'
           "
           :style="
-            data.execution_status === PodStatus.Executing &&
-            !data.execution_progress
+            data.executionStatus === PodStatus.Executing &&
+            !data.executionProgress
               ? {}
-              : determineProgressBarColor(data.execution_progress)
+              : determineProgressBarColor(data.executionProgress)
           "
-          :value="data.execution_progress"
+          :value="data.executionProgress"
         />
       </template>
     </Column>
@@ -418,17 +418,17 @@ const onCloseNavToast = () => {
       <template #body="slotProps">
         <div class="control-buttons">
           <AnalysisControlButtons
-            :analysisBuildStatus="slotProps.data.analysis.build_status"
+            :analysisBuildStatus="slotProps.data.analysis.buildStatus"
             :analysisDistributionStatus="
-              slotProps.data.analysis.distribution_status
+              slotProps.data.analysis.distributionStatus
             "
-            :analysisExecutionStatus="slotProps.data.execution_status"
-            :analysisId="slotProps.data.analysis_id"
+            :analysisExecutionStatus="slotProps.data.executionStatus"
+            :analysisId="slotProps.data.analysisId"
             :analysisNodeId="slotProps.data.id"
-            :approvalStatus="slotProps.data.approval_status"
+            :approvalStatus="slotProps.data.approvalStatus"
             :datastore="slotProps.data.datastore"
-            :nodeId="slotProps.data.node_id"
-            :projectId="slotProps.data.analysis.project_id"
+            :nodeId="slotProps.data.nodeId"
+            :projectId="slotProps.data.analysis.projectId"
             :requireDatastore="datastoreRequired!"
             @missingDataStore="showDataStoreNavToast"
             @updateAnalysisRow="updateAnalysisRun"

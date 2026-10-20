@@ -66,7 +66,7 @@ export async function useAnalyses() {
         method: "GET",
         query: {
           sort: "-updatedAt",
-          fields: "id,name,display_name",
+          fields: "id,name,displayName",
         },
       })
       .catch(() => undefined)) as Project[];
@@ -104,7 +104,7 @@ export async function useAnalyses() {
     if (projData) {
       projData.forEach((proj: Project) => {
         if (proj.id) {
-          projMap.set(proj.id, proj.display_name ?? proj.name ?? proj.id);
+          projMap.set(proj.id, proj.displayName ?? proj.name ?? proj.id);
         }
       });
     }
@@ -160,13 +160,13 @@ export async function useAnalyses() {
 
     const formattedAnalyses = formatDataRow(
       analysisData,
-      ["created_at", "updated_at"],
+      ["createdAt", "updatedAt"],
       [],
     ) as ModifiedAnalysisNode[];
     if (formattedAnalyses && projMap.size > 0) {
       formattedAnalyses.forEach((analysisEntry: ModifiedAnalysisNode) => {
         parsedAnalyses.set(
-          analysisEntry.analysis_id,
+          analysisEntry.analysisId,
           parseAnalysis(
             analysisEntry,
             currentExecutionStatuses,
@@ -246,8 +246,8 @@ export async function useAnalyses() {
     if (analysesMap.value.has(analysisId)) {
       const analysisToUpdate = analysesMap.value.get(analysisId)!;
       if (newStatusData) {
-        analysisToUpdate.execution_status = newStatusData.status;
-        analysisToUpdate.execution_progress = newStatusData.progress || 0;
+        analysisToUpdate.executionStatus = newStatusData.status;
+        analysisToUpdate.executionProgress = newStatusData.progress || 0;
       }
       analysesMap.value.set(analysisId, setProgress(analysisToUpdate));
     }

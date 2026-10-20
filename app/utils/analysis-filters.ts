@@ -10,7 +10,7 @@ import {
 export const HUB_STATUS_FILTER_MATCH_MODE = "hubStatusMatch";
 
 export type HubStatusGroup =
-  "approval_status" | "build_status" | "distribution_status";
+  "approvalStatus" | "buildStatus" | "distributionStatus";
 
 export const podStatuses = Object.values(PodStatus);
 
@@ -18,7 +18,7 @@ const approvalStatuses = Object.values(ApprovalStatus);
 const processStatuses = Object.values(ProcessStatus);
 
 export function getHubStatusSeverity(group: HubStatusGroup, status: string) {
-  return group === "approval_status"
+  return group === "approvalStatus"
     ? getApprovalStatusSeverity(status as ApprovalStatus)
     : getBuildStatusSeverity(status as ProcessStatus);
 }
@@ -28,8 +28,8 @@ export const hubStatusFilterOptions = [
     label: "Approval Status",
     items: approvalStatuses.map((status) => ({
       label: status,
-      value: `approval_status::${status}`,
-      group: "approval_status" as HubStatusGroup,
+      value: `approvalStatus::${status}`,
+      group: "approvalStatus" as HubStatusGroup,
       status,
     })),
   },
@@ -37,8 +37,8 @@ export const hubStatusFilterOptions = [
     label: "Build Status",
     items: processStatuses.map((status) => ({
       label: status,
-      value: `build_status::${status}`,
-      group: "build_status" as HubStatusGroup,
+      value: `buildStatus::${status}`,
+      group: "buildStatus" as HubStatusGroup,
       status,
     })),
   },
@@ -46,8 +46,8 @@ export const hubStatusFilterOptions = [
     label: "Distribution Status",
     items: processStatuses.map((status) => ({
       label: status,
-      value: `distribution_status::${status}`,
-      group: "distribution_status" as HubStatusGroup,
+      value: `distributionStatus::${status}`,
+      group: "distributionStatus" as HubStatusGroup,
       status,
     })),
   },

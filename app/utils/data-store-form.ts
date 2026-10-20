@@ -45,8 +45,8 @@ export function toAvailableProjects(
   projectNodes: ProjectNode[],
 ): AvailableProject[] {
   return projectNodes.map((proj: ProjectNode) => ({
-    name: proj.project?.display_name ?? proj.project?.name ?? proj.project_id,
-    id: proj.project_id,
+    name: proj.project?.displayName ?? proj.project?.name ?? proj.projectId,
+    id: proj.projectId,
   }));
 }
 

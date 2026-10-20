@@ -101,16 +101,16 @@ export function mergeExecutionStatuses(
 
   return analysisNodes.map((analysisNode) => {
     const merged = { ...analysisNode };
-    const analysisId = merged.analysis_id;
+    const analysisId = merged.analysisId;
 
     if (executionStatuses && analysisId in executionStatuses) {
-      merged.execution_status = executionStatuses[analysisId]!
-        .status as AnalysisNode["execution_status"];
+      merged.executionStatus = executionStatuses[analysisId]!
+        .status as AnalysisNode["executionStatus"];
     } else if (
       orchestratorReachable &&
-      !FINISHED_STATUSES.includes(merged.execution_status as PodStatus)
+      !FINISHED_STATUSES.includes(merged.executionStatus as PodStatus)
     ) {
-      merged.execution_status = null;
+      merged.executionStatus = null;
     }
 
     return merged;

@@ -61,7 +61,7 @@ function mockSummaries(
     truncated: ref(composableOverrides.truncated ?? false),
     refreshSummaries: vi.fn(),
     // Id-aware on purpose: a mock that ignored its argument would pass even if
-    // the component looked the summary up by the wrong id (row.id, node_id...).
+    // the component looked the summary up by the wrong id (row.id, nodeId...).
     summaryFor: (id: string | undefined | null) =>
       (id ? summaries.get(id) : undefined) ??
       emptyProjectAnalysisSummary(false),

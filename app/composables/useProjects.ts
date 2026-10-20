@@ -10,7 +10,7 @@ export type ProjectRow = ProjectNode & {
   summary?: ProjectAnalysisSummary;
 };
 
-const DATA_ROW_UNIX_COLS = ["created_at", "updated_at"];
+const DATA_ROW_UNIX_COLS = ["createdAt", "updatedAt"];
 
 /** Loads the project nodes joined with their per-project analysis summaries; must be awaited in setup. */
 export async function useProjects() {
@@ -34,7 +34,7 @@ export async function useProjects() {
       ) as unknown as ProjectRow[] | undefined;
       formatted?.forEach((row) => {
         row.project_name =
-          row.project?.display_name ?? row.project?.name ?? row.project?.id;
+          row.project?.displayName ?? row.project?.name ?? row.project?.id;
         row.summary = summaryFor(row.project?.id);
       });
       projects.value = formatted;

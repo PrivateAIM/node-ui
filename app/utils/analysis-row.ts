@@ -6,20 +6,20 @@ const TERMINAL_HUB_STATUSES: Array<PodStatus | null | undefined> = [
   PodStatus.Executed,
 ];
 
-/** Normalises execution_progress for terminal run states, mutating and returning the row. */
+/** Normalises executionProgress for terminal run states, mutating and returning the row. */
 export function setProgress(
   analysis: ModifiedAnalysisNode,
 ): ModifiedAnalysisNode {
-  analysis.execution_progress = analysis.execution_progress
-    ? analysis.execution_progress
+  analysis.executionProgress = analysis.executionProgress
+    ? analysis.executionProgress
     : 0;
 
-  const currentRunStatus = analysis.execution_status;
+  const currentRunStatus = analysis.executionStatus;
   if (currentRunStatus) {
     if (currentRunStatus === PodStatus.Failed) {
-      analysis.execution_progress = 0;
+      analysis.executionProgress = 0;
     } else if (currentRunStatus === PodStatus.Executed) {
-      analysis.execution_progress = 100;
+      analysis.executionProgress = 100;
     }
   }
   return analysis;
@@ -51,10 +51,10 @@ export function parseAnalysis(
   projectNames: Map<string, string>,
   dataStoreProjectIds: Set<string>,
 ): ModifiedAnalysisNode {
-  const projId = analysisEntry.analysis?.project_id;
-  const analysisId = analysisEntry.analysis_id;
+  const projId = analysisEntry.analysis?.projectId;
+  const analysisId = analysisEntry.analysisId;
   analysisEntry.analysis_name =
-    analysisEntry.analysis?.display_name ??
+    analysisEntry.analysis?.displayName ??
     analysisEntry.analysis?.name ??
     analysisId;
   if (projId) {
@@ -65,18 +65,18 @@ export function parseAnalysis(
   }
   if (executionStatuses && analysisId in executionStatuses) {
     const podStatus = executionStatuses[analysisId]!;
-    analysisEntry.execution_status = podStatus.status;
-    analysisEntry.execution_progress =
-      podStatus.progress ?? analysisEntry.execution_progress;
+    analysisEntry.executionStatus = podStatus.status;
+    analysisEntry.executionProgress =
+      podStatus.progress ?? analysisEntry.executionProgress;
   } else {
-    if (!TERMINAL_HUB_STATUSES.includes(analysisEntry.execution_status)) {
-      analysisEntry.execution_status = null;
+    if (!TERMINAL_HUB_STATUSES.includes(analysisEntry.executionStatus)) {
+      analysisEntry.executionStatus = null;
     }
   }
   analysisEntry.hub_statuses = {
-    approval_status: analysisEntry.approval_status,
-    build_status: analysisEntry.analysis?.build_status ?? null,
-    distribution_status: analysisEntry.analysis?.distribution_status ?? null,
+    approvalStatus: analysisEntry.approvalStatus,
+    buildStatus: analysisEntry.analysis?.buildStatus ?? null,
+    distributionStatus: analysisEntry.analysis?.distributionStatus ?? null,
   };
   return setProgress(analysisEntry);
 }

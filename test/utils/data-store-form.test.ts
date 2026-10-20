@@ -40,9 +40,9 @@ describe("project options", () => {
 
   it("maps project nodes to options, preferring the display name", () => {
     const nodes = [
-      { project_id: "1", project: { display_name: "Display", name: "name" } },
-      { project_id: "2", project: { name: "name-only" } },
-      { project_id: "3" },
+      { projectId: "1", project: { displayName: "Display", name: "name" } },
+      { projectId: "2", project: { name: "name-only" } },
+      { projectId: "3" },
     ] as unknown as ProjectNode[];
 
     expect(toAvailableProjects(nodes)).toEqual([

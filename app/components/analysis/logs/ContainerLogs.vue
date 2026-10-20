@@ -91,7 +91,7 @@ const { pause, resume, isActive } = useIntervalFn(
     refreshLogs();
   },
   5000,
-  { immediate: analysis.value?.execution_status === ProcessStatus.Executing },
+  { immediate: analysis.value?.executionStatus === ProcessStatus.Executing },
 );
 
 async function refreshLogs() {
@@ -157,9 +157,9 @@ function onRefreshToggle() {
             class="log-debug-toggle"
           />
           <RefreshSwitch
-            :disabled="analysis?.execution_status !== ProcessStatus.Executing"
+            :disabled="analysis?.executionStatus !== ProcessStatus.Executing"
             :startEnabled="
-              analysis?.execution_status === ProcessStatus.Executing
+              analysis?.executionStatus === ProcessStatus.Executing
             "
             @change="onRefreshToggle"
           />

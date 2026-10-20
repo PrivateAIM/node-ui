@@ -30,10 +30,10 @@ export function emptyProjectAnalysisSummary(
 
 // An analysis is still waiting to be approved, built or distributed
 function isWaitingOnHub(analysisNode: AnalysisNode): boolean {
-  if (analysisNode.approval_status !== ApprovalStatus.Approved) return true;
-  if (analysisNode.analysis?.build_status !== ProcessStatus.Executed)
+  if (analysisNode.approvalStatus !== ApprovalStatus.Approved) return true;
+  if (analysisNode.analysis?.buildStatus !== ProcessStatus.Executed)
     return true;
-  return analysisNode.analysis?.distribution_status !== ProcessStatus.Executed;
+  return analysisNode.analysis?.distributionStatus !== ProcessStatus.Executed;
 }
 
 export function summariseProjectAnalyses(
@@ -43,7 +43,7 @@ export function summariseProjectAnalyses(
   const summaries = new Map<string, ProjectAnalysisSummary>();
 
   for (const analysisNode of analysisNodes) {
-    const projectId = analysisNode.analysis?.project_id;
+    const projectId = analysisNode.analysis?.projectId;
     if (!projectId) continue;
 
     let summary = summaries.get(projectId);
@@ -53,7 +53,7 @@ export function summariseProjectAnalyses(
     }
     summary.total++;
 
-    switch (analysisNode.execution_status) {
+    switch (analysisNode.executionStatus) {
       case PodStatus.Failed:
         summary.failed++;
         break;
