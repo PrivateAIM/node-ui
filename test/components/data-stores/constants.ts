@@ -1,8 +1,8 @@
-import {
-  type Analysis,
-  type ListConsumers,
-  type ListServices,
-  type Project,
+import type {
+  Analysis,
+  ListConsumers,
+  ListServices,
+  Project,
 } from "@/app/services/Api";
 
 export const validProjectId = "7f2f3b59-3b6d-4fb6-a900-2a4d5c2ea483";

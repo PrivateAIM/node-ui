@@ -12,7 +12,8 @@ function describeFetchError(error: unknown): string {
 
 export default defineEventHandler(async () => {
   const clientIssuer =
-    process.env.NUXT_PUBLIC_IDP_ISSUER ?? "http://localhost:8080/realms/flame";
+    process.env.NUXT_PUBLIC_IDP_ISSUER ??
+    "https://auth.hub.privateaim.net/realms/master";
   const wellKnown = `${clientIssuer.replace(/\/$/, "")}/.well-known/openid-configuration`;
 
   try {

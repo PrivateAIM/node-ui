@@ -1,7 +1,7 @@
-import {
-  type Analysis,
-  type AnalysisNode,
-  type DetailedService,
+import type {
+  Analysis,
+  AnalysisNode,
+  DetailedService,
   PodStatus,
 } from "~/services/Api";
 

@@ -6,4 +6,5 @@ allowBuilds:
   esbuild: true
   maplibre-gl: true
   msw: true
+  unrs-resolver: false
   vue-demi: true

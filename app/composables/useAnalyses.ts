@@ -2,13 +2,13 @@ import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useNuxtApp, useState } from "nuxt/app";
 import { useToast } from "primevue/usetoast";
 import { getAnalysisNodes } from "~/composables/useAPIFetch";
-import {
-  type AnalysisNode,
-  type AnalysisStatus,
-  type ListRoutes,
-  type PodProgressResponse,
-  type Project,
-  type Route,
+import type {
+  AnalysisNode,
+  AnalysisStatus,
+  ListRoutes,
+  PodProgressResponse,
+  Project,
+  Route,
 } from "~/services/Api";
 import type { ModifiedAnalysisNode } from "~/services/modifiedApiInterfaces";
 import { parseAnalysis, setProgress } from "~/utils/analysis-row";

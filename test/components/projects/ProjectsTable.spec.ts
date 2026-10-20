@@ -76,12 +76,11 @@ function mockSummary(
 }
 
 describe("ProjectsTable.vue", () => {
-  let mockToast;
   let ProjectsTableTestComponent;
 
   beforeEach(() => {
     vi.restoreAllMocks(); // Reset mocks before each test
-    vi.mocked(useToast).mockReturnValue(mockToast);
+    vi.mocked(useToast).mockReturnValue({ add: vi.fn() } as never);
 
     vi.mocked(useDataStoreRequirement).mockReturnValue({
       nodeType: computed(() => "default"),

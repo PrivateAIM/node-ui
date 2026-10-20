@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import ContainerCounter from "~/components/analysis/ContainerCounter.vue";
 import { fakeAnalysisNodes } from "@/test/components/analysis/constants";
-import { type AnalysisNode } from "~/services/Api";
+import type { AnalysisNode } from "~/services/Api";
 
 interface filterData {
   value: string[] | undefined;
@@ -51,7 +51,7 @@ describe("ContainerCounter.vue", () => {
     let emitCounts = 0;
     const fillCounterDiv = wrapper.find(".counter-badge-all");
     ["Started", "Executing", "Stopped", "Failed", "Executed"].forEach(
-      (executionStatus, index) => {
+      (executionStatus) => {
         const displayedStatus = "";
         expect(fillCounterDiv.text()).toContain(displayedStatus);
         const lowerStatus = executionStatus.toLowerCase();

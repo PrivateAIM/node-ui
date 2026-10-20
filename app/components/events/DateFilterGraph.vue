@@ -24,7 +24,12 @@ const endDate = ref<Date>(props.initialEndDate);
 const queryLimit = ref<number>(50);
 
 onMounted(() => {
-  emit("applyDateFilter", startDate.value, endDate.value, queryLimit.value ?? 50);
+  emit(
+    "applyDateFilter",
+    startDate.value,
+    endDate.value,
+    queryLimit.value ?? 50,
+  );
 });
 
 const isInvalidRange = computed(
@@ -32,7 +37,12 @@ const isInvalidRange = computed(
 );
 
 function applyFilter() {
-  emit("applyDateFilter", startDate.value, endDate.value, queryLimit.value ?? 50);
+  emit(
+    "applyDateFilter",
+    startDate.value,
+    endDate.value,
+    queryLimit.value ?? 50,
+  );
 }
 </script>
 
@@ -50,8 +60,8 @@ function applyFilter() {
             <div class="custom-filter-startdate-form">
               <FloatLabel class="w-full" variant="on">
                 <DatePicker
-                  inputId="startdate_label"
                   v-model="startDate"
+                  inputId="startdate_label"
                   :invalid="isInvalidRange"
                   showIcon
                   showTime
@@ -68,8 +78,8 @@ function applyFilter() {
             <div class="custom-filter-enddate-form">
               <FloatLabel class="w-full" variant="on">
                 <DatePicker
-                  inputId="enddate_label"
                   v-model="endDate"
+                  inputId="enddate_label"
                   :invalid="isInvalidRange"
                   showIcon
                   showTime
@@ -95,8 +105,8 @@ function applyFilter() {
         <div class="custom-filter-header-end">
           <FloatLabel variant="on">
             <InputNumber
-              inputId="query_limit_label"
               v-model="queryLimit"
+              inputId="query_limit_label"
               :min="1"
               :max="10000"
               :step="50"

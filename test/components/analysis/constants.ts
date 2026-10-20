@@ -1,9 +1,9 @@
-import {
-  type Analysis,
-  type AnalysisNode,
-  type Node,
-  type PodLog,
-  type Project,
+import type {
+  Analysis,
+  AnalysisNode,
+  Node,
+  PodLog,
+  Project,
 } from "~/services/Api";
 
 export const fakeLogs =

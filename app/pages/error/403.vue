@@ -34,7 +34,7 @@ const goHome = () => {
       </p>
 
       <div class="error-actions">
-        <Button @click="goHome" class="btn btn-primary">
+        <Button class="btn btn-primary" @click="goHome">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"

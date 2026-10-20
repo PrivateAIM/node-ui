@@ -109,9 +109,9 @@ const eventCountDisplay = computed(() => displayedEvents.value.length);
         columnResizeMode="fit"
         paginator
         class="rounded-table"
-        @page="onPage"
         :sortOrder="-1"
         sortField="timestamp"
+        @page="onPage"
       >
         <template #empty>No events found.</template>
         <Column

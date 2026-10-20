@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type CleanupPodResponse } from "~/services/Api";
+import type { CleanupPodResponse } from "~/services/Api";
 import { useToast } from "primevue/usetoast";
 import { useNuxtApp } from "nuxt/app";
 

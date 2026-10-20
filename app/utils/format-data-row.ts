@@ -34,16 +34,18 @@ export function formatDataRow(
       // parseUnixTimestamp now returns a new object, so assign it back
       const parsedRow = parseUnixTimestamp(newRow, datetimeKeys);
 
-      const expandData: object = {};
-      rowExpansionKeys.forEach((key) => {
-        if (key in parsedRow) {
-          expandData[key] = parsedRow[key];
-          delete parsedRow[key];
-        }
-      });
-      parsedRow["expand"] = expandData;
+      const expandData = Object.fromEntries(
+        rowExpansionKeys
+          .filter((key) => key in parsedRow)
+          .map((key) => [key, parsedRow[key]]),
+      );
+      const remaining = Object.fromEntries(
+        Object.entries(parsedRow).filter(
+          ([key]) => !rowExpansionKeys.includes(key),
+        ),
+      );
 
-      return parsedRow;
+      return { ...remaining, expand: expandData } as typeof parsedRow;
     });
   }
   return rowEntries;

@@ -3,11 +3,10 @@ import { flushPromises, mount } from "@vue/test-utils";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { http, HttpResponse } from "msw";
 import ContainerLogs from "~/components/analysis/logs/ContainerLogs.vue";
-import {
-  fakeAnalysisId,
-  fakeAnalysisNodeId,
-} from "@/test/mockapi/handlers";
+import { fakeAnalysisId, fakeAnalysisNodeId } from "@/test/mockapi/handlers";
 import { testServer } from "@/test/mockapi/setup";
+
+import { useLogChunks } from "~/composables/useLogChunks";
 
 // Stub VirtualScroller to render all items in tests (no DOM dimensions needed)
 const VirtualScrollerStub = defineComponent({
@@ -31,8 +30,6 @@ vi.mock("~/composables/useLogChunks", () => ({
 
 // navigateTo is a Nuxt auto-import; provide a no-op global stub for tests
 globalThis.navigateTo = vi.fn();
-
-import { useLogChunks } from "~/composables/useLogChunks";
 
 function makeLogChunksMock(overrides: Record<string, unknown> = {}) {
   return {
@@ -100,8 +97,9 @@ describe("ContainerLogs.vue", () => {
 
   test("Empty analysis logs", async () => {
     testServer.use(
-      http.get(`/analysis-nodes/${fakeAnalysisNodeId}`, () =>
-        new HttpResponse(null, { status: 404 }),
+      http.get(
+        `/analysis-nodes/${fakeAnalysisNodeId}`,
+        () => new HttpResponse(null, { status: 404 }),
       ),
     );
 

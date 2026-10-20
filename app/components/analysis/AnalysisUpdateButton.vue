@@ -2,8 +2,8 @@
 import { useNuxtApp } from "nuxt/app";
 import { useToast } from "primevue/usetoast";
 
-import { type AnalysisStatus, type PodProgressResponse } from "~/services/Api";
-import { FetchError } from "ofetch";
+import type { AnalysisStatus, PodProgressResponse } from "~/services/Api";
+import type { FetchError } from "ofetch";
 
 const props = defineProps({
   analysisId: {
@@ -86,10 +86,10 @@ async function onClickUpdate() {
 <template>
   <div class="update-analysis-btn-container">
     <Button
+      v-tooltip.top="'Update the status of the analysis'"
       icon="pi pi-sync"
       aria-label="Update"
       class="analysis-btn update-analysis-btn"
-      v-tooltip.top="'Update the status of the analysis'"
       severity="info"
       :disabled="props.disabled"
       :loading="loading"

@@ -1,5 +1,6 @@
 import { useToast } from "primevue/usetoast";
-import { flushPromises, mount, VueWrapper } from "@vue/test-utils";
+import type { VueWrapper } from "@vue/test-utils";
+import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import AnalysisControlButtons from "~/components/analysis/AnalysisControlButtons.vue";
 import {

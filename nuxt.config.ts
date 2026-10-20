@@ -15,6 +15,7 @@ export default defineNuxtConfig({
     "@sidebase/nuxt-auth",
     "@pinia/nuxt",
     "nuxt-echarts",
+    "@nuxt/eslint",
   ],
 
   components: [{ path: "~/components", pathPrefix: false }],

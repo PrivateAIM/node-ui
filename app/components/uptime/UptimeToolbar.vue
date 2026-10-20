@@ -145,8 +145,8 @@ defineExpose({ autoRefresh, customStart, customEnd, isInvalidRange });
         <div v-if="isCustom" class="uptime-toolbar-custom">
           <FloatLabel variant="on">
             <DatePicker
-              input-id="uptime_start"
               v-model="customStart"
+              input-id="uptime_start"
               :invalid="isInvalidRange"
               show-icon
               show-time
@@ -158,8 +158,8 @@ defineExpose({ autoRefresh, customStart, customEnd, isInvalidRange });
 
           <FloatLabel variant="on">
             <DatePicker
-              input-id="uptime_end"
               v-model="customEnd"
+              input-id="uptime_end"
               :invalid="isInvalidRange"
               show-icon
               show-time

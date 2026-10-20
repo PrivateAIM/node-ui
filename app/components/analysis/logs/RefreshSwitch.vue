@@ -17,13 +17,13 @@ const tooltip = props.disabled
   <ToggleButton
     id="refreshBtn"
     v-model="periodicRefresh"
+    v-tooltip.top="tooltip"
     :disabled="props.disabled"
     onLabel="Refresh Logs On"
     offLabel="Refresh Logs Off"
     onIcon="pi pi-spin pi-refresh"
     offIcon="pi pi-refresh"
     class="log-timestamp-toggle"
-    v-tooltip.top="tooltip"
     @change="$emit('change')"
   />
 </template>

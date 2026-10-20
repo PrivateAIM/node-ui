@@ -45,13 +45,13 @@ function clearFilters() {
             class="event-viewer-filter-panel-header-clear-btn event-viewer-filter-panel-header-component"
           >
             <Button
+              v-tooltip.top="'Clear the tag filters'"
               icon="pi pi-filter-slash"
-              @click="clearFilters()"
               size="small"
               variant="text"
               severity="contrast"
-              v-tooltip.top="'Clear the tag filters'"
               rounded
+              @click="clearFilters()"
             />
           </div>
         </div>
