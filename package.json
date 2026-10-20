@@ -37,8 +37,7 @@
     "primevue": "^4.5.5",
     "proxy-agent": "^5.0.0",
     "vue": "^3.5.42",
-    "vue-echarts": "^8.2.0",
-    "vue-router": "^5.3.0"
+    "vue-echarts": "^8.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",

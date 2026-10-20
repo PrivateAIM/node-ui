@@ -12,6 +12,7 @@ export default [
       "**/*.d.ts",
       ".nuxt/**",
       ".output/**",
+      ".playwright-mcp/**",
       ".superpowers/**",
       "coverage/**",
       "public/**",
