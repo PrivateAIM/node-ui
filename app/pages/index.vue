@@ -82,10 +82,6 @@ definePageMeta({
   margin-top: 1rem;
 }
 
-.tab-card {
-  margin-top: 1rem;
-}
-
 @media (max-width: 768px) {
   #home {
     flex-direction: column;

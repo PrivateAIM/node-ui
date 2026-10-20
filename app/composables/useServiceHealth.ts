@@ -10,7 +10,7 @@ const MAX_CELLS = 200; // too hard to see if higher than this
 
 const SLICE_WIDTHS = [30, 60, 180, 720, 3600];
 
-export interface UptimeRangePreset {
+interface UptimeRangePreset {
   label: string;
   spanMs: number;
 }

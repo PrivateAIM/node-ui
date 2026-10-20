@@ -113,28 +113,6 @@ const links = computed(() =>
 </template>
 
 <style lang="scss" scoped>
-.brand-mark {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding-right: 1rem;
-  margin-right: 0.25rem;
-  border-right: 1px solid var(--p-menubar-border-color);
-  text-decoration: none;
-}
-
-.brand-icon {
-  color: var(--p-primary-color);
-  font-size: 1.25rem;
-}
-
-.brand-name {
-  font-weight: 800;
-  font-size: 1rem;
-  letter-spacing: 0.08em;
-  color: var(--p-primary-color);
-}
-
 .menu-item-label {
   margin-left: 0.1rem;
 }

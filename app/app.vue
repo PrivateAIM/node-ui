@@ -3,8 +3,6 @@ import MenuHeader from "~/components/header/MenuHeader.vue";
 import Footer from "~/components/Footer.vue";
 import type { ToastMessageOptions } from "primevue/toast";
 
-const pauseToastTimer = () => {};
-
 const toastPt = {
   message: ({ props }: { props: { message: ToastMessageOptions } }) => {
     const life = props.message.life;
@@ -16,12 +14,7 @@ const toastPt = {
 </script>
 
 <template>
-  <Toast
-    position="top-right"
-    :pt="toastPt"
-    :onMouseEnter="pauseToastTimer"
-    :onMouseLeave="pauseToastTimer"
-  />
+  <Toast position="top-right" :pt="toastPt" />
   <NuxtLoadingIndicator color="var(--p-primary-color)" />
   <div class="app-container">
     <MenuHeader />

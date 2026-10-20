@@ -171,18 +171,6 @@ export const showInvalidRobotCredentialsToast = (
   console.warn("Invalid robot credentials");
 };
 
-export const showMissingRegistryRobotCredentialsToast = (
-  toast: ToastServiceMethods,
-) => {
-  showConnectionErrorToast(toast, {
-    severity: "error",
-    summary: "Missing Registry Credentials",
-    detail:
-      "Unable to retrieve the credentials for accessing the registry so the analysis could not be started",
-  });
-  console.warn("Missing registry credentials");
-};
-
 export const showWrongRobotIdToast = (toast: ToastServiceMethods) => {
   showConnectionErrorToast(toast, {
     severity: "error",

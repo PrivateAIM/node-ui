@@ -14,7 +14,7 @@ import {
   summariseProjectAnalyses,
 } from "~/utils/summarise-project-analyses";
 
-export type HubFetch = (
+type HubFetch = (
   url: string,
   opts?: Record<string, unknown>,
 ) => Promise<unknown>;
@@ -28,7 +28,7 @@ const FINISHED_STATUSES: Array<PodStatus | null | undefined> = [
   PodStatus.Stopped,
 ];
 
-export interface AnalysisNodeFetchResult {
+interface AnalysisNodeFetchResult {
   nodes: AnalysisNode[];
   truncated: boolean;
   incomplete: boolean;
@@ -68,7 +68,7 @@ export async function fetchAllAnalysisNodes(
   return { nodes: allNodes, truncated, incomplete };
 }
 
-export interface DataStoreProjectIdsResult {
+interface DataStoreProjectIdsResult {
   projectIds: Set<string>;
   unavailable: boolean;
 }

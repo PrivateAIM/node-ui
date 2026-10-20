@@ -1,7 +1,7 @@
 import { PodStatus } from "~/services/Api";
 import type { ModifiedAnalysisNode } from "~/services/modifiedApiInterfaces";
 
-export interface containerCount {
+interface containerCount {
   started: number;
   executing: number;
   failed: number;
