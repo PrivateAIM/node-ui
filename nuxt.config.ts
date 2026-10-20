@@ -80,14 +80,7 @@ export default defineNuxtConfig({
     components: ["TooltipComponent", "VisualMapComponent", "GridComponent"],
   },
 
-  css: [
-    "~/assets/css/main.css",
-    "primeicons/primeicons.css",
-    "~/assets/css/elements.css",
-    "~/assets/css/table.css",
-    "~/assets/css/preferences.css",
-    "~/assets/css/toast.css",
-  ],
+  css: ["~/assets/css/main.css", "primeicons/primeicons.css"],
 
   nitro: {
     alias: {
