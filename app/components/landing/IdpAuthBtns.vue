@@ -13,6 +13,11 @@ const idpNameCapitalized: string =
 const attemptSignIn = async () => {
   if (await checkIdpReachable(toast)) await signIn(idpProvider);
 };
+
+const signInLabel =
+  idpProvider === "hub"
+    ? `Login via the ${idpNameCapitalized}`
+    : `Login with ${idpNameCapitalized}`;
 </script>
 
 <template>
@@ -32,7 +37,7 @@ const attemptSignIn = async () => {
         outlined
         severity="success"
         @click="attemptSignIn"
-        >Login with {{ idpNameCapitalized }}
+        >{{ signInLabel }}
       </Button>
     </div>
   </div>

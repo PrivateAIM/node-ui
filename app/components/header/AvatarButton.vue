@@ -11,6 +11,7 @@ const menu = ref();
 const showCleanupDialog = ref(false);
 
 const config = useRuntimeConfig();
+const baseUrl = new URL(config.public.baseUrl as string).origin;
 const idpProvider = config.public.idpProvider;
 const victoriaLogsUrl = config.public.victoriaLogsUrl as string;
 const hubAccountUrl =
@@ -36,16 +37,6 @@ const menuItems = computed(() => [
     label: "Options",
     items: [
       {
-        label: isAuthenticated.value ? "Logout" : "Login",
-        icon: isAuthenticated.value ? "pi pi-sign-out" : "pi pi-sign-in",
-        command: () => {
-          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-          isAuthenticated.value
-            ? signOut({ callbackUrl: "/" })
-            : attemptSignIn();
-        },
-      },
-      {
         label: "Account",
         icon: "pi pi-user-edit",
         url: hubAccountUrl,
@@ -53,11 +44,17 @@ const menuItems = computed(() => [
         visible: !!hubAccountUrl,
       },
       {
+        label: "Node Service Admin",
+        icon: "pi pi-sitemap",
+        url: `${baseUrl}/keycloak/admin`,
+        target: "_blank",
+      },
+      {
         label: "VictoriaLogs",
         icon: "pi pi-book",
         url: victoriaLogsUrl,
         target: "_blank",
-        visible: isAuthenticated.value && !!victoriaLogsUrl,
+        visible: !!victoriaLogsUrl,
         disabled: !isAuthenticated.value,
       },
       {
@@ -66,8 +63,14 @@ const menuItems = computed(() => [
         command: () => {
           showCleanupDialog.value = true;
         },
-        visible: isAuthenticated.value,
         disabled: !isAuthenticated.value,
+      },
+      {
+        label: "Logout",
+        icon: "pi pi-sign-out",
+        command: () => {
+          signOut({ callbackUrl: "/" });
+        },
       },
     ],
   },
@@ -90,39 +93,38 @@ const menuItems = computed(() => [
         type="button"
         @click="toggle"
       />
+      <Menu
+        id="overlay_menu"
+        ref="menu"
+        :model="menuItems"
+        :popup="true"
+        class="avatar-menu"
+      >
+        <template #item="{ item, props }">
+          <a
+            v-ripple
+            :href="item.url"
+            :target="item.target"
+            v-bind="props.action"
+          >
+            <i :class="item.icon" />
+            <span class="ml-2 menu-item-label">{{ item.label }}</span>
+          </a>
+        </template>
+      </Menu>
     </div>
     <div v-else-if="authStatus === 'loading'" class="avatar-container" />
     <div v-else>
       <Button
-        aria-controls="overlay_menu"
-        aria-haspopup="true"
-        class="avatar-btn avatar-btn-logged-out"
-        icon="pi pi-question"
-        rounded
+        variant="text"
         severity="contrast"
         type="button"
-        @click="toggle"
+        label="Login"
+        size="small"
+        icon="pi pi-sign-in"
+        @click="attemptSignIn()"
       />
     </div>
-    <Menu
-      id="overlay_menu"
-      ref="menu"
-      :model="menuItems"
-      :popup="true"
-      class="avatar-menu"
-    >
-      <template #item="{ item, props }">
-        <a
-          v-ripple
-          :href="item.url"
-          :target="item.target"
-          v-bind="props.action"
-        >
-          <i :class="item.icon" />
-          <span class="ml-2 menu-item-label">{{ item.label }}</span>
-        </a>
-      </template>
-    </Menu>
   </div>
   <CleanupDialog v-model:cleanUpVisible="showCleanupDialog" />
 </template>
