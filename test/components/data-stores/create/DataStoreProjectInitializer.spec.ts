@@ -10,24 +10,14 @@ import {
   it,
   vi,
 } from "vitest";
-import DataStoreProjectInitializer from "../../../../app/components/data-stores/create/DataStoreProjectInitializer.vue";
+import DataStoreProjectInitializer from "~/components/data-stores/create/DataStoreProjectInitializer.vue";
 import { fakeParsedProjects } from "../constants";
-import type { AvailableProject } from "../../../../app/components/data-stores/create/index";
-import { DataStoreType } from "../../../../app/services/Api";
+import type { AvailableProject } from "~/types/dataStore";
+import { DataStoreType } from "~/services/Api";
 import { getProjectNodes } from "~/composables/useAPIFetch";
 
 vi.mock("~/composables/useAPIFetch", () => ({
   getProjectNodes: vi.fn(),
-}));
-
-// Controllable route so we can exercise the ?projectId= preselection. The
-// global test setup only mocks RouterLink, so useRoute must be provided here.
-const { routeMock } = vi.hoisted(() => ({
-  routeMock: { query: {} as Record<string, string> },
-}));
-vi.mock("vue-router", () => ({
-  RouterLink: { template: "<a><slot /></a>" },
-  useRoute: () => routeMock,
 }));
 
 describe("DataStoreProjectInitializer.vue", () => {
@@ -38,7 +28,9 @@ describe("DataStoreProjectInitializer.vue", () => {
 
   const DataStoreProjectInitializerTestComponent = defineComponent({
     components: { DataStoreProjectInitializer },
-    template: "<Suspense><DataStoreProjectInitializer/></Suspense>",
+    props: { preselectedProjectId: String },
+    template:
+      '<Suspense><DataStoreProjectInitializer :preselectedProjectId="preselectedProjectId"/></Suspense>',
   });
 
   beforeAll(() => {
@@ -52,8 +44,8 @@ describe("DataStoreProjectInitializer.vue", () => {
       // @ts-expect-error data is right
       data: ref(
         fakeParsedProjects.map((p) => ({
-          project: { display_name: p.name },
-          project_id: p.id,
+          project: { displayName: p.name },
+          projectId: p.id,
         })),
       ),
       pending: ref(false),
@@ -79,7 +71,6 @@ describe("DataStoreProjectInitializer.vue", () => {
   afterEach(() => {
     spy.mockReset();
     wrapper.unmount();
-    routeMock.query = {};
   });
 
   function innerVm() {
@@ -127,12 +118,6 @@ describe("DataStoreProjectInitializer.vue", () => {
     await innerVm().$nextTick();
     expect(innerVm().selectedProject.id).toBe(project.id);
   }
-
-  it("Create Data Store - Header", () => {
-    expect(wrapper).toBeTruthy();
-    expect(wrapper.text()).toContain("Create a Data Store for a Project");
-    expect(wrapper.text()).toContain("Helpful tooltips");
-  });
 
   it("Check data store project dropdown options", async () => {
     expect(
@@ -196,11 +181,6 @@ describe("DataStoreProjectInitializer.vue", () => {
       "wss",
     ];
     checkDropdown(".communication-protocol-picker", acceptedProtocols);
-  });
-
-  it("Header content", () => {
-    expect(wrapper.text()).toContain("Create a Data Store for a Project");
-    expect(wrapper.text()).toContain("Helpful tooltips");
   });
 
   async function checkDataStoreInit(
@@ -318,11 +298,11 @@ describe("DataStoreProjectInitializer.vue", () => {
     ).toBeFalsy();
   });
 
-  it("Preselects the project from the projectId query parameter", async () => {
+  it("Preselects the project from the preselectedProjectId prop", async () => {
     const target = fakeParsedProjects[1]!;
-    routeMock.query = { projectId: target.id };
 
     const localWrapper = mount(DataStoreProjectInitializerTestComponent, {
+      props: { preselectedProjectId: target.id },
       attachTo: document.body,
       global: { stubs: { teleport: true } },
     });
@@ -338,9 +318,8 @@ describe("DataStoreProjectInitializer.vue", () => {
   });
 
   it("Leaves the project unselected for an unknown projectId", async () => {
-    routeMock.query = { projectId: "does-not-exist" };
-
     const localWrapper = mount(DataStoreProjectInitializerTestComponent, {
+      props: { preselectedProjectId: "does-not-exist" },
       attachTo: document.body,
       global: { stubs: { teleport: true } },
     });

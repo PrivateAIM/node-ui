@@ -1,9 +1,9 @@
-<script setup>
-import EventViewer from "~/components/events/EventViewer.vue";
-</script>
-
 <template>
-  <EventViewer />
+  <div class="event-viewer-container">
+    <Card class="content-card event-viewer-card">
+      <template #content>
+        <EventViewer />
+      </template>
+    </Card>
+  </div>
 </template>
-
-<style scoped lang="scss"></style>

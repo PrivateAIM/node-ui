@@ -1,16 +1,14 @@
-import {
-  type Analysis,
-  type AnalysisNode,
-  type Consumer,
-  type DetailedService,
+import type {
+  Analysis,
+  AnalysisNode,
+  DetailedService,
   PodStatus,
-  type Route,
 } from "~/services/Api";
 
 export interface HubStatuses {
-  approval_status: AnalysisNode["approval_status"];
-  build_status: Analysis["build_status"];
-  distribution_status: Analysis["distribution_status"];
+  approvalStatus: AnalysisNode["approvalStatus"];
+  buildStatus: Analysis["buildStatus"];
+  distributionStatus: Analysis["distributionStatus"];
 }
 
 export interface modifiedTimestamp {
@@ -28,25 +26,9 @@ export interface ModifiedDetailedService extends Omit<
   updated_at: modifiedTimestamp;
 }
 
-export interface ModifiedConsumer extends Omit<
-  Consumer,
-  "created_at" | "updated_at"
-> {
-  created_at: modifiedTimestamp;
-  updated_at?: modifiedTimestamp;
-}
-
-export interface ModifiedRoute extends Omit<
-  Route,
-  "created_at" | "updated_at"
-> {
-  created_at: modifiedTimestamp;
-  updated_at: modifiedTimestamp;
-}
-
 export interface ModifiedAnalysisNode extends Omit<
   AnalysisNode,
-  "execution_status"
+  "executionStatus"
 > {
   project_name: string | undefined | null;
   analysis_name: string | undefined | null;
@@ -54,15 +36,7 @@ export interface ModifiedAnalysisNode extends Omit<
     [key: string]: string;
   };
   datastore: boolean;
-  execution_status: PodStatus | undefined | null;
+  executionStatus: PodStatus | undefined | null;
   progress: number;
   hub_statuses: HubStatuses;
-}
-
-export interface ModifiedParsedAnalysisNode extends Omit<
-  ModifiedAnalysisNode,
-  "created_at" | "updated_at"
-> {
-  created_at: modifiedTimestamp;
-  updated_at: modifiedTimestamp;
 }

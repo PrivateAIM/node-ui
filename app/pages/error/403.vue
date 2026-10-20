@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { useRouter } from "#vue-router";
-import Button from "primevue/button";
-
 const router = useRouter();
 
 const goHome = () => {
@@ -37,7 +34,7 @@ const goHome = () => {
       </p>
 
       <div class="error-actions">
-        <Button @click="goHome" class="btn btn-primary">
+        <Button class="btn btn-primary" @click="goHome">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"

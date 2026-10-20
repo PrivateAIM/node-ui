@@ -1,8 +1,6 @@
 <script lang="ts" setup>
-import { Card, VirtualScroller } from "primevue";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useToast } from "primevue/usetoast";
-import Toast from "primevue/toast";
 import type { FlatLogLine } from "~/types/logs";
 
 const props = defineProps<{
@@ -201,23 +199,23 @@ async function copyToClipboard(isAnalysis: boolean) {
       <template #title>
         <div class="log-header-row">
           <div class="log-header-row-title">Nginx Logs</div>
-          <div class="log-btns" v-if="nginxLines.length">
+          <div v-if="nginxLines.length" class="log-btns">
             <div class="log-download-btn log-btn">
               <Button
+                v-tooltip.top="'Download logs'"
                 icon="pi pi-download"
-                @click="downloadLogs(false)"
                 severity="contrast"
                 variant="text"
-                v-tooltip.top="'Download logs'"
+                @click="downloadLogs(false)"
               />
             </div>
             <div class="log-copy-btn log-btn">
               <Button
+                v-tooltip.top="'Copy logs to clipboard'"
                 icon="pi pi-copy"
-                @click="copyToClipboard(false)"
                 severity="contrast"
                 variant="text"
-                v-tooltip.top="'Copy logs to clipboard'"
+                @click="copyToClipboard(false)"
               />
             </div>
           </div>
@@ -260,23 +258,23 @@ async function copyToClipboard(isAnalysis: boolean) {
       <template #title>
         <div class="log-header-row">
           <div class="log-header-row-title">Analysis Logs</div>
-          <div class="log-btns" v-if="analysisLines.length">
+          <div v-if="analysisLines.length" class="log-btns">
             <div class="log-download-btn log-btn">
               <Button
+                v-tooltip.top="'Download logs'"
                 icon="pi pi-download"
-                @click="downloadLogs(true)"
                 severity="contrast"
                 variant="text"
-                v-tooltip.top="'Download logs'"
+                @click="downloadLogs(true)"
               />
             </div>
             <div class="log-copy-btn log-btn">
               <Button
+                v-tooltip.top="'Copy logs to clipboard'"
                 icon="pi pi-copy"
-                @click="copyToClipboard(true)"
                 severity="contrast"
                 variant="text"
-                v-tooltip.top="'Copy logs to clipboard'"
+                @click="copyToClipboard(true)"
               />
             </div>
           </div>

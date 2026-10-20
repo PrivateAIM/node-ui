@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import RequireDataStoreField from "~/components/preferences/RequireDataStoreField.vue";
-import AutostartField from "~/components/preferences/AutostartField.vue";
-import Button from "primevue/button";
-import Divider from "primevue/divider";
 import { useNodeSettingsStore } from "~/stores/nodeSettingsStore";
 import { useToast } from "primevue/usetoast";
 import type { AutostartSettings } from "~/services/Api";

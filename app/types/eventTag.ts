@@ -1,4 +1,4 @@
-import { type ServiceTag } from "~/services/Api";
+import type { ServiceTag } from "~/services/Api";
 
 export const EventLogLevelTag = {
   Info: "Info",

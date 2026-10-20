@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import Badge from "primevue/badge";
 import { countAnalysisContainers } from "~/utils/count-analyses";
 import type { ModifiedAnalysisNode } from "~/services/modifiedApiInterfaces";
 import { PodStatus } from "~/services/Api";
@@ -15,7 +14,7 @@ const props = defineProps({
   },
 });
 
-const currentFilters = ref(props.activeFilters.execution_status);
+const currentFilters = ref(props.activeFilters.executionStatus);
 const counts = computed(() =>
   countAnalysisContainers(props.analyses as ModifiedAnalysisNode[]),
 );

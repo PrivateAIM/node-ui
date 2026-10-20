@@ -1,7 +1,7 @@
 import { PodStatus } from "~/services/Api";
 import type { ModifiedAnalysisNode } from "~/services/modifiedApiInterfaces";
 
-export interface containerCount {
+interface containerCount {
   started: number;
   executing: number;
   failed: number;
@@ -20,7 +20,7 @@ export function countAnalysisContainers(
     stopped: 0,
   };
   for (const analysis of currentAnalyses) {
-    const executionStatus = analysis.execution_status;
+    const executionStatus = analysis.executionStatus;
     if (executionStatus) {
       switch (executionStatus) {
         case PodStatus.Started:

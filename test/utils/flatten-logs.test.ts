@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { flattenLogs } from "~/types/logs";
+import { flattenLogs } from "~/utils/flatten-logs";
 import type { PodLog } from "~/services/Api";
 
 const makeLog = (overrides: Partial<PodLog> = {}): PodLog => ({

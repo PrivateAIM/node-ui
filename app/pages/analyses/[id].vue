@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import ContainerLogs from "~/components/analysis/logs/ContainerLogs.vue";
+const route = useRoute();
+const analysisId = route.params.id as string;
+const analysisNodeId = route.query.nodeId as string | undefined;
 </script>
 
 <template>
-  <ContainerLogs />
+  <ContainerLogs :analysisId="analysisId" :analysisNodeId="analysisNodeId" />
 </template>
-
-<style scoped lang="scss"></style>

@@ -127,13 +127,6 @@ export enum CleanUpType {
   Zombies = "zombies",
 }
 
-/** AnalysisBucketType */
-export enum AnalysisBucketType {
-  CODE = "CODE",
-  RESULT = "RESULT",
-  TEMP = "TEMP",
-}
-
 /**
  * ACL
  * ACL entities are used to control access to a resource. An ACL can be applied to a Consumer
@@ -174,19 +167,19 @@ export interface Analysis {
   description: string | null;
   /** Name */
   name: string | null;
-  /** Display Name */
-  display_name: string | null;
+  /** Displayname */
+  displayName: string | null;
   /**
-   * Project Id
+   * Projectid
    * @format uuid
    */
-  project_id: string;
-  /** Master Image Id */
-  master_image_id: string | null;
-  /** Registry Id */
-  registry_id: string | null;
-  /** Image Command Arguments */
-  image_command_arguments?: MasterImageCommandArgument[];
+  projectId: string;
+  /** Masterimageid */
+  masterImageId: string | null;
+  /** Registryid */
+  registryId: string | null;
+  /** Imagecommandarguments */
+  imageCommandArguments?: MasterImageCommandArgument[];
   /**
    * Id
    * @format uuid
@@ -194,22 +187,22 @@ export interface Analysis {
   id: string;
   /** Nodes */
   nodes: number;
-  /** Nodes Approved */
-  nodes_approved: number;
-  /** Configuration Locked */
-  configuration_locked: boolean;
-  /** Configuration Entrypoint Valid */
-  configuration_entrypoint_valid: boolean;
-  /** Configuration Image Valid */
-  configuration_image_valid: boolean;
-  /** Configuration Node Aggregator Valid */
-  configuration_node_aggregator_valid: boolean;
-  /** Configuration Node Default Valid */
-  configuration_node_default_valid: boolean;
-  /** Configuration Nodes Valid */
-  configuration_nodes_valid: boolean;
-  /** Build Status */
-  build_status:
+  /** Nodesapproved */
+  nodesApproved: number;
+  /** Configurationlocked */
+  configurationLocked: boolean;
+  /** Configurationentrypointvalid */
+  configurationEntrypointValid: boolean;
+  /** Configurationimagevalid */
+  configurationImageValid: boolean;
+  /** Configurationnodeaggregatorvalid */
+  configurationNodeAggregatorValid: boolean;
+  /** Configurationnodedefaultvalid */
+  configurationNodeDefaultValid: boolean;
+  /** Configurationnodesvalid */
+  configurationNodesValid: boolean;
+  /** Buildstatus */
+  buildStatus:
     | "starting"
     | "started"
     | "stopping"
@@ -218,18 +211,18 @@ export interface Analysis {
     | "executed"
     | "failed"
     | null;
-  /** Build Nodes Valid */
-  build_nodes_valid: boolean;
-  /** Build Progress */
-  build_progress: number | null;
-  /** Build Hash */
-  build_hash: string | null;
-  /** Build Os */
-  build_os: string | null;
-  /** Build Size */
-  build_size: number | null;
-  /** Distribution Status */
-  distribution_status:
+  /** Distributionnodesvalid */
+  distributionNodesValid: boolean;
+  /** Buildprogress */
+  buildProgress: number | null;
+  /** Buildhash */
+  buildHash: string | null;
+  /** Buildos */
+  buildOs: string | null;
+  /** Buildsize */
+  buildSize: number | null;
+  /** Distributionstatus */
+  distributionStatus:
     | "starting"
     | "started"
     | "stopping"
@@ -238,10 +231,10 @@ export interface Analysis {
     | "executed"
     | "failed"
     | null;
-  /** Distribution Progress */
-  distribution_progress: number | null;
-  /** Execution Status */
-  execution_status:
+  /** Distributionprogress */
+  distributionProgress: number | null;
+  /** Executionstatus */
+  executionStatus:
     | "starting"
     | "started"
     | "stopping"
@@ -250,85 +243,33 @@ export interface Analysis {
     | "executed"
     | "failed"
     | null;
-  /** Execution Progress */
-  execution_progress: number | null;
+  /** Executionprogress */
+  executionProgress: number | null;
   /**
-   * Created At
+   * Createdat
    * @format date-time
    */
-  created_at: string;
+  createdAt: string;
   /**
-   * Updated At
+   * Updatedat
    * @format date-time
    */
-  updated_at: string;
+  updatedAt: string;
   registry?: Registry | null;
   /**
-   * Realm Id
+   * Realmid
    * @format uuid
    */
-  realm_id: string;
+  realmId: string;
   /**
-   * User Id
+   * Userid
    * @format uuid
    */
-  user_id: string;
-  /** Client Id */
-  client_id: string | null;
-  project?: Project;
-  master_image?: MasterImage | null;
-}
-
-/** AnalysisBucket */
-export interface AnalysisBucket {
-  type: AnalysisBucketType;
-  /**
-   * Bucket Id
-   * @format uuid
-   */
-  bucket_id: string;
-  /**
-   * Analysis Id
-   * @format uuid
-   */
-  analysis_id: string;
-  /**
-   * Id
-   * @format uuid
-   */
-  id: string;
-  /**
-   * Created At
-   * @format date-time
-   */
-  created_at: string;
-  /**
-   * Updated At
-   * @format date-time
-   */
-  updated_at: string;
-  analysis?: Analysis;
-  /**
-   * Realm Id
-   * @format uuid
-   */
-  realm_id: string;
-}
-
-/** AnalysisImageUrl */
-export interface AnalysisImageUrl {
-  /** Image Url */
-  image_url: string;
-  /** Project Id */
-  project_id?: string | null;
-  /** Kong Token */
-  kong_token?: string | null;
-  /** Analysis Id */
-  analysis_id: string;
-  /** Registry Url */
-  registry_url: string;
-  /** Registry User */
-  registry_user?: string | null;
+  userId: string;
+  /** Clientid */
+  clientId: string | null;
+  project?: Project | null;
+  masterImage?: MasterImage | null;
 }
 
 /**
@@ -366,24 +307,24 @@ export interface AnalysisLogsResponse {
 /** AnalysisNode */
 export interface AnalysisNode {
   /**
-   * Analysis Id
+   * Analysisid
    * @format uuid
    */
-  analysis_id: string;
+  analysisId: string;
   /**
-   * Node Id
+   * Nodeid
    * @format uuid
    */
-  node_id: string;
+  nodeId: string;
   /**
    * Id
    * @format uuid
    */
   id: string;
-  /** Approval Status */
-  approval_status: "rejected" | "approved" | null;
-  /** Execution Status */
-  execution_status:
+  /** Approvalstatus */
+  approvalStatus: "rejected" | "approved" | null;
+  /** Executionstatus */
+  executionStatus:
     | "starting"
     | "started"
     | "stopping"
@@ -392,36 +333,36 @@ export interface AnalysisNode {
     | "executed"
     | "failed"
     | null;
-  /** Execution Progress */
-  execution_progress: number | null;
+  /** Executionprogress */
+  executionProgress: number | null;
   /** Comment */
   comment: string | null;
-  /** Artifact Tag */
-  artifact_tag: string | null;
-  /** Artifact Digest */
-  artifact_digest: string | null;
+  /** Artifacttag */
+  artifactTag: string | null;
+  /** Artifactdigest */
+  artifactDigest: string | null;
   /**
-   * Created At
+   * Createdat
    * @format date-time
    */
-  created_at: string;
+  createdAt: string;
   /**
-   * Updated At
+   * Updatedat
    * @format date-time
    */
-  updated_at: string;
-  analysis?: Analysis;
-  node?: Node;
+  updatedAt: string;
+  analysis?: Analysis | null;
+  node?: Node | null;
   /**
-   * Analysis Realm Id
+   * Analysisrealmid
    * @format uuid
    */
-  analysis_realm_id: string;
+  analysisRealmId: string;
   /**
-   * Node Realm Id
+   * Noderealmid
    * @format uuid
    */
-  node_realm_id: string;
+  nodeRealmId: string;
 }
 
 /**
@@ -479,75 +420,6 @@ export interface BodyGetTokenTokenPost {
   password: string;
 }
 
-/** Body_hub_analysis_image_get_analysis_image_post */
-export interface BodyHubAnalysisImageGetAnalysisImagePost {
-  /**
-   * Analysis Id
-   * Analysis UUID
-   */
-  analysis_id: string;
-  /**
-   * Project Id
-   * Project UUID
-   */
-  project_id: string;
-  /**
-   * Kong Token
-   * Analysis keyauth kong token
-   */
-  kong_token?: string;
-  /**
-   * Node Id
-   * Node UUID
-   */
-  node_id: string;
-}
-
-/** Body_hub_analysis_update_analysis_nodes__analysis_node_id__post */
-export interface BodyHubAnalysisUpdateAnalysisNodesAnalysisNodeIdPost {
-  /**
-   * Approval Status
-   * Set the approval status of project for the node. Either 'rejected' or 'approved'
-   */
-  approval_status: "rejected" | "approved";
-}
-
-/** Body_hub_project_node_update_project_nodes__project_node_id__post */
-export interface BodyHubProjectNodeUpdateProjectNodesProjectNodeIdPost {
-  /**
-   * Approval Status
-   * Set the approval status of project for the node. Either 'rejected' or 'approved'
-   */
-  approval_status: "rejected" | "approved";
-}
-
-/** Body_kong_analysis_create_kong_analysis_post */
-export interface BodyKongAnalysisCreateKongAnalysisPost {
-  /**
-   * Project Id
-   * UUID or name of the project
-   */
-  project_id: string;
-  /**
-   * Analysis Id
-   * UUID or name of the analysis
-   */
-  analysis_id: string;
-}
-
-/** Body_kong_datastore_create_kong_datastore_post */
-export interface BodyKongDatastoreCreateKongDatastorePost {
-  /**
-   * Data store metadata.
-   * Required information for creating a new data store.
-   */
-  datastore: ServiceRequest;
-  /** Data store type. Either 's3' or 'fhir' */
-  ds_type: DataStoreType;
-  /** S3 configuration */
-  s3_config?: S3Config | null;
-}
-
 /** Body_kong_initialize_kong_initialize_post */
 export interface BodyKongInitializeKongInitializePost {
   /**
@@ -575,20 +447,6 @@ export interface BodyKongInitializeKongInitializePost {
   ds_type: DataStoreType;
   /** S3 configuration */
   s3_config?: S3Config | null;
-}
-
-/** Body_kong_project_link_kong_project__project_id__datastore__datastore_id__post */
-export interface BodyKongProjectLinkKongProjectProjectIdDatastoreDatastoreIdPost {
-  /**
-   * Methods
-   * List of acceptable HTTP methods
-   */
-  methods?: HttpMethodCode[] | null;
-  /**
-   * Protocols
-   * List of acceptable transfer protocols. A combo of 'http', 'grpc', 'grpcs', 'tls', 'tcp'
-   */
-  protocols?: ProtocolCode[] | null;
 }
 
 /** Body_podorc_pods_create_po_post */
@@ -635,155 +493,12 @@ export interface CleanupPodResponse {
 }
 
 /**
- * Consumer
- * The Consumer object represents a consumer - or a user - of a service. You can either rely on Kong as the primary datastore, or you can map the consumer list with your database to keep consistency between Kong and your existing primary datastore.
- */
-export interface Consumer {
-  /**
-   * Created At
-   * Unix epoch when the resource was created.
-   */
-  created_at?: number | null;
-  /**
-   * Custom Id
-   * Field for storing an existing unique ID for the Consumer - useful for mapping Kong with users in your existing database. You must send either this field or `username` with the request.
-   */
-  custom_id?: string | null;
-  /** Id */
-  id?: string | null;
-  /**
-   * Tags
-   * An optional set of strings associated with the Consumer for grouping and filtering.
-   */
-  tags?: string[] | null;
-  /**
-   * Username
-   * The unique username of the Consumer. You must send either this field or `custom_id` with the request.
-   */
-  username?: string | null;
-}
-
-/**
  * CreateServiceRequestClientCertificate
  * Certificate to be used as client certificate while TLS handshaking to the upstream server. With form-encoded, the notation is `client_certificate.id=<client_certificate id>`. With JSON, use `"client_certificate":{"id":"<client_certificate id>"}`.
  */
 export interface CreateServiceRequestClientCertificate {
   /** Id */
   id?: string | null;
-}
-
-/**
- * DetailedAnalysis
- * Model representing a single detailed analysis.
- */
-export interface DetailedAnalysis {
-  /** Description */
-  description: string | null;
-  /** Name */
-  name: string | null;
-  /** Display Name */
-  display_name: string | null;
-  /**
-   * Project Id
-   * @format uuid
-   */
-  project_id: string;
-  /** Master Image Id */
-  master_image_id: string | null;
-  /** Registry Id */
-  registry_id: string | null;
-  /** Image Command Arguments */
-  image_command_arguments?: MasterImageCommandArgument[];
-  /**
-   * Id
-   * @format uuid
-   */
-  id: string;
-  /** Nodes */
-  nodes: number;
-  /** Nodes Approved */
-  nodes_approved: number;
-  /** Configuration Locked */
-  configuration_locked: boolean;
-  /** Configuration Entrypoint Valid */
-  configuration_entrypoint_valid: boolean;
-  /** Configuration Image Valid */
-  configuration_image_valid: boolean;
-  /** Configuration Node Aggregator Valid */
-  configuration_node_aggregator_valid: boolean;
-  /** Configuration Node Default Valid */
-  configuration_node_default_valid: boolean;
-  /** Configuration Nodes Valid */
-  configuration_nodes_valid: boolean;
-  /** Build Status */
-  build_status:
-    | "starting"
-    | "started"
-    | "stopping"
-    | "stopped"
-    | "executing"
-    | "executed"
-    | "failed"
-    | null;
-  /** Build Nodes Valid */
-  build_nodes_valid: boolean;
-  /** Build Progress */
-  build_progress: number | null;
-  /** Build Hash */
-  build_hash: string | null;
-  /** Build Os */
-  build_os: string | null;
-  /** Build Size */
-  build_size: number | null;
-  /** Distribution Status */
-  distribution_status:
-    | "starting"
-    | "started"
-    | "stopping"
-    | "stopped"
-    | "executing"
-    | "executed"
-    | "failed"
-    | null;
-  /** Distribution Progress */
-  distribution_progress: number | null;
-  /** Execution Status */
-  execution_status:
-    | "starting"
-    | "started"
-    | "stopping"
-    | "stopped"
-    | "executing"
-    | "executed"
-    | "failed"
-    | null;
-  /** Execution Progress */
-  execution_progress: number | null;
-  /**
-   * Created At
-   * @format date-time
-   */
-  created_at: string;
-  /**
-   * Updated At
-   * @format date-time
-   */
-  updated_at: string;
-  registry?: Registry | null;
-  /**
-   * Realm Id
-   * @format uuid
-   */
-  realm_id: string;
-  /**
-   * User Id
-   * @format uuid
-   */
-  user_id: string;
-  /** Client Id */
-  client_id: string | null;
-  project?: Project | null;
-  master_image?: MasterImage | null;
 }
 
 /**
@@ -1137,7 +852,7 @@ export interface KeyAuthConsumer {
 export interface KongCleanupSettings {
   /**
    * Interval
-   * @default 120
+   * @default 600
    */
   interval?: number | null;
 }
@@ -1150,30 +865,6 @@ export interface LinkDataStoreProject {
   keyauth: KeyAuth;
   /** ACL entities are used to control access to a resource. An ACL can be applied to a Consumer */
   acl: ACL;
-}
-
-/** LinkProjectAnalysis */
-export interface LinkProjectAnalysis {
-  /** The Consumer object represents a consumer - or a user - of a service. You can either rely on Kong as the primary datastore, or you can map the consumer list with your database to keep consistency between Kong and your existing primary datastore. */
-  consumer: Consumer;
-  /** A Key-auth entity represents a key used to authenticate consumers with the key-auth plugin. The key-auth plugin is used to protect API endpoints by requiring a secret key to be sent with the request. */
-  keyauth: KeyAuth;
-  /** ACL entities are used to control access to a resource. An ACL can be applied to a Consumer */
-  acl: ACL;
-}
-
-/**
- * ListConsumers
- * Custom route list response model.
- */
-export interface ListConsumers {
-  /** Data */
-  data?: Consumer[] | null;
-  /**
-   * Offset
-   * Offset is used to paginate through the API. Provide this value to the next list operation to fetch the next page
-   */
-  offset?: string | null;
 }
 
 /**
@@ -1247,12 +938,12 @@ export interface MasterImage {
   id: string;
   /** Path */
   path: string | null;
-  /** Virtual Path */
-  virtual_path: string;
-  /** Group Virtual Path */
-  group_virtual_path: string;
-  /** Build Status */
-  build_status:
+  /** Virtualpath */
+  virtualPath: string;
+  /** Groupvirtualpath */
+  groupVirtualPath: string;
+  /** Buildstatus */
+  buildStatus:
     | "starting"
     | "started"
     | "stopping"
@@ -1261,24 +952,24 @@ export interface MasterImage {
     | "executed"
     | "failed"
     | null;
-  /** Build Progress */
-  build_progress: number | null;
+  /** Buildprogress */
+  buildProgress: number | null;
   /** Name */
   name: string;
   /** Command */
   command: string | null;
-  /** Command Arguments */
-  command_arguments: MasterImageCommandArgument[] | null;
+  /** Commandarguments */
+  commandArguments: MasterImageCommandArgument[] | null;
   /**
-   * Created At
+   * Createdat
    * @format date-time
    */
-  created_at: string;
+  createdAt: string;
   /**
-   * Updated At
+   * Updatedat
    * @format date-time
    */
-  updated_at: string;
+  updatedAt: string;
 }
 
 /** MasterImageCommandArgument */
@@ -1348,16 +1039,16 @@ export interface NetStatTotal {
 
 /** Node */
 export interface Node {
-  /** External Name */
-  external_name: string | null;
+  /** Externalname */
+  externalName: string | null;
   /** Hidden */
   hidden: boolean | null;
   /** Name */
   name: string;
-  /** Realm Id */
-  realm_id: string | null;
-  /** Registry Id */
-  registry_id: string | null;
+  /** Realmid */
+  realmId: string | null;
+  /** Registryid */
+  registryId: string | null;
   /** Type */
   type: "aggregator" | "default" | null;
   /**
@@ -1365,26 +1056,26 @@ export interface Node {
    * @format uuid
    */
   id: string;
-  /** Public Key */
-  public_key: string | null;
+  /** Publickey */
+  publicKey: string | null;
   /** Online */
   online: boolean;
   registry?: Registry | null;
-  /** Registry Project Id */
-  registry_project_id: string | null;
-  registry_project?: RegistryProject | null;
-  /** Client Id */
-  client_id: string | null;
+  /** Registryprojectid */
+  registryProjectId: string | null;
+  registryProject?: RegistryProject | null;
+  /** Clientid */
+  clientId: string | null;
   /**
-   * Created At
+   * Createdat
    * @format date-time
    */
-  created_at: string;
+  createdAt: string;
   /**
-   * Updated At
+   * Updatedat
    * @format date-time
    */
-  updated_at: string;
+  updatedAt: string;
 }
 
 /** NodeTypeResponse */
@@ -1424,12 +1115,12 @@ export type PodResponse = Partial<Record<any, (string | null)[]>>;
 export interface Project {
   /** Description */
   description: string | null;
-  /** Master Image Id */
-  master_image_id: string | null;
+  /** Masterimageid */
+  masterImageId: string | null;
   /** Name */
   name: string;
-  /** Display Name */
-  display_name: string | null;
+  /** Displayname */
+  displayName: string | null;
   /**
    * Id
    * @format uuid
@@ -1439,69 +1130,69 @@ export interface Project {
   analyses: number;
   /** Nodes */
   nodes: number;
-  master_image?: MasterImage | null;
+  masterImage?: MasterImage | null;
   /**
-   * Created At
+   * Createdat
    * @format date-time
    */
-  created_at: string;
+  createdAt: string;
   /**
-   * Updated At
+   * Updatedat
    * @format date-time
    */
-  updated_at: string;
+  updatedAt: string;
   /**
-   * Realm Id
+   * Realmid
    * @format uuid
    */
-  realm_id: string;
-  /** User Id */
-  user_id: string | null;
+  realmId: string;
+  /** Userid */
+  userId: string | null;
 }
 
 /** ProjectNode */
 export interface ProjectNode {
   /**
-   * Node Id
+   * Nodeid
    * @format uuid
    */
-  node_id: string;
+  nodeId: string;
   /**
-   * Project Id
+   * Projectid
    * @format uuid
    */
-  project_id: string;
+  projectId: string;
   /**
    * Id
    * @format uuid
    */
   id: string;
-  /** Approval Status */
-  approval_status: "rejected" | "approved" | null;
+  /** Approvalstatus */
+  approvalStatus: "rejected" | "approved" | null;
   /** Comment */
   comment: string | null;
   /**
-   * Created At
+   * Createdat
    * @format date-time
    */
-  created_at: string;
+  createdAt: string;
   /**
-   * Updated At
+   * Updatedat
    * @format date-time
    */
-  updated_at: string;
-  node?: Node;
-  project?: Project;
+  updatedAt: string;
+  node?: Node | null;
+  project?: Project | null;
   /**
-   * Project Realm Id
+   * Projectrealmid
    * @format uuid
    */
-  project_realm_id: string;
+  projectRealmId: string;
   /**
-   * Node Realm Id
+   * Noderealmid
    * @format uuid
    */
-  node_realm_id: string;
+  nodeRealmId: string;
 }
 
 /** Registry */
@@ -1510,25 +1201,25 @@ export interface Registry {
   name: string;
   /** Host */
   host: string;
-  /** Account Name */
-  account_name: string | null;
-  /** Account Secret */
-  account_secret?: string | null;
+  /** Accountname */
+  accountName: string | null;
+  /** Accountsecret */
+  accountSecret?: string | null;
   /**
    * Id
    * @format uuid
    */
   id: string;
   /**
-   * Created At
+   * Createdat
    * @format date-time
    */
-  created_at: string;
+  createdAt: string;
   /**
-   * Updated At
+   * Updatedat
    * @format date-time
    */
-  updated_at: string;
+  updatedAt: string;
 }
 
 /** RegistryProject */
@@ -1544,16 +1235,16 @@ export interface RegistryProject {
     | "masterImages"
     | "node";
   /**
-   * Registry Id
+   * Registryid
    * @format uuid
    */
-  registry_id: string;
-  /** External Name */
-  external_name: string;
-  /** Account Name */
-  account_name: string | null;
-  /** Account Secret */
-  account_secret?: string | null;
+  registryId: string;
+  /** Externalname */
+  externalName: string;
+  /** Accountname */
+  accountName: string | null;
+  /** Accountsecret */
+  accountSecret?: string | null;
   /**
    * Id
    * @format uuid
@@ -1561,27 +1252,27 @@ export interface RegistryProject {
   id: string;
   /** Public */
   public: boolean;
-  /** External Id */
-  external_id: string | null;
-  /** Account Id */
-  account_id: string | null;
-  /** Webhook Name */
-  webhook_name: string | null;
-  /** Webhook Exists */
-  webhook_exists: boolean | null;
-  /** Realm Id */
-  realm_id: string | null;
-  registry?: Registry;
+  /** Externalid */
+  externalId: string | null;
+  /** Accountid */
+  accountId: string | null;
+  /** Webhookname */
+  webhookName: string | null;
+  /** Webhookexists */
+  webhookExists: boolean | null;
+  /** Realmid */
+  realmId: string | null;
+  registry?: Registry | null;
   /**
-   * Created At
+   * Createdat
    * @format date-time
    */
-  created_at: string;
+  createdAt: string;
   /**
-   * Updated At
+   * Updatedat
    * @format date-time
    */
-  updated_at: string;
+  updatedAt: string;
 }
 
 /**
@@ -2154,22 +1845,6 @@ export interface Token {
 }
 
 /**
- * UnlinkResponse
- * Response for unlinking a data store from a project or deleting a whole project.
- */
-export interface UnlinkResponse {
-  /** Removed Routes */
-  removed_routes: Route[];
-  /**
-   * Removed Consumers
-   * @default []
-   */
-  removed_consumers?: Consumer[];
-  /** Status */
-  status?: number | null;
-}
-
-/**
  * UserSettings
  * Node configuration settings set by the user.
  */
@@ -2181,7 +1856,7 @@ export interface UserSettings {
   require_data_store?: boolean | null;
   /** @default {"enabled":false,"interval":60} */
   autostart?: AutostartSettings | null;
-  /** @default {"interval":120} */
+  /** @default {"interval":600} */
   kong_cleanup?: KongCleanupSettings | null;
   /** @default {"interval":60,"retention_days":30} */
   service_health?: ServiceHealthSettings | null;
@@ -2713,29 +2388,6 @@ export class Api<
         format: "json",
         ...params,
       }),
-
-    /**
-     * @description Build an analysis image URL using its metadata from the Hub.
-     *
-     * @tags Hub
-     * @name HubAnalysisImageGetAnalysisImagePost
-     * @summary Hub.Analysis.Image.Get
-     * @request POST:/analysis/image
-     * @secure
-     */
-    hubAnalysisImageGetAnalysisImagePost: (
-      data: BodyHubAnalysisImageGetAnalysisImagePost,
-      params: RequestParams = {},
-    ) =>
-      this.request<AnalysisImageUrl, void | HTTPValidationError>({
-        path: `/analysis/image`,
-        method: "POST",
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
   };
   node = {
     /**
@@ -2817,27 +2469,6 @@ export class Api<
         format: "json",
         ...params,
       }),
-
-    /**
-     * @description List project for a given UUID.
-     *
-     * @tags Hub
-     * @name HubProjectGetProjectsProjectIdGet
-     * @summary List a specific project
-     * @request GET:/projects/{project_id}
-     * @secure
-     */
-    hubProjectGetProjectsProjectIdGet: (
-      projectId: string,
-      params: RequestParams = {},
-    ) =>
-      this.request<Project, void | HTTPValidationError>({
-        path: `/projects/${projectId}`,
-        method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
   };
   projectNodes = {
     /**
@@ -2879,51 +2510,6 @@ export class Api<
         method: "GET",
         query: query,
         secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Set the approval status of a project proposal.
-     *
-     * @tags Hub
-     * @name HubProjectNodeGetProjectNodesProjectNodeIdGet
-     * @summary List a specific project proposal
-     * @request GET:/project-nodes/{project_node_id}
-     * @secure
-     */
-    hubProjectNodeGetProjectNodesProjectNodeIdGet: (
-      projectNodeId: string,
-      params: RequestParams = {},
-    ) =>
-      this.request<ProjectNode, void | HTTPValidationError>({
-        path: `/project-nodes/${projectNodeId}`,
-        method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Set the approval status of a project proposal.
-     *
-     * @tags Hub
-     * @name HubProjectNodeUpdateProjectNodesProjectNodeIdPost
-     * @summary Update a specific project proposal
-     * @request POST:/project-nodes/{project_node_id}
-     * @secure
-     */
-    hubProjectNodeUpdateProjectNodesProjectNodeIdPost: (
-      projectNodeId: string,
-      data: BodyHubProjectNodeUpdateProjectNodesProjectNodeIdPost,
-      params: RequestParams = {},
-    ) =>
-      this.request<ProjectNode, void | HTTPValidationError>({
-        path: `/project-nodes/${projectNodeId}`,
-        method: "POST",
-        body: data,
-        secure: true,
-        type: ContentType.UrlEncoded,
         format: "json",
         ...params,
       }),
@@ -3010,171 +2596,6 @@ export class Api<
         format: "json",
         ...params,
       }),
-
-    /**
-     * @description Set the approval status of an analysis proposal.
-     *
-     * @tags Hub
-     * @name HubAnalysisUpdateAnalysisNodesAnalysisNodeIdPost
-     * @summary Update a specific analysis proposal
-     * @request POST:/analysis-nodes/{analysis_node_id}
-     * @secure
-     */
-    hubAnalysisUpdateAnalysisNodesAnalysisNodeIdPost: (
-      analysisNodeId: string,
-      data: BodyHubAnalysisUpdateAnalysisNodesAnalysisNodeIdPost,
-      params: RequestParams = {},
-    ) =>
-      this.request<AnalysisNode, void | HTTPValidationError>({
-        path: `/analysis-nodes/${analysisNodeId}`,
-        method: "POST",
-        body: data,
-        secure: true,
-        type: ContentType.UrlEncoded,
-        format: "json",
-        ...params,
-      }),
-  };
-  analyses = {
-    /**
-     * @description List all registered analyses.
-     *
-     * @tags Hub
-     * @name HubAnalysisGetAnalysesGet
-     * @summary List all of the analysis proposals
-     * @request GET:/analyses
-     * @secure
-     */
-    hubAnalysisGetAnalysesGet: (
-      query?: {
-        /**
-         * Page
-         * Pagination as JSON, e.g. {"limit": 50, "offset": 0}
-         */
-        page?: string | null;
-        /**
-         * Sort
-         * Sort field; prefix with - for descending, + for ascending
-         */
-        sort?: string | null;
-        /**
-         * Fields
-         * Comma-separated list of fields to return
-         */
-        fields?: string | null;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<Analysis[], void | HTTPValidationError>({
-        path: `/analyses`,
-        method: "GET",
-        query: query,
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description List a specific analysis.
-     *
-     * @tags Hub
-     * @name HubAnalysisGetAnalysesAnalysisIdGet
-     * @summary List a specific analysis
-     * @request GET:/analyses/{analysis_id}
-     * @secure
-     */
-    hubAnalysisGetAnalysesAnalysisIdGet: (
-      analysisId: string,
-      params: RequestParams = {},
-    ) =>
-      this.request<Analysis, void | HTTPValidationError>({
-        path: `/analyses/${analysisId}`,
-        method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Update analysis with a given UUID.
-     *
-     * @tags Hub
-     * @name HubAnalysisNodeUpdateAnalysesAnalysisIdPost
-     * @summary Update a specific analysis proposal
-     * @request POST:/analyses/{analysis_id}
-     * @secure
-     */
-    hubAnalysisNodeUpdateAnalysesAnalysisIdPost: (
-      analysisId: string,
-      data: string,
-      params: RequestParams = {},
-    ) =>
-      this.request<DetailedAnalysis, void | HTTPValidationError>({
-        path: `/analyses/${analysisId}`,
-        method: "POST",
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-  };
-  nodes = {
-    /**
-     * @description List all nodes.
-     *
-     * @tags Hub
-     * @name HubNodeGetNodesGet
-     * @summary List all of the nodes
-     * @request GET:/nodes
-     * @secure
-     */
-    hubNodeGetNodesGet: (
-      query?: {
-        /**
-         * Page
-         * Pagination as JSON, e.g. {"limit": 50, "offset": 0}
-         */
-        page?: string | null;
-        /**
-         * Sort
-         * Sort field; prefix with - for descending, + for ascending
-         */
-        sort?: string | null;
-        /**
-         * Fields
-         * Comma-separated list of fields to return
-         */
-        fields?: string | null;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<Node[], void | HTTPValidationError>({
-        path: `/nodes`,
-        method: "GET",
-        query: query,
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description List a specific node.
-     *
-     * @tags Hub
-     * @name HubNodeGetNodesNodeIdGet
-     * @summary List a specific node
-     * @request GET:/nodes/{node_id}
-     * @secure
-     */
-    hubNodeGetNodesNodeIdGet: (nodeId: string, params: RequestParams = {}) =>
-      this.request<Node, void | HTTPValidationError>({
-        path: `/nodes/${nodeId}`,
-        method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
   };
   nodeType = {
     /**
@@ -3189,148 +2610,6 @@ export class Api<
     hubNodeTypeGetNodeTypeGet: (params: RequestParams = {}) =>
       this.request<NodeTypeResponse, void>({
         path: `/node-type`,
-        method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-  };
-  registryProjects = {
-    /**
-     * @description List registry data for a project.
-     *
-     * @tags Hub
-     * @name GetRegistryMetadataForProjectRegistryProjectsRegistryProjectIdGet
-     * @summary Get registry project
-     * @request GET:/registry-projects/{registry_project_id}
-     * @secure
-     */
-    getRegistryMetadataForProjectRegistryProjectsRegistryProjectIdGet: (
-      registryProjectId: string,
-      params: RequestParams = {},
-    ) =>
-      this.request<RegistryProject, void | HTTPValidationError>({
-        path: `/registry-projects/${registryProjectId}`,
-        method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-  };
-  analysisBuckets = {
-    /**
-     * @description List all analysis buckets.
-     *
-     * @tags Hub
-     * @name HubAnalysisBucketGetAnalysisBucketsGet
-     * @summary List a specific analysis bucket
-     * @request GET:/analysis-buckets
-     * @secure
-     */
-    hubAnalysisBucketGetAnalysisBucketsGet: (
-      query?: {
-        /**
-         * Page
-         * Pagination as JSON, e.g. {"limit": 50, "offset": 0}
-         */
-        page?: string | null;
-        /**
-         * Sort
-         * Sort field; prefix with - for descending, + for ascending
-         */
-        sort?: string | null;
-        /**
-         * Fields
-         * Comma-separated list of fields to return
-         */
-        fields?: string | null;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<any, void | HTTPValidationError>({
-        path: `/analysis-buckets`,
-        method: "GET",
-        query: query,
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description List a specific analysis bucket.
-     *
-     * @tags Hub
-     * @name HubAnalysisBucketGetAnalysisBucketsAnalysisBucketIdGet
-     * @summary List a specific analysis bucket
-     * @request GET:/analysis-buckets/{analysis_bucket_id}
-     * @secure
-     */
-    hubAnalysisBucketGetAnalysisBucketsAnalysisBucketIdGet: (
-      analysisBucketId: string,
-      params: RequestParams = {},
-    ) =>
-      this.request<AnalysisBucket, void | HTTPValidationError>({
-        path: `/analysis-buckets/${analysisBucketId}`,
-        method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-  };
-  analysisBucketFiles = {
-    /**
-     * @description List partial analysis bucket files.
-     *
-     * @tags Hub
-     * @name HubAnalysisBucketFileGetAnalysisBucketFilesGet
-     * @summary List partial analysis bucket files.
-     * @request GET:/analysis-bucket-files
-     * @secure
-     */
-    hubAnalysisBucketFileGetAnalysisBucketFilesGet: (
-      query?: {
-        /**
-         * Page
-         * Pagination as JSON, e.g. {"limit": 50, "offset": 0}
-         */
-        page?: string | null;
-        /**
-         * Sort
-         * Sort field; prefix with - for descending, + for ascending
-         */
-        sort?: string | null;
-        /**
-         * Fields
-         * Comma-separated list of fields to return
-         */
-        fields?: string | null;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<any, void | HTTPValidationError>({
-        path: `/analysis-bucket-files`,
-        method: "GET",
-        query: query,
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description List specific partial analysis bucket file.
-     *
-     * @tags Hub
-     * @name HubAnalysisBucketFileGetAnalysisBucketFilesAnalysisBucketFileIdGet
-     * @summary List partial analysis bucket files.
-     * @request GET:/analysis-bucket-files/{analysis_bucket_file_id}
-     * @secure
-     */
-    hubAnalysisBucketFileGetAnalysisBucketFilesAnalysisBucketFileIdGet: (
-      analysisBucketFileId: string,
-      params: RequestParams = {},
-    ) =>
-      this.request<any, void | HTTPValidationError>({
-        path: `/analysis-bucket-files/${analysisBucketFileId}`,
         method: "GET",
         secure: true,
         format: "json",
@@ -3397,29 +2676,6 @@ export class Api<
         method: "GET",
         query: query,
         secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Create a data store (service), independent of any project. The admin chosen display name must not be a bare UUID, the Kong service ID returned in the response is the main identifier.
-     *
-     * @tags Kong
-     * @name KongDatastoreCreateKongDatastorePost
-     * @summary Kong.Datastore.Create
-     * @request POST:/kong/datastore
-     * @secure
-     */
-    kongDatastoreCreateKongDatastorePost: (
-      data: BodyKongDatastoreCreateKongDatastorePost,
-      params: RequestParams = {},
-    ) =>
-      this.request<Service, void | HTTPValidationError>({
-        path: `/kong/datastore`,
-        method: "POST",
-        body: data,
-        secure: true,
-        type: ContentType.Json,
         format: "json",
         ...params,
       }),
@@ -3514,104 +2770,6 @@ export class Api<
       }),
 
     /**
-     * @description List a specific projects (referred to as routes by kong) using the project UUID. Set "detailed" to True to include detailed information on the linked kong service.
-     *
-     * @tags Kong
-     * @name KongProjectGetKongProjectProjectIdGet
-     * @summary Kong.Project.Get
-     * @request GET:/kong/project/{project_id}
-     * @secure
-     */
-    kongProjectGetKongProjectProjectIdGet: (
-      projectId: string,
-      query?: {
-        /**
-         * Detailed
-         * Whether to include detailed information on the connected kong service
-         * @default false
-         */
-        detailed?: boolean;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<ListRoutes, void | HTTPValidationError>({
-        path: `/kong/project/${projectId}`,
-        method: "GET",
-        query: query,
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Disconnect a project from all data stores and delete all its consumers (analyses + health).
-     *
-     * @tags Kong
-     * @name KongProjectDeleteKongProjectProjectIdDelete
-     * @summary Kong.Project.Delete
-     * @request DELETE:/kong/project/{project_id}
-     * @secure
-     */
-    kongProjectDeleteKongProjectProjectIdDelete: (
-      projectId: string,
-      params: RequestParams = {},
-    ) =>
-      this.request<UnlinkResponse, void | HTTPValidationError>({
-        path: `/kong/project/${projectId}`,
-        method: "DELETE",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Link a project to a data store by creating a route on the store's service. A data store can only be linked to one project at a time. The route's matching path is "/{service_name}/{type}" with no project identifier in it.
-     *
-     * @tags Kong
-     * @name KongProjectLinkKongProjectProjectIdDatastoreDatastoreIdPost
-     * @summary Kong.Project.Link
-     * @request POST:/kong/project/{project_id}/datastore/{datastore_id}
-     * @secure
-     */
-    kongProjectLinkKongProjectProjectIdDatastoreDatastoreIdPost: (
-      projectId: string,
-      datastoreId: string,
-      data: BodyKongProjectLinkKongProjectProjectIdDatastoreDatastoreIdPost,
-      params: RequestParams = {},
-    ) =>
-      this.request<LinkDataStoreProject, void | HTTPValidationError>({
-        path: `/kong/project/${projectId}/datastore/${datastoreId}`,
-        method: "POST",
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Unlink a single data store from a project. Consumers (analyses) are kept.
-     *
-     * @tags Kong
-     * @name KongProjectUnlinkKongProjectProjectIdDatastoreDatastoreIdDelete
-     * @summary Kong.Project.Unlink
-     * @request DELETE:/kong/project/{project_id}/datastore/{datastore_id}
-     * @secure
-     */
-    kongProjectUnlinkKongProjectProjectIdDatastoreDatastoreIdDelete: (
-      projectId: string,
-      datastoreId: string,
-      params: RequestParams = {},
-    ) =>
-      this.request<UnlinkResponse, void | HTTPValidationError>({
-        path: `/kong/project/${projectId}/datastore/${datastoreId}`,
-        method: "DELETE",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
      * @description Creates a new datastore (service) and a new project (route), then links them together with a health consumer.
      *
      * @tags Kong
@@ -3630,107 +2788,6 @@ export class Api<
         body: data,
         secure: true,
         type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description List all analyses (referred to as consumers by kong) available. Can be filtered by project UUID.
-     *
-     * @tags Kong
-     * @name KongAnalysisGetKongAnalysisGet
-     * @summary Kong.Analysis.Get
-     * @request GET:/kong/analysis
-     * @secure
-     */
-    kongAnalysisGetKongAnalysisGet: (
-      query?: {
-        /**
-         * Project Id
-         * Filter consumers by project UUID
-         */
-        project_id?: string | null;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<ListConsumers, void | HTTPValidationError>({
-        path: `/kong/analysis`,
-        method: "GET",
-        query: query,
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Create a new analysis and link it to a project.
-     *
-     * @tags Kong
-     * @name KongAnalysisCreateKongAnalysisPost
-     * @summary Kong.Analysis.Create
-     * @request POST:/kong/analysis
-     * @secure
-     */
-    kongAnalysisCreateKongAnalysisPost: (
-      data: BodyKongAnalysisCreateKongAnalysisPost,
-      params: RequestParams = {},
-    ) =>
-      this.request<LinkProjectAnalysis, void | HTTPValidationError>({
-        path: `/kong/analysis`,
-        method: "POST",
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description List all analyses (referred to as consumers by kong) available.
-     *
-     * @tags Kong
-     * @name KongAnalysisGetKongAnalysisAnalysisIdGet
-     * @summary Kong.Analysis.Get
-     * @request GET:/kong/analysis/{analysis_id}
-     * @secure
-     */
-    kongAnalysisGetKongAnalysisAnalysisIdGet: (
-      analysisId: string | null,
-      query?: {
-        /**
-         * Project Id
-         * Filter consumers by project UUID
-         */
-        project_id?: string | null;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<ListConsumers, void | HTTPValidationError>({
-        path: `/kong/analysis/${analysisId}`,
-        method: "GET",
-        query: query,
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Delete the listed analysis (consumer), resolved via its tag.
-     *
-     * @tags Kong
-     * @name KongAnalysisDeleteKongAnalysisAnalysisIdDelete
-     * @summary Kong.Analysis.Delete
-     * @request DELETE:/kong/analysis/{analysis_id}
-     * @secure
-     */
-    kongAnalysisDeleteKongAnalysisAnalysisIdDelete: (
-      analysisId: string,
-      params: RequestParams = {},
-    ) =>
-      this.request<any, void | HTTPValidationError>({
-        path: `/kong/analysis/${analysisId}`,
-        method: "DELETE",
-        secure: true,
         format: "json",
         ...params,
       }),

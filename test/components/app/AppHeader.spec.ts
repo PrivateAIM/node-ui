@@ -2,7 +2,7 @@ import { flushPromises, mount } from "@vue/test-utils";
 import { useRuntimeConfig } from "nuxt/app";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import Menubar from "primevue/menubar";
-import MenuHeader from "~/components/header/MenuHeader.vue";
+import AppHeader from "~/components/app/AppHeader.vue";
 import { type DefineComponent, defineComponent, ref } from "vue";
 import { useAuthState } from "@/test/mockapi/nuxt-auth-mock";
 
@@ -12,16 +12,16 @@ interface MenuLink {
   route?: string;
 }
 
-describe("MenuHeader.vue", () => {
+describe("AppHeader.vue", () => {
   vi.mocked(useRuntimeConfig);
 
-  let MenuHeaderTestComponent: DefineComponent<typeof defineComponent>;
+  let AppHeaderTestComponent: DefineComponent<typeof defineComponent>;
 
   // Render the component with the fake params
   beforeAll(async () => {
-    MenuHeaderTestComponent = defineComponent({
-      components: { MenuHeader },
-      template: "<Suspense><MenuHeader/></Suspense>",
+    AppHeaderTestComponent = defineComponent({
+      components: { AppHeader },
+      template: "<Suspense><AppHeader/></Suspense>",
     });
   });
 
@@ -41,7 +41,7 @@ describe("MenuHeader.vue", () => {
       data: ref(null),
     });
 
-    const wrapper = mount(MenuHeaderTestComponent, {
+    const wrapper = mount(AppHeaderTestComponent, {
       global: {
         stubs: { AvatarButton: true, DarkModeToggle: true, PreferencesDialog: true },
       },
@@ -78,7 +78,7 @@ describe("MenuHeader.vue", () => {
       data: ref(null),
     });
 
-    const wrapper = mount(MenuHeaderTestComponent, {
+    const wrapper = mount(AppHeaderTestComponent, {
       global: {
         stubs: {
           AvatarButton: true,
@@ -90,8 +90,8 @@ describe("MenuHeader.vue", () => {
     await flushPromises();
 
     // Read the route off the model rather than the rendered `href`: the custom `#item`
-    // slot renders a `router-link`, which the test router resolves to "/" for any route
-    // this suite has not registered - so a typo'd path would still render plausibly.
+    // slot renders a `NuxtLink`, which the test setup stubs without an `href` - so a
+    // typo'd path would still render plausibly.
     const model = wrapper.findComponent(Menubar).props("model") as MenuLink[];
 
     expect(model.find((item) => item.label === "Uptime")?.route).toBe(

@@ -18,11 +18,8 @@ describe("AvatarButton.vue", () => {
     });
   });
 
-  async function avatarMenuChecks(authenticated: boolean) {
-    const status = authenticated ? "authenticated" : "unauthenticated";
-    const expectedIcon = authenticated ? "pi-user" : "pi-question";
-    const logPrompt = authenticated ? "Logout" : "Login";
-    const userData = authenticated ? { user: { name: testUser } } : {};
+  async function avatarMenuChecks() {
+    const userData = { user: { name: testUser } };
 
     vi.mocked(useAuth).mockReturnValue({
       signIn: vi.fn(),
@@ -30,7 +27,7 @@ describe("AvatarButton.vue", () => {
     });
 
     vi.mocked(useAuthState).mockReturnValue({
-      status: ref(status),
+      status: ref("authenticated"),
       data: ref(userData),
     });
 
@@ -51,24 +48,18 @@ describe("AvatarButton.vue", () => {
 
     const avatarBtn = wrapper.find(".avatar-btn");
     const avatarName = wrapper.find(".username-menu-bar");
-    expect(avatarBtn.find("span").attributes()["class"]).toContain(
-      expectedIcon,
-    );
+    expect(avatarBtn.find("span").attributes()["class"]).toContain("pi-user");
 
-    if (authenticated) {
-      expect(avatarName.text()).toBeTruthy();
-      expect(avatarName.text()).toBe(testUser);
-    }
+    expect(avatarName.text()).toBeTruthy();
+    expect(avatarName.text()).toBe(testUser);
 
     await avatarBtn.trigger("click");
     await flushPromises(); // use flushPromises here too for consistency
 
     const menu = wrapper.find(".avatar-menu");
-    expect(menu.text()).toContain(logPrompt);
+    expect(menu.text()).toContain("Logout");
 
-    const accountBtn = menu
-      .findAll("a")
-      .find((e1) => e1.text() === "Account");
+    const accountBtn = menu.findAll("a").find((e1) => e1.text() === "Account");
     const accountUrl = new URL(accountBtn?.attributes()["href"] ?? "");
     expect(`${accountUrl.origin}${accountUrl.pathname}`).toBe(
       "https://auth.fakehub.com/console/account",
@@ -77,11 +68,7 @@ describe("AvatarButton.vue", () => {
     expect(accountUrl.searchParams.get("ref")).toBe(window.location.origin);
   }
 
-  it("Unauthenticated avatar menu", async () => {
-    await avatarMenuChecks(false);
-  });
-
   it("Authenticated avatar menu", async () => {
-    await avatarMenuChecks(true);
+    await avatarMenuChecks();
   });
 });

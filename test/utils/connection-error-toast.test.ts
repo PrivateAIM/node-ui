@@ -14,7 +14,7 @@ import {
   showNotAuthenticatedToast,
   showProxyErrorToast,
   showRbacPermissionError,
-} from "~/composables/connectionErrorToast";
+} from "~/utils/connection-error-toast";
 
 function makeToast(): { add: ReturnType<typeof vi.fn> } {
   return { add: vi.fn() };

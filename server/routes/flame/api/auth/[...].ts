@@ -14,7 +14,8 @@ function compileEndpoints() {
   const clientId = process.env.NUXT_IDP_CLIENT_ID ?? "node-ui";
   const clientSecret = process.env.NUXT_IDP_CLIENT_SECRET;
   const clientIssuer =
-    process.env.NUXT_PUBLIC_IDP_ISSUER ?? "http://localhost:8080/realms/flame";
+    process.env.NUXT_PUBLIC_IDP_ISSUER ??
+    "https://auth.hub.privateaim.net/realms/master";
   const internalEndpoint =
     process.env.NUXT_PUBLIC_INTERNAL_KEYCLOAK_URL ?? clientIssuer;
 
@@ -37,10 +38,11 @@ function compileEndpoints() {
 }
 
 function buildProvider() {
-  const idpProvider = process.env.NUXT_PUBLIC_IDP_PROVIDER ?? "keycloak";
+  const idpProvider = process.env.NUXT_PUBLIC_IDP_PROVIDER ?? "hub";
   const endPoints = compileEndpoints();
   const clientIssuer =
-    process.env.NUXT_PUBLIC_IDP_ISSUER ?? "http://localhost:8080/realms/flame";
+    process.env.NUXT_PUBLIC_IDP_ISSUER ??
+    "https://auth.hub.privateaim.net/realms/master";
 
   const providers: Provider[] = [];
 
@@ -203,7 +205,8 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
   const clientId = process.env.NUXT_IDP_CLIENT_ID ?? "node-ui";
   const clientSecret = process.env.NUXT_IDP_CLIENT_SECRET ?? "";
   const clientIssuer =
-    process.env.NUXT_PUBLIC_IDP_ISSUER ?? "http://localhost:8080/realms/flame";
+    process.env.NUXT_PUBLIC_IDP_ISSUER ??
+    "https://auth.hub.privateaim.net/realms/master";
 
   const proxy = createProxy();
 

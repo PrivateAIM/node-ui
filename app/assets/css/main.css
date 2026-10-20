@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@import "./elements.css";
+@import "./table.css";
+@import "./preferences.css";
+@import "./toast.css";
 
 html {
     font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
@@ -22,8 +26,4 @@ html {
     width: 100%;
     gap: 1rem;
     margin-bottom: 2rem;
-}
-
-.page-description {
-
 }

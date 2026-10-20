@@ -15,7 +15,7 @@ import {
   showProxyErrorToast,
   showRbacPermissionError,
   showWrongRobotIdToast,
-} from "~/composables/connectionErrorToast";
+} from "~/utils/connection-error-toast";
 import { useToast } from "primevue/usetoast";
 
 declare module "nuxt/app" {

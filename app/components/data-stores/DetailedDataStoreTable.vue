@@ -1,34 +1,13 @@
 <script lang="ts" setup>
 import { deleteDataStore } from "~/composables/useAPIFetch";
-import ConfirmDialog from "primevue/confirmdialog";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
-import type { Route } from "~/services/Api";
 import { FilterMatchMode } from "@primevue/core/api";
-import SearchBar from "~/components/table/SearchBar.vue";
-import { parseKongTags } from "~/utils/parse-kong-tags";
-import { parseUnixTimestamp } from "~/utils/format-data-row";
+import type { DetailedDataStoreTableRow } from "~/types/dataStore";
+import { buildDataStoreRows } from "~/utils/data-store-rows";
 import { getDataStoreTypeSeverity } from "~/utils/status-tag-severity";
-import type {
-  ModifiedDetailedService,
-  modifiedTimestamp,
-} from "~/services/modifiedApiInterfaces";
+import type { ModifiedDetailedService } from "~/services/modifiedApiInterfaces";
 import { useNuxtApp } from "nuxt/app";
-
-interface DetailedDataStoreTableRow {
-  rowKey: string;
-  datastoreId?: string | undefined;
-  projectId?: string | undefined;
-  name?: string | null | undefined;
-  type?: string | undefined;
-  project?: string | undefined;
-  path?: string | null | undefined;
-  host?: string | null | undefined;
-  port?: number | null | undefined;
-  protocol?: string | null | undefined;
-  created_at?: modifiedTimestamp | undefined;
-  updated_at?: modifiedTimestamp | undefined;
-}
 
 const props = defineProps({
   stores: Array<ModifiedDetailedService>,
@@ -45,53 +24,9 @@ const emit = defineEmits(["deleteDataStore"]);
 
 const dataStoreTypes = ["s3", "fhir"];
 
-const dataStores = computed(() => {
-  let tableRows: DetailedDataStoreTableRow[] = [];
-
-  if (props.stores && props.stores.length > 0) {
-    props.stores.forEach((store: ModifiedDetailedService) => {
-      const formattedRow = parseUnixTimestamp(store, [
-        "created_at",
-        "updated_at",
-      ]) as ModifiedDetailedService;
-      const baseRow: DetailedDataStoreTableRow = {
-        rowKey: store.id!,
-        datastoreId: store.id ?? undefined,
-        name: store.name,
-        type: parseKongTags(store.tags).type,
-        project: "N/A",
-        path: store.path,
-        host: store.host,
-        port: store.port,
-        protocol: store.protocol,
-        created_at: formattedRow.created_at,
-        updated_at: formattedRow.updated_at,
-      };
-      const routes = store.routes;
-      if (routes && routes.length > 0) {
-        routes.forEach((route: Route) => {
-          const routeTags = parseKongTags(route.tags);
-          const projectUuid = routeTags.project ?? route["projectId"];
-          tableRows.push({
-            ...baseRow,
-            rowKey: `${store.id}:${route.id}`,
-            projectId: projectUuid,
-            type: routeTags.type ?? baseRow.type,
-            project:
-              projectUuid && props.projectNameMap?.has(projectUuid)
-                ? props.projectNameMap.get(projectUuid)!
-                : "N/A",
-          });
-        });
-      } else {
-        // Data stores can now exist without any linked project
-        tableRows.push(baseRow);
-      }
-    });
-  }
-
-  return tableRows;
-});
+const dataStores = computed(() =>
+  buildDataStoreRows(props.stores, props.projectNameMap),
+);
 
 async function onConfirmDeleteDataStore(row: DetailedDataStoreTableRow) {
   const dsId = row.datastoreId ?? row.name!;

@@ -1,147 +1,68 @@
 <script lang="ts" setup>
-import { computed, ref, watch } from "vue";
-import { navigateTo, useNuxtApp } from "nuxt/app";
-import { useRoute } from "vue-router";
-import InputText from "primevue/inputtext";
-import RadioButton from "primevue/radiobutton";
-import Select from "primevue/select";
-import AutoComplete from "primevue/autocomplete";
-import InputNumber from "primevue/inputnumber";
-import InputGroupAddon from "primevue/inputgroupaddon";
-import InputGroup from "primevue/inputgroup";
-import DataStoreHelpBox from "~/components/data-stores/create/DataStoreHelpBox.vue";
+import { computed, ref } from "vue";
+import { DataStoreType } from "~/services/Api";
+import { type AvailableProject, HelpTextField } from "~/types/dataStore";
+import { useAvailableProjects } from "~/composables/useAvailableProjects";
+import { useDataStoreForm } from "~/composables/useDataStoreForm";
 import {
-  type AvailableProject,
-  HelpTextField,
-} from "~/components/data-stores/create/index";
-import { useToast } from "primevue/usetoast";
-import {
-  type BodyKongInitializeKongInitializePost,
-  DataStoreType,
-  type ProjectNode,
-} from "~/services/Api";
-import { getProjectNodes } from "~/composables/useAPIFetch";
-import {
-  generateRandomDataStoreName,
-  isValidDataStoreName,
-} from "~/utils/data-store-name";
+  ACCEPTED_PROTOCOLS,
+  searchProjectsByName,
+  sortProjectsByName,
+} from "~/utils/data-store-form";
+import { isValidDataStoreName } from "~/utils/data-store-name";
 
-const loading = ref(false);
+const props = defineProps<{ preselectedProjectId?: string }>();
+
 const helpActive = ref<HelpTextField | undefined>();
 
-const connMsg = ref("");
+const {
+  loading,
+  connMsg,
+  selectedDataStoreType,
+  selectedBucketAccessPolicy,
+  bucketAccessKey,
+  bucketSecretKey,
+  selectedProject,
+  selectedProjectOption,
+  dataStoreName,
+  host,
+  path,
+  port,
+  protocol,
+  rerollDataStoreName,
+  preselectProject,
+  autofillFields,
+  submit: onSubmitCreateDataStoreAndProject,
+} = useDataStoreForm();
+
 const connMsgColor = computed(() =>
   connMsg.value === "Invalid connection!" ? "#ff2e2e" : "#008800",
 );
 
-const toast = useToast();
+const { availableProjects } = await useAvailableProjects();
 
-// Project list
-const availableProjects = ref<AvailableProject[]>([]);
-
-const { data: projects, status: projStatus } = await getProjectNodes();
-
-if (projStatus.value === "success") {
-  const projectData = projects.value as unknown as Array<ProjectNode>;
-  if (projectData.length > 0) {
-    availableProjects.value = projectData.map((proj: ProjectNode) => ({
-      name: proj.project?.display_name ?? proj.project?.name ?? proj.project_id,
-      id: proj.project_id,
-    }));
-  }
-}
-
-// Project settings
 const dataStoreTypeOptions = computed(() =>
   Object.values(DataStoreType).map((type) => ({
     label: type.toUpperCase(),
     value: type,
   })),
 );
-const selectedDataStoreType = ref<DataStoreType>(DataStoreType.Fhir);
-
-// S3 settings
-type allowedBucketAccessPolicies = "Public" | "Private";
-const selectedBucketAccessPolicy = ref<allowedBucketAccessPolicies>("Private");
-
-const bucketAccessKey = ref<string>("");
-const bucketSecretKey = ref<string>("");
-
-const selectedProject = ref<AvailableProject | string | null | undefined>();
-const selectedProjectOption = computed<AvailableProject | undefined>(() =>
-  selectedProject.value && typeof selectedProject.value === "object"
-    ? selectedProject.value
-    : undefined,
-);
 
 const sortedProjects = computed(() =>
-  [...availableProjects.value].sort((a, b) => {
-    if (!a.name) return 1;
-    if (!b.name) return -1;
-    return a.name.localeCompare(b.name);
-  }),
+  sortProjectsByName(availableProjects.value),
 );
 
 const projectSuggestions = ref<AvailableProject[]>([]);
 
 // Show all projs if empty
 function searchProjects(event: { query: string }) {
-  const query = event.query.trim().toLowerCase();
-  projectSuggestions.value = query
-    ? sortedProjects.value.filter((proj) =>
-        (proj.name ?? proj.id).toLowerCase().includes(query),
-      )
-    : [...sortedProjects.value];
-}
-
-const dataStoreSettingsMap: Map<string, string> = new Map([
-  ["name", "Project"],
-  ["host", "Server hostname"],
-  ["path", "Data path or bucket name"],
-  ["port", "Port"],
-  ["protocol", "Connection protocol"],
-  ["minio_access_key", "S3 access key"],
-  ["minio_secret_key", "S3 secret key"],
-]);
-
-// Datastore settings
-const dataStoreName = ref("");
-const host = ref("");
-const path = ref("");
-const port = ref(80);
-const protocol = ref("http");
-
-const acceptedProtocols = [
-  "grpc",
-  "grpcs",
-  "http",
-  "https",
-  "tcp",
-  "tls",
-  "tls_passthrough",
-  "ws",
-  "wss",
-];
-
-function rerollDataStoreName() {
-  const project = selectedProjectOption.value;
-  if (project) {
-    dataStoreName.value = generateRandomDataStoreName(
-      project.name ?? project.id,
-    );
-  }
-}
-
-watch(selectedProjectOption, rerollDataStoreName);
-
-// Preselect the project when navigated here with a projectId query parameter
-const route = useRoute();
-const preselectedProjectId = route.query.projectId;
-if (typeof preselectedProjectId === "string") {
-  selectedProject.value = availableProjects.value.find(
-    (proj) => proj.id === preselectedProjectId,
+  projectSuggestions.value = searchProjectsByName(
+    sortedProjects.value,
+    event.query,
   );
 }
+
+preselectProject(availableProjects, props.preselectedProjectId);
 
 function activateHelp(helpField: HelpTextField) {
   helpActive.value = helpActive.value === helpField ? undefined : helpField;
@@ -150,479 +71,316 @@ function activateHelp(helpField: HelpTextField) {
 function deactivateHelp() {
   helpActive.value = undefined;
 }
-
-function validatePath(path: string) {
-  return path.startsWith("/") ? path : `/${path}`;
-}
-
-function autofillFields(
-  afDatastoreType: DataStoreType,
-  afHostname: string,
-  afPort: number,
-) {
-  selectedDataStoreType.value = afDatastoreType;
-  host.value = afHostname;
-  port.value = afPort;
-}
-
-function verifyValuesFilled(settings: object): boolean {
-  for (const key in settings) {
-    if (!settings[key]) {
-      const missingValue = dataStoreSettingsMap.has(key)
-        ? dataStoreSettingsMap.get(key)
-        : key;
-      toast.add({
-        severity: "error",
-        summary: "Value missing",
-        detail: `${missingValue} is not defined!`,
-        life: 5000,
-      });
-      return false;
-    }
-  }
-  return true;
-}
-
-async function onSubmitCreateDataStoreAndProject() {
-  if (!isValidDataStoreName(dataStoreName.value)) {
-    toast.add({
-      severity: "error",
-      summary: "Invalid data store name",
-      detail:
-        "Only letters, digits, '.', '_', '~', and '-' are allowed, and the name cannot be a bare UUID",
-      life: 5000,
-    });
-    return;
-  }
-
-  const validatedPath = validatePath(path.value);
-  const datastoreSettings = {
-    name: dataStoreName.value,
-    host: host.value,
-    path: validatedPath,
-    port: port.value,
-    protocol: protocol.value,
-  };
-
-  const configSettings: BodyKongInitializeKongInitializePost = {
-    datastore: datastoreSettings,
-    project_id: selectedProjectOption.value!.id,
-    ds_type: selectedDataStoreType.value,
-  };
-
-  const s3Settings = {
-    s3_access_key: bucketAccessKey.value || "",
-    s3_secret_key: bucketSecretKey.value || "",
-  };
-
-  let settingsValidated = verifyValuesFilled(datastoreSettings);
-
-  if (
-    selectedDataStoreType.value === DataStoreType.S3 &&
-    selectedBucketAccessPolicy.value === "Private"
-  ) {
-    configSettings.s3_config = s3Settings;
-    settingsValidated = settingsValidated && verifyValuesFilled(s3Settings);
-  }
-
-  if (settingsValidated) {
-    loading.value = true;
-    const creationResp = await useNuxtApp()
-      .$hubApi("/kong/initialize", {
-        method: "POST",
-        body: configSettings,
-      })
-      .catch(() => {
-        toast.add({
-          severity: "error",
-          summary: "Registration failure",
-          detail: "An error occurred while trying to register the data store",
-          life: 5000,
-        });
-        connMsg.value = "Invalid connection!";
-      });
-
-    loading.value = false;
-
-    if (creationResp) {
-      toast.add({
-        severity: "success",
-        summary: "Registration success",
-        detail:
-          "The data store and project were successfully registered, returning to the analyses page...",
-        life: 5000,
-      });
-      connMsg.value = "Connection validated!";
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-      navigateTo("/analyses");
-    }
-  }
-}
 </script>
 
 <template>
-  <div>
-    <Card style="margin-top: 10px">
-      <template #title>Create a Data Store for a Project</template>
-      <template #content>
-        <div class="intro-text">
-          <p>
-            In order for users to be able to access the data in your
-            institution, a data store needs to be created for each approved
-            project. A data store is essentially a fileshare, or a specified set
-            of permissions granted to the users of a project allowing access to
-            a folder on your system.
+  <div class="ds-autofill-btns">
+    <Button
+      :loading="loading"
+      :size="'small'"
+      class="ds-autofill-btn"
+      label="Autofill FHIR"
+      outlined
+      rounded
+      severity="warn"
+      @click="autofillFields(DataStoreType.Fhir, 'node-datastore-blaze', 80)"
+    />
+    <Button
+      :loading="loading"
+      :size="'small'"
+      class="ds-autofill-btn"
+      label="Autofill S3"
+      outlined
+      rounded
+      severity="info"
+      @click="
+        autofillFields(
+          DataStoreType.S3,
+          'node-datastore-seaweedfs-all-in-one',
+          8333,
+        )
+      "
+    />
+  </div>
+  <div class="data-store-panel">
+    <div class="data-store-input-fields">
+      <InputGroup class="data-store-project-input" style="margin-bottom: 20px">
+        <InputGroupAddon class="data-store-field-name">
+          <i class="pi pi-pen-to-square"></i>
+          <p class="data-store-field-name-box">Project</p>
+        </InputGroupAddon>
+        <AutoComplete
+          v-model="selectedProject"
+          :suggestions="projectSuggestions"
+          class="project-picker"
+          dropdown
+          fluid
+          forceSelection
+          optionLabel="name"
+          placeholder="Select or search for a project"
+          @complete="searchProjects"
+        />
+      </InputGroup>
+      <InputGroup>
+        <InputGroupAddon class="data-store-field-name">
+          <i class="pi pi-barcode"></i>
+          <p
+            v-tooltip.top="'Display name of the data store'"
+            class="data-store-field-name-box"
+          >
+            Data Store
           </p>
-          <p>
-            To create a data store, fill out the fields below, starting with the
-            project which will be granted access to the data followed by the
-            technical information defining the data's location.
-          </p>
-          <p>
-            Helpful tooltips can be shown when hovering over each field, an
-            additional detailed information about what is required for each
-            field can be displayed by clicking on the field name in the left
-            column.
-          </p>
-        </div>
-        <div class="ds-autofill-btns">
-          <Button
-            :loading="loading"
-            :size="'small'"
-            class="ds-autofill-btn"
-            label="Autofill FHIR"
-            outlined
-            rounded
-            severity="warn"
-            @click="
-              autofillFields(DataStoreType.Fhir, 'node-datastore-blaze', 80)
-            "
-          />
-          <Button
-            :loading="loading"
-            :size="'small'"
-            class="ds-autofill-btn"
-            label="Autofill S3"
-            outlined
-            rounded
-            severity="info"
-            @click="
-              autofillFields(
-                DataStoreType.S3,
-                'node-datastore-seaweedfs-all-in-one',
-                8333,
-              )
-            "
-          />
-        </div>
-        <div class="data-store-panel">
-          <div class="data-store-input-fields">
-            <InputGroup
-              class="data-store-project-input"
-              style="margin-bottom: 20px"
+        </InputGroupAddon>
+        <InputText
+          v-model="dataStoreName"
+          :invalid="
+            dataStoreName !== '' && !isValidDataStoreName(dataStoreName)
+          "
+          placeholder="Name of the data store"
+        />
+        <Button
+          v-tooltip.top="'Suggest a new random name'"
+          :disabled="!selectedProjectOption"
+          class="reroll-name-btn"
+          icon="pi pi-refresh"
+          severity="secondary"
+          @click="rerollDataStoreName"
+        />
+      </InputGroup>
+      <InputGroup class="data-store-type-input">
+        <InputGroupAddon class="data-store-field-name">
+          <i class="pi pi-warehouse"></i>
+          <div class="data-store-field-name-box">
+            <button
+              class="help-button"
+              @click="activateHelp(HelpTextField.Type)"
             >
-              <InputGroupAddon class="data-store-field-name">
-                <i class="pi pi-pen-to-square"></i>
-                <p class="data-store-field-name-box">Project</p>
-              </InputGroupAddon>
-              <AutoComplete
-                v-model="selectedProject"
-                :suggestions="projectSuggestions"
-                class="project-picker"
-                dropdown
-                fluid
-                forceSelection
-                optionLabel="name"
-                placeholder="Select or search for a project"
-                @complete="searchProjects"
-              />
-            </InputGroup>
-            <InputGroup>
-              <InputGroupAddon class="data-store-field-name">
-                <i class="pi pi-barcode"></i>
-                <p
-                  v-tooltip.top="'Display name of the data store'"
-                  class="data-store-field-name-box"
-                >
-                  Data Store
+              <p
+                v-tooltip.top="'Type of server the data is stored on'"
+                class="help-text"
+              >
+                Server Type
+              </p>
+            </button>
+          </div>
+        </InputGroupAddon>
+        <Select
+          v-model="selectedDataStoreType"
+          :options="dataStoreTypeOptions"
+          class="data-store-type-picker"
+          optionLabel="label"
+          optionValue="value"
+        />
+      </InputGroup>
+      <div
+        v-if="selectedDataStoreType == DataStoreType.S3"
+        class="s3-name-fields"
+      >
+        <InputGroup class="data-store-path-input-s3">
+          <InputGroupAddon class="data-store-field-name">
+            <i class="pi pi-inbox"></i>
+            <div class="data-store-field-name-box">
+              <button
+                class="help-button"
+                @click="activateHelp(HelpTextField.S3)"
+              >
+                <p v-tooltip.top="'Name of the S3 bucket'" class="help-text">
+                  Bucket Name
                 </p>
-              </InputGroupAddon>
-              <InputText
-                v-model="dataStoreName"
-                :invalid="
-                  dataStoreName !== '' && !isValidDataStoreName(dataStoreName)
-                "
-                placeholder="Name of the data store"
-              />
-              <Button
-                v-tooltip.top="'Suggest a new random name'"
-                :disabled="!selectedProjectOption"
-                class="reroll-name-btn"
-                icon="pi pi-refresh"
-                severity="secondary"
-                @click="rerollDataStoreName"
-              />
-            </InputGroup>
-            <InputGroup class="data-store-type-input">
-              <InputGroupAddon class="data-store-field-name">
-                <i class="pi pi-warehouse"></i>
-                <div class="data-store-field-name-box">
-                  <button
-                    class="help-button"
-                    @click="activateHelp(HelpTextField.Type)"
-                  >
-                    <p
-                      v-tooltip.top="'Type of server the data is stored on'"
-                      class="help-text"
-                    >
-                      Server Type
-                    </p>
-                  </button>
-                </div>
-              </InputGroupAddon>
-              <Select
-                v-model="selectedDataStoreType"
-                :options="dataStoreTypeOptions"
-                class="data-store-type-picker"
-                optionLabel="label"
-                optionValue="value"
-              />
-            </InputGroup>
-            <div
-              v-if="selectedDataStoreType == DataStoreType.S3"
-              class="s3-name-fields"
-            >
-              <InputGroup class="data-store-path-input-s3">
-                <InputGroupAddon class="data-store-field-name">
-                  <i class="pi pi-inbox"></i>
-                  <div class="data-store-field-name-box">
-                    <button
-                      class="help-button"
-                      @click="activateHelp(HelpTextField.S3)"
-                    >
-                      <p
-                        v-tooltip.top="'Name of the S3 bucket'"
-                        class="help-text"
-                      >
-                        Bucket Name
-                      </p>
-                    </button>
-                  </div>
-                </InputGroupAddon>
-                <InputText
-                  v-model="path"
-                  :invalid="path === ''"
-                  placeholder="Name of the S3 bucket"
-                />
-              </InputGroup>
-              <InputGroup class="data-store-path-input-s3-bucket">
-                <InputGroupAddon class="data-store-field-name">
-                  <i class="pi pi-lock"></i>
-                  <div class="data-store-field-name-box">
-                    <p
-                      v-tooltip.top="
-                        'Whether the bucket is set to Public or Private'
-                      "
-                    >
-                      Bucket Access
-                    </p>
-                  </div>
-                </InputGroupAddon>
-                <InputGroupAddon class="data-store-field-value">
-                  <div class="flex flex-wrap gap-4 bucket-access-policy-radio">
-                    <div class="flex items-center gap-2">
-                      <RadioButton
-                        v-model="selectedBucketAccessPolicy"
-                        class="bucket-access-policy-radio-btn-private"
-                        inputId="private"
-                        name="accessPolicy"
-                        size="small"
-                        value="Private"
-                      />
-                      <label for="private">Private</label>
-                    </div>
-                    <div class="flex items-center gap-2">
-                      <RadioButton
-                        v-model="selectedBucketAccessPolicy"
-                        class="bucket-access-policy-radio-btn-public"
-                        inputId="public"
-                        name="accessPolicy"
-                        size="small"
-                        value="Public"
-                      />
-                      <label for="public">Public</label>
-                    </div>
-                  </div>
-                </InputGroupAddon>
-              </InputGroup>
-              <InputGroup
-                v-if="selectedBucketAccessPolicy == 'Private'"
-                class="data-store-path-input-s3-private"
-              >
-                <InputGroupAddon class="data-store-field-name">
-                  <i class="pi pi-verified"></i>
-                  <div class="data-store-field-name-box">
-                    <p v-tooltip.top="'Access key for the S3 bucket'">
-                      Access Key
-                    </p>
-                  </div>
-                </InputGroupAddon>
-                <InputText
-                  v-model="bucketAccessKey"
-                  :invalid="bucketAccessKey === ''"
-                  placeholder="Access key"
-                />
-              </InputGroup>
-              <InputGroup
-                v-if="selectedBucketAccessPolicy == 'Private'"
-                class="data-store-path-input-s3-private"
-              >
-                <InputGroupAddon class="data-store-field-name">
-                  <i class="pi pi-key"></i>
-                  <div class="data-store-field-name-box">
-                    <p v-tooltip.top="'Secret key for the S3 instance'">
-                      Secret Key
-                    </p>
-                  </div>
-                </InputGroupAddon>
-                <InputText
-                  v-model="bucketSecretKey"
-                  :invalid="bucketSecretKey === ''"
-                  placeholder="Secret key"
-                />
-              </InputGroup>
+              </button>
             </div>
-            <InputGroup v-else class="data-store-path-input-fhir">
-              <InputGroupAddon class="data-store-field-name">
-                <i class="pi pi-folder"></i>
-                <div class="data-store-field-name-box">
-                  <button
-                    class="help-button"
-                    @click="activateHelp(HelpTextField.FHIR)"
-                  >
-                    <p
-                      v-tooltip.top="'Absolute directory path'"
-                      class="help-text"
-                    >
-                      Data Path
-                    </p>
-                  </button>
-                </div>
-              </InputGroupAddon>
-              <InputText
-                v-model="path"
-                :invalid="path === '' || !path.startsWith('/')"
-                placeholder="Data path (must start with '/')"
-              />
-            </InputGroup>
-            <InputGroup class="data-store-server-input">
-              <InputGroupAddon class="data-store-field-name">
-                <i class="pi pi-server"></i>
-                <div class="data-store-field-name-box">
-                  <button
-                    class="help-button"
-                    @click="activateHelp(HelpTextField.Server)"
-                  >
-                    <p
-                      v-tooltip.top="
-                        'Name of the server on which the data resides'
-                      "
-                      class="help-text"
-                    >
-                      Hostname
-                    </p>
-                  </button>
-                </div>
-              </InputGroupAddon>
-              <InputText
-                v-model="host"
-                :invalid="host === ''"
-                placeholder="Server or hostname"
-              />
-            </InputGroup>
-            <InputGroup class="data-store-port-input">
-              <InputGroupAddon class="data-store-field-name">
-                <i class="pi pi-bullseye"></i>
-                <div class="data-store-field-name-box">
-                  <button
-                    class="help-button"
-                    @click="activateHelp(HelpTextField.Port)"
-                  >
-                    <p
-                      v-tooltip.top="'Port number for accessing the data'"
-                      class="help-text"
-                    >
-                      Port
-                    </p>
-                  </button>
-                </div>
-              </InputGroupAddon>
-              <InputNumber
-                v-model="port"
-                :invalid="port < 0 || port > 65535"
-                :useGrouping="false"
-                placeholder="Port e.g. 443"
-              />
-            </InputGroup>
-            <InputGroup class="data-store-protocol-input">
-              <InputGroupAddon class="data-store-field-name">
-                <i class="pi pi-cog"></i>
-                <div class="data-store-field-name-box">
-                  <button
-                    class="help-button"
-                    @click="activateHelp(HelpTextField.Protocol)"
-                  >
-                    <p
-                      v-tooltip.top="
-                        'Access protocol for the data storage server'
-                      "
-                      class="help-text"
-                    >
-                      Protocol
-                    </p>
-                  </button>
-                </div>
-              </InputGroupAddon>
-              <Select
-                v-model="protocol"
-                :options="acceptedProtocols"
-                class="w-full md:w-56 communication-protocol-picker"
-              />
-            </InputGroup>
-            <div class="data-store-submission-container">
-              <Button
-                :loading="loading"
-                class="create-data-store-btn"
-                icon="pi pi-check"
-                iconPos="right"
-                label="Submit"
-                severity="info"
-                @click="onSubmitCreateDataStoreAndProject"
-              />
-              <div v-if="connMsg" class="data-store-connection-test-text">
-                <p>
-                  {{ connMsg }}
-                </p>
+          </InputGroupAddon>
+          <InputText
+            v-model="path"
+            :invalid="path === ''"
+            placeholder="Name of the S3 bucket"
+          />
+        </InputGroup>
+        <InputGroup class="data-store-path-input-s3-bucket">
+          <InputGroupAddon class="data-store-field-name">
+            <i class="pi pi-lock"></i>
+            <div class="data-store-field-name-box">
+              <p
+                v-tooltip.top="'Whether the bucket is set to Public or Private'"
+              >
+                Bucket Access
+              </p>
+            </div>
+          </InputGroupAddon>
+          <InputGroupAddon class="data-store-field-value">
+            <div class="flex flex-wrap gap-4 bucket-access-policy-radio">
+              <div class="flex items-center gap-2">
+                <RadioButton
+                  v-model="selectedBucketAccessPolicy"
+                  class="bucket-access-policy-radio-btn-private"
+                  inputId="private"
+                  name="accessPolicy"
+                  size="small"
+                  value="Private"
+                />
+                <label for="private">Private</label>
+              </div>
+              <div class="flex items-center gap-2">
+                <RadioButton
+                  v-model="selectedBucketAccessPolicy"
+                  class="bucket-access-policy-radio-btn-public"
+                  inputId="public"
+                  name="accessPolicy"
+                  size="small"
+                  value="Public"
+                />
+                <label for="public">Public</label>
               </div>
             </div>
+          </InputGroupAddon>
+        </InputGroup>
+        <InputGroup
+          v-if="selectedBucketAccessPolicy == 'Private'"
+          class="data-store-path-input-s3-private"
+        >
+          <InputGroupAddon class="data-store-field-name">
+            <i class="pi pi-verified"></i>
+            <div class="data-store-field-name-box">
+              <p v-tooltip.top="'Access key for the S3 bucket'">Access Key</p>
+            </div>
+          </InputGroupAddon>
+          <InputText
+            v-model="bucketAccessKey"
+            :invalid="bucketAccessKey === ''"
+            placeholder="Access key"
+          />
+        </InputGroup>
+        <InputGroup
+          v-if="selectedBucketAccessPolicy == 'Private'"
+          class="data-store-path-input-s3-private"
+        >
+          <InputGroupAddon class="data-store-field-name">
+            <i class="pi pi-key"></i>
+            <div class="data-store-field-name-box">
+              <p v-tooltip.top="'Secret key for the S3 instance'">Secret Key</p>
+            </div>
+          </InputGroupAddon>
+          <InputText
+            v-model="bucketSecretKey"
+            :invalid="bucketSecretKey === ''"
+            placeholder="Secret key"
+          />
+        </InputGroup>
+      </div>
+      <InputGroup v-else class="data-store-path-input-fhir">
+        <InputGroupAddon class="data-store-field-name">
+          <i class="pi pi-folder"></i>
+          <div class="data-store-field-name-box">
+            <button
+              class="help-button"
+              @click="activateHelp(HelpTextField.FHIR)"
+            >
+              <p v-tooltip.top="'Absolute directory path'" class="help-text">
+                Data Path
+              </p>
+            </button>
           </div>
-          <div v-if="helpActive" class="data-store-help-box">
-            <DataStoreHelpBox
-              :helpField="helpActive"
-              @closeHelp="deactivateHelp"
-            />
+        </InputGroupAddon>
+        <InputText
+          v-model="path"
+          :invalid="path === '' || !path.startsWith('/')"
+          placeholder="Data path (must start with '/')"
+        />
+      </InputGroup>
+      <InputGroup class="data-store-server-input">
+        <InputGroupAddon class="data-store-field-name">
+          <i class="pi pi-server"></i>
+          <div class="data-store-field-name-box">
+            <button
+              class="help-button"
+              @click="activateHelp(HelpTextField.Server)"
+            >
+              <p
+                v-tooltip.top="'Name of the server on which the data resides'"
+                class="help-text"
+              >
+                Hostname
+              </p>
+            </button>
           </div>
+        </InputGroupAddon>
+        <InputText
+          v-model="host"
+          :invalid="host === ''"
+          placeholder="Server or hostname"
+        />
+      </InputGroup>
+      <InputGroup class="data-store-port-input">
+        <InputGroupAddon class="data-store-field-name">
+          <i class="pi pi-bullseye"></i>
+          <div class="data-store-field-name-box">
+            <button
+              class="help-button"
+              @click="activateHelp(HelpTextField.Port)"
+            >
+              <p
+                v-tooltip.top="'Port number for accessing the data'"
+                class="help-text"
+              >
+                Port
+              </p>
+            </button>
+          </div>
+        </InputGroupAddon>
+        <InputNumber
+          v-model="port"
+          :invalid="port < 0 || port > 65535"
+          :useGrouping="false"
+          placeholder="Port e.g. 443"
+        />
+      </InputGroup>
+      <InputGroup class="data-store-protocol-input">
+        <InputGroupAddon class="data-store-field-name">
+          <i class="pi pi-cog"></i>
+          <div class="data-store-field-name-box">
+            <button
+              class="help-button"
+              @click="activateHelp(HelpTextField.Protocol)"
+            >
+              <p
+                v-tooltip.top="'Access protocol for the data storage server'"
+                class="help-text"
+              >
+                Protocol
+              </p>
+            </button>
+          </div>
+        </InputGroupAddon>
+        <Select
+          v-model="protocol"
+          :options="ACCEPTED_PROTOCOLS"
+          class="w-full md:w-56 communication-protocol-picker"
+        />
+      </InputGroup>
+      <div class="data-store-submission-container">
+        <Button
+          :loading="loading"
+          class="create-data-store-btn"
+          icon="pi pi-check"
+          iconPos="right"
+          label="Submit"
+          severity="info"
+          @click="onSubmitCreateDataStoreAndProject"
+        />
+        <div v-if="connMsg" class="data-store-connection-test-text">
+          <p>
+            {{ connMsg }}
+          </p>
         </div>
-      </template>
-    </Card>
+      </div>
+    </div>
+    <div v-if="helpActive" class="data-store-help-box">
+      <DataStoreHelpBox :helpField="helpActive" @closeHelp="deactivateHelp" />
+    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.intro-text {
-  padding-bottom: 3em;
-}
-
 .data-store-help-box {
   width: 60%;
 }

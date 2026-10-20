@@ -13,6 +13,11 @@ const idpNameCapitalized: string =
 const attemptSignIn = async () => {
   if (await checkIdpReachable(toast)) await signIn(idpProvider);
 };
+
+const signInLabel =
+  idpProvider === "hub"
+    ? `Login via the ${idpNameCapitalized}`
+    : `Login with ${idpNameCapitalized}`;
 </script>
 
 <template>
@@ -32,26 +37,13 @@ const attemptSignIn = async () => {
         outlined
         severity="success"
         @click="attemptSignIn"
-        >Login with {{ idpNameCapitalized }}
+        >{{ signInLabel }}
       </Button>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.login-welcome {
-  display: flex;
-  flex-direction: row;
-  justify-content: safe center;
-  align-items: center;
-  margin-top: 2em;
-  font-size: 1.1em;
-}
-
-.login-welcome-msg {
-  margin-right: 2em;
-}
-
 .flame-light .idp-auth-success {
   border-color: var(--p-green-700);
   color: var(--p-green-600);

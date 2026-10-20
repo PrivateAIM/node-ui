@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 import { nextTick, type Ref } from "vue";
 import UptimeTrack from "~/components/uptime/UptimeTrack.vue";
-import { buildSlots } from "~/composables/useServiceHealth";
+import { buildSlots } from "~/utils/uptime-slots";
 import {
   trackGapColor,
   uptimePalette,

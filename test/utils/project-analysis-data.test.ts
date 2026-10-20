@@ -4,12 +4,12 @@ import {
   fetchDataStoreProjectIds,
   fetchExecutionStatuses,
   mergeExecutionStatuses,
-} from "~/composables/useProjectAnalysisSummary";
+} from "~/utils/project-analysis-data";
 import { PodStatus, type AnalysisNode } from "~/services/Api";
 
 function page(size: number, idPrefix = "a"): AnalysisNode[] {
   return Array.from({ length: size }, (_, i) => ({
-    analysis_id: `${idPrefix}-${i}`,
+    analysisId: `${idPrefix}-${i}`,
   })) as unknown as AnalysisNode[];
 }
 
@@ -106,14 +106,14 @@ describe("fetchExecutionStatuses", () => {
 
 describe("mergeExecutionStatuses", () => {
   const node = (analysisId: string, executionStatus: PodStatus | null) =>
-    ({ analysis_id: analysisId, execution_status: executionStatus }) as unknown as AnalysisNode;
+    ({ analysisId: analysisId, executionStatus: executionStatus }) as unknown as AnalysisNode;
 
   it("prefers the pod orchestrator's status", () => {
     const result = mergeExecutionStatuses(
       [node("a-1", PodStatus.Executed)],
       { "a-1": { status: PodStatus.Executing, progress: 40 } } as never,
     );
-    expect(result[0].execution_status).toBe(PodStatus.Executing);
+    expect(result[0].executionStatus).toBe(PodStatus.Executing);
   });
 
   it("keeps failed, executed and stopped Hub statuses when the pod orchestrator has no entry", () => {
@@ -125,26 +125,26 @@ describe("mergeExecutionStatuses", () => {
       ],
       {} as never,
     );
-    expect(result[0].execution_status).toBe(PodStatus.Failed);
-    expect(result[1].execution_status).toBe(PodStatus.Executed);
-    expect(result[2].execution_status).toBe(PodStatus.Stopped);
+    expect(result[0].executionStatus).toBe(PodStatus.Failed);
+    expect(result[1].executionStatus).toBe(PodStatus.Executed);
+    expect(result[2].executionStatus).toBe(PodStatus.Stopped);
   });
 
   it("discards other Hub statuses when the pod orchestrator has no entry", () => {
     const result = mergeExecutionStatuses([node("a-1", PodStatus.Started)], {} as never);
-    expect(result[0].execution_status).toBeNull();
+    expect(result[0].executionStatus).toBeNull();
   });
 
   it("preserves non-terminal Hub statuses when the pod orchestrator is unreachable", () => {
     // Unlike a reachable orchestrator with no entry, "unreachable" tells us
     // nothing - discarding here would hide genuinely running analyses.
     const result = mergeExecutionStatuses([node("a-1", PodStatus.Executing)], undefined);
-    expect(result[0].execution_status).toBe(PodStatus.Executing);
+    expect(result[0].executionStatus).toBe(PodStatus.Executing);
   });
 
   it("does not mutate the input nodes", () => {
     const input = [node("a-1", PodStatus.Started)];
     mergeExecutionStatuses(input, {} as never);
-    expect(input[0].execution_status).toBe(PodStatus.Started);
+    expect(input[0].executionStatus).toBe(PodStatus.Started);
   });
 });

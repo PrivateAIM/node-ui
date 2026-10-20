@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import LandingButtons from "~/components/landing/LandingButtons.vue";
-
 definePageMeta({
   auth: false,
 });
@@ -79,10 +77,6 @@ definePageMeta({
 
 /* Preserve card margin used by other pages */
 .content-card {
-  margin-top: 1rem;
-}
-
-.tab-card {
   margin-top: 1rem;
 }
 

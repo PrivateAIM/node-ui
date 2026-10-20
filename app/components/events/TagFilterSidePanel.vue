@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { EventLogLevelTag, type EventTag } from "~/types/eventTag";
 import { ServiceTag } from "~/services/Api";
-import Panel from "primevue/panel";
-import PanelMenu from "primevue/panelmenu";
-import Checkbox from "primevue/checkbox";
 
 const modelValue = defineModel<EventTag[]>({ default: () => [] });
 const emit = defineEmits(["clearTagFilter"]);
@@ -48,13 +45,13 @@ function clearFilters() {
             class="event-viewer-filter-panel-header-clear-btn event-viewer-filter-panel-header-component"
           >
             <Button
+              v-tooltip.top="'Clear the tag filters'"
               icon="pi pi-filter-slash"
-              @click="clearFilters()"
               size="small"
               variant="text"
               severity="contrast"
-              v-tooltip.top="'Clear the tag filters'"
               rounded
+              @click="clearFilters()"
             />
           </div>
         </div>

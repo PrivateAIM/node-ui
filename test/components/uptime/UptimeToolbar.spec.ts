@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
 import UptimeToolbar from "~/components/uptime/UptimeToolbar.vue";
-import { MAX_SPAN_MS, SPAN_PRESETS } from "~/composables/useServiceHealth";
+import { MAX_SPAN_MS, SPAN_PRESETS } from "~/utils/uptime-slots";
 
 const FAKE_NOW = new Date("2026-07-30T12:00:00.000Z");
 const HOUR_MS = 60 * 60 * 1000;

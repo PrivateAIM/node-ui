@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
 import BucketDrilldownDialog from "~/components/uptime/BucketDrilldownDialog.vue";
-import { buildSlots, type UptimeSlot } from "~/composables/useServiceHealth";
+import { buildSlots, type UptimeSlot } from "~/utils/uptime-slots";
 import { formatClockTime, SLOW_LATENCY_MS } from "~/utils/uptime-state";
 import { ServiceCheckStatus, type ServiceHealthPoint } from "~/services/Api";
 

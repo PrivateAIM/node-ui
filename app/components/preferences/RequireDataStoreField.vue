@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import ToggleSwitch from "primevue/toggleswitch";
-
 const model = defineModel<boolean>({ required: true });
 
 withDefaults(defineProps<{ disabled?: boolean }>(), { disabled: false });

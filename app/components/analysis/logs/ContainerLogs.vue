@@ -1,12 +1,8 @@
 <script lang="ts" setup>
-import { useRoute } from "vue-router";
-import { Card, Fieldset } from "primevue";
 import { useIntervalFn } from "@vueuse/core";
 import { useLogChunks } from "~/composables/useLogChunks";
 import type { FlatLogLine } from "~/types/logs";
-import { flattenLogs } from "~/types/logs";
-import RefreshSwitch from "~/components/analysis/logs/RefreshSwitch.vue";
-import AnalysisLogCardContent from "~/components/analysis/logs/AnalysisLogCardContent.vue";
+import { flattenLogs } from "~/utils/flatten-logs";
 import { useNuxtApp } from "nuxt/app";
 import type {
   AnalysisLogHistoryResponse,
@@ -21,9 +17,11 @@ type FlatRunLogs = {
   analysisLines: FlatLogLine[];
 };
 
-const route = useRoute();
-const analysisId = route.params.id as string;
-const analysisNodeId = route.query.nodeId as string | undefined;
+const props = defineProps<{
+  analysisId: string;
+  analysisNodeId?: string;
+}>();
+const { analysisId, analysisNodeId } = props;
 const prevLogs = ref<FlatRunLogs[]>([]);
 const analysis = ref<AnalysisNode | null>(null);
 
@@ -93,7 +91,7 @@ const { pause, resume, isActive } = useIntervalFn(
     refreshLogs();
   },
   5000,
-  { immediate: analysis.value?.execution_status === ProcessStatus.Executing },
+  { immediate: analysis.value?.executionStatus === ProcessStatus.Executing },
 );
 
 async function refreshLogs() {
@@ -159,9 +157,9 @@ function onRefreshToggle() {
             class="log-debug-toggle"
           />
           <RefreshSwitch
-            :disabled="analysis?.execution_status !== ProcessStatus.Executing"
+            :disabled="analysis?.executionStatus !== ProcessStatus.Executing"
             :startEnabled="
-              analysis?.execution_status === ProcessStatus.Executing
+              analysis?.executionStatus === ProcessStatus.Executing
             "
             @change="onRefreshToggle"
           />

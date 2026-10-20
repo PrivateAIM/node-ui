@@ -1,5 +1,5 @@
 import type { ToastServiceMethods } from "primevue/toastservice";
-import { showIdpUnreachableToast } from "~/composables/connectionErrorToast";
+import { showIdpUnreachableToast } from "~/utils/connection-error-toast";
 
 interface IdpHealth {
   reachable: boolean;

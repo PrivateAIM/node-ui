@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import Panel from "primevue/panel";
-
 defineProps<{ header: string }>();
 const emit = defineEmits(["closeHelp"]);
 </script>

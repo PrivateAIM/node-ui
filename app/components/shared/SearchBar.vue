@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import IconField from "primevue/iconfield";
-import InputIcon from "primevue/inputicon";
-
 const props = defineProps<{
   searchTerm?: string;
 }>();
@@ -38,11 +35,11 @@ const clearFilters = () => {
     </div>
     <div class="search-clear-btn">
       <Button
+        v-tooltip.top="'Clear all filters'"
         type="button"
         class="filter-clear-btn"
         icon="pi pi-filter-slash"
         label="Clear"
-        v-tooltip.top="'Clear all filters'"
         outlined
         @click="clearFilters()"
       />

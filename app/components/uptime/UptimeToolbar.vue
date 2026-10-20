@@ -1,12 +1,6 @@
 <script lang="ts" setup>
 import { onUnmounted } from "vue";
-import Button from "primevue/button";
-import DatePicker from "primevue/datepicker";
-import FloatLabel from "primevue/floatlabel";
-import SelectButton from "primevue/selectbutton";
-import ToggleButton from "primevue/togglebutton";
-import Toolbar from "primevue/toolbar";
-import { MAX_SPAN_MS, SPAN_PRESETS } from "~/composables/useServiceHealth";
+import { MAX_SPAN_MS, SPAN_PRESETS } from "~/utils/uptime-slots";
 
 const props = defineProps<{
   loading: boolean;
@@ -151,8 +145,8 @@ defineExpose({ autoRefresh, customStart, customEnd, isInvalidRange });
         <div v-if="isCustom" class="uptime-toolbar-custom">
           <FloatLabel variant="on">
             <DatePicker
-              input-id="uptime_start"
               v-model="customStart"
+              input-id="uptime_start"
               :invalid="isInvalidRange"
               show-icon
               show-time
@@ -164,8 +158,8 @@ defineExpose({ autoRefresh, customStart, customEnd, isInvalidRange });
 
           <FloatLabel variant="on">
             <DatePicker
-              input-id="uptime_end"
               v-model="customEnd"
+              input-id="uptime_end"
               :invalid="isInvalidRange"
               show-icon
               show-time

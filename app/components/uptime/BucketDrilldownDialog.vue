@@ -1,11 +1,6 @@
 <script lang="ts" setup>
-import Button from "primevue/button";
-import Column from "primevue/column";
-import DataTable from "primevue/datatable";
-import Dialog from "primevue/dialog";
-import Tag from "primevue/tag";
 import { getServiceHealthHistory } from "~/composables/useAPIFetch";
-import type { UptimeSlot } from "~/composables/useServiceHealth";
+import type { UptimeSlot } from "~/utils/uptime-slots";
 import { formatClockTime, SLOW_LATENCY_MS } from "~/utils/uptime-state";
 import { ServiceCheckStatus, type ServiceHealthPoint } from "~/services/Api";
 

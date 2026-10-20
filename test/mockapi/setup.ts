@@ -103,13 +103,6 @@ config.global.directives.ripple = {
   },
 };
 
-// Mock router-link
-vi.mock("vue-router", async () => ({
-  RouterLink: {
-    template: "<a><slot /></a>",
-  },
-}));
-
 vi.mock("nuxt/app", () => ({
   useNuxtApp: () => ({
     $hubApi: fakeHubApi,

@@ -32,7 +32,8 @@ export default defineVitestConfig({
     environment: "happy-dom",
     setupFiles: "./test/mockapi/setup.ts", // Load the config for testing
     coverage: {
-      include: ["**/app/components/**"],
+      include: ["app/**"],
+      exclude: ["app/services/Api.ts"],
     },
   },
   resolve: {

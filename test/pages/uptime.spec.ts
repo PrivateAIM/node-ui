@@ -6,7 +6,7 @@ import UptimePage from "~/pages/uptime.vue";
 import ServiceUptimeCard from "~/components/uptime/ServiceUptimeCard.vue";
 import BucketDrilldownDialog from "~/components/uptime/BucketDrilldownDialog.vue";
 import UptimeToolbar from "~/components/uptime/UptimeToolbar.vue";
-import { resolutionFor } from "~/composables/useServiceHealth";
+import { resolutionFor } from "~/utils/uptime-slots";
 import {
   fakeMonitoringDisabled,
   fakeServiceHealthHistory,

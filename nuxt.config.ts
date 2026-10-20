@@ -15,9 +15,10 @@ export default defineNuxtConfig({
     "@sidebase/nuxt-auth",
     "@pinia/nuxt",
     "nuxt-echarts",
+    "@nuxt/eslint",
   ],
 
-  plugins: ["./app/plugins/api.ts"],
+  components: [{ path: "~/components", pathPrefix: false }],
 
   runtimeConfig: {
     authSecret: process.env.NUXT_AUTH_SECRET,
@@ -80,14 +81,7 @@ export default defineNuxtConfig({
     components: ["TooltipComponent", "VisualMapComponent", "GridComponent"],
   },
 
-  css: [
-    "~/assets/css/main.css",
-    "primeicons/primeicons.css",
-    "~/assets/css/elements.css",
-    "~/assets/css/table.css",
-    "~/assets/css/preferences.css",
-    "~/assets/css/toast.css",
-  ],
+  css: ["~/assets/css/main.css", "primeicons/primeicons.css"],
 
   nitro: {
     alias: {

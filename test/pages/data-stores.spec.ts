@@ -1,18 +1,18 @@
 import { defineComponent, ref } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
-import DataStoreList from "~/components/data-stores/DataStoreList.vue";
+import DataStoresPage from "~/pages/data-stores/index.vue";
 import { getDataStores, getProjects } from "~/composables/useAPIFetch";
 import type { ListServices, Project } from "~/services/Api";
-import { fakeDataStoreResp, fakeProjectResp } from "./constants";
+import { fakeDataStoreResp, fakeProjectResp } from "../components/data-stores/constants";
 
 vi.mock("~/composables/useAPIFetch", () => ({
   getProjects: vi.fn(),
   getDataStores: vi.fn(),
 }));
 
-describe("DataStoreList.vue", () => {
-  let DataStoreListTestComponent;
+describe("pages/data-stores/index.vue", () => {
+  let DataStoresPageTestComponent;
 
   beforeEach(() => {
     vi.restoreAllMocks(); // Reset mocks before each test
@@ -20,9 +20,9 @@ describe("DataStoreList.vue", () => {
 
   // Render the component with the fake params
   beforeAll(async () => {
-    DataStoreListTestComponent = defineComponent({
-      components: { DataStoreList: DataStoreList },
-      template: "<Suspense><DataStoreList/></Suspense>",
+    DataStoresPageTestComponent = defineComponent({
+      components: { DataStoresPage },
+      template: "<Suspense><DataStoresPage/></Suspense>",
     });
   });
 
@@ -50,7 +50,7 @@ describe("DataStoreList.vue", () => {
       clear: vi.fn(),
     });
 
-    const wrapper = mount(DataStoreListTestComponent);
+    const wrapper = mount(DataStoresPageTestComponent);
     expect(wrapper).toBeTruthy();
 
     await flushPromises();

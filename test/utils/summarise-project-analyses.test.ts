@@ -16,22 +16,22 @@ function makeNode(overrides: {
   distributionStatus?: string | null;
 }): AnalysisNode {
   return {
-    approval_status:
+    approvalStatus:
       overrides.approvalStatus !== undefined
         ? overrides.approvalStatus
         : "approved",
-    execution_status:
+    executionStatus:
       overrides.executionStatus !== undefined
         ? overrides.executionStatus
         : null,
     analysis: {
-      project_id:
+      projectId:
         overrides.projectId !== undefined ? overrides.projectId : PROJECT_A,
-      build_status:
+      buildStatus:
         overrides.buildStatus !== undefined
           ? overrides.buildStatus
           : "executed",
-      distribution_status:
+      distributionStatus:
         overrides.distributionStatus !== undefined
           ? overrides.distributionStatus
           : "executed",
@@ -151,7 +151,7 @@ describe("summariseProjectAnalyses", () => {
 
   it("skips analysis nodes with no project id", () => {
     const orphan = {
-      approval_status: "approved",
+      approvalStatus: "approved",
       analysis: {},
     } as unknown as AnalysisNode;
     expect(summariseProjectAnalyses([orphan], new Set()).size).toBe(0);
