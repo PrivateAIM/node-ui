@@ -5,6 +5,18 @@ import pluginVue from "eslint-plugin-vue";
 import eslintConfigPrettier from "eslint-config-prettier";
 
 export default [
+  {
+    ignores: [
+      "**/dist/**",
+      "**/node_modules/**",
+      "**/*.d.ts",
+      ".nuxt/**",
+      ".output/**",
+      ".superpowers/**",
+      "coverage/**",
+      "public/**",
+    ],
+  },
   pluginJs.configs.recommended,
   eslintConfigPrettier,
   ...tseslint.configs.recommended,
@@ -21,14 +33,5 @@ export default [
       "no-unused-vars": "off",
       "no-undef": "off",
     },
-    ignores: [
-      "**/dist/*",
-      "**/*.d.ts",
-      "**/node_modules/**",
-      "**/.nuxt",
-      "**/writable/**",
-      "**/packages/frontend/ui/components/svg/**",
-      "public/**",
-    ],
   },
 ];

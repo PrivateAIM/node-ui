@@ -17,8 +17,6 @@ export default defineNuxtConfig({
     "nuxt-echarts",
   ],
 
-  plugins: ["./app/plugins/api.ts"],
-
   runtimeConfig: {
     authSecret: process.env.NUXT_AUTH_SECRET,
     public: {
