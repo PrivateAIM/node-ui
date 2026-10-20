@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import ToggleSwitch from "primevue/toggleswitch";
 import type { AutostartSettings } from "~/services/Api";
-import Divider from "primevue/divider";
 
 const autostartModel = defineModel<AutostartSettings>({ required: true });
 </script>

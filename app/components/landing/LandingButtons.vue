@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import IdpAuthBtns from "~/components/landing/IdpAuthBtns.vue";
-
 const { data } = useAuth();
 </script>
 

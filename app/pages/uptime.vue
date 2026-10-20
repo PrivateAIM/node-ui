@@ -1,9 +1,4 @@
 <script lang="ts" setup>
-import Message from "primevue/message";
-import ProgressSpinner from "primevue/progressspinner";
-import UptimeToolbar from "~/components/uptime/UptimeToolbar.vue";
-import ServiceUptimeCard from "~/components/uptime/ServiceUptimeCard.vue";
-import BucketDrilldownDialog from "~/components/uptime/BucketDrilldownDialog.vue";
 import { getServiceHealthHistory } from "~/composables/useAPIFetch";
 import {
   buildSlots,

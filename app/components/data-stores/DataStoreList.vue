@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { useDataStoreList } from "~/composables/useDataStoreList";
-import DetailedDataStoreTable from "~/components/data-stores/DetailedDataStoreTable.vue";
 
 const { dataStores, projectNameMap, loading, refresh } = useDataStoreList();
 

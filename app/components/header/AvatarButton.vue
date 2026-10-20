@@ -1,9 +1,6 @@
 <script lang="ts" setup>
-import Menu from "primevue/menu";
-import Button from "primevue/button";
 import { useRuntimeConfig } from "nuxt/app";
 import { useToast } from "primevue/usetoast";
-import CleanupDialog from "~/components/header/CleanupDialog.vue";
 import { buildHubAccountUrl } from "~/utils/hub-console-url";
 
 const { signIn, signOut } = useAuth();

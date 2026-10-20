@@ -1,10 +1,4 @@
 <script lang="ts" setup>
-import Menubar from "primevue/menubar";
-import Button from "primevue/button";
-import AvatarButton from "~/components/header/AvatarButton.vue";
-import DarkModeToggle from "~/components/header/DarkModeToggle.vue";
-import { RouterLink } from "vue-router";
-
 const { status } = useAuthState();
 
 const isAuthenticated = computed(() => status.value === "authenticated");
@@ -66,17 +60,17 @@ const links = computed(() =>
     <Menubar :model="links" class="menu-bar-header">
       <template #item="{ item, props, hasSubmenu }">
         <div v-ripple class="p-ripple border-round menu-bar-item">
-          <router-link
+          <NuxtLink
             v-if="item.route"
             v-slot="{ href, navigate }"
             :to="item.route"
             custom
           >
-            <a :href="href" v-bind="props.action" @click="navigate">
+            <a :href="href ?? undefined" v-bind="props.action" @click="navigate">
               <span :class="item.icon" />
               <span class="ml-2 menu-item-label">{{ item.label }}</span>
             </a>
-          </router-link>
+          </NuxtLink>
           <a
             v-else
             :href="item.url"

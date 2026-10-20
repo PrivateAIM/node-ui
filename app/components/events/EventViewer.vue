@@ -2,18 +2,13 @@
 import { useNuxtApp } from "nuxt/app";
 import { FilterMatchMode } from "@primevue/core/api";
 import { useToast } from "primevue/usetoast";
-import SearchBar from "~/components/table/SearchBar.vue";
-import MeterGroup from "primevue/metergroup";
-import Chip from "primevue/chip";
 import { EventLogLevelTag, type EventTag } from "~/types/eventTag";
-import TagFilterSidePanel from "~/components/events/TagFilterSidePanel.vue";
 import {
   type EventLog,
   type EventLogResponse,
   type Meta,
   ServiceTag,
 } from "~/services/Api";
-import DateFilterGraph from "~/components/events/DateFilterGraph.vue";
 
 const toast = useToast();
 
@@ -130,7 +125,6 @@ async function fetchEvents(offset: number, reset: boolean) {
 
   loading.value = false;
 }
-
 
 function onPage(event: { page: number; rows: number }) {
   if (allLoaded.value) return;

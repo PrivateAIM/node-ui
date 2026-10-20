@@ -1,8 +1,6 @@
 <script lang="ts" setup>
-import { Card, VirtualScroller } from "primevue";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useToast } from "primevue/usetoast";
-import Toast from "primevue/toast";
 import type { FlatLogLine } from "~/types/logs";
 
 const props = defineProps<{

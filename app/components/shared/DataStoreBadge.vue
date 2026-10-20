@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import Badge from "primevue/badge";
 import { computed } from "vue";
 
 const props = defineProps<{

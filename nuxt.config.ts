@@ -17,6 +17,8 @@ export default defineNuxtConfig({
     "nuxt-echarts",
   ],
 
+  components: [{ path: "~/components", pathPrefix: false }],
+
   runtimeConfig: {
     authSecret: process.env.NUXT_AUTH_SECRET,
     public: {

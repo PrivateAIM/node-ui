@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { useNuxtApp, useState } from "nuxt/app";
 import { useToast } from "primevue/usetoast";
-import ProgressBar from "primevue/progressbar";
 import { getAnalysisNodes } from "~/composables/useAPIFetch";
 import { formatDataRow } from "~/utils/format-data-row";
 import {
@@ -9,8 +8,6 @@ import {
   showConnectionErrorToast,
 } from "~/composables/connectionErrorToast";
 import { FilterMatchMode, FilterService } from "@primevue/core/api";
-import SearchBar from "~/components/table/SearchBar.vue";
-import AnalysisControlButtons from "./AnalysisControlButtons.vue";
 import {
   getApprovalStatusSeverity,
   getBuildStatusSeverity,
@@ -27,8 +24,6 @@ import {
 } from "~/services/Api";
 import { ApprovalStatus } from "~/types/node";
 import { parseKongTags } from "~/utils/parse-kong-tags";
-import ContainerCounter from "~/components/analysis/ContainerCounter.vue";
-import DataStoreBadge from "~/components/shared/DataStoreBadge.vue";
 import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
 import type {
   HubStatuses,

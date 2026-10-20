@@ -2,14 +2,6 @@
 import { computed, ref, watch } from "vue";
 import { navigateTo, useNuxtApp } from "nuxt/app";
 import { useRoute } from "vue-router";
-import InputText from "primevue/inputtext";
-import RadioButton from "primevue/radiobutton";
-import Select from "primevue/select";
-import AutoComplete from "primevue/autocomplete";
-import InputNumber from "primevue/inputnumber";
-import InputGroupAddon from "primevue/inputgroupaddon";
-import InputGroup from "primevue/inputgroup";
-import DataStoreHelpBox from "~/components/data-stores/create/DataStoreHelpBox.vue";
 import {
   type AvailableProject,
   HelpTextField,

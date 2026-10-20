@@ -1,11 +1,9 @@
 <script lang="ts" setup>
 import { deleteDataStore } from "~/composables/useAPIFetch";
-import ConfirmDialog from "primevue/confirmdialog";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import type { Route } from "~/services/Api";
 import { FilterMatchMode } from "@primevue/core/api";
-import SearchBar from "~/components/table/SearchBar.vue";
 import { parseKongTags } from "~/utils/parse-kong-tags";
 import { parseUnixTimestamp } from "~/utils/format-data-row";
 import { getDataStoreTypeSeverity } from "~/utils/status-tag-severity";

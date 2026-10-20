@@ -6,9 +6,6 @@ import { formatDataRow } from "~/utils/format-data-row";
 import { type ProjectAnalysisSummary } from "~/utils/summarise-project-analyses";
 import { type ProjectNode } from "~/services/Api";
 import { FilterMatchMode } from "@primevue/core/api";
-import Message from "primevue/message";
-import SearchBar from "~/components/table/SearchBar.vue";
-import DataStoreBadge from "~/components/shared/DataStoreBadge.vue";
 
 const proposals = ref();
 const expandedRows = ref({});

@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import Badge from "primevue/badge";
 import { countAnalysisContainers } from "~/utils/count-analyses";
 import type { ModifiedAnalysisNode } from "~/services/modifiedApiInterfaces";
 import { PodStatus } from "~/services/Api";

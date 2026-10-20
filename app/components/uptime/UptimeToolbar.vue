@@ -1,11 +1,5 @@
 <script lang="ts" setup>
 import { onUnmounted } from "vue";
-import Button from "primevue/button";
-import DatePicker from "primevue/datepicker";
-import FloatLabel from "primevue/floatlabel";
-import SelectButton from "primevue/selectbutton";
-import ToggleButton from "primevue/togglebutton";
-import Toolbar from "primevue/toolbar";
 import { MAX_SPAN_MS, SPAN_PRESETS } from "~/composables/useServiceHealth";
 
 const props = defineProps<{

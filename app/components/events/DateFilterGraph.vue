@@ -1,9 +1,4 @@
 <script setup lang="ts">
-import DatePicker from "primevue/datepicker";
-import InputNumber from "primevue/inputnumber";
-import Toolbar from "primevue/toolbar";
-import FloatLabel from "primevue/floatlabel";
-
 const props = withDefaults(
   defineProps<{
     loading: boolean;

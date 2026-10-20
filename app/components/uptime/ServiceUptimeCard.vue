@@ -1,7 +1,4 @@
 <script lang="ts" setup>
-import Card from "primevue/card";
-import Tag from "primevue/tag";
-import UptimeTrack from "~/components/uptime/UptimeTrack.vue";
 import { alignBuckets, type UptimeSlot } from "~/composables/useServiceHealth";
 import type { UptimeBucket } from "~/utils/uptime-state";
 import type { ServiceHealthSummary } from "~/services/Api";

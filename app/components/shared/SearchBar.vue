@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import IconField from "primevue/iconfield";
-import InputIcon from "primevue/inputicon";
-
 const props = defineProps<{
   searchTerm?: string;
 }>();

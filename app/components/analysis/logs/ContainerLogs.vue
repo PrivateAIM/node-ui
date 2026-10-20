@@ -1,12 +1,9 @@
 <script lang="ts" setup>
 import { useRoute } from "vue-router";
-import { Card, Fieldset } from "primevue";
 import { useIntervalFn } from "@vueuse/core";
 import { useLogChunks } from "~/composables/useLogChunks";
 import type { FlatLogLine } from "~/types/logs";
 import { flattenLogs } from "~/types/logs";
-import RefreshSwitch from "~/components/analysis/logs/RefreshSwitch.vue";
-import AnalysisLogCardContent from "~/components/analysis/logs/AnalysisLogCardContent.vue";
 import { useNuxtApp } from "nuxt/app";
 import type {
   AnalysisLogHistoryResponse,
