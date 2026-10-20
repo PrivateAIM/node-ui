@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.1.0](https://github.com/PrivateAIM/node-ui/compare/v1.0.0...v1.1.0) (2026-10-20)
+
+
+### Features
+
+* **header:** link the hub account console in the avatar menu ([4c2aac6](https://github.com/PrivateAIM/node-ui/commit/4c2aac6ca6e2b5ab2565e7c20674a30aa37c18f9))
+* **header:** link the hub admin and account console in the avatar menu ([7c5ef1b](https://github.com/PrivateAIM/node-ui/commit/7c5ef1ba4245ee010ec81f1edfc741b495ac0684))
+
+
+### Bug Fixes
+
+* **header:** treat non-http and malformed-realm issuers as invalid ([f8aa3d4](https://github.com/PrivateAIM/node-ui/commit/f8aa3d41a4d76786fc64759cb8fecea2fb74bb7d))
+
+
+### Reverts
+
+* release please config ([d2c1648](https://github.com/PrivateAIM/node-ui/commit/d2c1648bc7f58145af08da469825aa1e4f486dcf))
+
 ## [1.0.0](https://github.com/PrivateAIM/node-ui/compare/v0.8.2...v1.0.0) (2026-09-15)
 
 
