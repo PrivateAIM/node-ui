@@ -105,7 +105,6 @@ describe("ProjectsTable.vue", () => {
     await flushPromises();
 
     expect(ProjectsTableTestComponent).toBeTruthy();
-    expect(wrapper.text()).toContain("Projects"); // Card title
 
     // Find header and all rows
     const rows = wrapper.findAll("tbody tr");

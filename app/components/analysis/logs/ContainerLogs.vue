@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { useRoute } from "vue-router";
 import { useIntervalFn } from "@vueuse/core";
 import { useLogChunks } from "~/composables/useLogChunks";
 import type { FlatLogLine } from "~/types/logs";
@@ -18,9 +17,11 @@ type FlatRunLogs = {
   analysisLines: FlatLogLine[];
 };
 
-const route = useRoute();
-const analysisId = route.params.id as string;
-const analysisNodeId = route.query.nodeId as string | undefined;
+const props = defineProps<{
+  analysisId: string;
+  analysisNodeId?: string;
+}>();
+const { analysisId, analysisNodeId } = props;
 const prevLogs = ref<FlatRunLogs[]>([]);
 const analysis = ref<AnalysisNode | null>(null);
 

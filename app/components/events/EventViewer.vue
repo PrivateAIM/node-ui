@@ -1,39 +1,19 @@
 <script setup lang="ts">
-import { useNuxtApp } from "nuxt/app";
 import { FilterMatchMode } from "@primevue/core/api";
-import { useToast } from "primevue/usetoast";
-import { EventLogLevelTag, type EventTag } from "~/types/eventTag";
+import { useEvents } from "~/composables/useEvents";
+import type { EventTag } from "~/types/eventTag";
 import {
-  type EventLog,
-  type EventLogResponse,
-  type Meta,
-  ServiceTag,
-} from "~/services/Api";
+  countLogLevels,
+  filterEventsByTags,
+  formatEventName,
+  formatTag,
+  formatTimestampPart,
+  getLogLevelColor,
+} from "~/utils/event-format";
 
-const toast = useToast();
+const { events, loading, onPage, applyDateFilter } = useEvents();
 
-const fetchLimit = ref(50);
-
-const events = ref<EventLog[]>([]);
-const meta = ref<Meta>({ count: 0, total: 0, limit: fetchLimit.value, offset: 0 });
-const loading = ref(false);
-
-const startDate = ref<Date>();
-const endDate = ref<Date>();
 const appliedFilters = ref<EventTag[]>([]);
-
-const logLevelColorMap = new Map([
-  [EventLogLevelTag.Error, "#ef4444"],
-  [EventLogLevelTag.Warning, "#eab308"],
-  [EventLogLevelTag.Info, "#3b82f6"],
-]);
-const logLevelDistributions = ref(
-  Array.from(logLevelColorMap, ([label, color]) => ({
-    label,
-    color,
-    value: 0,
-  })),
-);
 
 const filters = ref<{
   global: { value: string | undefined; matchMode: string };
@@ -41,176 +21,18 @@ const filters = ref<{
   global: { value: undefined, matchMode: FilterMatchMode.CONTAINS },
 });
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: "short" });
+const dateFormatter = new Intl.DateTimeFormat(undefined, {
+  dateStyle: "short",
+});
 const timeFormatter = new Intl.DateTimeFormat(undefined, { timeStyle: "long" });
 
-const selectedLevelFilters = computed(() =>
-  appliedFilters.value
-    .filter((f) =>
-      Object.values(EventLogLevelTag).includes(f as EventLogLevelTag),
-    )
-    .map((f) => f.toLowerCase()),
+const displayedEvents = computed(() =>
+  filterEventsByTags(events.value, appliedFilters.value),
 );
 
-const selectedServiceFilters = computed(() =>
-  appliedFilters.value.filter((f) =>
-    Object.values(ServiceTag).includes(f as ServiceTag),
-  ),
+const logLevelDistributions = computed(() =>
+  countLogLevels(displayedEvents.value),
 );
-
-const displayedEvents = computed(() => {
-  let result = events.value;
-
-  if (selectedLevelFilters.value.length > 0) {
-    result = result.filter((e) =>
-      selectedLevelFilters.value.includes(e.level?.toLowerCase()),
-    );
-  }
-
-  if (selectedServiceFilters.value.length > 0) {
-    result = result.filter((e) =>
-      selectedServiceFilters.value.includes(e.service as ServiceTag),
-    );
-  }
-
-  return result;
-});
-
-const allLoaded = computed(() => events.value.length >= meta.value.total);
-
-function formatDate(date: Date): string {
-  return date.toISOString().slice(0, 16);
-}
-
-function buildQuery(offset: number) {
-  return {
-    limit: fetchLimit.value,
-    offset,
-    ...(startDate.value && { start_date: formatDate(startDate.value) }),
-    ...(endDate.value && { end_date: formatDate(endDate.value) }),
-  };
-}
-
-async function fetchEvents(offset: number, reset: boolean) {
-  loading.value = true;
-  const resp = (await useNuxtApp()
-    .$hubApi("/events", {
-      method: "GET",
-      query: buildQuery(offset),
-    })
-    .catch((e) => {
-      if (e?.status === 503) {
-        toast.add({
-          severity: "error",
-          summary: "Event Log Unavailable",
-          detail: "The event log service is not configured on this node",
-          life: 5000,
-        });
-      } else {
-        toast.add({
-          severity: "error",
-          summary: "Event Fetch Failed",
-          detail: "Unable to fetch events from the server",
-          life: 5000,
-        });
-      }
-      return undefined;
-    })) as EventLogResponse | undefined;
-
-  if (resp) {
-    events.value = reset ? resp.data : [...events.value, ...resp.data];
-    meta.value = resp.meta;
-    updateLogLevelCounts();
-  }
-
-  loading.value = false;
-}
-
-function onPage(event: { page: number; rows: number }) {
-  if (allLoaded.value) return;
-
-  const loadedPages = Math.ceil(events.value.length / event.rows);
-  const currentPage = event.page + 1;
-
-  if (currentPage >= loadedPages - 1) {
-    fetchEvents(events.value.length, false);
-  }
-}
-
-function handleDateFilterApply(
-  start: Date | undefined,
-  end: Date | undefined,
-  limit: number,
-) {
-  startDate.value = start;
-  endDate.value = end;
-  fetchLimit.value = limit;
-  fetchEvents(0, true);
-}
-
-// --- Log level meter ---
-
-function updateLogLevelCounts(eventList: EventLog[] = displayedEvents.value) {
-  const updatedCounts = new Map(
-    logLevelDistributions.value.map((dist) => [
-      dist.label,
-      { ...dist, value: 0 },
-    ]),
-  );
-
-  eventList.forEach((event) => {
-    const level = event.level?.toLowerCase();
-    updatedCounts.forEach((dist) => {
-      if (level === dist.label.toLowerCase()) {
-        dist.value++;
-      }
-    });
-  });
-
-  logLevelDistributions.value = Array.from(updatedCounts.values());
-}
-
-watch(displayedEvents, (newList) => {
-  updateLogLevelCounts(newList);
-});
-
-// --- Formatting helpers ---
-
-function formatTag(tag: string, isLevel: boolean) {
-  if (isLevel) {
-    return {
-      background: logLevelColorMap.get(tag as EventLogLevelTag) ?? "#8b5cf6",
-      color: "#ffffff",
-    };
-  }
-  return { background: "#14b8a6", color: "#ffffff" };
-}
-
-function formatEventName(eventName: string): string {
-  return eventName.toUpperCase().split(".").join("-");
-}
-
-function formatTimestampPart(
-  timestamp: string,
-  formatter: Intl.DateTimeFormat,
-): string {
-  try {
-    return formatter.format(new Date(timestamp));
-  } catch (error) {
-    console.error(`Timestamp: ${timestamp}; Error: ${error}`);
-    return "";
-  }
-}
-
-function getLogLevelColor(level: string | undefined): string {
-  if (!level) return "transparent";
-
-  const normalized = level.toLowerCase();
-  for (const [tag, color] of logLevelColorMap) {
-    if (tag.toLowerCase() === normalized) return color;
-  }
-  return "transparent";
-}
 
 const updateFilters = (filterText: string) => {
   filters.value.global.value = filterText;
@@ -229,131 +51,126 @@ const eventCountDisplay = computed(() => displayedEvents.value.length);
 </script>
 
 <template>
-  <div class="event-viewer-container">
-    <Card class="content-card event-viewer-card">
-      <template #content>
-        <div class="event-viewer-filter-panel-box">
-          <DateFilterGraph
-            :loading="loading"
-            @applyDateFilter="handleDateFilterApply"
-          />
-        </div>
-        <div v-if="eventCountDisplay > 0" class="log-distribution-meter">
-          <MeterGroup :value="logLevelDistributions" :max="eventCountDisplay" />
-        </div>
-        <div class="table-header-row">
-          <div class="table-header-row-filter-chips-container">
-            <div class="table-header-row-filter-chips-container-counter">
-              <span
-                ><b>FILTERS: ({{ appliedFilters.length }})</b></span
-              >
-            </div>
-            <div class="table-header-row-filter-chips flex flex-wrap gap-2">
-              <Chip
-                v-for="appliedFilter in appliedFilters"
-                :key="appliedFilter"
-                :value="appliedFilter"
-                :label="appliedFilter"
-                removable
-                @remove="handleRemoveFilterTag(appliedFilter)"
-              />
-            </div>
-          </div>
-          <div class="table-header-row-searchbar">
-            <SearchBar
-              :searchTerm="filters.global.value"
-              @clearFilters="clearAllFilters"
-              @updateSearch="updateFilters"
-            />
-          </div>
-        </div>
-        <div class="event-viewer-components">
-          <div class="event-viewer-component-filter-panel">
-            <TagFilterSidePanel
-              v-model="appliedFilters"
-              @clearTagFilter="
-                () => {
-                  appliedFilters = [];
-                }
-              "
-            />
-          </div>
-          <div class="event-viewer-component-event-table">
-            <DataTable
-              v-model:filters="filters"
-              :globalFilterFields="['event_name', 'service', 'message', 'user']"
-              :loading="loading"
-              :rows="10"
-              :rowsPerPageOptions="[10, 20, 50]"
-              :value="displayedEvents"
-              filterDisplay="menu"
-              stripedRows
-              showGridlines
-              resizableColumns
-              columnResizeMode="fit"
-              paginator
-              class="rounded-table"
-              @page="onPage"
-              :sortOrder="-1"
-              sortField="timestamp"
+  <div class="event-viewer-filter-panel-box">
+    <DateFilterGraph :loading="loading" @applyDateFilter="applyDateFilter" />
+  </div>
+  <div v-if="eventCountDisplay > 0" class="log-distribution-meter">
+    <MeterGroup :value="logLevelDistributions" :max="eventCountDisplay" />
+  </div>
+  <div class="table-header-row">
+    <div class="table-header-row-filter-chips-container">
+      <div class="table-header-row-filter-chips-container-counter">
+        <span
+          ><b>FILTERS: ({{ appliedFilters.length }})</b></span
+        >
+      </div>
+      <div class="table-header-row-filter-chips flex flex-wrap gap-2">
+        <Chip
+          v-for="appliedFilter in appliedFilters"
+          :key="appliedFilter"
+          :value="appliedFilter"
+          :label="appliedFilter"
+          removable
+          @remove="handleRemoveFilterTag(appliedFilter)"
+        />
+      </div>
+    </div>
+    <div class="table-header-row-searchbar">
+      <SearchBar
+        :searchTerm="filters.global.value"
+        @clearFilters="clearAllFilters"
+        @updateSearch="updateFilters"
+      />
+    </div>
+  </div>
+  <div class="event-viewer-components">
+    <div class="event-viewer-component-filter-panel">
+      <TagFilterSidePanel
+        v-model="appliedFilters"
+        @clearTagFilter="
+          () => {
+            appliedFilters = [];
+          }
+        "
+      />
+    </div>
+    <div class="event-viewer-component-event-table">
+      <DataTable
+        v-model:filters="filters"
+        :globalFilterFields="['event_name', 'service', 'message', 'user']"
+        :loading="loading"
+        :rows="10"
+        :rowsPerPageOptions="[10, 20, 50]"
+        :value="displayedEvents"
+        filterDisplay="menu"
+        stripedRows
+        showGridlines
+        resizableColumns
+        columnResizeMode="fit"
+        paginator
+        class="rounded-table"
+        @page="onPage"
+        :sortOrder="-1"
+        sortField="timestamp"
+      >
+        <template #empty>No events found.</template>
+        <Column
+          field="timestamp"
+          :sortable="true"
+          dataType="date"
+          header="DateTime"
+          style="width: 15em"
+        >
+          <template #body="{ data }">
+            <div
+              class="event-entry-datetime"
+              :style="{
+                borderLeft: `4px solid ${getLogLevelColor(data.level)}`,
+                paddingLeft: '0.75rem',
+              }"
             >
-              <template #empty>No events found.</template>
-              <Column
-                field="timestamp"
-                :sortable="true"
-                dataType="date"
-                header="DateTime"
-                style="width: 15em"
-              >
-                <template #body="{ data }">
-                  <div
-                    class="event-entry-datetime"
-                    :style="{
-                      borderLeft: `4px solid ${getLogLevelColor(data.level)}`,
-                      paddingLeft: '0.75rem',
-                    }"
-                  >
-                    <span>{{ formatTimestampPart(data.timestamp, dateFormatter) }}</span
-                    ><br /><b>{{ formatTimestampPart(data.timestamp, timeFormatter) }}</b>
-                  </div>
-                </template>
-              </Column>
-              <Column header="Event">
-                <template #body="{ data }">
-                  <div class="event-entry-cell">
-                    <div class="event-entry-title">
-                      <div class="event-entry-title-name">
-                        {{ formatEventName(data.event_name) }}
-                      </div>
-                      <div class="event-entry-title-tags">
-                        <Tag
-                          v-if="data.level"
-                          :value="data.level"
-                          :style="formatTag(data.level, true)"
-                        />
-                        <Tag
-                          v-if="data.service"
-                          :value="data.service"
-                          :style="formatTag(data.service, false)"
-                        />
-                      </div>
-                    </div>
-                    <div class="event-entry-cell-body">
-                      <span>{{ data.message }}</span>
-                    </div>
-                  </div>
-                </template>
-              </Column>
-              <Column field="user" header="User" style="width: 10em">
-                <template #body="{ data }">
-                  <span>{{ data.user ?? "—" }}</span>
-                </template>
-              </Column>
-            </DataTable>
-          </div>
-        </div>
-      </template>
-    </Card>
+              <span>{{
+                formatTimestampPart(data.timestamp, dateFormatter)
+              }}</span
+              ><br /><b>{{
+                formatTimestampPart(data.timestamp, timeFormatter)
+              }}</b>
+            </div>
+          </template>
+        </Column>
+        <Column header="Event">
+          <template #body="{ data }">
+            <div class="event-entry-cell">
+              <div class="event-entry-title">
+                <div class="event-entry-title-name">
+                  {{ formatEventName(data.event_name) }}
+                </div>
+                <div class="event-entry-title-tags">
+                  <Tag
+                    v-if="data.level"
+                    :value="data.level"
+                    :style="formatTag(data.level, true)"
+                  />
+                  <Tag
+                    v-if="data.service"
+                    :value="data.service"
+                    :style="formatTag(data.service, false)"
+                  />
+                </div>
+              </div>
+              <div class="event-entry-cell-body">
+                <span>{{ data.message }}</span>
+              </div>
+            </div>
+          </template>
+        </Column>
+        <Column field="user" header="User" style="width: 10em">
+          <template #body="{ data }">
+            <span>{{ data.user ?? "—" }}</span>
+          </template>
+        </Column>
+      </DataTable>
+    </div>
   </div>
 </template>
 

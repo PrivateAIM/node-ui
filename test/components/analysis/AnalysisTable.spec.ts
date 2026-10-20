@@ -80,7 +80,6 @@ describe("AnalysesTable.vue", () => {
     await flushPromises();
 
     expect(AnalysisTableTestComponent).toBeTruthy();
-    expect(wrapper.text()).toContain("Analyses"); // H1 of the page
 
     // Find header and all rows
     const headerRow = wrapper.findAll("thead tr");

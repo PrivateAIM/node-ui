@@ -24,13 +24,6 @@ const VirtualScrollerStub = defineComponent({
   },
 });
 
-vi.mock("vue-router", () => ({
-  useRoute: () => ({
-    params: { id: fakeAnalysisId },
-    query: { nodeId: fakeAnalysisNodeId },
-  }),
-}));
-
 // Mock useLogChunks so tests control the chunk state without hitting MSW for logs
 vi.mock("~/composables/useLogChunks", () => ({
   useLogChunks: vi.fn(),
@@ -71,7 +64,9 @@ describe("ContainerLogs.vue", () => {
   beforeAll(async () => {
     LogTestComponent = defineComponent({
       components: { ContainerLogs },
-      template: "<Suspense><ContainerLogs/></Suspense>",
+      data: () => ({ fakeAnalysisId, fakeAnalysisNodeId }),
+      template:
+        '<Suspense><ContainerLogs :analysisId="fakeAnalysisId" :analysisNodeId="fakeAnalysisNodeId"/></Suspense>',
     });
   });
 
