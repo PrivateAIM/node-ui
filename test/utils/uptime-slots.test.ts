@@ -7,7 +7,7 @@ import {
   resolutionFor,
   SPAN_PRESETS,
   type UptimeSlot,
-} from "~/composables/useServiceHealth";
+} from "~/utils/uptime-slots";
 import type { UptimeBucket } from "~/utils/uptime-state";
 import { ServiceCheckStatus } from "~/services/Api";
 

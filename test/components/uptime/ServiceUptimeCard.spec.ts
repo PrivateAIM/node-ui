@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 import ServiceUptimeCard from "~/components/uptime/ServiceUptimeCard.vue";
-import { buildSlots } from "~/composables/useServiceHealth";
+import { buildSlots } from "~/utils/uptime-slots";
 import { fakeServiceHealthHistory } from "./constants";
 import type { ServiceHealthSummary } from "~/services/Api";
 

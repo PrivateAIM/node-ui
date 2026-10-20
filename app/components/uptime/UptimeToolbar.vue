@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { onUnmounted } from "vue";
-import { MAX_SPAN_MS, SPAN_PRESETS } from "~/composables/useServiceHealth";
+import { MAX_SPAN_MS, SPAN_PRESETS } from "~/utils/uptime-slots";
 
 const props = defineProps<{
   loading: boolean;

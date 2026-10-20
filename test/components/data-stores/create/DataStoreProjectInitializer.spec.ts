@@ -10,9 +10,9 @@ import {
   it,
   vi,
 } from "vitest";
-import DataStoreProjectInitializer from "../../../../app/components/data-stores/create/DataStoreProjectInitializer.vue";
+import DataStoreProjectInitializer from "~/components/data-stores/create/DataStoreProjectInitializer.vue";
 import { fakeParsedProjects } from "../constants";
-import type { AvailableProject } from "../../../../app/components/data-stores/create/index";
+import type { AvailableProject } from "~/types/dataStore";
 import { DataStoreType } from "../../../../app/services/Api";
 import { getProjectNodes } from "~/composables/useAPIFetch";
 

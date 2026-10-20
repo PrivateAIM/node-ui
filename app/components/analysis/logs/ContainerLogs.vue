@@ -3,7 +3,7 @@ import { useRoute } from "vue-router";
 import { useIntervalFn } from "@vueuse/core";
 import { useLogChunks } from "~/composables/useLogChunks";
 import type { FlatLogLine } from "~/types/logs";
-import { flattenLogs } from "~/types/logs";
+import { flattenLogs } from "~/utils/flatten-logs";
 import { useNuxtApp } from "nuxt/app";
 import type {
   AnalysisLogHistoryResponse,

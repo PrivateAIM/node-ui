@@ -6,7 +6,7 @@ import { formatDataRow } from "~/utils/format-data-row";
 import {
   showCacheWarningToast,
   showConnectionErrorToast,
-} from "~/composables/connectionErrorToast";
+} from "~/utils/connection-error-toast";
 import { FilterMatchMode, FilterService } from "@primevue/core/api";
 import {
   getApprovalStatusSeverity,
@@ -24,7 +24,7 @@ import {
 } from "~/services/Api";
 import { ApprovalStatus } from "~/types/node";
 import { parseKongTags } from "~/utils/parse-kong-tags";
-import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
+import { useDataStoreRequirement } from "~/composables/useDataStoreRequirement";
 import type {
   HubStatuses,
   ModifiedAnalysisNode,
@@ -36,7 +36,7 @@ const tableLoading = ref(true);
 
 // Data Store Requirement Check
 const { nodeType, requireDataStore: datastoreRequired } =
-  useDatastoreRequirement();
+  useDataStoreRequirement();
 
 const analysesMap = ref<Map<string, ModifiedAnalysisNode>>(new Map());
 const analyses = computed(() => Array.from(analysesMap.value.values()));

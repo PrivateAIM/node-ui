@@ -5,7 +5,7 @@ import {
   floorToGrid,
   resolutionFor,
   type UptimeSlot,
-} from "~/composables/useServiceHealth";
+} from "~/utils/uptime-slots";
 import type { ServiceHealthHistory } from "~/services/Api";
 import type { UptimeBucket } from "~/utils/uptime-state";
 

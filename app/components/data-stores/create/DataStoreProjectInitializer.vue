@@ -5,7 +5,7 @@ import { useRoute } from "vue-router";
 import {
   type AvailableProject,
   HelpTextField,
-} from "~/components/data-stores/create/index";
+} from "~/types/dataStore";
 import { useToast } from "primevue/usetoast";
 import {
   type BodyKongInitializeKongInitializePost,

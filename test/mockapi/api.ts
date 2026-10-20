@@ -15,7 +15,7 @@ import {
   showKongS3BucketErrorToast,
   showRbacPermissionError,
   showWrongRobotIdToast,
-} from "../../app/composables/connectionErrorToast";
+} from "~/utils/connection-error-toast";
 
 const toast = useToast();
 

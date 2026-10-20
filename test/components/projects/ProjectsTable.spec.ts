@@ -4,7 +4,7 @@ import { flushPromises, mount } from "@vue/test-utils";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import ProjectsTable from "~/components/projects/ProjectsTable.vue";
 import { getProjectNodes } from "~/composables/useAPIFetch";
-import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
+import { useDataStoreRequirement } from "~/composables/useDataStoreRequirement";
 import { useProjectAnalysisSummary } from "~/composables/useProjectAnalysisSummary";
 import type { ProjectAnalysisSummary } from "~/utils/summarise-project-analyses";
 import { emptyProjectAnalysisSummary } from "~/utils/summarise-project-analyses";
@@ -20,8 +20,8 @@ vi.mock("~/composables/useAPIFetch", () => ({
   getProjectNodes: vi.fn(),
 }));
 
-vi.mock("~/composables/useDatastoreRequirement", () => ({
-  useDatastoreRequirement: vi.fn(),
+vi.mock("~/composables/useDataStoreRequirement", () => ({
+  useDataStoreRequirement: vi.fn(),
 }));
 
 vi.mock("~/composables/useProjectAnalysisSummary", () => ({
@@ -83,7 +83,7 @@ describe("ProjectsTable.vue", () => {
     vi.restoreAllMocks(); // Reset mocks before each test
     vi.mocked(useToast).mockReturnValue(mockToast);
 
-    vi.mocked(useDatastoreRequirement).mockReturnValue({
+    vi.mocked(useDataStoreRequirement).mockReturnValue({
       nodeType: computed(() => "default"),
       requireDataStore: computed(() => true),
     } as never);
@@ -157,7 +157,7 @@ describe("ProjectsTable.vue", () => {
   });
 
   test("Hides the data store column on an aggregator node", async () => {
-    vi.mocked(useDatastoreRequirement).mockReturnValue({
+    vi.mocked(useDataStoreRequirement).mockReturnValue({
       nodeType: computed(() => "aggregator"),
       requireDataStore: computed(() => false),
     } as never);
@@ -176,7 +176,7 @@ describe("ProjectsTable.vue", () => {
     // The node settings plugin does not await fetchSettings(), so the getter
     // sits at its default `true` until the request lands.
     const requireDataStore = ref(true);
-    vi.mocked(useDatastoreRequirement).mockReturnValue({
+    vi.mocked(useDataStoreRequirement).mockReturnValue({
       nodeType: computed(() => "default"),
       requireDataStore,
     } as never);

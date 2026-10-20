@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { getServiceHealthHistory } from "~/composables/useAPIFetch";
-import type { UptimeSlot } from "~/composables/useServiceHealth";
+import type { UptimeSlot } from "~/utils/uptime-slots";
 import { formatClockTime, SLOW_LATENCY_MS } from "~/utils/uptime-state";
 import { ServiceCheckStatus, type ServiceHealthPoint } from "~/services/Api";
 

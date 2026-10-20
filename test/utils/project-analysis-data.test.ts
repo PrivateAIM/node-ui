@@ -4,7 +4,7 @@ import {
   fetchDataStoreProjectIds,
   fetchExecutionStatuses,
   mergeExecutionStatuses,
-} from "~/composables/useProjectAnalysisSummary";
+} from "~/utils/project-analysis-data";
 import { PodStatus, type AnalysisNode } from "~/services/Api";
 
 function page(size: number, idPrefix = "a"): AnalysisNode[] {

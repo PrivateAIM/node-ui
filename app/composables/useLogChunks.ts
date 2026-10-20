@@ -1,7 +1,8 @@
 import { ref } from "vue";
 import { useNuxtApp } from "nuxt/app";
 import type { AnalysisLogsResponse, PodLog } from "~/services/Api";
-import { type FlatLogLine, flattenLogs } from "~/types/logs";
+import type { FlatLogLine } from "~/types/logs";
+import { flattenLogs } from "~/utils/flatten-logs";
 
 const CHUNK_SIZE = 300;
 

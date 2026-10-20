@@ -20,7 +20,7 @@ import {
   newFakeAnalysisNode,
 } from "./constants";
 import { getAnalysisNodes } from "~/composables/useAPIFetch";
-import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
+import { useDataStoreRequirement } from "~/composables/useDataStoreRequirement";
 import type { AnalysisNode } from "~/services/Api";
 import { PodStatus } from "~/services/Api";
 import { testServer } from "@/test/mockapi/setup";
@@ -30,8 +30,8 @@ vi.mock("~/composables/useAPIFetch", () => ({
   getAnalysisNodes: vi.fn(),
 }));
 
-vi.mock("~/composables/useDatastoreRequirement", () => ({
-  useDatastoreRequirement: vi.fn(),
+vi.mock("~/composables/useDataStoreRequirement", () => ({
+  useDataStoreRequirement: vi.fn(),
 }));
 
 describe("AnalysesTable.vue", () => {
@@ -52,7 +52,7 @@ describe("AnalysesTable.vue", () => {
     vi.mocked(useToast).mockReturnValue(mockToast);
     spy = vi.spyOn(mockToast, "add");
 
-    vi.mocked(useDatastoreRequirement).mockReturnValue({
+    vi.mocked(useDataStoreRequirement).mockReturnValue({
       nodeType: computed(() => "default"),
       requireDataStore: computed(() => true),
     });
@@ -242,7 +242,7 @@ describe("AnalysesTable.vue - PO calls and Progress", () => {
     vi.mocked(useToast).mockReturnValue({
       add: vi.fn(),
     } as unknown as ReturnType<typeof useToast>);
-    vi.mocked(useDatastoreRequirement).mockReturnValue({
+    vi.mocked(useDataStoreRequirement).mockReturnValue({
       nodeType: computed(() => "default"),
       requireDataStore: computed(() => true),
     });

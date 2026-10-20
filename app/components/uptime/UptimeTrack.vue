@@ -15,7 +15,7 @@ import {
   uptimePalette,
   type UptimeState,
 } from "~/utils/uptime-state";
-import type { UptimeSlot } from "~/composables/useServiceHealth";
+import type { UptimeSlot } from "~/utils/uptime-slots";
 
 type UptimeTrackOption = ComposeOption<
   | GridComponentOption

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { alignBuckets, type UptimeSlot } from "~/composables/useServiceHealth";
+import { alignBuckets, type UptimeSlot } from "~/utils/uptime-slots";
 import type { UptimeBucket } from "~/utils/uptime-state";
 import type { ServiceHealthSummary } from "~/services/Api";
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { HelpTextField } from "~/components/data-stores/create/index";
+import { HelpTextField } from "~/types/dataStore";
 
 const props = defineProps<{ helpField: string | undefined }>();
 const emit = defineEmits(["closeHelp"]);

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { getProjectNodes } from "~/composables/useAPIFetch";
-import { useDatastoreRequirement } from "~/composables/useDatastoreRequirement";
+import { useDataStoreRequirement } from "~/composables/useDataStoreRequirement";
 import { useProjectAnalysisSummary } from "~/composables/useProjectAnalysisSummary";
 import { formatDataRow } from "~/utils/format-data-row";
 import { type ProjectAnalysisSummary } from "~/utils/summarise-project-analyses";
@@ -15,7 +15,7 @@ const expandRowEntries = [];
 
 const filters = ref();
 
-const { nodeType, requireDataStore } = useDatastoreRequirement();
+const { nodeType, requireDataStore } = useDataStoreRequirement();
 const {
   loading: summariesLoading,
   truncated,
