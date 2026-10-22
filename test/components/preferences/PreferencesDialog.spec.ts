@@ -59,6 +59,7 @@ describe("PreferencesDialog.vue", () => {
       requireDataStoreSetting: true,
       autostartEnabled: false,
       autostartInterval: 60,
+      autostartDefaultPolicy: false,
       updateSettings: mockUpdateSettings,
     } as unknown as ReturnType<typeof useNodeSettingsStore>);
   });
@@ -95,6 +96,7 @@ describe("PreferencesDialog.vue", () => {
       requireDataStoreSetting: false,
       autostartEnabled: true,
       autostartInterval: 30,
+      autostartDefaultPolicy: true,
       updateSettings: mockUpdateSettings,
     } as unknown as ReturnType<typeof useNodeSettingsStore>);
 
@@ -118,8 +120,65 @@ describe("PreferencesDialog.vue", () => {
 
     expect(mockUpdateSettings).toHaveBeenCalledWith({
       require_data_store: true,
-      autostart: { enabled: false, interval: 60 },
+      autostart: {
+        enabled: false,
+        interval: 60,
+        default_project_autostart_policy: false,
+      },
     });
+  });
+
+  it("submits the default autostart policy from the store", async () => {
+    vi.mocked(useNodeSettingsStore).mockReturnValue({
+      requireDataStore: true,
+      requireDataStoreSetting: true,
+      autostartEnabled: true,
+      autostartInterval: 60,
+      autostartDefaultPolicy: true,
+      updateSettings: mockUpdateSettings,
+    } as unknown as ReturnType<typeof useNodeSettingsStore>);
+
+    const wrapper = mount(PreferencesDialog, {
+      props: { preferencesVisible: true },
+      global: { stubs: globalStubs },
+    });
+
+    await wrapper.find(".preferences-update-btn button").trigger("click");
+    await flushPromises();
+
+    expect(mockUpdateSettings).toHaveBeenCalledWith(
+      expect.objectContaining({
+        autostart: expect.objectContaining({
+          default_project_autostart_policy: true,
+        }),
+      }),
+    );
+  });
+
+  it("closes the dialog after a successful update", async () => {
+    const wrapper = mount(PreferencesDialog, {
+      props: { preferencesVisible: true },
+      global: { stubs: globalStubs },
+    });
+
+    await wrapper.find(".preferences-update-btn button").trigger("click");
+    await flushPromises();
+
+    expect(wrapper.emitted("update:preferencesVisible")).toEqual([[false]]);
+  });
+
+  it("keeps the dialog open when the update fails", async () => {
+    mockUpdateSettings.mockResolvedValue(null);
+
+    const wrapper = mount(PreferencesDialog, {
+      props: { preferencesVisible: true },
+      global: { stubs: globalStubs },
+    });
+
+    await wrapper.find(".preferences-update-btn button").trigger("click");
+    await flushPromises();
+
+    expect(wrapper.emitted("update:preferencesVisible")).toBeUndefined();
   });
 
   it("shows success toast after a successful update", async () => {
@@ -164,6 +223,7 @@ describe("PreferencesDialog.vue", () => {
       requireDataStoreSetting: false,
       autostartEnabled: true,
       autostartInterval: 30,
+      autostartDefaultPolicy: true,
       updateSettings: mockUpdateSettings,
     } as unknown as ReturnType<typeof useNodeSettingsStore>);
 

@@ -23,7 +23,7 @@ const AutostartFieldStub = {
   props: ["modelValue"],
   emits: ["update:modelValue"],
   template:
-    '<div class="autostart-stub" :data-enabled="String(modelValue.enabled)" :data-interval="String(modelValue.interval)" />',
+    '<div class="autostart-stub" :data-enabled="String(modelValue.enabled)" :data-interval="String(modelValue.interval)" :data-default-policy="String(modelValue.default_project_autostart_policy)" />',
 };
 
 const globalStubs = {
@@ -184,6 +184,31 @@ describe("PreferencesDialog.vue + nodeSettingsStore", () => {
       expect(autostart.attributes("data-interval")).toBe("30");
     });
 
+    it("re-seeds the default autostart policy when settings arrive", async () => {
+      const store = seedUnloaded();
+
+      const wrapper = mount(PreferencesDialog, {
+        props: { preferencesVisible: false },
+        global: { stubs: globalStubs },
+      });
+      await wrapper.setProps({ preferencesVisible: true });
+      await flushPromises();
+
+      store.settings = {
+        require_data_store: true,
+        autostart: {
+          enabled: true,
+          interval: 60,
+          default_project_autostart_policy: true,
+        },
+      };
+      await flushPromises();
+
+      expect(
+        wrapper.find(".autostart-stub").attributes("data-default-policy"),
+      ).toBe("true");
+    });
+
     it("saves the loaded values, not the pre-load defaults", async () => {
       const store = seedUnloaded();
 
@@ -203,7 +228,11 @@ describe("PreferencesDialog.vue + nodeSettingsStore", () => {
 
       expect(store.updateSettings).toHaveBeenCalledWith({
         require_data_store: false,
-        autostart: { enabled: true, interval: 30 },
+        autostart: {
+          enabled: true,
+          interval: 30,
+          default_project_autostart_policy: false,
+        },
       });
     });
   });
@@ -231,5 +260,30 @@ describe("PreferencesDialog.vue + nodeSettingsStore", () => {
     expect(
       wrapper.find(".require-datastore-stub").attributes("data-value"),
     ).toBe("false");
+  });
+
+  it("persists the default autostart policy across a save and reopen", async () => {
+    const store = seedStore("default", {
+      require_data_store: true,
+      autostart: {
+        enabled: true,
+        interval: 60,
+        default_project_autostart_policy: true,
+      },
+    });
+
+    const wrapper = mount(PreferencesDialog, {
+      props: { preferencesVisible: true },
+      global: { stubs: globalStubs },
+    });
+
+    await toggleSaveAndReopen(wrapper);
+
+    expect(store.settings?.autostart?.default_project_autostart_policy).toBe(
+      true,
+    );
+    expect(
+      wrapper.find(".autostart-stub").attributes("data-default-policy"),
+    ).toBe("true");
   });
 });

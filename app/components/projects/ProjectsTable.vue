@@ -46,7 +46,6 @@ const updateFilters = (filterText: string) => {
 </script>
 
 <template>
-  <ConfirmDialog />
   <div class="table-header-row">
     <SearchBar
       :searchTerm="defaultFilters.global.value"

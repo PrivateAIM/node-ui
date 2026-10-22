@@ -35,25 +35,83 @@ describe("AutostartField.vue", () => {
   it("renders the autostart enabled section", () => {
     const wrapper = mountField({ enabled: false, interval: 60 });
     expect(
-      wrapper.find(".autostart-enabled-field .settings-description-title").text(),
+      wrapper
+        .find(".autostart-enabled-field .settings-description-title")
+        .text(),
     ).toBe("Autostart Analyses");
     expect(
-      wrapper
-        .find(".autostart-enabled-field .setting-description-text")
-        .text(),
-    ).toContain("Immediately start an analysis");
+      wrapper.find(".autostart-enabled-field .setting-description-text").text(),
+    ).toContain("Toggle the autostart feature");
   });
 
   it("renders the autostart interval section", () => {
     const wrapper = mountField({ enabled: false, interval: 60 });
     expect(
-      wrapper.find(".autostart-interval-field .settings-description-title").text(),
+      wrapper
+        .find(".autostart-interval-field .settings-description-title")
+        .text(),
     ).toBe("Autostart Interval");
     expect(
       wrapper
         .find(".autostart-interval-field .setting-description-text")
         .text(),
     ).toContain("How often");
+  });
+
+  it("renders the default autostart policy section", () => {
+    const wrapper = mountField({ enabled: false, interval: 60 });
+    expect(
+      wrapper
+        .find(".autostart-default-policy-field .settings-description-title")
+        .text(),
+    ).toBe("Default Autostart Policy");
+    expect(
+      wrapper
+        .find(".autostart-default-policy-field .setting-description-text")
+        .text(),
+    ).toContain("default autostart policy assigned to new projects");
+  });
+
+  it("dims the subsettings when autostart is off", () => {
+    const wrapper = mountField({ enabled: false, interval: 60 });
+    const subsettings = wrapper.findAll(".settings-subsection .settings-field");
+    expect(subsettings.length).toBe(2);
+    subsettings.forEach((field) =>
+      expect(field.classes()).toContain("disabled"),
+    );
+  });
+
+  it("does not dim the subsettings when autostart is on", () => {
+    const wrapper = mountField({ enabled: true, interval: 60 });
+    wrapper
+      .findAll(".settings-subsection .settings-field")
+      .forEach((field) => expect(field.classes()).not.toContain("disabled"));
+  });
+
+  it("default policy toggle reflects the model", () => {
+    const wrapper = mountField({
+      enabled: true,
+      interval: 60,
+      default_project_autostart_policy: true,
+    });
+    expect(wrapper.findAll(".mock-toggle")[1].attributes("data-checked")).toBe(
+      "true",
+    );
+  });
+
+  it("default policy toggle updates the model", async () => {
+    const model: AutostartSettings = {
+      enabled: true,
+      interval: 60,
+      default_project_autostart_policy: false,
+    };
+    const wrapper = mountField(model);
+
+    await wrapper.findAll(".mock-toggle")[1].trigger("click");
+    await nextTick();
+
+    expect(model.default_project_autostart_policy).toBe(true);
+    expect(model.enabled).toBe(true);
   });
 
   it("toggle is off when enabled is false", () => {
@@ -65,7 +123,9 @@ describe("AutostartField.vue", () => {
 
   it("toggle is on when enabled is true", () => {
     const wrapper = mountField({ enabled: true, interval: 60 });
-    expect(wrapper.find(".mock-toggle").attributes("data-checked")).toBe("true");
+    expect(wrapper.find(".mock-toggle").attributes("data-checked")).toBe(
+      "true",
+    );
   });
 
   it("InputNumber is disabled when autostart is off", () => {
@@ -84,9 +144,9 @@ describe("AutostartField.vue", () => {
 
   it("InputNumber shows the initial interval value", () => {
     const wrapper = mountField({ enabled: true, interval: 120 });
-    expect(wrapper.find(".mock-input-number").element.getAttribute("value")).toBe(
-      "120",
-    );
+    expect(
+      wrapper.find(".mock-input-number").element.getAttribute("value"),
+    ).toBe("120");
   });
 
   it("InputNumber becomes enabled after toggling autostart on", async () => {
