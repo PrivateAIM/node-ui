@@ -16,8 +16,8 @@ html {
     --page-padding-y: 1.5rem;
 
     /* PrimeVue runtime tokens — overridden by PrimeVue at hydration; declared here for IDE resolution */
-    --p-primary-color: #ea580c;
     --p-text-muted-color: #64748b;
+    --p-primary-color: #ea580c;
 }
 
 .description-box {
@@ -26,4 +26,12 @@ html {
     width: 100%;
     gap: 1rem;
     margin-bottom: 2rem;
+}
+
+[class='flame-light'] {
+    --icon-warning: #eaa001;
+}
+
+[class='flame-dark'] {
+    --icon-warning: #d8cc00;
 }

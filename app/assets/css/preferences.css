@@ -5,6 +5,17 @@
     gap: 1rem;
 }
 
+.settings-subsection {
+    margin-left: 2rem;
+    margin-top: 1.5rem;
+}
+
+.disabled {
+    opacity: 0.4;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
 .settings-description-title {
     font-weight: 600;
     margin-bottom: 0.75rem;

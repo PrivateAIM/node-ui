@@ -1,6 +1,7 @@
 import { useToast } from "primevue/usetoast";
 import { computed, defineComponent } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
+import { createPinia, setActivePinia } from "pinia";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import ProjectsTable from "~/components/projects/ProjectsTable.vue";
 import { getProjectNodes } from "~/composables/useAPIFetch";
@@ -9,6 +10,7 @@ import { useProjectAnalysisSummary } from "~/composables/useProjectAnalysisSumma
 import type { ProjectAnalysisSummary } from "~/utils/summarise-project-analyses";
 import { emptyProjectAnalysisSummary } from "~/utils/summarise-project-analyses";
 import type { ProjectNode } from "~/services/Api";
+import { useNodeSettingsStore } from "~/stores/nodeSettingsStore";
 import {
   FAKE_PROJECT_ID,
   fakeProposalsResp,
@@ -80,6 +82,7 @@ describe("ProjectsTable.vue", () => {
 
   beforeEach(() => {
     vi.restoreAllMocks(); // Reset mocks before each test
+    setActivePinia(createPinia());
     vi.mocked(useToast).mockReturnValue({ add: vi.fn() } as never);
 
     vi.mocked(useDataStoreRequirement).mockReturnValue({
@@ -288,6 +291,46 @@ describe("ProjectsTable.vue", () => {
     await flushPromises();
 
     expect(names()).toEqual(["second-project", "fake-project"]);
+  });
+
+  test("Hides the autostart column when autostart is disabled", async () => {
+    useNodeSettingsStore().settings = { autostart: { enabled: false } };
+    mockProjectNodes(fakeProposalsResp);
+
+    const wrapper = mount(ProjectsTableTestComponent);
+    await flushPromises();
+
+    const headerCols = wrapper.findAll("thead tr")[0].findAll("th");
+    expect(headerCols.map((col) => col.text())).not.toContain(
+      "Autostart Analyses",
+    );
+    expect(wrapper.findComponent({ name: "AutostartToggle" }).exists()).toBe(
+      false,
+    );
+  });
+
+  test("Shows an autostart toggle per project when autostart is enabled", async () => {
+    useNodeSettingsStore().settings = { autostart: { enabled: true } };
+    mockSummaries({
+      [FAKE_PROJECT_ID]: { total: 4, executed: 4 },
+      [SECOND_FAKE_PROJECT_ID]: { total: 3, failed: 3 },
+    });
+    mockProjectNodes(fakeTwoProposalsResp);
+
+    const wrapper = mount(ProjectsTableTestComponent, {
+      global: { stubs: { AutostartToggle: true } },
+    });
+    await flushPromises();
+
+    const headerCols = wrapper.findAll("thead tr")[0].findAll("th");
+    expect(headerCols.length).toBe(8);
+    expect(headerCols[7].text()).toBe("Autostart Analyses");
+
+    const toggles = wrapper.findAllComponents({ name: "AutostartToggle" });
+    expect(toggles.map((toggle) => toggle.props())).toEqual([
+      { projectId: FAKE_PROJECT_ID, projectName: "fake-project" },
+      { projectId: SECOND_FAKE_PROJECT_ID, projectName: "second-project" },
+    ]);
   });
 
   test("No projects returned", async () => {

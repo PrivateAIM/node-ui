@@ -21,6 +21,14 @@ export const useNodeSettingsStore = defineStore("nodeSettings", {
     autostartInterval(state): number {
       return state.settings?.autostart?.interval ?? 60;
     },
+    autostartDefaultPolicy(state): boolean {
+      return Boolean(
+        state.settings?.autostart?.default_project_autostart_policy ?? false,
+      );
+    },
+    projectAutostartSettings(state): Record<string, boolean> {
+      return state.settings?.autostart?.projects ?? {};
+    },
   },
   actions: {
     async fetchSettings() {
