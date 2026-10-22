@@ -7,8 +7,10 @@ import {
   meterSegments,
   meterTooltip,
 } from "~/utils/project-status-meter";
+import { useNodeSettingsStore } from "~/stores/nodeSettingsStore.ts";
 
 const filters = ref();
+const store = useNodeSettingsStore();
 
 const { nodeType, requireDataStore } = useDataStoreRequirement();
 const { projects, status, summariesLoading, truncated, refreshTable } =
@@ -44,6 +46,7 @@ const updateFilters = (filterText: string) => {
 </script>
 
 <template>
+  <ConfirmDialog />
   <div class="table-header-row">
     <SearchBar
       :searchTerm="defaultFilters.global.value"
@@ -210,6 +213,29 @@ const updateFilters = (filterText: string) => {
         <p v-tooltip.top="data.updatedAt.long">
           {{ data.updatedAt.short }}
         </p>
+      </template>
+    </Column>
+    <Column
+      v-if="store.autostartEnabled"
+      :exportable="false"
+      :showAddButton="false"
+      :showApplyButton="false"
+      :showClearButton="false"
+      style="min-width: 10em"
+    >
+      <template #header>
+        <span
+          v-tooltip.top="'Toggle whether analyses will start automatically'"
+          class="help-text"
+        >
+          <b>Autostart Analyses</b>
+        </span>
+      </template>
+      <template #body="slotProps">
+        <AutostartToggle
+          :projectName="slotProps.data.project_name"
+          :projectId="slotProps.data.project.id"
+        />
       </template>
     </Column>
   </DataTable>

@@ -23,53 +23,55 @@ const autostartModel = defineModel<AutostartSettings>({ required: true });
       />
     </div>
   </div>
-  <Divider />
-  <div
-    class="settings-subsection settings-field autostart-interval-field"
-    :class="{ disabled: !autostartModel.enabled }"
-  >
-    <div class="settings-description">
-      <h4 class="settings-description-title">Default Autostart Policy</h4>
-      <span class="setting-description-text">
-        The default autostart policy assigned to new projects registered in the
-        Hub for this node. When enabled, new projects will have autostart
-        enabled for their analyses by default. Autostart settings for individual
-        projects can still be configured in the Projects table.
-      </span>
+  <div class="settings-subsection">
+    <Divider type="dashed" />
+    <div
+      class="settings-field autostart-interval-field"
+      :class="{ disabled: !autostartModel.enabled }"
+    >
+      <div class="settings-description">
+        <h4 class="settings-description-title">Default Autostart Policy</h4>
+        <span class="setting-description-text">
+          The default autostart policy assigned to new projects registered in
+          the Hub for this node. When enabled, new projects will have autostart
+          enabled for their analyses by default. Autostart settings for
+          individual projects can still be configured in the Projects table.
+        </span>
+      </div>
+      <div class="settings-control autostart-toggle">
+        <ToggleSwitch
+          v-model="autostartModel.default_project_autostart_policy!"
+          label="Default Autostart Policy"
+        />
+      </div>
     </div>
-    <div class="settings-control autostart-toggle">
-      <ToggleSwitch
-        v-model="autostartModel.default_project_autostart_policy!"
-        label="Default Autostart Policy"
-      />
-    </div>
-  </div>
-  <Divider />
-  <div
-    class="settings-subsection settings-field autostart-interval-field"
-    :class="{ disabled: !autostartModel.enabled }"
-    ssss
-  >
-    <div class="settings-description">
-      <h4 class="settings-description-title">Autostart Interval</h4>
-      <span class="setting-description-text">
-        How often (in seconds) the Hub should be queried to check for new
-        analyses.
-      </span>
-    </div>
-    <div class="settings-control autostart-interval-input">
-      <InputNumber
-        v-model="autostartModel.interval"
-        v-tooltip.top="{
-          value: 'Autostart is disabled!',
-          disabled: autostartModel.enabled,
-        }"
-        :disabled="!autostartModel.enabled"
-        :min="1"
-        :invalid="autostartModel.enabled === null"
-        label="Autostart Analyses"
-        fluid
-      />
+    <Divider type="dashed" />
+    <div
+      class="settings-field autostart-interval-field"
+      :class="{ disabled: !autostartModel.enabled }"
+      ssss
+    >
+      <div class="settings-description">
+        <h4 class="settings-description-title">Autostart Interval</h4>
+        <span class="setting-description-text">
+          How often (in seconds) the Hub should be queried to check for new
+          analyses.
+        </span>
+      </div>
+      <div class="settings-control autostart-interval-input">
+        <InputNumber
+          v-model="autostartModel.interval"
+          v-tooltip.top="{
+            value: 'Autostart is disabled!',
+            disabled: autostartModel.enabled,
+          }"
+          :disabled="!autostartModel.enabled"
+          :min="1"
+          :invalid="autostartModel.enabled === null"
+          label="Autostart Analyses"
+          fluid
+        />
+      </div>
     </div>
   </div>
 </template>

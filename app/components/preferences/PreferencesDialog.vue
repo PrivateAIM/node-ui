@@ -58,6 +58,7 @@ async function onSubmitPreferences() {
       detail: "Settings were successfully updated",
       life: 5000,
     });
+    preferencesVisible.value = false;
   } else {
     toast.add({
       severity: "error",

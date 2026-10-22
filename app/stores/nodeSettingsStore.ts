@@ -26,6 +26,9 @@ export const useNodeSettingsStore = defineStore("nodeSettings", {
         state.settings?.autostart?.default_project_autostart_policy ?? false,
       );
     },
+    projectAutostartSettings(state): Record<string, boolean> {
+      return state.settings?.autostart?.projects ?? {};
+    },
   },
   actions: {
     async fetchSettings() {
