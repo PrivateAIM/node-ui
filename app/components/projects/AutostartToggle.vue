@@ -14,6 +14,8 @@ const confirm = useConfirm();
 const loading = ref(false);
 
 const store = useNodeSettingsStore();
+const confirmGroup = `autostart-${props.projectId}`;
+const confirmAction = ref<"enable" | "disable">("enable");
 
 const checked = ref(
   store.projectAutostartSettings[props.projectId] ??
@@ -21,10 +23,6 @@ const checked = ref(
 );
 
 const toggleAutostart = () => {
-  if (loading.value) {
-    checked.value = !checked.value;
-    return;
-  }
   if (checked.value) {
     confirmRejection();
   } else {
@@ -33,10 +31,12 @@ const toggleAutostart = () => {
 };
 
 const confirmApproval = () => {
+  confirmAction.value = "enable";
   confirm.require({
-    message: `Are you sure you want to enable autostart for project ${props.projectName}?\n\nAll future analyses for this project will be automatically started as soon as this node receives the image.`,
+    group: confirmGroup,
+    message:
+      "All future analyses for this project will be automatically started as soon as this node receives the image.",
     header: "Enable Autostart Confirmation",
-    icon: "pi pi-exclamation-triangle",
     rejectProps: {
       label: "Cancel",
       severity: "secondary",
@@ -59,10 +59,11 @@ const confirmApproval = () => {
 };
 
 const confirmRejection = () => {
+  confirmAction.value = "disable";
   confirm.require({
-    message: `Are you sure you want to disable autostart for project ${props.projectName}?\n\nAll future analyses will need to be manually started.`,
+    group: confirmGroup,
+    message: "All future analyses will need to be manually started.",
     header: "Disable Autostart Confirmation",
-    icon: "pi pi-exclamation-triangle",
     rejectProps: {
       label: "Cancel",
       severity: "secondary",
@@ -115,6 +116,23 @@ async function onSubmitAutostartPreference(isEnabled: boolean) {
 
 <template>
   <div class="autostart-toggle">
+    <ConfirmDialog :group="confirmGroup">
+      <template #message="{ message }">
+        <div class="autostart-confirm-message">
+          <i
+            class="pi pi-exclamation-triangle autostart-confirm-message-icon"
+          />
+          <div>
+            <p>
+              Are you sure you want to {{ confirmAction }} autostart for project
+              <b class="autostart-confirm-project">{{ projectName }}</b
+              >?
+            </p>
+            <p>{{ message.message }}</p>
+          </div>
+        </div>
+      </template>
+    </ConfirmDialog>
     <div
       class="autostart-status-tag autostart-tag-disabled"
       :class="{ dimmed: checked }"
@@ -123,6 +141,7 @@ async function onSubmitAutostartPreference(isEnabled: boolean) {
     </div>
     <ToggleSwitch
       v-model="checked"
+      :disabled="loading"
       class="autostart-toggle-switch"
       label="Autostart Toggle"
       @click="toggleAutostart()"
@@ -150,7 +169,22 @@ async function onSubmitAutostartPreference(isEnabled: boolean) {
   }
 }
 
-.p-dialog-content {
-  white-space: pre-line;
+.autostart-confirm-message {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.autostart-confirm-message-icon {
+  font-size: 4rem;
+  color: var(--icon-warning);
+}
+
+.autostart-confirm-icon {
+  font-size: 1.5rem;
+}
+
+.autostart-confirm-project {
+  color: var(--p-primary-color);
 }
 </style>

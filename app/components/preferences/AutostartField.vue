@@ -26,7 +26,7 @@ const autostartModel = defineModel<AutostartSettings>({ required: true });
   <div class="settings-subsection">
     <Divider type="dashed" />
     <div
-      class="settings-field autostart-interval-field"
+      class="settings-field autostart-default-policy-field"
       :class="{ disabled: !autostartModel.enabled }"
     >
       <div class="settings-description">
@@ -49,7 +49,6 @@ const autostartModel = defineModel<AutostartSettings>({ required: true });
     <div
       class="settings-field autostart-interval-field"
       :class="{ disabled: !autostartModel.enabled }"
-      ssss
     >
       <div class="settings-description">
         <h4 class="settings-description-title">Autostart Interval</h4>
