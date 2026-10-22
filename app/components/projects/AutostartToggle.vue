@@ -17,10 +17,17 @@ const store = useNodeSettingsStore();
 const confirmGroup = `autostart-${props.projectId}`;
 const confirmAction = ref<"enable" | "disable">("enable");
 
-const checked = ref(
-  store.projectAutostartSettings[props.projectId] ??
+const enabledAutostart = computed(
+  () =>
+    store.projectAutostartSettings[props.projectId] ??
     store.autostartDefaultPolicy,
 );
+
+const checked = ref(enabledAutostart.value);
+
+watch(enabledAutostart, (value) => {
+  checked.value = value;
+});
 
 const toggleAutostart = () => {
   if (checked.value) {
@@ -102,6 +109,8 @@ async function onSubmitAutostartPreference(isEnabled: boolean) {
       life: 5000,
     });
   } else {
+    // If no response/failed, reset the updated toggle
+    checked.value = !checked.value;
     toast.add({
       severity: "error",
       summary: "Update Failed",
