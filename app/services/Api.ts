@@ -404,6 +404,16 @@ export interface AutostartSettings {
    * @default 60
    */
   interval?: number | null;
+  /**
+   * Default Project Autostart Policy
+   * @default false
+   */
+  default_project_autostart_policy?: boolean;
+  /**
+   * Projects
+   * @default {}
+   */
+  projects?: Record<string, boolean>;
 }
 
 /** Body_get_token_token_post */
@@ -1854,7 +1864,7 @@ export interface UserSettings {
    * @default true
    */
   require_data_store?: boolean | null;
-  /** @default {"enabled":false,"interval":60} */
+  /** @default {"enabled":false,"interval":60,"default_project_autostart_policy":false,"projects":{}} */
   autostart?: AutostartSettings | null;
   /** @default {"interval":600} */
   kong_cleanup?: KongCleanupSettings | null;

@@ -16,6 +16,7 @@ const requireDataStoreDisabled = computed(
 const draftAutostart = ref<AutostartSettings>({
   enabled: store.autostartEnabled,
   interval: store.autostartInterval,
+  default_project_autostart_policy: store.autostartDefaultPolicy,
 });
 
 const settingsLoaded = computed(() => store.settings !== null);
@@ -24,6 +25,8 @@ function resetDrafts() {
   draftRequireDataStore.value = store.requireDataStoreSetting;
   draftAutostart.value.enabled = store.autostartEnabled;
   draftAutostart.value.interval = store.autostartInterval;
+  draftAutostart.value.default_project_autostart_policy =
+    store.autostartDefaultPolicy;
 }
 
 watch(preferencesVisible, (visible) => {
@@ -43,6 +46,8 @@ async function onSubmitPreferences() {
     autostart: {
       enabled: draftAutostart.value.enabled,
       interval: draftAutostart.value.interval,
+      default_project_autostart_policy:
+        draftAutostart.value.default_project_autostart_policy,
     },
   });
 

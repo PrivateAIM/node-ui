@@ -3164,7 +3164,7 @@
             "anyOf": [
               {
                 "type": "integer",
-                "exclusiveMinimum": 0
+                "exclusiveMinimum": 0.0
               },
               {
                 "type": "null"
@@ -3172,6 +3172,19 @@
             ],
             "title": "Interval",
             "default": 60
+          },
+          "default_project_autostart_policy": {
+            "type": "boolean",
+            "title": "Default Project Autostart Policy",
+            "default": false
+          },
+          "projects": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "type": "object",
+            "title": "Projects",
+            "default": {}
           }
         },
         "additionalProperties": false,
@@ -3414,7 +3427,7 @@
         },
         "type": "object",
         "title": "CreateServiceRequestClientCertificate",
-        "description": "Certificate to be used as client certificate while TLS handshaking to the upstream server. With form-encoded, the notation is `client_certificate.id=\u003Cclient_certificate id\u003E`. With JSON, use `\"client_certificate\":{\"id\":\"\u003Cclient_certificate id\u003E\"}`."
+        "description": "Certificate to be used as client certificate while TLS handshaking to the upstream server. With form-encoded, the notation is `client_certificate.id=<client_certificate id>`. With JSON, use `\"client_certificate\":{\"id\":\"<client_certificate id>\"}`."
       },
       "DataStoreType": {
         "type": "string",
@@ -4315,7 +4328,7 @@
             "anyOf": [
               {
                 "type": "integer",
-                "exclusiveMinimum": 0
+                "exclusiveMinimum": 0.0
               },
               {
                 "type": "null"
@@ -6282,7 +6295,7 @@
             "anyOf": [
               {
                 "type": "integer",
-                "exclusiveMinimum": 0
+                "exclusiveMinimum": 0.0
               },
               {
                 "type": "null"
@@ -6295,7 +6308,7 @@
             "anyOf": [
               {
                 "type": "integer",
-                "exclusiveMinimum": 0
+                "exclusiveMinimum": 0.0
               },
               {
                 "type": "null"
@@ -6775,7 +6788,9 @@
             ],
             "default": {
               "enabled": false,
-              "interval": 60
+              "interval": 60,
+              "default_project_autostart_policy": false,
+              "projects": {}
             }
           },
           "kong_cleanup": {
