@@ -60,10 +60,6 @@ const autostartModel = defineModel<AutostartSettings>({ required: true });
       <div class="settings-control autostart-interval-input">
         <InputNumber
           v-model="autostartModel.interval"
-          v-tooltip.top="{
-            value: 'Autostart is disabled!',
-            disabled: autostartModel.enabled,
-          }"
           :disabled="!autostartModel.enabled"
           :min="1"
           :invalid="autostartModel.enabled === null"
