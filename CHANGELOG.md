@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0](https://github.com/PrivateAIM/node-ui/compare/v1.1.0...v1.2.0) (2026-10-22)
+
+
+### Features
+
+* **project:** add autostart column and toggle to table ([e8cda05](https://github.com/PrivateAIM/node-ui/commit/e8cda05783672befae346755b02db0123a3f5d47))
+* **settings:** add default autostart policy to settings menu ([37362ac](https://github.com/PrivateAIM/node-ui/commit/37362acbb00751363c931d64eede7b5029860ae2))
+
+
+### Bug Fixes
+
+* **preferences:** reset toggle if autostart update response is null ([90d4380](https://github.com/PrivateAIM/node-ui/commit/90d4380f93c27be5be403643a81328ea05b22768))
+
 ## [1.1.0](https://github.com/PrivateAIM/node-ui/compare/v1.0.0...v1.1.0) (2026-10-20)
 
 
