@@ -32,7 +32,7 @@
     "echarts": "^6.1.0",
     "next-auth": "~4.21.1",
     "node-fetch-native": "^1.6.7",
-    "nuxt": "^4.5.2",
+    "nuxt": "^4.6.2",
     "nuxt-echarts": "^1.0.1",
     "pinia": "^3.0.4",
     "primeicons": "^7.0.0",
