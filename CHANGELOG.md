@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/PrivateAIM/node-ui/compare/v1.2.0...v1.2.1) (2026-10-30)
+
+
+### Bug Fixes
+
+* security patching ([95f6e2b](https://github.com/PrivateAIM/node-ui/commit/95f6e2be0a74310c7f630eefe84253de41e2e9f3))
+
 ## [1.2.0](https://github.com/PrivateAIM/node-ui/compare/v1.1.0...v1.2.0) (2026-10-22)
 
 
