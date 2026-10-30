@@ -85,7 +85,7 @@ const updateFilters = (filterText: string) => {
   </Message>
   <DataTable
     v-model:filters="filters"
-    :globalFilterFields="['id', 'project_name', 'node.name']"
+    :globalFilterFields="['id', 'project_name']"
     :rows="10"
     :rowsPerPageOptions="[10, 20, 50]"
     :sortOrder="1"

@@ -154,7 +154,7 @@ const onCloseNavToast = () => {
   </div>
   <DataTable
     v-model:filters="filters"
-    :globalFilterFields="['analysis_name', 'project_name', 'node.name']"
+    :globalFilterFields="['analysis_name', 'project_name']"
     :loading="tableLoading"
     :rows="10"
     :rowsPerPageOptions="[10, 20, 50]"
