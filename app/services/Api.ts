@@ -476,11 +476,6 @@ export interface BodyPodorcPodsCreatePoPost {
    * Analysis keyauth kong token
    */
   kong_token?: string;
-  /**
-   * Node Id
-   * Node UUID
-   */
-  node_id: string;
 }
 
 /**
@@ -2468,6 +2463,11 @@ export class Api<
          * Comma-separated list of fields to return
          */
         fields?: string | null;
+        /**
+         * Include
+         * Comma-separated list of nested fields to include
+         */
+        include?: string | null;
       },
       params: RequestParams = {},
     ) =>
@@ -2512,6 +2512,11 @@ export class Api<
          * Comma-separated list of fields to return
          */
         fields?: string | null;
+        /**
+         * Include
+         * Comma-separated list of nested fields to include
+         */
+        include?: string | null;
       },
       params: RequestParams = {},
     ) =>
@@ -2556,6 +2561,11 @@ export class Api<
          * Comma-separated list of fields to return
          */
         fields?: string | null;
+        /**
+         * Include
+         * Comma-separated list of nested fields to include
+         */
+        include?: string | null;
       },
       params: RequestParams = {},
     ) =>
@@ -2595,6 +2605,11 @@ export class Api<
          * Comma-separated list of fields to return
          */
         fields?: string | null;
+        /**
+         * Include
+         * Comma-separated list of nested fields to include
+         */
+        include?: string | null;
       },
       params: RequestParams = {},
     ) =>

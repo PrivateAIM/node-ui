@@ -715,6 +715,24 @@
               "title": "Fields"
             },
             "description": "Comma-separated list of fields to return"
+          },
+          {
+            "name": "include",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma-separated list of nested fields to include",
+              "title": "Include"
+            },
+            "description": "Comma-separated list of nested fields to include"
           }
         ],
         "responses": {
@@ -823,6 +841,24 @@
               "title": "Fields"
             },
             "description": "Comma-separated list of fields to return"
+          },
+          {
+            "name": "include",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma-separated list of nested fields to include",
+              "title": "Include"
+            },
+            "description": "Comma-separated list of nested fields to include"
           }
         ],
         "responses": {
@@ -931,6 +967,24 @@
               "title": "Fields"
             },
             "description": "Comma-separated list of fields to return"
+          },
+          {
+            "name": "include",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma-separated list of nested fields to include",
+              "title": "Include"
+            },
+            "description": "Comma-separated list of nested fields to include"
           }
         ],
         "responses": {
@@ -1048,6 +1102,24 @@
               "title": "Fields"
             },
             "description": "Comma-separated list of fields to return"
+          },
+          {
+            "name": "include",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma-separated list of nested fields to include",
+              "title": "Include"
+            },
+            "description": "Comma-separated list of nested fields to include"
           }
         ],
         "responses": {
@@ -3305,23 +3377,10 @@
             "type": "string",
             "title": "Kong Token",
             "description": "Analysis keyauth kong token"
-          },
-          "node_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "string"
-              }
-            ],
-            "title": "Node Id",
-            "description": "Node UUID"
           }
         },
         "type": "object",
-        "required": ["analysis_id", "project_id", "node_id"],
+        "required": ["analysis_id", "project_id"],
         "title": "Body_podorc_pods_create_po_post"
       },
       "CleanUpType": {
