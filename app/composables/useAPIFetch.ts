@@ -46,7 +46,7 @@ export function getProjectNodes(opts?) {
     ...opts,
     method: "GET",
     query: {
-      include: "project,node",
+      include: "project",
       sort: "-updatedAt",
     },
   });
@@ -64,7 +64,7 @@ export function getProjects(opts?) {
 
 export function getAnalysisNodes(opts?) {
   return useAPIFetch<AnalysisNode[] | undefined>(
-    "/analysis-nodes?include=analysis,node",
+    "/analysis-nodes?include=analysis",
     {
       ...opts,
       method: "GET",

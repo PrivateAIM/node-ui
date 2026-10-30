@@ -211,7 +211,7 @@ export async function useAnalyses() {
             offset: currentOffset,
             limit: QUERY_LIMIT,
           },
-          include: "analysis,node",
+          include: "analysis",
           sort: "-updatedAt",
         },
       })
